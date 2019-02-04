@@ -1,4 +1,3 @@
-
 #define HashSize 317
 
 /* SYMBOL will be extended later.
