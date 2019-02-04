@@ -9,3 +9,6 @@ symbol.o : source/symbol.c header/memory.h
 
 memory.o : source/memory.c
 	cc -c source/memory.c
+
+clean :
+	rm *.o && rm run

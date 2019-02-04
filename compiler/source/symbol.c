@@ -40,7 +40,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
   int hashIndex = Hash(name);
 
   //insert into table
-  SYMBOL *table = t->table;
+  SYMBOL **table = t->table;
   if(table[hashIndex] == NULL){
     table[hashIndex] = newSym;
   } else {
@@ -56,10 +56,10 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
 
 SYMBOL *getSymbol(SymbolTable *t, char *name){
   //find index via hash
-  int hashIndex = hash(name);
+  int hashIndex = Hash(name);
 
   //search in current table
-  SYMBOL *table = t->table;
+  SYMBOL **table = t->table;
   SYMBOL *temp = table[hashIndex];
   while(temp != NULL){
     if(strcmp(temp->name, name)){
