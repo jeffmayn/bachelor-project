@@ -42,10 +42,13 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
   //insert into table
   SYMBOL **table = t->table;
   if(table[hashIndex] == NULL){
+    printf("\nindex Empty ");
     table[hashIndex] = newSym;
   } else {
+    printf("\nindex not empty ");
     SYMBOL *temp = table[hashIndex];
     while(temp->next != NULL){
+      printf("element ");
       temp = temp->next;
     }
     temp->next = newSym;
@@ -87,11 +90,15 @@ void dumpSymbolTable(SymbolTable *t){
   printf(" ||\n");
   dumpSymbolTable(t->next);
   SYMBOL **table = t->table;
-  for(int i=0; i<317; i++){
+  for(int i=0; i<HashSize; i++){
+    printf("for, %p\n", table[i]);
     if(table[i]!=NULL){
+      printf("if");
       SYMBOL *elm = table[i];
       while(elm != NULL){
+        printf("while");
         printf("(%s,%d)\n",elm->name,elm->value);
+        elm = elm->next;
       }
     }
   }
