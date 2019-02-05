@@ -92,6 +92,7 @@ void dumpSymbolTable(SymbolTable *t){
       SYMBOL *elm = table[i];
       while(elm != NULL){
         printf("(%s,%d)\n",elm->name,elm->value);
+        elm = elm->next;
       }
     }
   }
