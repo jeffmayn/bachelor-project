@@ -10,7 +10,41 @@ int main(int argc, char** argv){
   printf("parent of child Symboltable = %p\n", childTable->next);
   dumpSymbolTable(childTable);
 
+  for(int i = 0; i<20; i++){
+    //s = itoa(i,s,DECIMAL);
+    putSymbol(table, "blah" , i);
+  }
+  putSymbol(table, "ikke chained", 42);
+  for(int i = 0; i<16; i++){
+    //s = itoa(i,s,DECIMAL);
+    putSymbol(childTable, "blah2", i);
+  }
+  dumpSymbolTable(childTable);
+
 }
 
 
-int
+void createAFuckingTree(){
+  int tableCount = 20;
+  SymbolTable *tables[tableCount]; //list of pointers to any symbolTable in the tree
+  SymbolTable *tableRoot = initSymbolTable();
+  tables[0] = tableRoot;
+
+  //create tables
+  for(int i = 0; i < tableCount; tableCount++){
+    int search = 1; //continue to search for parent
+    int j = 1; //randomization factor for finding parent
+    int parentIndex = i*j*300 % HashSize;
+    while(tables[parentIndex] == NULL){
+      int parentIndex = i*j*300 % HashSize;
+    }
+    SymbolTable *childTable = scopeSymbolTable(tables[parentIndex]); //set parent of child
+    tables[i] = childTable; //save child i table
+  }
+
+  //insert symbol into the tables
+  for(int i = 0; i<500; i++){
+
+  }
+
+}
