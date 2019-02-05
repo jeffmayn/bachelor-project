@@ -1,14 +1,41 @@
-run : main.o symbol.o memory.o
-	cc -o run main.o symbol.o memory.o
+TARGET_EXEC ?= a.out
 
-main.o : source/main.c header/symbol.h
-	cc -c source/main.c
+BUILD_DIR ?= ./build
+SRC_DIRS ?= ./source
 
-symbol.o : source/symbol.c header/memory.h
-	cc -c source/symbol.c
+SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.d)
 
-memory.o : source/memory.c
-	cc -c source/memory.c
+INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-clean :
-	rm *.o && rm run
+CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -std=c11 -Wall -Wextra -pedantic
+
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+
+# assembly
+#$(BUILD_DIR)/%.s.o: %.s
+#	$(MKDIR_P) $(dir $@)
+#	$(AS) $(ASFLAGS) -c $< -o $@
+
+# c source
+$(BUILD_DIR)/%.c.o: %.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+# c++ source
+#$(BUILD_DIR)/%.cpp.o: %.cpp
+#	$(MKDIR_P) $(dir $@)
+#	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+
+.PHONY: clean
+
+clean:
+	$(RM) -r $(BUILD_DIR)
+
+-include $(DEPS)
+
+MKDIR_P ?= mkdir -p
