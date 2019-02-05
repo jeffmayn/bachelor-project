@@ -12,7 +12,7 @@ int Hash(char *str){
     if(i < strlen(str)-1){
       sum <<= 1;
     }
-  } return sum;
+  } return sum % HashSize;
 }
 
 SymbolTable *initSymbolTable(){
@@ -28,6 +28,13 @@ SymbolTable *scopeSymbolTable(SymbolTable *t){
   return newt;
 }
 
+/**
+ * creates a new symbol which stores the name and value
+ * from the arguments in table t
+ *
+ * return NULL* if the name is already in the table
+ * return SYMBOL* to the new symbol on success
+ */
 SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
   //make new symbol add name and value
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
@@ -45,7 +52,19 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
     table[hashIndex] = newSym;
   } else {
     SYMBOL *temp = table[hashIndex];
+    if(!strcmp(name,temp->name)){
+      //name is already in this table
+      free(newSym->name);
+      free(newSym);
+      return NULL;
+    }
     while(temp->next != NULL){
+      if(!strcmp(name,temp->name)){
+        //name is already in this table
+        free(newSym->name);
+        free(newSym);
+        return NULL;
+      }
       temp = temp->next;
     }
     temp->next = newSym;
@@ -81,18 +100,25 @@ void dumpSymbolTable(SymbolTable *t){
   if(t == NULL){
     return;
   }
-  printf(" /\\\n");
-  printf("/||\\\n");
-  printf(" ||\n");
-  printf(" ||\n");
+
   dumpSymbolTable(t->next);
+  if(t->next != NULL){
+    printf("\n /\\\n");
+    printf("/||\\\n");
+    printf(" ||\n");
+    printf(" ||\n\n");
+  }
   SYMBOL **table = t->table;
-  for(int i=0; i<317; i++){
+  for(int i=0; i<HashSize; i++){
     if(table[i]!=NULL){
       SYMBOL *elm = table[i];
+      printf("(%s,%d)",elm->name,elm->value);
+      elm = elm->next;
       while(elm != NULL){
-        printf("(%s,%d)\n",elm->name,elm->value);
+        printf("->(%s,%d)",elm->name,elm->value);
+        elm = elm->next;
       }
+      printf("\n");
     }
   }
 
