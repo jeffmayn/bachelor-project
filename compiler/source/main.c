@@ -22,6 +22,7 @@ int main(int argc, char** argv){
     //s = itoa(i,s,DECIMAL);
     putSymbol(table, "blah" , i);
   }
+  putSymbol(table, "ikke chained", 42);
   for(int i = 0; i<16; i++){
     //s = itoa(i,s,DECIMAL);
     putSymbol(childTable, "blah2", i);
