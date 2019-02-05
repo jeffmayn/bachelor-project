@@ -28,6 +28,13 @@ SymbolTable *scopeSymbolTable(SymbolTable *t){
   return newt;
 }
 
+/**
+ * creates a new symbol which stores the name and value
+ * from the arguments in table t
+ *
+ * return NULL* if the name is already in the table
+ * return SYMBOL* to the new symbol on success
+ */
 SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
   //make new symbol add name and value
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
@@ -42,13 +49,22 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
   //insert into table
   SYMBOL **table = t->table;
   if(table[hashIndex] == NULL){
-    //printf("\nindex Empty ");
     table[hashIndex] = newSym;
   } else {
-    //printf("\nindex not empty ");
     SYMBOL *temp = table[hashIndex];
+    if(!strcmp(name,temp->name)){
+      //name is already in this table
+      free(newSym->name);
+      free(newSym);
+      return NULL;
+    }
     while(temp->next != NULL){
-      //printf("element ");
+      if(!strcmp(name,temp->name)){
+        //name is already in this table
+        free(newSym->name);
+        free(newSym);
+        return NULL;
+      }
       temp = temp->next;
     }
     temp->next = newSym;
@@ -94,14 +110,11 @@ void dumpSymbolTable(SymbolTable *t){
   }
   SYMBOL **table = t->table;
   for(int i=0; i<HashSize; i++){
-    //printf("for, %p\n", table[i]);
     if(table[i]!=NULL){
-      //printf("if");
       SYMBOL *elm = table[i];
       printf("(%s,%d)",elm->name,elm->value);
       elm = elm->next;
       while(elm != NULL){
-        //printf("while");
         printf("->(%s,%d)",elm->name,elm->value);
         elm = elm->next;
       }
