@@ -12,7 +12,7 @@ int Hash(char *str){
     if(i < strlen(str)-1){
       sum <<= 1;
     }
-  } return sum;
+  } return sum % HashSize;
 }
 
 SymbolTable *initSymbolTable(){
@@ -42,10 +42,13 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
   //insert into table
   SYMBOL **table = t->table;
   if(table[hashIndex] == NULL){
+    //printf("\nindex Empty ");
     table[hashIndex] = newSym;
   } else {
+    //printf("\nindex not empty ");
     SYMBOL *temp = table[hashIndex];
     while(temp->next != NULL){
+      //printf("element ");
       temp = temp->next;
     }
     temp->next = newSym;
@@ -81,19 +84,28 @@ void dumpSymbolTable(SymbolTable *t){
   if(t == NULL){
     return;
   }
-  printf(" /\\\n");
-  printf("/||\\\n");
-  printf(" ||\n");
-  printf(" ||\n");
+
   dumpSymbolTable(t->next);
+  if(t->next != NULL){
+    printf("\n /\\\n");
+    printf("/||\\\n");
+    printf(" ||\n");
+    printf(" ||\n\n");
+  }
   SYMBOL **table = t->table;
-  for(int i=0; i<317; i++){
+  for(int i=0; i<HashSize; i++){
+    //printf("for, %p\n", table[i]);
     if(table[i]!=NULL){
+      //printf("if");
       SYMBOL *elm = table[i];
+      printf("(%s,%d)",elm->name,elm->value);
+      elm = elm->next;
       while(elm != NULL){
-        printf("(%s,%d)\n",elm->name,elm->value);
+        //printf("while");
+        printf("->(%s,%d)",elm->name,elm->value);
         elm = elm->next;
       }
+      printf("\n");
     }
   }
 
