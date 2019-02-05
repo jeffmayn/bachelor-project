@@ -103,19 +103,23 @@ void dumpSymbolTable(SymbolTable *t){
 
   dumpSymbolTable(t->next);
   if(t->next != NULL){
-    printf("\n /\\\n");
-    printf("/||\\\n");
-    printf(" ||\n");
-    printf(" ||\n\n");
+    printf("\n%8s\n","/\\ ");
+    printf("%8s\n","/||\\");
+    printf("%8s\n"," || ");
+    printf("%8s\n"," || ");
+    printf(".:childnode:.\n");
+  } else {
+    printf(".:root:.\n");
   }
   SYMBOL **table = t->table;
+  printf("%-9s %-15s %-10s %s\n", "hashIndex", "name", "value", "chained pairs->");
   for(int i=0; i<HashSize; i++){
     if(table[i]!=NULL){
       SYMBOL *elm = table[i];
-      printf("(%s,%d)",elm->name,elm->value);
+      printf("%9d %-15s %-10d", i, elm->name, elm->value);
       elm = elm->next;
       while(elm != NULL){
-        printf("->(%s,%d)",elm->name,elm->value);
+        printf(" -> (%s,%d)",elm->name,elm->value);
         elm = elm->next;
       }
       printf("\n");
