@@ -6,7 +6,7 @@
 
 int Hash(char *str){
   unsigned int sum = 0;
-  for (int i = 0; i < strlen(str); i++){
+  for (unsigned int i = 0; i < strlen(str); i++){
     char c = str[i];
     sum += c;
     if(i < strlen(str)-1){
