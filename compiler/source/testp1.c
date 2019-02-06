@@ -32,6 +32,36 @@ void testTree(){
     dumpSymbolTable(tables[i]);
     printf("\n\n\n\n\n\n\n");
   }
+	
+	SYMBOL* s = getSymbol(tables[17],"1y1y");
+	if(s !=NULL)
+	  printf("1y1y from table 17: (%s,%d)\n", s->name,s->value);
+	else
+    printf("No symbol found\n"); 
+  s=getSymbol(tables[17],"0y0y");
+	if(s !=NULL)
+	  printf("0y0y from table 17: (%s,%d)\n", s->name,s->value);
+	else
+    printf("No symbol found\n"); 
+  
+	s=getSymbol(tables[17],"220y220y");
+	if(s !=NULL)
+	  printf("220y220y from table 17: (%s,%d)\n", s->name,s->value);
+	else
+    printf("No symbol found\n"); 
+  
+	s=getSymbol(tables[18],"220y220y");
+	if(s !=NULL)
+	  printf("220y220y from table 18: (%s,%d)\n", s->name,s->value);
+	else
+    printf("No symbol found\n"); 
+  
+	s=getSymbol(tables[1],"220y220y");
+	if(s !=NULL)
+	  printf("220y220y from table 1: (%s,%d)\n", s->name,s->value);
+	else
+    printf("No symbol found\n"); 
+  
 
 
 }
