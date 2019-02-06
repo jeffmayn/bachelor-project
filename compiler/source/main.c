@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../header/testp1.h"
 
 int main(int argc, char** argv){
+
 
 
 
@@ -28,5 +30,10 @@ int main(int argc, char** argv){
     putSymbol(childTable, "blah2", i);
   }
   dumpSymbolTable(childTable);
+
+
+  testTree();
+
+
 
 }

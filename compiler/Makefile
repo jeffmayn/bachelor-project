@@ -1,20 +1,32 @@
-run : main.o symbol.o memory.o
-	cc -g -o run main.o symbol.o memory.o
+TARGET_EXEC ?= run
 
-testp1 : testp1.o symbol.o memory.o
-	cc -g -o run testp1.o symbol.o memory.o
+BUILD_DIR ?= ./build
+SRC_DIRS ?= ./source
 
-main.o : source/main.c header/symbol.h
-	cc -g -c source/main.c
+SRCS := $(shell find $(SRC_DIRS) -name *.c)
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.d)
 
-symbol.o : source/symbol.c header/memory.h
-	cc -g -c source/symbol.c
+CC := gcc
+INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-memory.o : source/memory.c
-	cc -g -c source/memory.c
+CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -std=c11 -Wall -Wextra -pedantic -g
 
-testp1.o : source/testp1.c
-	cc -g -c source/testp1.c
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
 
-clean :
-	rm *.o && rm run
+# c source
+$(BUILD_DIR)/%.c.o: %.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+
+clean:
+	$(RM) -r $(BUILD_DIR)
+
+-include $(DEPS)
+
+MKDIR_P ?= mkdir -p
+
