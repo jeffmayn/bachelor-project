@@ -1,8 +1,8 @@
 #include "../header/symbol.h"
 #include "../header/memory.h"
 #include <stdlib.h>
-#include  <stdio.h>
-#include  <string.h>
+#include <stdio.h>
+#include <string.h>
 
 int Hash(char *str){
   unsigned int sum = 0;
