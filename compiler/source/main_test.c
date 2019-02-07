@@ -90,10 +90,11 @@ int test_putSymbol(){
 
   SYMBOL *newSym = putSymbol(table, "kitty", 199);
 
-  if((newSym != NULL) && (!strcmp(newSym->name, "kitty")) && (newSym->value == 199)){
+  if((newSym != NULL) && (!strcmp(newSym->name, "kitty"))\
+                      && (newSym->value == 199)){
     mistakes = 0;
   } else {
-    printf("failed: %s, %d\n",newSym->name, newSym->value);
+    printf("failed ");
   }
 
   return mistakes;
@@ -111,7 +112,8 @@ int test_getSymbol(){
   if(retrieved == NULL){
     printf("failed: getsymbol null pointer\n");
   }
-  if((retrieved != NULL) && (!strcmp(retrieved->name, "kitty")) && (retrieved->value == 199)){
+  if((retrieved != NULL) && (!strcmp(retrieved->name, "kitty"))\
+                         && (retrieved->value == 199)){
     mistakes = 0;
   } else {
     printf("failed: getSymbol\n");
@@ -133,67 +135,45 @@ int test_scopeSymbolTable(){
   putSymbol(t, "kitty", 199);
   putSymbol(childTable, "Arnold", 155);
 
-  SYMBOL **table = childTable->table;
-/*
-  for(int i = 0; i < HashSize; i++){
-    if(table[i]){
-      SYMBOL *elm = table[i];
-      printf("%s: %d\n",elm->name, elm->value);
-      elm = elm->next;
-      while(elm){
-        printf("%s: %d\n",elm->name, elm->value);
-        elm = elm->next;
-      }
-      printf("\n");
-    }
-  }
-*/
   SYMBOL *retrieved = getSymbol(childTable, "kitty");
   SYMBOL *retrieved2 = getSymbol(childTable, "Arnold");
 
   if(!retrieved){
     printf("failed: getsymbol null pointer\n");
   }
-  if((retrieved && retrieved2) && ((!strcmp(retrieved->name, "kitty")) && (retrieved->value == 199))\
-                               && ((!strcmp(retrieved2->name, "Arnold")) && (retrieved2->value == 155))) {
+  if((retrieved && retrieved2) && ((!strcmp(retrieved->name, "kitty"))\
+      && (retrieved->value == 199)) && ((!strcmp(retrieved2->name, "Arnold"))\
+      && (retrieved2->value == 155))) {
     mistakes = 0;
-  } else {
   }
   return mistakes;
 }
 
 /**
  * put the same name twice into the same table, it should not be
- * possible
+ * possible second symbol should be NULL
  */
 int test_doublePutSymbol(){
   int mistakes = 123;
   SymbolTable *t = initSymbolTable();
 
   // create first 'kitty' symbol and insert
-  putSymbol(t, "kitty", 199);
+  SYMBOL *firstSym = putSymbol(t, "kitty", 199);
 
-  // create second 'kitty' symbol
-  SYMBOL *newSym = Malloc(sizeof(SYMBOL));
-  newSym->value = 199;
-  newSym->name = Malloc(strlen("kitty")+1);
-  memcpy(newSym->name, "kitty", strlen("kitty")+1);
-  newSym->next = NULL;
-
-  int hashIndex = Hash("kitty");
-
-  SYMBOL **table = t->table;
-  if(table[hashIndex] == NULL){
-    // no symbol 'kitty' exist
-    table[hashIndex] = newSym;
+  if((firstSym != NULL) && (!strcmp(firstSym->name, "kitty"))\
+      && (firstSym->value == 199)){
     mistakes = 0;
   } else {
-    // 'kitty' symbol already exists
-    SYMBOL *temp = table[hashIndex];
-    if(!strcmp("kitty",temp->name)){
-      mistakes = -1;
-    }
+    printf("failed ");
   }
+
+  SYMBOL *secondSym = putSymbol(t, "kitty", 199); //should return NULL
+
+  if(secondSym == NULL){
+    mistakes = 0;
+  }
+
+
   return mistakes;
 }
 
@@ -207,17 +187,17 @@ int test_doubleScopeSymbolTable(){
   SymbolTable *t = initSymbolTable();
   SymbolTable *childTable = scopeSymbolTable(t);
 
-  putSymbol(t, "kitty", 199);
-  putSymbol(childTable, "kitty", 199);
-
-  SYMBOL **table = childTable->table;
+  putSymbol(t, "kitty", 1);
+  putSymbol(childTable, "kitty", 2);
 
   SYMBOL *retrieved = getSymbol(t, "kitty");
   SYMBOL *retrieved2 = getSymbol(childTable, "kitty");
 
   if((retrieved && retrieved2) && ((!strcmp(retrieved->name, "kitty")))\
                                && ((!strcmp(retrieved2->name, "kitty")))){
-    mistakes = 0;
+    if((retrieved->value == 1) && (retrieved2->value == 2)){
+      mistakes = 0;
+    }
   } else {
     printf("failed: getSymbol\n");
   }

@@ -59,13 +59,13 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
       return NULL;
     }
     while(temp->next != NULL){
+      temp = temp->next;
       if(!strcmp(name,temp->name)){
         //name is already in this table
         free(newSym->name);
         free(newSym);
         return NULL;
       }
-      temp = temp->next;
     }
     temp->next = newSym;
   }
@@ -112,7 +112,8 @@ void dumpSymbolTable(SymbolTable *t){
     printf(".:root:.\n");
   }
   SYMBOL **table = t->table;
-  printf("%-9s %-15s %-10s %s\n", "hashIndex", "name", "value", "chained pairs->");
+  printf("%-9s %-15s %-10s %s\n", "hashIndex", "name", "value",
+   "chained pairs->");
   for(int i=0; i<HashSize; i++){
     if(table[i]!=NULL){
       SYMBOL *elm = table[i];
