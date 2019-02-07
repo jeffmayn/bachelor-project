@@ -7,7 +7,6 @@
 
 void run_tests(){
   //run all tests in here
-  printf("runtest\n");
   test_Hash();
 }
 
