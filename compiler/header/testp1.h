@@ -2,4 +2,4 @@
 #define wordCount 500
 
 void createTree();
-int testTree();
+void testTree();
