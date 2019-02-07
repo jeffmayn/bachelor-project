@@ -7,7 +7,6 @@
 #include "../header/testp1.h"
 
 int main(){
-
-  run_tests();
   testTree();
+  run_tests();
 }

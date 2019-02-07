@@ -1,6 +1,6 @@
 # lots of inspiration from https://spin.atomicobject.com/2016/08/26/makefile-c-projects/
 
-TARGET_EXEC ?= run
+TARGET_EXEC ?= compiler
 
 BUILD_DIR ?= ./build
 SRC_DIRS ?= ./source
