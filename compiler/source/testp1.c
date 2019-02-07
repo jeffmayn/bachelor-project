@@ -5,15 +5,18 @@
 
 SymbolTable *tables[tableCount]; //list of pointers to any symbolTable in the tree
 
-int testTree(){
+void testTree(){
+  //create a tree of 20 nodes/hashtables
   createTree();
 
+  //Print the path from every node to the root
   for(int i=0; i<tableCount; i++){
-    printf("Table number %d\n", i);
+    printf("/*******Table number %d*******\\\n\n", i);
     dumpSymbolTable(tables[i]);
     printf("\n\n\n\n\n\n\n");
   }
 
+  //extract some things from the table
 	SYMBOL* s = getSymbol(tables[17],"1y1y");
 	if(s !=NULL)
 	  printf("1y1y from table 17: (%s,%d)\n", s->name,s->value);
@@ -36,12 +39,16 @@ int testTree(){
 	  printf("220y220y from table 18: (%s,%d)\n", s->name,s->value);
 	else
     printf("No symbol found\n");
-
 	s=getSymbol(tables[1],"220y220y");
 	if(s !=NULL)
 	  printf("220y220y from table 1: (%s,%d)\n", s->name,s->value);
 	else
     printf("No symbol found\n");
+  s=getSymbol(tables[1],"220y2201y");
+  	if(s !=NULL)
+  	  printf("220y2201y from table 1: (%s,%d)\n", s->name,s->value);
+  	else
+      printf("220y2201y from table 1: No symbol found\n");
 
 
 
@@ -55,48 +62,38 @@ void createTree(){
 
   //create tables
   for(int i = 1; i < tableCount; i++){
-    printf("i %d", i);
-    //int search = 1; //continue to search for parent
+    //for each new table find a speudorandom existing parent
     int j = 1; //randomization factor for finding parent
-    //int parentIndex = i*j*300 % 20;
     int parentIndex = (i-j)*3 %20;
     while(tables[parentIndex] == NULL){
       j++;
-      //int parentIndex = i*j*300 % 20;
       parentIndex = (i-j)*3 % 20;
     }
-    //SymbolTable *childTable = scopeSymbolTable(tables[parentIndex]); //set parent of child
-    tables[i] = scopeSymbolTable(tables[parentIndex]); //save child i table
+    //save child in list of tables for easy access
+    tables[i] = scopeSymbolTable(tables[parentIndex]);
   }
 
-  //insert symbol into the tables
-  int j = -1; //0%25 is 0
+  //insert 25 symbols into each table
+  int j = -1;
   for(int i = 0; i<wordCount; i++){
-  //printf("(i,j)=(%d,%d)\n",i,j);
     if((i % (wordCount/20)) == 0){
       j++;
       j = j%20;
     }
-    //SymbolTable *table = tables[(i*319)%20];
-    SymbolTable *table = tables[j];
-    putSymbol(table, words[i], i);
+    putSymbol(tables[j], words[i], i); //add symbol to table
   }
 
-//add 1 string from each table to each table, including a repetition
+  //add 1 string from each table to each table, including a repetition
   for(int i = 0; i<wordCount/20; i++){
     for(int j = 0; j<20; j++){
-      SymbolTable *table = tables[j];
-      putSymbol(table, words[i*20], i+10000);
-      //printf("(i,j,words[i],i*wordCount/20)=(%d,%d,%c,%d)\n", i,j,words[i],i*wordCount/20);
+      putSymbol(tables[j], words[i*20], i+j*10000); //add symbol to table
     }
   }
 
-  //add all the strings of table 0 to table 0 again
+  //add all the strings of table 0 to table 0 again (with new value)
   for(int i = 0; i<wordCount/20; i++){
     for(int j = 0; j<20; j++){
-      SymbolTable *table = tables[0];
-      putSymbol(table, words[i], i+10000);
-      //printf("(i,j,words[i],i*wordCount/20)=(%d,%d,%c,%d)\n", i,j,words[i],i*wordCount/20);
+      putSymbol(tables[0], words[i], i+j*900000); //add symbol to table
     }
   }
 
