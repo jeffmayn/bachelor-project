@@ -1,3 +1,5 @@
+# lots of inspiration from https://spin.atomicobject.com/2016/08/26/makefile-c-projects/
+
 TARGET_EXEC ?= run
 
 BUILD_DIR ?= ./build
