@@ -81,7 +81,7 @@ SYMBOL *getSymbol(SymbolTable *t, char *name){
   SYMBOL **table = t->table;
   SYMBOL *temp = table[hashIndex];
   while(temp != NULL){
-    if(strcmp(temp->name, name)){
+    if(!strcmp(temp->name, name)){
       return temp;
     } else {
       temp = temp->next;

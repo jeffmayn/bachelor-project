@@ -6,14 +6,13 @@
 SymbolTable *tables[tableCount]; //list of pointers to any symbolTable in the tree
 
 int testTree(){
-  printf("Hej\n");
+  /*printf("Hej\n");
   SymbolTable *table = initSymbolTable();
   printf("Symboltable = %p\n", table);
   SymbolTable *childTable = scopeSymbolTable(table);
   printf("Child Symboltable = %p\n", childTable);
   printf("parent of child Symboltable = %p\n", childTable->next);
   dumpSymbolTable(childTable);
-
   for(int i = 0; i<20; i++){
     //s = itoa(i,s,DECIMAL);
     putSymbol(table, "blah" , i);
@@ -24,14 +23,14 @@ int testTree(){
     putSymbol(childTable, "blah2", i);
   }
   dumpSymbolTable(childTable);
-
+*/
   createTree();
   for(int i=0; i<tableCount; i++){
     printf("Table number %d\n", i);
     dumpSymbolTable(tables[i]);
     printf("\n\n\n\n\n\n\n");
   }
-
+  return 0;
 }
 
 
@@ -46,7 +45,7 @@ void createTree(){
   //create tables
   for(int i = 1; i < tableCount; i++){
     printf("i %d", i);
-    int search = 1; //continue to search for parent
+    //int search = 1; //continue to search for parent
     int j = 1; //randomization factor for finding parent
     //int parentIndex = i*j*300 % 20;
     int parentIndex = (i-j)*3 %20;
