@@ -167,40 +167,34 @@ int test_scopeSymbolTable(){
  * possible
  */
 int test_doublePutSymbol(){
-  // TODO: not finnished
   int mistakes = 123;
-  /*
-
   SymbolTable *t = initSymbolTable();
 
+  // create first 'kitty' symbol and insert
   putSymbol(t, "kitty", 199);
-  putSymbol(t, "kitty", 199);
+
+  // create second 'kitty' symbol
+  SYMBOL *newSym = Malloc(sizeof(SYMBOL));
+  newSym->value = 199;
+  newSym->name = Malloc(strlen("kitty")+1);
+  memcpy(newSym->name, "kitty", strlen("kitty")+1);
+  newSym->next = NULL;
 
   int hashIndex = Hash("kitty");
+
   SYMBOL **table = t->table;
-  SYMBOL *temp = table[hashIndex];
-  int i = 0;
-  while(temp != NULL){
-    if(!strcmp(temp->name, "kitty")){
-    i+=1;
-    printf("%d\n", i);
-    } else {
-      temp = temp->next;
-    }
-  }
-
-
-  SYMBOL *retrieved = getSymbol(t, "kitty");
-
-  if((retrieved) && (!strcmp(retrieved->name, "kitty")) && (retrieved->value == 199)){
+  if(table[hashIndex] == NULL){
+    // no symbol 'kitty' exist
+    table[hashIndex] = newSym;
     mistakes = 0;
   } else {
-    printf("failed: getSymbol\n");
+    // 'kitty' symbol already exists
+    SYMBOL *temp = table[hashIndex];
+    if(!strcmp("kitty",temp->name)){
+      mistakes = -1;
+    }
   }
-
   return mistakes;
-*/
-return mistakes;
 }
 
 /**
