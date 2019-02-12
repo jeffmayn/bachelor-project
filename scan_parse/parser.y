@@ -16,9 +16,26 @@ void yyerror() {
 //da der ikke er noget nvanv for union er den kaldet YYSTYPE
 //Jeg tror at dette er stak typen
 %union {
-   int intconst;
-   char *stringconst;
-   struct EXP *exp;
+  FUNCTION* ufunc;
+  HEAD* uhead;
+  BODY* ubody;
+  TAIL* utail;
+  TYPE* utype;
+  PAR_DECL_LIST* upardecllist;
+  VAR_DECL_LIST* uvardecllist;
+  STATEMENT_LIST* ustatementlist;
+  STATEMENT* ustatement;
+  void* uvoid; //default for testing
+
+
+
+
+
+
+   //int intconst;
+   //char *stringconst;
+   //struct EXP *exp;
+
    //jeg tror at jeg skal lave en variable af hver type som JEFF laver
    //Måske primitive typer er undtaget
 }
@@ -27,7 +44,6 @@ void yyerror() {
 //tokens er terminal symboler
 //%token <intconst> tINTCONST
 //%token <stringconst> tIDENTIFIER
-%token <> tFUNC
 %token <> tID
 %token <> tEND
 %token <> tINT
@@ -56,18 +72,18 @@ void yyerror() {
 //type er non-terminal symboler
 //bruges kun til at definere typen af non-terminalen
 //%type <exp> program exp
-%type <> func
-%type <> head
-%type <> body
-%type <> tail
-%type <> type //gad vide om jeg må kalde den type??
-%type <> par_decl_list
-%type <> var_decl_list
+%type <ufunc> func
+%type <uhead> head
+%type <ubody> body
+%type <utail> tail
+%type <utype> type //gad vide om jeg må kalde den type??
+%type <upardecllist> par_decl_list
+%type <uvardecllist> var_decl_list
 %type <> var_type
 %type <> decl_list
 %type <> decl
-%type <> stmt_list
-%type <> stmt
+%type <ustatementlist> stmt_list
+%type <ustatement> stmt
 %type <> var
 %type <> exp
 %type <> term
@@ -86,41 +102,41 @@ program: exp
 
 func :  head body head
         {
-          //what the heck should happen here?!?!?
+          $$ = makeFUNCTION($1, $2, $3);
         }
 head :  tFUNC tID '(' par_decl_list ')' : type
         {
-          //someshit should also happen here
+          $$ = makeHEAD($2, $4, $6);
         }
 tail :  tEND tID
         {
-          //I'm getting tired of making up sentences
+          $$ = makeTAIL($2);
         }
 type :  tID
         {
-          //Jeff
+          $$ = makeID($1);
         }
       | tINT
         {
-          //I
+          $$ = makeINT($1);
         }
       | tBOOL
         {
-          //need
+          $$ = makeBOOL($1);
         }
       | tARRAY tOF type
         {
-          //function
+          $$ = makeARRAY($2);
         }
       | tRECORD tOF '{' var_decl_list '}'
         {
-          //definitions
+          $$ = makeRECORD($3);
         }
 par_decl_list : var_decl_list
         {
           //what about empty strings??
         }
-      | //empty string
+      | ;//empty string
 var_decl_list : var_type ',' var_decl_list
         {
           //blah
@@ -133,7 +149,10 @@ var_type : tID ':' type
         {
           //more semantic happening here
         }
-body :  decl_list stmt_list {}
+body :  decl_list stmt_list
+        {
+          $$ = makeBODY($1, $2);
+        }
 decl_list : decl decl_list
       | ;//empty string
 decl :  tTYPE tID '=' type ';'
@@ -168,9 +187,6 @@ act_list : exp_list {}
       | ; {}
 exp_list : exp {}
       | exp, exp_list {}
-
-//MANGLER REGLER PÅ SIDE 3 AF del2.pdf
-
 
 
 exp : tIDENTIFIER
