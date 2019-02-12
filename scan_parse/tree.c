@@ -50,7 +50,12 @@ TYPE *makeID(char *id){
 }
 
 TYPE *makeINT(int *Int){
-//TODO
+  TYPE *type;
+  type = NEW(TYPE);
+  type->lineno = lineno;
+  type->kind = intK;
+  type->intE = Int;
+  return type;
 }
 
 TYPE *makeBOOL(bool *Bool){
