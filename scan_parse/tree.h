@@ -1,6 +1,8 @@
 #ifndef __tree_h
 #define __tree_h
 
+typedef enum {false, true} bool;
+
 typedef struct FUNCTION {
   int lineno;
   struct HEAD *head;
@@ -30,10 +32,10 @@ typedef struct TYPE {
   int lineno;
   enum {idK, intK, boolK, arrayK, recordK} kind;
   union{
-    char *idE;
-    int *intE;
-    bool *boolE;
-    struct {struct TYPE *type;} arrayE;
+    char *id;
+    int *integer;
+    bool *bool;
+    struct {struct TYPE *typo;} arrayE;
     struct {struct VAR_DECL_LIST *vList;} recordE;
   } val;
 } TYPE;
@@ -54,8 +56,9 @@ typedef struct VAR_DECL_LIST {
 typedef struct STATEMENT_LIST {
   int lineno;
   struct STATEMENT *sList;
-}
+} STATEMENT_LIST;
 
+/*
 typedef struct STATEMENT {
   int lineno;
   enum {returnK, writeK, allocateK, allocateLengthK} kind;
@@ -67,15 +70,15 @@ typedef struct STATEMENT {
     struct {struct } allocateLengthE;
   } val;
 } STATEMENT;
-
-FUNCTION *makeFUNCTION(struct head *head, struct body *body, struct tail *tail);
-HEAD *makeHEAD(char *id, struct PAR_DECL_LIST *pList, struct TYPE *type);
-BODY *makeBODY(struct VAR_DECL_LIST *vList, struct STATEMENT_LIST *sList);
+*/
+FUNCTION *makeFUNCTION(HEAD *head, BODY *body, TAIL *tail);
+HEAD *makeHEAD(char *id, PAR_DECL_LIST *pList, TYPE *type);
+BODY *makeBODY(VAR_DECL_LIST *vList, STATEMENT_LIST *sList);
 TAIL *makeTAIL(char *id);
 TYPE *makeID(char *id);
-TYPE *makeINT(int *Int);
-TYPE *makeBOOL(bool *Bool);
-TYPE *makeARRAY(TYPE *type);
-TYPE *makeRECORD(struct VAR_DECL_LIST *vList);
+TYPE *makeINT(int *integer);
+TYPE *makeBOOL(bool *bool);
+TYPE *makeARRAY(TYPE *typo);
+TYPE *makeRECORD(VAR_DECL_LIST *vList);
 
 #endif

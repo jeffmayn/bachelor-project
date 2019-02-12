@@ -3,9 +3,9 @@
 
 extern int lineno;
 
-FUNCTION *makeFUNCTION(struct head *head, struct body *body, struct tail *tail){
+FUNCTION *makeFUNCTION(struct HEAD *head, struct BODY *body, struct TAIL *tail){
   FUNCTION *function;
-  function = NEW(FUNCTION);
+  function = NEW(function);
   function->lineno = lineno;
   function->head = head;
   function->body = body;
@@ -15,26 +15,26 @@ FUNCTION *makeFUNCTION(struct head *head, struct body *body, struct tail *tail){
 
 HEAD *makeHEAD(char *id, struct PAR_DECL_LIST *pList, struct TYPE *type){
   HEAD *head;
-  head = NEW(HEAD);
+  head = NEW(head);
   head->lineno = lineno;
   head->id = id;
-  head->PAR_DECL_LIST = pList;
-  head->TYPE = type;
+  head->pList = pList;
+  head->type = type;
   return head;
 }
 
 BODY *makeBODY(struct VAR_DECL_LIST *vList, struct STATEMENT_LIST *sList){
   BODY *body;
-  body = NEW(BODY);
+  body = NEW(body);
   body->lineno = lineno;
-  body->VAR_DECL_LIST = vList;
-  body->STATEMENT_LIST = sList;
+  body->vList = vList;
+  body->sList = sList;
   return body;
 }
 
 TAIL *makeTAIL(char *id){
   TAIL *tail;
-  tail = NEW(TAIL);
+  tail = NEW(tail);
   tail->lineno = lineno;
   tail->id = id;
   return tail;
@@ -42,35 +42,45 @@ TAIL *makeTAIL(char *id){
 
 TYPE *makeID(char *id){
   TYPE *type;
-  type = NEW(TYPE);
+  type = NEW(type);
   type->lineno = lineno;
   type->kind = idK;
-  type->idE = id;
+  type->val.id = id;
   return type;
 }
 
-TYPE *makeINT(int *Int){
+TYPE *makeINT(int *integer){
   TYPE *type;
-  type = NEW(TYPE);
+  type = NEW(type);
   type->lineno = lineno;
   type->kind = intK;
-  type->intE = Int;
+  type->val.integer = integer;
   return type;
 }
 
-TYPE *makeBOOL(bool *Bool){
-//TODO
+TYPE *makeBOOL(bool *bool){
+  TYPE *type;
+  type = NEW(type);
+  type->lineno = lineno;
+  type->kind = boolK;
+  type->val.bool = bool;
+  return type;
 }
 
-TYPE *makeARRAY(TYPE *type){
+TYPE *makeARRAY(TYPE *typo){
   TYPE *type;
-  type = NEW(TYPE);
+  type = NEW(type);
   type->lineno = lineno;
   type->kind = arrayK;
-  type->val.arrayE.type = type;
+  type->val.arrayE.typo = typo;
   return type;
 }
 
 TYPE *makeRECORD(VAR_DECL_LIST *vList){
-//TODO
+  TYPE *type;
+  type = NEW(type);
+  type->lineno = lineno;
+  type->kind = recordK;
+  type->val.recordE.vList;
+  return type;
 }
