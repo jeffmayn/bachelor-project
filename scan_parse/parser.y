@@ -151,8 +151,23 @@ stmt :  tRETURN exp ';' {}
       | tWHILE exp tDO stmt {}
       | '{' stmt_list '}' {}
 var :   tID {}
-      | var '[' exp ']'
-      | var '.' tID
+      | var '[' exp ']' {}
+      | var '.' tID {}
+exp :   exp tOP exp {}
+      | term {}
+term :  var {}
+      | tID '(' act_list ')' {}
+      | '(' exp_list ')' {}
+      | '!' term {}
+      | '|' exp '|' {}
+      | tNUM {}
+      | tTRUE {}
+      | tFALSE {}
+      | tNULL {}
+act_list : exp_list {}
+      | ; {}
+exp_list : exp {}
+      | exp, exp_list {}
 
 //MANGLER REGLER PÅ SIDE 3 AF del2.pdf
 
