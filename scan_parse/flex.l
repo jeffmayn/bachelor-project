@@ -3,7 +3,11 @@
 #include "tree.h"
 #include "y.tab.h"
 int lineNo = 0;
+int linePos = 0;
 %}
+
+NUMBER  0|[1-9][0-9]*
+ID      [a-zA-Z][a-zA-Z0-9_]*
 
 %option noyywrap
 %start INITIAL COMMENT ONELINECOMMENT
@@ -21,12 +25,14 @@ int lineNo = 0;
 <INITIAL>"&&"   { return tOP;}
 <INITIAL>"||"   { return tOP;}
 
-<INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { yylval.stringconst = (char *) malloc(strlen(yytext)+1);
-                                  sprintf(yylval.stringconst, "%s", yytext);
-                                  return tID;}
+<INITIAL>ID       { yylval.stringconst = (char *) malloc(strlen(yytext)+1);
+                    sprintf(yylval.stringconst, "%s", yytext);
+                    return tID;}
 
-<INITIAL>0|[1-9][0-9]*  { yylval.intconst = atoi(yytext);
-                          return tINT;}
+<INITIAL>NUMBER   { yylval.intconst = atoi(yytext);
+                    return tINT;}
+
+<INITIAL>func ID (/*howtodothisstuff?*/)    {/*return <head> token here or something*/}
 
 <INITIAL>"(*"                       { BEGIN COMMENT;}
 <INITIAL>#                          { BEGIN ONELINECOMMENT;}
