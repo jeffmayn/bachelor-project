@@ -25,11 +25,11 @@ ID      [a-zA-Z][a-zA-Z0-9_]*
 <INITIAL>"&&"   { return tOP;}
 <INITIAL>"||"   { return tOP;}
 
-<INITIAL>ID       { yylval.stringconst = (char *) malloc(strlen(yytext)+1);
+<INITIAL>{ID}     { yylval.stringconst = (char *) malloc(strlen(yytext)+1);
                     sprintf(yylval.stringconst, "%s", yytext);
                     return tID;}
 
-<INITIAL>NUMBER   { yylval.intconst = atoi(yytext);
+<INITIAL>{NUMBER} { yylval.intconst = atoi(yytext);
                     return tINT;}
 
 <INITIAL>func ID (/*howtodothisstuff?*/)    {/*return <head> token here or something*/}
