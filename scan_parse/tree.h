@@ -56,27 +56,33 @@ typedef struct STATEMENT_LIST {
   struct STATEMENT *sList;
 } STATEMENT_LIST;
 
-/*
-typedef struct STATEMENT {
-  int lineno;
-  enum {returnK, writeK, allocateK, allocateLengthK} kind;
+typedef struct EXPRESSION {
+  enum {idK,intconstK,timesK,divK,plusK,minusK} kind;
   union {
-    // TODO: ikke sikker på hvad hvordan de forskellige statement typer skal laves
-    struct {struct } returnE;
-    struct {struct } writeE;
-    struct {struct } allocateE;
-    struct {struct } allocateLengthE;
+    char *idE;
+    int intconstE;
+    struct {struct EXPRESSION *left; struct EXPRESSION *right;} timesE;
+    struct {struct EXPRESSION *left; struct EXPRESSION *right;} divE;
+    struct {struct EXPRESSION *left; struct EXPRESSION *right;} plusE;
+    struct {struct EXPRESSION *left; struct EXPRESSION *right;} minusE;
   } val;
-} STATEMENT;
-*/
+} EXPRESSION;
+
 FUNCTION *makeFUNCTION(HEAD *head, BODY *body, TAIL *tail);
 HEAD *makeHEAD(char *id, PAR_DECL_LIST *pList, TYPE *type);
 BODY *makeBODY(VAR_DECL_LIST *vList, STATEMENT_LIST *sList);
 TAIL *makeTAIL(char *id);
+
 TYPE *makeID(char *id);
 TYPE *makeINT(int *integer);
 TYPE *makeBOOL(bool *bool);
 TYPE *makeARRAY(TYPE *typo);
 TYPE *makeRECORD(VAR_DECL_LIST *vList);
 
+EXPRESSION *makeEXPid(char *id);
+EXPRESSION *makeEXPintconst(int intconst);
+EXPRESSION *makeEXPtimes(EXPRESSION *left, EXPRESSION *right);
+EXPRESSION *makeEXPdiv(EXPRESSION *left, EXPRESSION *right);
+EXPRESSION *makeEXPplus(EXPRESSION *left, EXPRESSION *right);
+EXPRESSION *makeEXPminus(EXPRESSION *left, EXPRESSION *right);
 #endif

@@ -84,3 +84,61 @@ TYPE *makeRECORD(VAR_DECL_LIST *vList){
   type->val.recordE.vList;
   return type;
 }
+
+EXPRESSION *makeEXPid(char *id)
+{ EXPRESSION *expression;
+  expression = NEW(EXP);
+  expression->lineno = lineno;
+  expression->kind = idK;
+  expression->val.idE = id;
+  return expression;
+}
+
+EXPRESSION *makeEXPintconst(int intconst)
+{ EXPRESSION *expression;
+  expression = NEW(EXP);
+  expression->lineno = lineno;
+  expression->kind = intconstK;
+  expression->val.intconstE = intconst;
+  return expression;
+}
+
+EXPRESSION *makeEXPtimes(EXPRESSION *left, EXPRESSION *right)
+{ EXPRESSION *expression;
+  expression = NEW(EXP);
+  expression->lineno = lineno;
+  expression->kind = timesK;
+  expression->val.timesE.left = left;
+  expression->val.timesE.right = right;
+  return expression;
+}
+
+EXPRESSION *makeEXPdiv(EXPRESSION *left, EXPRESSION *right)
+{ EXPRESSION *expression;
+  expression = NEW(EXP);
+  expression->lineno = lineno;
+  expression->kind = divK;
+  expression->val.divE.left = left;
+  expression->val.divE.right = right;
+  return expression;
+}
+
+EXPRESSION *makeEXPplus(EXPRESSION *left, EXPRESSION *right)
+{ EXPRESSION *expression;
+  expression = NEW(EXP);
+  expression->lineno = lineno;
+  expression->kind = plusK;
+  expression->val.plusE.left = left;
+  expression->val.plusE.right = right;
+  return expression;EXP
+}
+
+EXPRESSION *makeEXPminus(EXPRESSION *left, EXPRESSION *right)
+{ EXPRESSION *expression;
+  expression = NEW(EXP);
+  expression->lineno = lineno;
+  expression->kind = minusK;
+  expression->val.minusE.left = left;
+  expression->val.minusE.right = right;
+  return expression;
+}
