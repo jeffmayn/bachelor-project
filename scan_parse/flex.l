@@ -6,34 +6,33 @@ int lineNo = 0;
 int linePos = 0;
 %}
 
-NUMBER    0|[1-9][0-9]*
-ID        [a-zA-Z][a-zA-Z0-9_]*
-VAR_TYPE  ID" ":" "(id|int|bool|array" "of" ("VAR_TYPE")"|record" "of" ("VAR_TYPE(,VAR_TYPE)*")"
+NUMBER      0|[1-9][0-9]*
+ID          [a-zA-Z][a-zA-Z0-9_]*
 
 %option noyywrap
 %start INITIAL COMMENT ONELINECOMMENT
 %%
-<INITIAL>"+"    { return tOP;}/*noget med at finde ud af hvilken operator det er*/
-<INITIAL>"-"    { return tOP;}
-<INITIAL>"*"    { return tOP;}
-<INITIAL>"/"    { return tOP;}
-<INITIAL>"=="   { return tOP;}
-<INITIAL>"!="   { return tOP;}
-<INITIAL>"<"    { return tOP;}
-<INITIAL>">"    { return tOP;}
-<INITIAL>"<="   { return tOP;}
-<INITIAL>">="   { return tOP;}
-<INITIAL>"&&"   { return tOP;}
-<INITIAL>"||"   { return tOP;}
+<INITIAL>"+"    { return "+";}
+<INITIAL>"-"    { return "-";}
+<INITIAL>"*"    { return "*";}
+<INITIAL>"/"    { return "/";}
+<INITIAL>"=="   { return "==";}
+<INITIAL>"!="   { return "!=";}
+<INITIAL>"<"    { return "<";}
+<INITIAL>">"    { return ">";}
+<INITIAL>"<="   { return "<=";}
+<INITIAL>">="   { return ">=";}
+<INITIAL>"&&"   { return "&&";}
+<INITIAL>"||"   { return "||";}
+<INITIAL>"("    { return "(";}
+<INITIAL>")"    { return ")";}
 
 <INITIAL>{ID}     { yylval.stringconst = (char *) malloc(strlen(yytext)+1);
                     sprintf(yylval.stringconst, "%s", yytext);
                     return tID;}
 
-<INITIAL>{NUMBER} { yylval.intconst = atoi(yytext);
+<INITIAL>{NUMBER} { yylval.uNum = atoi(yytext);
                     return tINT;}
-
-<INITIAL>func" "ID" ("VAR_TYPE")"    {/*return <head> token here or something*/}
 
 <INITIAL>"(*"                       { BEGIN COMMENT;}
 <INITIAL>#                          { BEGIN ONELINECOMMENT;}
@@ -47,6 +46,3 @@ VAR_TYPE  ID" ":" "(id|int|bool|array" "of" ("VAR_TYPE")"|record" "of" ("VAR_TYP
 <ONELINECOMMENT>.                   /*ignore*/
 
 %%
-void main() {
-  yylex();
-}
