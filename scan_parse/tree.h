@@ -1,6 +1,8 @@
 #ifndef __tree_h
 #define __tree_h
 
+typedef enum {false, true} bool;
+
 typedef struct FUNCTION {
   int lineno;
   struct HEAD *head;
@@ -30,10 +32,10 @@ typedef struct TYPE {
   int lineno;
   enum {idK, intK, boolK, arrayK, recordK} kind;
   union{
-    char *idE;
-    int *intE;
-    bool *boolE;
-    struct {struct TYPE *type;} arrayE;
+    char *id;
+    int *integer;
+    bool *bool;
+    struct {struct TYPE *typo;} arrayE;
     struct {struct VAR_DECL_LIST *vList;} recordE;
   } val;
 } TYPE;
@@ -41,41 +43,46 @@ typedef struct TYPE {
 typedef struct PAR_DECL_LIST {
   int lineno;
   struct VAR_DECL_LIST *vList;
-  // TODO: empty list?
 } PAR_DECL_LIST;
 
 typedef struct VAR_DECL_LIST {
   int lineno;
   struct VAR_TYPE *vType;
   struct VAR_DECL_LIST *vList;
-  //TODO: hvad betyder komma i sproget, i opgavebeskrivelsen?
 } VAR_DECL_LIST;
 
 typedef struct STATEMENT_LIST {
   int lineno;
   struct STATEMENT *sList;
-}
+} STATEMENT_LIST;
 
-typedef struct STATEMENT {
-  int lineno;
-  enum {returnK, writeK, allocateK, allocateLengthK} kind;
+typedef struct EXPRESSION {
+  enum {idK,intconstK,timesK,divK,plusK,minusK} kind;
   union {
-    // TODO: ikke sikker på hvad hvordan de forskellige statement typer skal laves
-    struct {struct } returnE;
-    struct {struct } writeE;
-    struct {struct } allocateE;
-    struct {struct } allocateLengthE;
+    char *idE;
+    int intconstE;
+    struct {struct EXPRESSION *left; struct EXPRESSION *right;} timesE;
+    struct {struct EXPRESSION *left; struct EXPRESSION *right;} divE;
+    struct {struct EXPRESSION *left; struct EXPRESSION *right;} plusE;
+    struct {struct EXPRESSION *left; struct EXPRESSION *right;} minusE;
   } val;
-} STATEMENT;
+} EXPRESSION;
 
-FUNCTION *makeFUNCTION(struct head *head, struct body *body, struct tail *tail);
-HEAD *makeHEAD(char *id, struct PAR_DECL_LIST *pList, struct TYPE *type);
-BODY *makeBODY(struct VAR_DECL_LIST *vList, struct STATEMENT_LIST *sList);
+FUNCTION *makeFUNCTION(HEAD *head, BODY *body, TAIL *tail);
+HEAD *makeHEAD(char *id, PAR_DECL_LIST *pList, TYPE *type);
+BODY *makeBODY(VAR_DECL_LIST *vList, STATEMENT_LIST *sList);
 TAIL *makeTAIL(char *id);
-TYPE *makeID(char *id);
-TYPE *makeINT(int *Int);
-TYPE *makeBOOL(bool *Bool);
-TYPE *makeARRAY(TYPE *type);
-TYPE *makeRECORD(struct VAR_DECL_LIST *vList);
 
+TYPE *makeID(char *id);
+TYPE *makeINT(int *integer);
+TYPE *makeBOOL(bool *bool);
+TYPE *makeARRAY(TYPE *typo);
+TYPE *makeRECORD(VAR_DECL_LIST *vList);
+
+EXPRESSION *makeEXPid(char *id);
+EXPRESSION *makeEXPintconst(int intconst);
+EXPRESSION *makeEXPtimes(EXPRESSION *left, EXPRESSION *right);
+EXPRESSION *makeEXPdiv(EXPRESSION *left, EXPRESSION *right);
+EXPRESSION *makeEXPplus(EXPRESSION *left, EXPRESSION *right);
+EXPRESSION *makeEXPminus(EXPRESSION *left, EXPRESSION *right);
 #endif
