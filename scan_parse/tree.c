@@ -124,7 +124,9 @@ EXPRESSION *makeEXPdiv(EXPRESSION *left, EXPRESSION *right)
 }
 
 EXPRESSION *makeEXPplus(EXPRESSION *left, EXPRESSION *right)
-{ EXPRESSION *expression;
+{
+  printf("makeEXPplus\n");
+  EXPRESSION *expression;
   expression = (EXPRESSION*)Malloc(sizeof(expression));
   expression->lineno = lineno;
   expression->kind = plusK;

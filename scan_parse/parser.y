@@ -106,13 +106,27 @@ void yyerror() {
 
 %start program
 
+/*
 %left '+' '-'
 %left '*' '/'
+*/
+
+
 
 %%
 program: exp
          { theexpression = $1;}
 ;
+
+exp :   exp '+' exp {
+                      printf("bison +\n");
+                      $$ = makeEXPplus($1,$3);
+                    }
+      | exp '-' exp {}
+      | exp '*' exp {}
+      | exp '/' exp {}
+      | term {printf("bison term\n");};
+term : tINT {printf("bison int\n");};
 
 /*
 func :  head body head
@@ -155,12 +169,7 @@ type :  tID
 
 
 
-exp :   exp '+' exp {}
-      | exp '-' exp {}
-      | exp '*' exp {}
-      | exp '/' exp {}
-      | term {};
-term : tINT {}
+
 
 /*
   term :  var {}
