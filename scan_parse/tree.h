@@ -43,14 +43,12 @@ typedef struct TYPE {
 typedef struct PAR_DECL_LIST {
   int lineno;
   struct VAR_DECL_LIST *vList;
-  // TODO: empty list?
 } PAR_DECL_LIST;
 
 typedef struct VAR_DECL_LIST {
   int lineno;
   struct VAR_TYPE *vType;
   struct VAR_DECL_LIST *vList;
-  //TODO: hvad betyder komma i sproget, i opgavebeskrivelsen?
 } VAR_DECL_LIST;
 
 typedef struct STATEMENT_LIST {
