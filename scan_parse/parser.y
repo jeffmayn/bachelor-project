@@ -28,6 +28,9 @@ void yyerror() {
   void* uvoid; //default for testing
 
 
+  int unum;
+
+
 
 
 
@@ -44,6 +47,8 @@ void yyerror() {
 //tokens er terminal symboler
 //%token <intconst> tINTCONST
 //%token <stringconst> tIDENTIFIER
+
+/*
 %token <> tID
 %token <> tEND
 %token <> tINT
@@ -62,10 +67,13 @@ void yyerror() {
 %token <> tWHILE
 %token <> tDO
 %token <> tOP
-%token <> tNUM
+%token <unum> tNUM
 %token <> tTRUE
 %token <> tFALSE
 %token <> tNULL
+*/
+
+%token <unum> tNUM
 
 
 
@@ -79,6 +87,8 @@ void yyerror() {
 %type <utype> type //gad vide om jeg må kalde den type??
 %type <upardecllist> par_decl_list
 %type <uvardecllist> var_decl_list
+
+/*
 %type <> var_type
 %type <> decl_list
 %type <> decl
@@ -89,6 +99,7 @@ void yyerror() {
 %type <> term
 %type <> act_list
 %type <> exp_list
+*/
 
 %start program
 
@@ -100,13 +111,18 @@ program: exp
          { theexpression = $1;}
 ;
 
+/*
 func :  head body head
         {
           $$ = makeFUNCTION($1, $2, $3);
         }
-head :  tFUNC tID '(' par_decl_list ')' : type
+head :  tFUNC tID '(' par_decl_list ')' ':' type
         {
           $$ = makeHEAD($2, $4, $6);
+        }
+body :  decl_list stmt_list
+        {
+          $$ = makeBODY($1, $2);
         }
 tail :  tEND tID
         {
@@ -132,6 +148,30 @@ type :  tID
         {
           $$ = makeRECORD($3);
         }
+*/
+
+
+
+exp :   exp '+' exp {}
+      | exp '-' exp {}
+      | exp '*' exp {}
+      | exp '/' exp {}
+      | term {};
+term : tNUM {}
+
+/*
+  term :  var {}
+        | tID '(' act_list ')' {}
+        | '(' exp_list ')' {}
+        | '!' term {}
+        | '|' exp '|' {}
+        | tNUM {}
+        | tTRUE {}
+        | tFALSE {}
+        | tNULL {}
+*/
+
+/*
 par_decl_list : var_decl_list
         {
           //what about empty strings??
@@ -148,10 +188,6 @@ var_decl_list : var_type ',' var_decl_list
 var_type : tID ':' type
         {
           //more semantic happening here
-        }
-body :  decl_list stmt_list
-        {
-          $$ = makeBODY($1, $2);
         }
 decl_list : decl decl_list
       | ;//empty string
@@ -172,23 +208,14 @@ stmt :  tRETURN exp ';' {}
 var :   tID {}
       | var '[' exp ']' {}
       | var '.' tID {}
-exp :   exp tOP exp {}
-      | term {}
-term :  var {}
-      | tID '(' act_list ')' {}
-      | '(' exp_list ')' {}
-      | '!' term {}
-      | '|' exp '|' {}
-      | tNUM {}
-      | tTRUE {}
-      | tFALSE {}
-      | tNULL {}
 act_list : exp_list {}
       | ; {}
 exp_list : exp {}
       | exp, exp_list {}
 
+/*
 
+/*
 exp : tIDENTIFIER
       {$$ = makeEXPid($1);}
     | tINTCONST
@@ -204,5 +231,6 @@ exp : tIDENTIFIER
     | '(' exp ')'
       {$$ = $2;}
 ;
+*/
 
 %%
