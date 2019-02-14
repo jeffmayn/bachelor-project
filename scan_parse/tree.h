@@ -1,6 +1,5 @@
 #ifndef __tree_h
 #define __tree_h
-
 typedef enum {false, true} bool;
 
 typedef struct FUNCTION {
@@ -57,7 +56,8 @@ typedef struct STATEMENT_LIST {
 } STATEMENT_LIST;
 
 typedef struct EXPRESSION {
-  enum {idK,intconstK,timesK,divK,plusK,minusK} kind;
+  int lineno;
+  enum {idK2,intconstK,timesK,divK,plusK,minusK} kind;
   union {
     char *idE;
     int intconstE;

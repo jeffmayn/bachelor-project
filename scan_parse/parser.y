@@ -3,7 +3,7 @@
 #include "tree.h"
 
 extern char *yytext;
-extern EXP *theexpression;
+extern EXPRESSION *theexpression;
 
 void yyerror() {
    printf("syntax error before %s\n",yytext);
@@ -16,17 +16,17 @@ void yyerror() {
 //da der ikke er noget nvanv for union er den kaldet YYSTYPE
 //Jeg tror at dette er stak typen
 %union {
-  FUNCTION* ufunc;
-  HEAD* uhead;
-  BODY* ubody;
-  TAIL* utail;
-  TYPE* utype;
-  PAR_DECL_LIST* upardecllist;
-  VAR_DECL_LIST* uvardecllist;
-  STATEMENT_LIST* ustatementlist;
-  STATEMENT* ustatement;
+  struct FUNCTION* ufunc;
+  struct HEAD* uhead;
+  struct BODY* ubody;
+  struct TAIL* utail;
+  struct TYPE* utype;
+  struct PAR_DECL_LIST* upardecllist;
+  struct VAR_DECL_LIST* uvardecllist;
+  struct STATEMENT_LIST* ustatementlist;
+  //struct STATEMENT* ustatement;
   void* uvoid; //default for testing
-
+  struct EXPRESSION* uexp;
 
   int unum;
 
@@ -37,7 +37,7 @@ void yyerror() {
 
    //int intconst;
    //char *stringconst;
-   //struct EXP *exp;
+   //struct EXPRESSION *exp;
 
    //jeg tror at jeg skal lave en variable af hver type som JEFF laver
    //Måske primitive typer er undtaget
@@ -73,13 +73,15 @@ void yyerror() {
 %token <> tNULL
 */
 
-%token <unum> tNUM
+%token <unum> tINT
 
 
 
 //type er non-terminal symboler
 //bruges kun til at definere typen af non-terminalen
-//%type <exp> program exp
+%type <uexp> program exp
+
+/*
 %type <ufunc> func
 %type <uhead> head
 %type <ubody> body
@@ -87,6 +89,7 @@ void yyerror() {
 %type <utype> type //gad vide om jeg må kalde den type??
 %type <upardecllist> par_decl_list
 %type <uvardecllist> var_decl_list
+*/
 
 /*
 %type <> var_type
@@ -157,7 +160,7 @@ exp :   exp '+' exp {}
       | exp '*' exp {}
       | exp '/' exp {}
       | term {};
-term : tNUM {}
+term : tINT {}
 
 /*
   term :  var {}

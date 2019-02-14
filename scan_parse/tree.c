@@ -5,7 +5,7 @@ extern int lineno;
 
 FUNCTION *makeFUNCTION(struct HEAD *head, struct BODY *body, struct TAIL *tail){
   FUNCTION *function;
-  function = NEW(function);
+  function = (FUNCTION*)Malloc(sizeof(function));
   function->lineno = lineno;
   function->head = head;
   function->body = body;
@@ -15,7 +15,7 @@ FUNCTION *makeFUNCTION(struct HEAD *head, struct BODY *body, struct TAIL *tail){
 
 HEAD *makeHEAD(char *id, struct PAR_DECL_LIST *pList, struct TYPE *type){
   HEAD *head;
-  head = NEW(head);
+  head = (HEAD*)Malloc(sizeof(head));
   head->lineno = lineno;
   head->id = id;
   head->pList = pList;
@@ -25,7 +25,7 @@ HEAD *makeHEAD(char *id, struct PAR_DECL_LIST *pList, struct TYPE *type){
 
 BODY *makeBODY(struct VAR_DECL_LIST *vList, struct STATEMENT_LIST *sList){
   BODY *body;
-  body = NEW(body);
+  body = (BODY*)Malloc(sizeof(body));
   body->lineno = lineno;
   body->vList = vList;
   body->sList = sList;
@@ -34,7 +34,7 @@ BODY *makeBODY(struct VAR_DECL_LIST *vList, struct STATEMENT_LIST *sList){
 
 TAIL *makeTAIL(char *id){
   TAIL *tail;
-  tail = NEW(tail);
+  tail = (TAIL*)Malloc(sizeof(tail));
   tail->lineno = lineno;
   tail->id = id;
   return tail;
@@ -42,7 +42,7 @@ TAIL *makeTAIL(char *id){
 
 TYPE *makeID(char *id){
   TYPE *type;
-  type = NEW(type);
+  type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = idK;
   type->val.id = id;
@@ -51,7 +51,7 @@ TYPE *makeID(char *id){
 
 TYPE *makeINT(int *integer){
   TYPE *type;
-  type = NEW(type);
+  type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = intK;
   type->val.integer = integer;
@@ -60,7 +60,7 @@ TYPE *makeINT(int *integer){
 
 TYPE *makeBOOL(bool *bool){
   TYPE *type;
-  type = NEW(type);
+  type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = boolK;
   type->val.bool = bool;
@@ -69,7 +69,7 @@ TYPE *makeBOOL(bool *bool){
 
 TYPE *makeARRAY(TYPE *typo){
   TYPE *type;
-  type = NEW(type);
+  type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = arrayK;
   type->val.arrayE.typo = typo;
@@ -78,7 +78,7 @@ TYPE *makeARRAY(TYPE *typo){
 
 TYPE *makeRECORD(VAR_DECL_LIST *vList){
   TYPE *type;
-  type = NEW(type);
+  type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = recordK;
   type->val.recordE.vList;
@@ -87,7 +87,7 @@ TYPE *makeRECORD(VAR_DECL_LIST *vList){
 
 EXPRESSION *makeEXPid(char *id)
 { EXPRESSION *expression;
-  expression = NEW(EXP);
+  expression = (EXPRESSION*)Malloc(sizeof(expression));
   expression->lineno = lineno;
   expression->kind = idK;
   expression->val.idE = id;
@@ -96,7 +96,7 @@ EXPRESSION *makeEXPid(char *id)
 
 EXPRESSION *makeEXPintconst(int intconst)
 { EXPRESSION *expression;
-  expression = NEW(EXP);
+  expression = (EXPRESSION*)Malloc(sizeof(expression));
   expression->lineno = lineno;
   expression->kind = intconstK;
   expression->val.intconstE = intconst;
@@ -105,7 +105,7 @@ EXPRESSION *makeEXPintconst(int intconst)
 
 EXPRESSION *makeEXPtimes(EXPRESSION *left, EXPRESSION *right)
 { EXPRESSION *expression;
-  expression = NEW(EXP);
+  expression = (EXPRESSION*)Malloc(sizeof(expression));
   expression->lineno = lineno;
   expression->kind = timesK;
   expression->val.timesE.left = left;
@@ -115,7 +115,7 @@ EXPRESSION *makeEXPtimes(EXPRESSION *left, EXPRESSION *right)
 
 EXPRESSION *makeEXPdiv(EXPRESSION *left, EXPRESSION *right)
 { EXPRESSION *expression;
-  expression = NEW(EXP);
+  expression = (EXPRESSION*)Malloc(sizeof(expression));
   expression->lineno = lineno;
   expression->kind = divK;
   expression->val.divE.left = left;
@@ -125,17 +125,17 @@ EXPRESSION *makeEXPdiv(EXPRESSION *left, EXPRESSION *right)
 
 EXPRESSION *makeEXPplus(EXPRESSION *left, EXPRESSION *right)
 { EXPRESSION *expression;
-  expression = NEW(EXP);
+  expression = (EXPRESSION*)Malloc(sizeof(expression));
   expression->lineno = lineno;
   expression->kind = plusK;
   expression->val.plusE.left = left;
   expression->val.plusE.right = right;
-  return expression;EXP
+  return expression;
 }
 
 EXPRESSION *makeEXPminus(EXPRESSION *left, EXPRESSION *right)
 { EXPRESSION *expression;
-  expression = NEW(EXP);
+  expression = (EXPRESSION*)Malloc(sizeof(expression));
   expression->lineno = lineno;
   expression->kind = minusK;
   expression->val.minusE.left = left;

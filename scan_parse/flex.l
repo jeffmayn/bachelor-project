@@ -1,7 +1,6 @@
 %{
 #include <stdio.h>
-#include "tree.h"
-#include "y.tab.h"
+#include "y.tab.h"S
 int lineNo = 0;
 int linePos = 0;
 %}
@@ -10,7 +9,7 @@ NUMBER      0|[1-9][0-9]*
 ID          [a-zA-Z][a-zA-Z0-9_]*
 
 %option noyywrap
-%start INITIAL COMMENT ONELINECOMMENT
+%x COMMENT ONELINECOMMENT
 %%
 <INITIAL>"+"    { return "+";}
 <INITIAL>"-"    { return "-";}
@@ -27,11 +26,11 @@ ID          [a-zA-Z][a-zA-Z0-9_]*
 <INITIAL>"("    { return "(";}
 <INITIAL>")"    { return ")";}
 
-<INITIAL>{ID}     { yylval.stringconst = (char *) malloc(strlen(yytext)+1);
+<INITIAL>ID     { /*yylval.stringconst = (char *) malloc(strlen(yytext)+1);
                     sprintf(yylval.stringconst, "%s", yytext);
-                    return tID;}
+                    return tID;*/}
 
-<INITIAL>{NUMBER} { yylval.uNum = atoi(yytext);
+<INITIAL>NUMBER { yylval.unum = atoi(yytext);
                     return tINT;}
 
 <INITIAL>"(*"                       { BEGIN COMMENT;}
@@ -41,8 +40,8 @@ ID          [a-zA-Z][a-zA-Z0-9_]*
 
 <COMMENT>"*)"                       { BEGIN INITIAL;}
 <COMMENT>\n                         { lineNo++;}
-<COMMENT>.                          /*ignore*/
-<ONELINECOMMENT>\n                  { lineNo++; BEGIN <INITIAL>;}
-<ONELINECOMMENT>.                   /*ignore*/
+<COMMENT>.                          { /*ignore*/}
 
+<ONELINECOMMENT>\n                  { lineNo++; BEGIN INITIAL;}
+<ONELINECOMMENT>.                   { /*ignore*/}
 %%
