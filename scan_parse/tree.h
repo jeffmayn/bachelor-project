@@ -2,6 +2,14 @@
 #define __tree_h
 typedef enum {false, true} bool;
 
+/*
+ * TODO:
+ *  - var_type
+ *  - declaration
+ *  - statement_list
+ *  - statement
+*/
+
 typedef struct FUNCTION {
   int lineno;
   struct HEAD *head;
@@ -32,10 +40,8 @@ typedef struct TYPE {
   enum {idK, intK, boolK, arrayK, recordK} kind;
   union{
     char *id;
-    int *integer;
-    bool *bool;
-    struct {struct TYPE *typo;} arrayE;
-    struct {struct VAR_DECL_LIST *vList;} recordE;
+    TYPE *arrayType;
+    VAR_DECL_LIST *vList;
   } val;
 } TYPE;
 
@@ -50,7 +56,7 @@ typedef struct VAR_DECL_LIST {
   struct VAR_DECL_LIST *vList;
 } VAR_DECL_LIST;
 
-typedef struct STATEMENT_LIST {
+typedef struct STATEMENT_LIST {arrayType
   int lineno;
   struct STATEMENT *sList;
 } STATEMENT_LIST;
@@ -106,9 +112,9 @@ BODY *makeBODY(VAR_DECL_LIST *vList, STATEMENT_LIST *sList);
 TAIL *makeTAIL(char *id);
 
 TYPE *makeID(char *id);
-TYPE *makeINT(int *integer);
-TYPE *makeBOOL(bool *bool);
-TYPE *makeARRAY(TYPE *typo);
+TYPE *makeINT();
+TYPE *makeBOOL();
+TYPE *makeARRAY(TYPE *arrayType);
 TYPE *makeRECORD(VAR_DECL_LIST *vList);
 
 EXP *makeEXPminus(EXP *left, EXP *right);

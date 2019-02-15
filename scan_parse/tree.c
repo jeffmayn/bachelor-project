@@ -50,21 +50,21 @@ TYPE *makeID(char *id){
   return type;
 }
 
-TYPE *makeINT(int *integer){
+TYPE *makeINT(){
   TYPE *type;
   type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = intK;
-  type->val.integer = integer;
+  //type->val.integer = integer;
   return type;
 }
 
-TYPE *makeBOOL(bool *bool){
-  TYPE *type;
+TYPE *makeBOOL(){
+  TYPE *type;bool *bool
   type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = boolK;
-  type->val.bool = bool;
+  //type->val.bool = bool;
   return type;
 }
 
@@ -73,7 +73,7 @@ TYPE *makeARRAY(TYPE *typo){
   type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = arrayK;
-  type->val.arrayE.typo = typo;
+  type->val.arrayE.typo = typo;bool *bool
   return type;
 }
 
