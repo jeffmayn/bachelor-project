@@ -45,11 +45,47 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    tINT = 258
+    tINT = 258,
+    tPLUS = 259,
+    tMINUS = 260,
+    tTIMES = 261,
+    tDIV = 262,
+    tEQ = 263,
+    tNE = 264,
+    tLE = 265,
+    tGE = 266,
+    tLESS = 267,
+    tGREAT = 268,
+    tAND = 269,
+    tOR = 270,
+    tLPAR = 271,
+    tRPAR = 272,
+    tLSQ = 273,
+    tRSQ = 274,
+    tLCURL = 275,
+    tRCURL = 276
   };
 #endif
 /* Tokens.  */
 #define tINT 258
+#define tPLUS 259
+#define tMINUS 260
+#define tTIMES 261
+#define tDIV 262
+#define tEQ 263
+#define tNE 264
+#define tLE 265
+#define tGE 266
+#define tLESS 267
+#define tGREAT 268
+#define tAND 269
+#define tOR 270
+#define tLPAR 271
+#define tRPAR 272
+#define tLSQ 273
+#define tRSQ 274
+#define tLCURL 275
+#define tRCURL 276
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -84,7 +120,7 @@ union YYSTYPE
    //jeg tror at jeg skal lave en variable af hver type som JEFF laver
    //Måske primitive typer er undtaget
 
-#line 88 "y.tab.h" /* yacc.c:1909  */
+#line 124 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
