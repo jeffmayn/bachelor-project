@@ -29,6 +29,7 @@ void yyerror() {
   struct EXP* uexp;
 
   int uint;
+  TERM* uterm;
 
 
 
@@ -74,7 +75,7 @@ void yyerror() {
 
 %token <uint> tINT
 %token tPLUS tMINUS tTIMES tDIV tEQ tNE tLE tGE tLESS tGREAT tAND tOR tLPAR tRPAR tLSQ tRSQ tLCURL tRCURL
-%token tID tEND tBOOL tARRAY tOF tRECORD tTYPE tVAR tRETURN tWRITE tWRITE tALLOC tLEN tTHEN tWHILE tDO tNULL
+%token tID tEND tBOOL tARRAY tOF tRECORD tTYPE tVAR tRETURN tWRITE tALLOC tLEN tTHEN tWHILE tDO tNULL
 %token tTRUE tFALSE
 
 
@@ -93,21 +94,20 @@ void yyerror() {
 
 
 //Only for temporary testing below
-%type var_type
-%type decl_list
-%type decl
-%type stmt_list
-%type stmt
-%type var
-%type exp
-%type term
-%type act_list
-%type exp_list
+%type <uvoid> var_type
+%type <uvoid> decl_list
+%type <uvoid> decl
+%type <uvoid> stmt_list
+%type <uvoid> stmt
+%type <uvoid> var
+%type <uvoid> term
+%type <uvoid> act_list
+%type <uvoid> exp_list
 
-%type exp
-%type term
-%type act_list
-%type exp_list
+%type <uvoid> exp
+%type <uterm> term
+%type <uvoid> act_list
+%type <uvoid> exp_list
 
 /*
 %type <> var_type
