@@ -1,8 +1,8 @@
 %{
 #include <stdio.h>
 #include "y.tab.h"
-int lineNo = 0;
-int linePos = 0;
+extern int lineno = 0;
+/*int linePos = 0;*/
 %}
 
 %option noyywrap
@@ -65,10 +65,11 @@ int linePos = 0;
 <INITIAL>0|[1-9][0-9]*          { yylval.uint = atoi(yytext);
                                   printf("lex int\n");
                                   return tINT;}
-<INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { /*yylval.stringconst = (char *) malloc(strlen(yytext)+1);
+<INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { /*TODO yylval.stringconst = (char *) malloc(strlen(yytext)+1);
                                   sprintf(yylval.stringconst, "%s", yytext);
                                   return tID;*/}
 
+<INITIAL>[ \t]
 <INITIAL>"(*"   { BEGIN COMMENT;}
 <INITIAL>#      { BEGIN ONELINECOMMENT;}
 <INITIAL>\n     { lineNo++;}
