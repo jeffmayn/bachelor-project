@@ -12,6 +12,6 @@ y.tab.c y.tab.h:  parser.y
 lex.yy.c:         flex.l y.tab.h
 	          flex flex.l
 
-.PHONY: clean
-clean:
-	-rm exp *.o y.tab.c y.tab.h lex.yy.c lex.yy.h
+#.PHONY: clean
+#clean:
+#	-rm exp *.o y.tab.c y.tab.h lex.yy.c lex.yy.h
