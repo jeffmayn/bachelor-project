@@ -1,52 +1,84 @@
 %{
 #include <stdio.h>
-#include "y.tab.h"//S
-int lineNo = 0;
-int linePos = 0;
-
-/*<INITIAL>"=="   { return '==';}*/
-/*<INITIAL>"!="   { return '!=';}*/
-/*<INITIAL>"<="   { return '<=';}*/
-/*<INITIAL>">="   { return '>=';}*/
-/*<INITIAL>"&&"   { return '&&';}*/
-/*<INITIAL>"||"   { return '||';}*/
+#include "y.tab.h"
+extern int lineno = 0;
+/*int linePos = 0;*/
 %}
-
-NUMBER
-ID
 
 %option noyywrap
 %x COMMENT ONELINECOMMENT
 %%
-<INITIAL>"+"    { printf("lex +\n"); return '+';}
-<INITIAL>"-"    { return '-';}
-<INITIAL>"*"    { return '*';}
-<INITIAL>"/"    { return '/';}
+<INITIAL>"+"    { return tPLUS;}
+<INITIAL>"-"    { return tMINUS;}
+<INITIAL>"*"    { return tTIMES;}
+<INITIAL>"/"    { return tDIV;}
+<INITIAL>"=="   { return tEQ;}
+<INITIAL>"!="   { return tNE;}
+<INITIAL>"<="   { return tLE;}
+<INITIAL>">="   { return tGE;}
+<INITIAL>"<"    { return tLESS;}
+<INITIAL>">"    { return tGREAT;}
+<INITIAL>"&&"   { return tAND;}
+<INITIAL>"||"   { return tOR;}
 
-<INITIAL>"<"    { return '<';}
-<INITIAL>">"    { return '>';}
+<INITIAL>"="    { return tASSI;}
 
-<INITIAL>"("    { return '(';}
-<INITIAL>")"    { return ')';}
+<INITIAL>"("    { return tLPAR;}
+<INITIAL>")"    { return tRPAR;}
+<INITIAL>"["    { return tLSQ;}
+<INITIAL>"]"    { return tRSQ;}
+<INITIAL>"{"    { return tLCURL;}
+<INITIAL>"}"    { return tRCURL;}
+<INITIAL>"|"    { return tBAR;}
 
-<INITIAL>[a-zA-Z][a-zA-Z0-9_]*     { /*yylval.stringconst = (char *) malloc(strlen(yytext)+1);
-                    sprintf(yylval.stringconst, "%s", yytext);
-                    return tID;*/}
+<INITIAL>"!"    { return tNEG;}
 
-<INITIAL>0|[1-9][0-9]* { yylval.unum = atoi(yytext);
-                    printf("lex int\n");
-                    return tINT;
-                    }
+<INITIAL>";"    { return tSEMI;}
+<INITIAL>":"    { return tCOL;}
+<INITIAL>","    { return tCOM;}
+<INITIAL>"."    { return tDOT;}
 
-<INITIAL>"(*"                       { BEGIN COMMENT;}
-<INITIAL>#                          { BEGIN ONELINECOMMENT;}
-<INITIAL>\n                         { lineNo++;}
-<INITIAL>.                          /*TODO errors*/
+<INITIAL>"true"     { return tTRUE;}
+<INITIAL>"false"    { return tFALSE;}
+<INITIAL>"null"     { return tNULL;}
 
-<COMMENT>"*)"                       { BEGIN INITIAL;}
-<COMMENT>\n                         { lineNo++;}
-<COMMENT>.                          { /*ignore*/}
+<INITIAL>"int"      { return tINTTYPE;}
+<INITIAL>"bool"     { return tBOOLTYPE;}
+<INITIAL>"array"    { return tARRAYTYPE;}
+<INITIAL>"record"   { return tRECORDTYPE;}
 
-<ONELINECOMMENT>\n                  { lineNo++; BEGIN INITIAL;}
-<ONELINECOMMENT>.                   { /*ignore*/}
+<INITIAL>"of"       { return tOF;}
+
+<INITIAL>"func"     { return tFUNC;}
+<INITIAL>"end"      { return tEND;}
+<INITIAL>"var"      { return tVAR;}
+<INITIAL>"return"   { return tRETURN;}
+<INITIAL>"write"    { return tWRITE;}
+<INITIAL>"allocate" { return tALLOC;}
+<INITIAL>"length"   { return tLEN;}
+<INITIAL>"if"       { return tIF;}
+<INITIAL>"else"     { return tELSE;}
+<INITIAL>"then"     { return tTHEN;}
+<INITIAL>"while"    { return tWHILE;}
+<INITIAL>"do"       { return tDO;}
+
+<INITIAL>0|[1-9][0-9]*          { yylval.uint = atoi(yytext);
+                                  printf("lex int\n");
+                                  return tINT;}
+<INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { /*TODO yylval.stringconst = (char *) malloc(strlen(yytext)+1);
+                                  sprintf(yylval.stringconst, "%s", yytext);
+                                  return tID;*/}
+
+<INITIAL>[ \t]
+<INITIAL>"(*"   { BEGIN COMMENT;}
+<INITIAL>#      { BEGIN ONELINECOMMENT;}
+<INITIAL>\n     { lineNo++;}
+<INITIAL>.      /*TODO errors*/
+
+<COMMENT>"*)"   { BEGIN INITIAL;}
+<COMMENT>\n     { lineNo++;}
+<COMMENT>.      /*ignore*/
+
+<ONELINECOMMENT>\n  { lineNo++; BEGIN INITIAL;}
+<ONELINECOMMENT>.   /*ignore*/
 %%
