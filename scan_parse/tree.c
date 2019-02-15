@@ -1,7 +1,6 @@
 #include "memory.h"
 #include "tree.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 extern int lineno;
 
@@ -87,62 +86,202 @@ TYPE *makeRECORD(VAR_DECL_LIST *vList){
   return type;
 }
 
-EXPRESSION *makeEXPid(char *id)
-{ EXPRESSION *expression;
-  expression = (EXPRESSION*)Malloc(sizeof(expression));
-  expression->lineno = lineno;
-  expression->kind = idK;
-  expression->val.idE = id;
-  return expression;
+EXP *makeEXPminus(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = minusK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
 }
 
-EXPRESSION *makeEXPintconst(int intconst)
-{ EXPRESSION *expression;
-  expression = (EXPRESSION*)Malloc(sizeof(expression));
-  expression->lineno = lineno;
-  expression->kind = intconstK;
-  expression->val.intconstE = intconst;
-  return expression;
+EXP *makeEXPplusK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = plusK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
 }
 
-EXPRESSION *makeEXPtimes(EXPRESSION *left, EXPRESSION *right)
-{ EXPRESSION *expression;
-  expression = (EXPRESSION*)Malloc(sizeof(expression));
-  expression->lineno = lineno;
-  expression->kind = timesK;
-  expression->val.timesE.left = left;
-  expression->val.timesE.right = right;
-  return expression;
+EXP *makeEXPtimesK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = timesK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
 }
 
-EXPRESSION *makeEXPdiv(EXPRESSION *left, EXPRESSION *right)
-{ EXPRESSION *expression;
-  expression = (EXPRESSION*)Malloc(sizeof(expression));
-  expression->lineno = lineno;
-  expression->kind = divK;
-  expression->val.divE.left = left;
-  expression->val.divE.right = right;
-  return expression;
+EXP *makeEXPdivK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = divK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
 }
 
-EXPRESSION *makeEXPplus(EXPRESSION *left, EXPRESSION *right)
-{
-  printf("makeEXPplus\n");
-  EXPRESSION *expression;
-  expression = (EXPRESSION*)Malloc(sizeof(expression));
-  expression->lineno = lineno;
-  expression->kind = plusK;
-  expression->val.plusE.left = left;
-  expression->val.plusE.right = right;
-  return expression;
+EXP *makeEXPeqK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = eqK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
 }
 
-EXPRESSION *makeEXPminus(EXPRESSION *left, EXPRESSION *right)
-{ EXPRESSION *expression;
-  expression = (EXPRESSION*)Malloc(sizeof(expression));
-  expression->lineno = lineno;
-  expression->kind = minusK;
-  expression->val.minusE.left = left;
-  expression->val.minusE.right = right;
-  return expression;
+EXP *makeEXPleK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = leK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
+}
+
+EXP *makeEXPgeK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = geK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
+}
+
+EXP *makeEXPgreatK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = greatK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
+}
+
+EXP *makeEXPlessK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = lessK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
+}
+
+EXP *makeEXPneK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = neK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
+}
+
+EXP *makeEXPandK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = andK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
+}
+
+EXP *makeEXPorK(EXP *left, EXP *right){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = orK;
+  exp->val.binOP.left = left;
+  exp->val.binOP.right = right;
+  return exp;
+}
+
+EXP *makeEXPterm(EXP *term){
+  EXP *exp;
+  exp = (EXP*)Malloc(sizeof(exp));
+  exp->lineno = lineno;
+  exp->kind = termK;
+  return exp;
+}
+
+TERM *makeTERMvar(char *var){
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = varK;
+  term->val.var = var;
+  return term;
+}
+
+TERM *makeTERMact_list(ACT_LIST *id){
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = idTermK;
+  term->val.id = id;
+  return term;
+}
+
+TERM *makeTERMexp(EXP *exp){
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = expK;
+  term->val.exp = exp;
+  return term;
+}
+
+TERM *makeTERMnotTerm(TERM *notTerm){
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = notTermK;
+  term->val.notTerm = notTerm;
+  return term;
+}
+
+TERM *makeTERMexpCard(EXP *expCard){
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = expCardK;
+  term->val.expCard = expCard;
+  return term;
+}
+
+TERM *makeTERMnum(int *num){
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = numK;
+  term->val.num = num;
+  return term;
+}
+
+TERM *makeTERMtrue(bool *trueE){
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = trueK;
+  term->val.true = trueE;
+  return term;
+}
+
+TERM *makeTERMfalse(bool *falseE){
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = falseK;
+  term->val.false = falseE;
+  return term;
 }
