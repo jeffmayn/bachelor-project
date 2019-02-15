@@ -50,6 +50,7 @@ extern int lineno = 0;
 <INITIAL>"of"       { return tOF;}
 
 <INITIAL>"func"     { return tFUNC;}
+<INITIAL>"type"     { return tTYPE;}
 <INITIAL>"end"      { return tEND;}
 <INITIAL>"var"      { return tVAR;}
 <INITIAL>"return"   { return tRETURN;}
@@ -69,16 +70,16 @@ extern int lineno = 0;
                                   sprintf(yylval.stringconst, "%s", yytext);
                                   return tID;*/}
 
-<INITIAL>[ \t]
+<INITIAL>[ \t]  /*ignore*/
 <INITIAL>"(*"   { BEGIN COMMENT;}
 <INITIAL>#      { BEGIN ONELINECOMMENT;}
-<INITIAL>\n     { lineNo++;}
+<INITIAL>\n     { lineno++;}
 <INITIAL>.      /*TODO errors*/
 
 <COMMENT>"*)"   { BEGIN INITIAL;}
-<COMMENT>\n     { lineNo++;}
+<COMMENT>\n     { lineno++;}
 <COMMENT>.      /*ignore*/
 
-<ONELINECOMMENT>\n  { lineNo++; BEGIN INITIAL;}
+<ONELINECOMMENT>\n  { lineno++; BEGIN INITIAL;}
 <ONELINECOMMENT>.   /*ignore*/
 %%

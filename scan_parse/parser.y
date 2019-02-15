@@ -30,7 +30,7 @@ void yyerror() {
 
   int uint;
   TERM* uterm;
-
+  char* uid;
 
 
 
@@ -75,12 +75,22 @@ void yyerror() {
 
 %token <uint> tINT
 %token tPLUS tMINUS tTIMES tDIV tEQ tNE tLE tGE tLESS tGREAT tAND tOR tLPAR tRPAR tLSQ tRSQ tLCURL tRCURL
-%token tID tEND tBOOL tARRAY tOF tRECORD tTYPE tVAR tRETURN tWRITE tALLOC tLEN tTHEN tWHILE tDO tNULL
+%token tEND tBOOL tARRAYTYPE tOF tRECORDTYPE tTYPE tVAR tRETURN tWRITE tALLOC tLEN tIF tTHEN tELSE tWHILE tDO tNULL
 %token tTRUE tFALSE
+%token tASSI tNEG tDOT
+%token tFUNC
+%token tBAR tCOL tCOM tSEMI
+
+
+//%token <utype> tINTTYPE tBOOLTYPE tARRAYTYPE tRECORDTYPE
+
+%token <uid> tID
 
 
 //type er non-terminal symboler
 //bruges kun til at definere typen af non-terminalen
+
+
 %type <uexp> program exp
 
 
@@ -100,14 +110,10 @@ void yyerror() {
 %type <uvoid> stmt_list
 %type <uvoid> stmt
 %type <uvoid> var
-%type <uvoid> term
 %type <uvoid> act_list
 %type <uvoid> exp_list
-
-%type <uvoid> exp
+/*%type <uvoid> exp*/
 %type <uterm> term
-%type <uvoid> act_list
-%type <uvoid> exp_list
 
 /*
 %type <> var_type
@@ -147,17 +153,17 @@ program: exp
 
 func :  head body head { $$ = makeFUNCTION($1, $2, $3);}
 
-head :  tFUNC tID tLPAR par_decl_list tRPAR tCOL type {$$ = makeHEAD($2, $4, $6);}
+head :  tFUNC tID tLPAR par_decl_list tRPAR tCOL type {$$ = makeHEAD($2, $4, $7);}
 
 body :  decl_list stmt_list {$$ = makeBODY($1, $2);}
 
 tail :  tEND tID {$$ = makeTAIL($2);}
 
 type :  tID {$$ = makeID($1);}
-      | tINT {$$ = makeINT($1);}
-      | tBOOL {$$ = makeBOOL($1);}
-      | tARRAY tOF type {$$ = makeARRAY($2);}
-      | tRECORD tOF '{' var_decl_list '}' {$$ = makeRECORD($3);}
+      | tINTTYPE {$$ = makeINT();}
+      | tBOOLTYPE {$$ = makeBOOL();}
+      | tARRAYTYPE tOF type {$$ = makeARRAY($3);}
+      | tRECORDTYPE tOF tLCURL var_decl_list tRCURL {$$ = makeRECORD($4);}
 
 
 var :   tID {printf("var tID\n");}
@@ -176,7 +182,7 @@ decl_list : decl decl_list {printf("decl_list\n");}
       | {printf("decl_list empty\n");}//empty string
 
 decl :  tTYPE tID tASSI type tSEMI {printf("decl assi\n");}
-      | function {printf("decl func\n");}
+      | func {printf("decl func\n");}
       | tVAR var_decl_list tSEMI {printf("decl var\n");}
 
 stmt_list : stmt {printf("stmt_list stmt\n");}
@@ -221,7 +227,7 @@ act_list : exp_list {printf("act_list exp_list\n");}
       | {printf("act_list empty\n");}
 
 exp_list : exp {printf("exp_list exp\n");}
-      | exp, exp_list {printf("exp_list list\n");}
+      | exp tCOM exp_list {printf("exp_list list\n");}
 
 
 /*

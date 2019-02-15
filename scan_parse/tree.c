@@ -54,7 +54,7 @@ TYPE *makeINT(int *integer){
   TYPE *type;
   type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
-  type->kind = intK;
+  type->kind = intK;bool *bool
   type->val.integer = integer;
   return type;
 }
