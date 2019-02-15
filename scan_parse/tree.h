@@ -55,18 +55,50 @@ typedef struct STATEMENT_LIST {
   struct STATEMENT *sList;
 } STATEMENT_LIST;
 
-typedef struct EXPRESSION {
+typedef struct EXP {
   int lineno;
-  enum {idK2,intconstK,timesK,divK,plusK,minusK} kind;
+  enum {binOPK, termK, minusK, plusK, timesK, divK,\
+        leK, eqK, geK, greatK, lessK, neK, andK, orK} kind;
   union {
-    char *idE;
-    int intconstE;
-    struct {struct EXPRESSION *left; struct EXPRESSION *right;} timesE;
-    struct {struct EXPRESSION *left; struct EXPRESSION *right;} divE;
-    struct {struct EXPRESSION *left; struct EXPRESSION *right;} plusE;
-    struct {struct EXPRESSION *left; struct EXPRESSION *right;} minusE;
+    struct {struct EXP *left; struct EXP *right;} binOP;
+    struct TERM *term;
   } val;
-} EXPRESSION;
+} EXP;
+
+typedef struct TERM {
+  int lineno;
+  enum {varK, idTermK, expK, notTermK, expCardK, numK, trueK, falseK, nullK} kind;
+  union {
+    char *var;
+    struct ACT_LIST * id;
+    struct EXP *exp;
+    struct TERM *notTerm;
+    struct EXP *expCard;
+    int *num;
+    bool *true;
+    bool *false;
+  } val;
+} TERM;
+
+typedef struct ACT_LIST {
+  int lineno;
+  struct EXP_LIST *expList;
+} ACT_LIST;
+
+typedef struct EXP_LIST {
+  int lineno;
+  struct EXP *exp;
+  struct EXP_LIST *expList;
+} EXP_LIST;
+
+typedef struct VARIABLE {
+  int lineno;
+  union {
+    char *id;
+    struct VARIABLE *var;
+    struct EXP *exp;
+  } val;
+} VARIABLE;
 
 FUNCTION *makeFUNCTION(HEAD *head, BODY *body, TAIL *tail);
 HEAD *makeHEAD(char *id, PAR_DECL_LIST *pList, TYPE *type);
@@ -79,10 +111,26 @@ TYPE *makeBOOL(bool *bool);
 TYPE *makeARRAY(TYPE *typo);
 TYPE *makeRECORD(VAR_DECL_LIST *vList);
 
-EXPRESSION *makeEXPid(char *id);
-EXPRESSION *makeEXPintconst(int intconst);
-EXPRESSION *makeEXPtimes(EXPRESSION *left, EXPRESSION *right);
-EXPRESSION *makeEXPdiv(EXPRESSION *left, EXPRESSION *right);
-EXPRESSION *makeEXPplus(EXPRESSION *left, EXPRESSION *right);
-EXPRESSION *makeEXPminus(EXPRESSION *left, EXPRESSION *right);
+EXP *makeEXPminus(EXP *left, EXP *right);
+EXP *makeEXPtimes(EXP *left, EXP *right);
+EXP *makeEXPdiv(EXP *left, EXP *right);
+EXP *makeEXPeq(EXP *left, EXP *right);
+EXP *makeEXPne(EXP *left, EXP *right);
+EXP *makeEXPle(EXP *left, EXP *right);
+EXP *makeEXPge(EXP *left, EXP *right);
+EXP *makeEXPless(EXP *left, EXP *right);
+EXP *makeEXPgreat(EXP *left, EXP *right);
+EXP *makeEXPand(EXP *left, EXP *right);
+EXP *makeEXPor(EXP *left, EXP *right);
+EXP *makeEXPterm(EXP *term);
+
+TERM *makeTERMvar(char *var);
+TERM *makeTERMact_list(struct ACT_LIST *id);
+TERM *makeTERMexp(struct EXP *exp);
+TERM *makeTERMnotTerm(struct TERM *notTerm);
+TERM *makeTERMexpCard(struct EXP *expCard);
+TERM *makeTERMnum(int *num);
+TERM *makeTERMtrue(bool *true);
+TERM *makeTERMfalse(bool *false);
+
 #endif
