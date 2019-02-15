@@ -45,8 +45,9 @@ int linePos = 0;
 <INITIAL>"int"      { return tINTTYPE;}
 <INITIAL>"bool"     { return tBOOLTYPE;}
 <INITIAL>"array"    { return tARRAYTYPE;}
-<INITIAL>"of"       { return tOFTYPE;}
 <INITIAL>"record"   { return tRECORDTYPE;}
+
+<INITIAL>"of"       { return tOF;}
 
 <INITIAL>"func"     { return tFUNC;}
 <INITIAL>"end"      { return tEND;}
