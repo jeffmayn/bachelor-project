@@ -2,14 +2,6 @@
 #define __tree_h
 typedef enum {false, true} bool;
 
-/*
- * TODO:
- *  - var_type
- *  - declaration
- *  - statement_list
- *  - statement
-*/
-
 typedef struct FUNCTION {
   int lineno;
   struct HEAD *head;
@@ -40,8 +32,8 @@ typedef struct TYPE {
   enum {idK, intK, boolK, arrayK, recordK} kind;
   union{
     char *id;
-    TYPE *arrayType;
-    VAR_DECL_LIST *vList;
+    struct TYPE *arrayType;
+    struct VAR_DECL_LIST *vList;
   } val;
 } TYPE;
 
@@ -56,9 +48,10 @@ typedef struct VAR_DECL_LIST {
   struct VAR_DECL_LIST *vList;
 } VAR_DECL_LIST;
 
-typedef struct STATEMENT_LIST {arrayType
+typedef struct STATEMENT_LIST {
   int lineno;
-  struct STATEMENT *sList;
+  struct STATEMENT_LIST *statemantList;
+  struct STATEMENT *statement;
 } STATEMENT_LIST;
 
 typedef struct EXP {
@@ -106,6 +99,41 @@ typedef struct VARIABLE {
   } val;
 } VARIABLE;
 
+typedef struct VAR_TYPE {
+  int lineno;
+  union {
+    char *id;
+    struct TYPE *type;
+  } val;
+} VAR_TYPE;
+
+typedef struct DECLARATION {
+  int lineno;
+  union {
+    struct FUNCTION *func;
+    struct TYPE *id;
+    struct VAR_DECL_LIST *var;
+  } val;
+} DECLARATION;
+
+typedef struct STATEMENT {
+  int lineno;
+  enum {returnK, writeK, allocateK, allocateLengthK, ifK, thenK, elseK,\
+        whileK, doK, listK} kind;
+  union {
+    struct EXP *return_;
+    struct EXP *write;
+    struct VARIABLE *allocate;
+    struct VARIABLE *allocateLength;
+    struct EXP *if_;
+    struct EXP *then;
+    struct EXP *else_;
+    struct EXP *while_;
+    struct EXP *do_;
+    struct STATEMENT_LIST *list;
+  } val;
+} STATEMENT;
+
 FUNCTION *makeFUNCTION(HEAD *head, BODY *body, TAIL *tail);
 HEAD *makeHEAD(char *id, PAR_DECL_LIST *pList, TYPE *type);
 BODY *makeBODY(VAR_DECL_LIST *vList, STATEMENT_LIST *sList);
@@ -138,5 +166,16 @@ TERM *makeTERMexpCard(struct EXP *expCard);
 TERM *makeTERMnum(int *num);
 TERM *makeTERMtrue(bool *true);
 TERM *makeTERMfalse(bool *false);
+
+STATEMENT *makeSTMreturn(EXP *return_);
+STATEMENT *makeSTMwrite(EXP *write);
+STATEMENT *makeSTMallocate(VARIABLE *allocate);
+STATEMENT *makeSTMallocateLength(VARIABLE *allocateLength);
+STATEMENT *makeSTMif_(EXP *if_);
+STATEMENT *makeSTMthen(EXP *then_);
+STATEMENT *makeSTMelse_(EXP *else_);
+STATEMENT *makeSTMwhile_(EXP *while_);
+STATEMENT *makeSTMdo_(EXP *do_);
+STATEMENT *makeSTMlist(STATEMENT_LIST *list);
 
 #endif

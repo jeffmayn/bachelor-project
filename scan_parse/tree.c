@@ -60,7 +60,7 @@ TYPE *makeINT(){
 }
 
 TYPE *makeBOOL(){
-  TYPE *type;bool *bool
+  TYPE *type;
   type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = boolK;
@@ -73,7 +73,7 @@ TYPE *makeARRAY(TYPE *typo){
   type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = arrayK;
-  type->val.arrayE.typo = typo;bool *bool
+  type->val.arrayType = typo;
   return type;
 }
 
@@ -82,7 +82,7 @@ TYPE *makeRECORD(VAR_DECL_LIST *vList){
   type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = recordK;
-  type->val.recordE.vList;
+  type->val.vList;
   return type;
 }
 
@@ -284,4 +284,94 @@ TERM *makeTERMfalse(bool *falseE){
   term->kind = falseK;
   term->val.false = falseE;
   return term;
+}
+
+STATEMENT *makeSTMreturn(EXP *return_){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = returnK;
+  stm->val.return_ = return_;
+  return stm;
+}
+
+STATEMENT *makeSTMwrite(EXP *write){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = writeK;
+  stm->val.write = write;
+  return stm;
+}
+
+STATEMENT *makeSTMallocate(VARIABLE *allocate){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = allocateK;
+  stm->val.allocate = allocate;
+  return stm;
+}
+
+STATEMENT *makeSTMallocateLength(VARIABLE *allocateLength){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = allocateLengthK;
+  stm->val.allocateLength = allocateLength;
+  return stm;
+}
+
+STATEMENT *makeSTMif_(EXP *if_){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = ifK;
+  stm->val.if_ = if_;
+  return stm;
+}
+
+STATEMENT *makeSTMthen(EXP *then){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = thenK;
+  stm->val.then = then;
+  return stm;
+}
+
+STATEMENT *makeSTMelse_(EXP *else_){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = elseK;
+  stm->val.else_ = else_;
+  return stm;
+}
+
+STATEMENT *makeSTMwhile_(EXP *while_){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = whileK;
+  stm->val.while_ = while_;
+  return stm;
+}
+
+STATEMENT *makeSTMdo_(EXP *do_){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = doK;
+  stm->val.do_ = do_;
+  return stm;
+}
+
+STATEMENT *makeSTMlist(STATEMENT_LIST *list){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = listK;
+  stm->val.list = list;
+  return stm;
 }
