@@ -5,7 +5,7 @@ int lineno;
 
 void yyparse();
 
-EXPRESSION *theexpression;
+EXP *theexpression;
 
 int main()
 { lineno = 1;

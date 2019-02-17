@@ -3,7 +3,7 @@
 #include "tree.h"
 
 extern char *yytext;
-extern EXP *theexpression;
+extern BODY *theexpression;
 
 void yyerror() {
    printf("syntax error before %s\n",yytext);
@@ -23,14 +23,21 @@ void yyerror() {
   struct TYPE* utype;
   struct PAR_DECL_LIST* upardecllist;
   struct VAR_DECL_LIST* uvardecllist;
-  struct STATEMENT_LIST* ustatementlist;
-  //struct STATEMENT* ustatement;
-  void* uvoid; //default for testing
+  struct VAR_TYPE* uvartype;
+  struct DECL_LIST* udecllist;
+  struct DECLARATION* udecl;
+  struct STATEMENT_LIST* ustmtlist;
+  struct STATEMENT* ustmt;
+  struct VARIABLE* uvar;
   struct EXP* uexp;
+  struct TERM* uterm;
+  struct ACT_LIST* uactlist;
+  struct EXP_LIST* uexplist;
 
   int uint;
-  TERM* uterm;
   char* uid;
+
+  void* uvoid; //default for testing
 
 
 
@@ -75,7 +82,7 @@ void yyerror() {
 
 %token <uint> tINT
 %token tPLUS tMINUS tTIMES tDIV tEQ tNE tLE tGE tLESS tGREAT tAND tOR tLPAR tRPAR tLSQ tRSQ tLCURL tRCURL
-%token tEND tBOOL tARRAYTYPE tOF tRECORDTYPE tTYPE tVAR tRETURN tWRITE tALLOC tLEN tIF tTHEN tELSE tWHILE tDO tNULL
+%token tEND tINTTYPE tBOOLTYPE tARRAYTYPE tOF tRECORDTYPE tTYPE tVAR tRETURN tWRITE tALLOC tLEN tIF tTHEN tELSE tWHILE tDO tNULL
 %token tTRUE tFALSE
 %token tASSI tNEG tDOT
 %token tFUNC
@@ -91,7 +98,7 @@ void yyerror() {
 //bruges kun til at definere typen af non-terminalen
 
 
-%type <uexp> program exp
+%type <ubody> program //exp
 
 
 %type <ufunc> func
@@ -101,19 +108,18 @@ void yyerror() {
 %type <utype> type //gad vide om jeg må kalde den type??
 %type <upardecllist> par_decl_list
 %type <uvardecllist> var_decl_list
-
-
-//Only for temporary testing below
-%type <uvoid> var_type
-%type <uvoid> decl_list
-%type <uvoid> decl
-%type <uvoid> stmt_list
-%type <uvoid> stmt
-%type <uvoid> var
-%type <uvoid> act_list
-%type <uvoid> exp_list
-/*%type <uvoid> exp*/
+%type <uvartype> var_type
+%type <udecllist> decl_list
+%type <udecl> decl
+%type <ustmtlist> stmt_list
+%type <ustmt> stmt
+%type <uvar> var
+%type <uexp> exp
 %type <uterm> term
+%type <uactlist> act_list
+%type <uexplist> exp_list
+/*%type <uvoid> exp*/
+
 
 /*
 %type <> var_type
@@ -137,6 +143,16 @@ void yyerror() {
 
 %start program
 
+%left tNEG
+%left tTIMES tDIV tMOD
+%left tPLUS tMINUS
+%left tLESS tGREAT tLE tGE
+%left tEQ tNE
+%left tAND
+%left tOR
+%left tASSI
+%right tTHEN tELSE
+
 /*
 %left '+' '-'
 %left '*' '/'
@@ -145,13 +161,13 @@ void yyerror() {
 
 
 %%
-program: exp
+program: body
          { theexpression = $1;}
 ;
 
 
 
-func :  head body head { $$ = makeFUNCTION($1, $2, $3);}
+func :  head body tail { $$ = makeFUNCTION($1, $2, $3);}
 
 head :  tFUNC tID tLPAR par_decl_list tRPAR tCOL type {$$ = makeHEAD($2, $4, $7);}
 
@@ -165,33 +181,33 @@ type :  tID {$$ = makeID($1);}
       | tARRAYTYPE tOF type {$$ = makeARRAY($3);}
       | tRECORDTYPE tOF tLCURL var_decl_list tRCURL {$$ = makeRECORD($4);}
 
-par_decl_list : var_decl_list {printf("par_decl_list\n");}
-      | {printf("par_decl_list empty\n");};//empty string
+par_decl_list : var_decl_list {$$ = makePDL($1);}
+      | {$$ = makePDL(NULL);};//empty string
 
-var_decl_list : var_type tCOM var_decl_list {printf("var_decl_list\n");}
-      | var_type {printf("var_decl_list empty\n");}
+var_decl_list : var_type tCOM var_decl_list {$$ = makeVDL($1,$3);}
+      | var_type {$$ = makeVDL($1,NULL);}
 
-var_type : tID tCOL type {printf("var_typ tID\n");}
+var_type : tID tCOL type {$$ = makeVAR_TYPE($1,$3);}
 
-decl_list : decl decl_list {printf("decl_list\n");}
-      | {printf("decl_list empty\n");}//empty string
+decl_list : decl decl_list {$$ = makeDECL_LIST($1,$2);}
+      | {makeDECL_LIST(NULL, NULL);}//empty string
 
 decl :  tTYPE tID tASSI type tSEMI {printf("decl assi\n");}
       | func {printf("decl func\n");}
       | tVAR var_decl_list tSEMI {printf("decl var\n");}
 
-stmt_list : stmt {printf("stmt_list stmt\n");}
-      | stmt stmt_list {printf("stmt_list list\n");}
+stmt_list : stmt {}
+      | stmt stmt_list {}
 
-stmt :  tRETURN exp tSEMI {$$ = makeSTMreturn($2)}
-      | tWRITE exp tSEMI { $$ = makeSTMwrite($2)}
-      | tALLOC var tSEMI {$$ = makeSTMallocate($2)}
-      | tALLOC var tOF tLEN exp tSEMI {$$ = makeSTMallocateLength($2,$5)}
+stmt :  tRETURN exp tSEMI {$$ = makeSTMreturn($2);}
+      | tWRITE exp tSEMI { $$ = makeSTMwrite($2);}
+      | tALLOC var tSEMI {$$ = makeSTMallocate($2);}
+      | tALLOC var tOF tLEN exp tSEMI {$$ = makeSTMallocateLength($2,$5);}
       | var tASSI exp tSEMI {}
-      | tIF exp tTHEN stmt {$$ = makeSTMif_($2,$4)}
-      | tIF exp tTHEN stmt tELSE stmt {$$ = makeSTMthen_($2,$4,$6)}
-      | tWHILE exp tDO stmt {$$ = makeSTMdo_($2,$4)}
-      | tLCURL stmt_list tRCURL {$$ makeSTMlist($2)}
+      | tIF exp tTHEN stmt {$$ = makeSTMif_then($2,$4);}
+      | tIF exp tTHEN stmt tELSE stmt {$$ = makeSTMif_then_else($2,$4,$6);}
+      | tWHILE exp tDO stmt {$$ = makeSTMwhile_do($2,$4);}
+      | tLCURL stmt_list tRCURL {$$ = makeSTMlist($2);}
 
 var :   tID {}
       | var tLSQ exp tRSQ {}
@@ -200,6 +216,7 @@ var :   tID {}
 exp :   exp tPLUS exp {$$ = makeEXPplus($1,$3);}
       | exp tMINUS exp {$$ = makeEXPminus($1,$3);}
       | exp tTIMES exp {$$ = makeEXPtimes($1,$3);}
+      | exp tMOD exp {printf("Modulo operation not yet implemented");}
       | exp tDIV exp {$$ = makeEXPdiv($1,$3);}
       | exp tEQ exp {$$ = makeEXPeq($1,$3);}
       | exp tNE exp {$$ = makeEXPne($1,$3);}
@@ -209,23 +226,23 @@ exp :   exp tPLUS exp {$$ = makeEXPplus($1,$3);}
       | exp tGREAT exp {$$ = makeEXPgreat($1,$3);}
       | exp tAND exp {$$ = makeEXPand($1,$3);}
       | exp tOR exp {$$ = makeEXPor($1,$3);}
-      | term {$$ = makeEXPterm($1,$3);}
+      | term {$$ = makeEXPterm($1);}
 
 term :  var {$$ = makeTERMvar($1);}
-      | tID tLPAR act_list tRPAR {$$ = makeTERMaclt_list($1,$3);}
-      | tLPAR exp_list tRPAR {$$ = makeTERMexp($2);}
-      | tNEG term {$$ = makeTERMnotTerm($2)}
-      | tBAR exp tBAR {$$ = makeTERMCard($2)}
-      | tINT {$$ = makeTERMnum($2)}
+      | tID tLPAR act_list tRPAR {$$ = makeTERMact_list($1,$3);}
+      | tLPAR exp tRPAR {$$ = makeTERMexp($2);}
+      | tNEG term {$$ = makeTERMnotTerm($2);}
+      | tBAR exp tBAR {$$ = makeTERMexpCard($2);}
+      | tINT {$$ = makeTERMnum($1);}
       | tTRUE {$$ = makeTERMtrue();}
       | tFALSE {$$ = makeTERMfalse();}
       | tNULL {$$ = makeTERMnull();}
 
-act_list : exp_list {printf("act_list exp_list\n");}
-      | {printf("act_list empty\n");}
+act_list : exp_list {$$ = makeACT_LIST($1);}
+      | {$$ = makeACT_LIST(NULL);}
 
-exp_list : exp {printf("exp_list exp\n");}
-      | exp tCOM exp_list {printf("exp_list list\n");}
+exp_list : exp {$$ = makeEXP_LIST($1,NULL);}
+      | exp tCOM exp_list {$$ = makeEXP_LIST($1,$3);}
 
 
 /*
