@@ -322,47 +322,33 @@ STATEMENT *makeSTMallocateLength(VARIABLE *allocateLength){
   return stm;
 }
 
-STATEMENT *makeSTMif_(EXP *if_){
+STATEMENT *makeSTMif_then(EXP *if_, STATEMENT *then){
   STATEMENT *stm;
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
   stm->kind = ifK;
   stm->val.if_ = if_;
-  return stm;
-}
-
-STATEMENT *makeSTMthen(EXP *then){
-  STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(stm));
-  stm->lineno = lineno;
-  stm->kind = thenK;
   stm->val.then = then;
   return stm;
 }
 
-STATEMENT *makeSTMelse_(EXP *else_){
+STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_){
   STATEMENT *stm;
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
-  stm->kind = elseK;
+  stm->kind = ifK;
+  stm->val.if_ = if_;
+  stm->val.then = then;
   stm->val.else_ = else_;
   return stm;
 }
 
-STATEMENT *makeSTMwhile_(EXP *while_){
+STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_){
   STATEMENT *stm;
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
   stm->kind = whileK;
   stm->val.while_ = while_;
-  return stm;
-}
-
-STATEMENT *makeSTMdo_(EXP *do_){
-  STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(stm));
-  stm->lineno = lineno;
-  stm->kind = doK;
   stm->val.do_ = do_;
   return stm;
 }

@@ -50,7 +50,7 @@ typedef struct VAR_DECL_LIST {
 
 typedef struct STATEMENT_LIST {
   int lineno;
-  struct STATEMENT_LIST *statemantList;
+  struct STATEMENT_LIST *statementList;
   struct STATEMENT *statement;
 } STATEMENT_LIST;
 
@@ -94,13 +94,22 @@ typedef struct STATEMENT {
     struct VARIABLE *allocate;
     struct VARIABLE *allocateLength;
     struct EXP *if_;
-    struct EXP *then;
-    struct EXP *else_;
+    struct STATEMENT *then;
+    struct STATEMENT *else_;
     struct EXP *while_;
-    struct EXP *do_;
+    struct STATEMENT *do_;
     struct STATEMENT_LIST *list;
   } val;
 } STATEMENT;
+
+typedef struct DECL_LIST {
+  int lineno;
+  enum {declarationK, decl_listK} kind;
+  union {
+    struct DECLARATION *decl;
+    struct DECL_LIST *decl_list;
+  } val;
+} DECL_LIST;
 
 FUNCTION *makeFUNCTION(HEAD *head, BODY *body, TAIL *tail);
 HEAD *makeHEAD(char *id, PAR_DECL_LIST *pList, TYPE *type);
@@ -139,11 +148,29 @@ STATEMENT *makeSTMreturn(EXP *return_);
 STATEMENT *makeSTMwrite(EXP *write);
 STATEMENT *makeSTMallocate(VARIABLE *allocate);
 STATEMENT *makeSTMallocateLength(VARIABLE *allocateLength);
-STATEMENT *makeSTMif_(EXP *if_);
-STATEMENT *makeSTMthen(EXP *then_);
-STATEMENT *makeSTMelse_(EXP *else_);
-STATEMENT *makeSTMwhile_(EXP *while_);
-STATEMENT *makeSTMdo_(EXP *do_);
+STATEMENT *makeSTMif_then(EXP *if_, STATEMENT *then);
+STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_);
+STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_);
 STATEMENT *makeSTMlist(STATEMENT_LIST *list);
+
+PAR_DECL_LIST *makePDL(VAR_DECL_LIST *vList);
+VAR_DECL_LIST *makeVDL(VAR_TYPE *vType, VAR_DECL_LIST *vList);
+
+VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type);
+
+DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list);
+
+DECLARATION *makeDECLid(TYPE *id);
+DECLARATION *makeDECLvar(VAR_DECL_LIST *var, FUNCTION *func);
+
+VARIABLE *makeVARIABLEexp(char *id, VARIABLE *var, EXP *exp);
+
+ACT_LIST *makeACT_LIST(EXP_LIST *list);
+EXP_LIST *makeEXP_LIST(EXP *exp, EXP_LIST *list);
+
+
+
+
+
 
 #endif
