@@ -165,18 +165,13 @@ type :  tID {$$ = makeID($1);}
       | tARRAYTYPE tOF type {$$ = makeARRAY($3);}
       | tRECORDTYPE tOF tLCURL var_decl_list tRCURL {$$ = makeRECORD($4);}
 
-
-var :   tID {printf("var tID\n");}
-      | var tLSQ exp tRSQ {printf("var exp\n");}
-      | var tDOT tID {printf("var dot\n");}
-
-par_decl_list : var_decl_list{printf("par_decl_list\n");}
+par_decl_list : var_decl_list {printf("par_decl_list\n");}
       | {printf("par_decl_list empty\n");};//empty string
 
-var_decl_list : var_type tCOM var_decl_list{printf("var_decl_list\n");}
+var_decl_list : var_type tCOM var_decl_list {printf("var_decl_list\n");}
       | var_type {printf("var_decl_list empty\n");}
 
-var_type : tID tCOL type{printf("var_typ tID\n");}
+var_type : tID tCOL type {printf("var_typ tID\n");}
 
 decl_list : decl decl_list {printf("decl_list\n");}
       | {printf("decl_list empty\n");}//empty string
@@ -188,16 +183,19 @@ decl :  tTYPE tID tASSI type tSEMI {printf("decl assi\n");}
 stmt_list : stmt {printf("stmt_list stmt\n");}
       | stmt stmt_list {printf("stmt_list list\n");}
 
-stmt :  tRETURN exp tSEMI {printf("stmt return\n");}
-      | tWRITE exp tSEMI {printf("stmt write\n");}
-      | tALLOC var tSEMI {printf("stmt alloc\n");}
-      | tALLOC var tOF tLEN exp tSEMI {printf("stmt alloc len\n");}
-      | var tASSI exp tSEMI {printf("stmt var assign\n");}
-      | tIF exp tTHEN stmt {printf("stmt if then\n");}
-      | tIF exp tTHEN stmt tELSE stmt {printf("stmt if else\n");}
-      | tWHILE exp tDO stmt {printf("stmt while\n");}
-      | tLCURL stmt_list tRCURL {printf("stmt list\n");}
+stmt :  tRETURN exp tSEMI {$$ = makeSTMreturn($2)}
+      | tWRITE exp tSEMI { $$ = makeSTMwrite($2)}
+      | tALLOC var tSEMI {$$ = makeSTMallocate($2)}
+      | tALLOC var tOF tLEN exp tSEMI {$$ = makeSTMallocateLength($2,$5)}
+      | var tASSI exp tSEMI {}
+      | tIF exp tTHEN stmt {$$ = makeSTMif_($2,$4)}
+      | tIF exp tTHEN stmt tELSE stmt {$$ = makeSTMthen_($2,$4,$6)}
+      | tWHILE exp tDO stmt {$$ = makeSTMdo_($2,$4)}
+      | tLCURL stmt_list tRCURL {$$ makeSTMlist($2)}
 
+var :   tID {}
+      | var tLSQ exp tRSQ {}
+      | var tDOT tID {}
 
 exp :   exp tPLUS exp {$$ = makeEXPplus($1,$3);}
       | exp tMINUS exp {$$ = makeEXPminus($1,$3);}
@@ -213,15 +211,15 @@ exp :   exp tPLUS exp {$$ = makeEXPplus($1,$3);}
       | exp tOR exp {$$ = makeEXPor($1,$3);}
       | term {$$ = makeEXPterm($1,$3);}
 
-term :  var {printf("term var\n");}
-      | tID tLPAR act_list tRPAR {printf("term func\n");}
-      | tLPAR exp_list tRPAR {printf("term paren\n");}
-      | tNEG term {printf("term neg\n");}
-      | tBAR exp tBAR {printf("term size\n");}
-      | tINT {printf("term num\n");}
-      | tTRUE {printf("term true\n");}
-      | tFALSE {printf("term false\n");}
-      | tNULL {printf("term null\n");}
+term :  var {$$ = makeTERMvar($1);}
+      | tID tLPAR act_list tRPAR {$$ = makeTERMaclt_list($1,$3);}
+      | tLPAR exp_list tRPAR {$$ = makeTERMexp($2);}
+      | tNEG term {$$ = makeTERMnotTerm($2)}
+      | tBAR exp tBAR {$$ = makeTERMCard($2)}
+      | tINT {$$ = makeTERMnum($2)}
+      | tTRUE {$$ = makeTERMtrue();}
+      | tFALSE {$$ = makeTERMfalse();}
+      | tNULL {$$ = makeTERMnull();}
 
 act_list : exp_list {printf("act_list exp_list\n");}
       | {printf("act_list empty\n");}
