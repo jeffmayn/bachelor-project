@@ -3,18 +3,15 @@
 #include "tree.h"
 
 extern char *yytext;
-extern BODY *theexpression;
+extern BODY *theexpression; //the root of AST
 
 void yyerror() {
    printf("syntax error before %s\n",yytext);
 }
 %}
 
-
-//Denne union angiver typen af associeret data
-//det vil sige typen af $x og $$.
-//da der ikke er noget nvanv for union er den kaldet YYSTYPE
-//Jeg tror at dette er stak typen
+//Union giving the parser-stack types.
+//Referenced as yyval/yystype.
 %union {
   struct FUNCTION* ufunc;
   struct HEAD* uhead;
@@ -37,50 +34,12 @@ void yyerror() {
   int uint;
   char* uid;
 
-  void* uvoid; //default for testing
-
-
-
-
-
-   //int intconst;
-   //char *stringconst;
-   //struct EXPRESSION *exp;
-
-   //jeg tror at jeg skal lave en variable af hver type som JEFF laver
-   //Måske primitive typer er undtaget
+  void* uvoid; //only used for testing during development
 }
 
-//da %union er brugt til at definere type, skal den præcise type/variable angives i < >
-//tokens er terminal symboler
-//%token <intconst> tINTCONST
-//%token <stringconst> tIDENTIFIER
-
-/*
-%token <> tID
-%token <> tEND
-%token <> tINT
-%token <> tBOOL
-%token <> tARRAY
-%token <> tOF
-%token <> tRECORD
-%token <> tTYPE
-%token <> tVAR
-%token <> tRETURN
-%token <> tWRITE
-%token <> tALLOC
-%token <> tLEN
-%token <> tIF
-%token <> tTHEN
-%token <> tWHILE
-%token <> tDO
-%token <unum> tNUM
-%token <> tTRUE
-%token <> tFALSE
-%token <> tNULL
-*/
-
+//all terminals
 %token <uint> tINT
+%token <uid> tID
 %token tPLUS tMINUS tTIMES tDIV tEQ tNE tLE tGE tLESS tGREAT tAND tOR tLPAR tRPAR tLSQ tRSQ tLCURL tRCURL
 %token tEND tINTTYPE tBOOLTYPE tARRAYTYPE tOF tRECORDTYPE tTYPE tVAR tRETURN tWRITE tALLOC tLEN tIF tTHEN tELSE tWHILE tDO tNULL
 %token tTRUE tFALSE
@@ -88,24 +47,14 @@ void yyerror() {
 %token tFUNC
 %token tBAR tCOL tCOM tSEMI
 
-
-//%token <utype> tINTTYPE tBOOLTYPE tARRAYTYPE tRECORDTYPE
-
-%token <uid> tID
-
-
-//type er non-terminal symboler
-//bruges kun til at definere typen af non-terminalen
-
-
-%type <ubody> program //exp
-
+//all non-terminals
+%type <ubody> program //the start type
 
 %type <ufunc> func
 %type <uhead> head
 %type <ubody> body
 %type <utail> tail
-%type <utype> type //gad vide om jeg må kalde den type??
+%type <utype> type
 %type <upardecllist> par_decl_list
 %type <uvardecllist> var_decl_list
 %type <uvartype> var_type
@@ -118,31 +67,11 @@ void yyerror() {
 %type <uterm> term
 %type <uactlist> act_list
 %type <uexplist> exp_list
-/*%type <uvoid> exp*/
-
-
-/*
-%type <> var_type
-%type <> decl_list
-%type <> decl
-%type <ustatementlist> stmt_list
-%type <ustatement> stmt
-%type <> var
-%type <> exp
-%type <> term
-%type <> act_list
-%type <> exp_list
-*/
-
-/*
-%type <> exp
-%type <> term
-%type <> act_list
-%type <> exp_list
-*/
 
 %start program
 
+
+//Precedence rules for operators
 %left tNEG
 %left tTIMES tDIV tMOD
 %left tPLUS tMINUS
@@ -153,20 +82,14 @@ void yyerror() {
 %left tASSI
 %right tTHEN tELSE
 
-/*
-%left '+' '-'
-%left '*' '/'
-*/
-
-
-
 %%
+//Rule for returning the AST
 program: body
          { theexpression = $1;}
 ;
 
 
-
+//All rules in grammar
 func :  head body tail { $$ = makeFUNCTION($1, $2, $3);}
 
 head :  tFUNC tID tLPAR par_decl_list tRPAR tCOL type {$$ = makeHEAD($2, $4, $7);}
@@ -196,22 +119,22 @@ decl :  tTYPE tID tASSI type tSEMI {printf("decl assi\n");}
       | func {printf("decl func\n");}
       | tVAR var_decl_list tSEMI {printf("decl var\n");}
 
-stmt_list : stmt {}
-      | stmt stmt_list {}
+stmt_list : stmt {$$ = makeSTM_LISTstmtlist($1,NULL);}
+      | stmt stmt_list {$$ = makeSTM_LISTstmtlist($1,$2);}
 
 stmt :  tRETURN exp tSEMI {$$ = makeSTMreturn($2);}
       | tWRITE exp tSEMI { $$ = makeSTMwrite($2);}
       | tALLOC var tSEMI {$$ = makeSTMallocate($2);}
       | tALLOC var tOF tLEN exp tSEMI {$$ = makeSTMallocateLength($2,$5);}
-      | var tASSI exp tSEMI {}
+      | var tASSI exp tSEMI {$$ = makeSTMassign($1,$3);}
       | tIF exp tTHEN stmt {$$ = makeSTMif_then($2,$4);}
       | tIF exp tTHEN stmt tELSE stmt {$$ = makeSTMif_then_else($2,$4,$6);}
       | tWHILE exp tDO stmt {$$ = makeSTMwhile_do($2,$4);}
       | tLCURL stmt_list tRCURL {$$ = makeSTMlist($2);}
 
-var :   tID {}
-      | var tLSQ exp tRSQ {}
-      | var tDOT tID {}
+var :   tID {$$ = makeVARIABLEid($1);}
+      | var tLSQ exp tRSQ {makeVARIABLEexp($1,$3);}
+      | var tDOT tID {makeVARIABLEdot($3,$1);}
 
 exp :   exp tPLUS exp {$$ = makeEXPplus($1,$3);}
       | exp tMINUS exp {$$ = makeEXPminus($1,$3);}
@@ -243,24 +166,4 @@ act_list : exp_list {$$ = makeACT_LIST($1);}
 
 exp_list : exp {$$ = makeEXP_LIST($1,NULL);}
       | exp tCOM exp_list {$$ = makeEXP_LIST($1,$3);}
-
-
-/*
-exp : tIDENTIFIER
-      {$$ = makeEXPid($1);}
-    | tINTCONST
-      {$$ = makeEXPintconst($1);}
-    | exp '*' exp
-      {$$ = makeEXPtimes($1,$3);}
-    | exp '/' exp
-      {$$ = makeEXPdiv($1,$3);}
-    | exp '+' exp
-      {$$ = makeEXPplus($1,$3);}
-    | exp '-' exp
-      {$$ = makeEXPminus($1,$3);}
-    | '(' exp ')'
-      {$$ = $2;}
-;
-*/
-
 %%

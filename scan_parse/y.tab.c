@@ -74,7 +74,7 @@ void yyerror() {
    printf("syntax error before %s\n",yytext);
 }
 
-#line 78 "parser.tab.c" /* yacc.c:339  */
+#line 78 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -92,7 +92,10 @@ void yyerror() {
 # define YYERROR_VERBOSE 0
 #endif
 
-
+/* In a future release of Bison, this section will be replaced
+   by #include "y.tab.h".  */
+#ifndef YY_YY_Y_TAB_H_INCLUDED
+# define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -157,6 +160,56 @@ extern int yydebug;
     tMOD = 306
   };
 #endif
+/* Tokens.  */
+#define tINT 258
+#define tID 259
+#define tPLUS 260
+#define tMINUS 261
+#define tTIMES 262
+#define tDIV 263
+#define tEQ 264
+#define tNE 265
+#define tLE 266
+#define tGE 267
+#define tLESS 268
+#define tGREAT 269
+#define tAND 270
+#define tOR 271
+#define tLPAR 272
+#define tRPAR 273
+#define tLSQ 274
+#define tRSQ 275
+#define tLCURL 276
+#define tRCURL 277
+#define tEND 278
+#define tINTTYPE 279
+#define tBOOLTYPE 280
+#define tARRAYTYPE 281
+#define tOF 282
+#define tRECORDTYPE 283
+#define tTYPE 284
+#define tVAR 285
+#define tRETURN 286
+#define tWRITE 287
+#define tALLOC 288
+#define tLEN 289
+#define tIF 290
+#define tTHEN 291
+#define tELSE 292
+#define tWHILE 293
+#define tDO 294
+#define tNULL 295
+#define tTRUE 296
+#define tFALSE 297
+#define tASSI 298
+#define tNEG 299
+#define tDOT 300
+#define tFUNC 301
+#define tBAR 302
+#define tCOL 303
+#define tCOM 304
+#define tSEMI 305
+#define tMOD 306
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -188,7 +241,7 @@ union YYSTYPE
 
   void* uvoid; //only used for testing during development
 
-#line 192 "parser.tab.c" /* yacc.c:355  */
+#line 245 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -201,11 +254,11 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-
+#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 209 "parser.tab.c" /* yacc.c:358  */
+#line 262 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -1407,371 +1460,371 @@ yyreduce:
         case 2:
 #line 88 "parser.y" /* yacc.c:1646  */
     { theexpression = (yyvsp[0].ubody);}
-#line 1411 "parser.tab.c" /* yacc.c:1646  */
+#line 1464 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
 #line 93 "parser.y" /* yacc.c:1646  */
     { (yyval.ufunc) = makeFUNCTION((yyvsp[-2].uhead), (yyvsp[-1].ubody), (yyvsp[0].utail));}
-#line 1417 "parser.tab.c" /* yacc.c:1646  */
+#line 1470 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
 #line 95 "parser.y" /* yacc.c:1646  */
     {(yyval.uhead) = makeHEAD((yyvsp[-5].uid), (yyvsp[-3].upardecllist), (yyvsp[0].utype));}
-#line 1423 "parser.tab.c" /* yacc.c:1646  */
+#line 1476 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
 #line 97 "parser.y" /* yacc.c:1646  */
     {(yyval.ubody) = makeBODY((yyvsp[-1].udecllist), (yyvsp[0].ustmtlist));}
-#line 1429 "parser.tab.c" /* yacc.c:1646  */
+#line 1482 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
 #line 99 "parser.y" /* yacc.c:1646  */
     {(yyval.utail) = makeTAIL((yyvsp[0].uid));}
-#line 1435 "parser.tab.c" /* yacc.c:1646  */
+#line 1488 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
 #line 101 "parser.y" /* yacc.c:1646  */
     {(yyval.utype) = makeID((yyvsp[0].uid));}
-#line 1441 "parser.tab.c" /* yacc.c:1646  */
+#line 1494 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
 #line 102 "parser.y" /* yacc.c:1646  */
     {(yyval.utype) = makeINT();}
-#line 1447 "parser.tab.c" /* yacc.c:1646  */
+#line 1500 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
 #line 103 "parser.y" /* yacc.c:1646  */
     {(yyval.utype) = makeBOOL();}
-#line 1453 "parser.tab.c" /* yacc.c:1646  */
+#line 1506 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
 #line 104 "parser.y" /* yacc.c:1646  */
     {(yyval.utype) = makeARRAY((yyvsp[0].utype));}
-#line 1459 "parser.tab.c" /* yacc.c:1646  */
+#line 1512 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
 #line 105 "parser.y" /* yacc.c:1646  */
     {(yyval.utype) = makeRECORD((yyvsp[-1].uvardecllist));}
-#line 1465 "parser.tab.c" /* yacc.c:1646  */
+#line 1518 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
 #line 107 "parser.y" /* yacc.c:1646  */
     {(yyval.upardecllist) = makePDL((yyvsp[0].uvardecllist));}
-#line 1471 "parser.tab.c" /* yacc.c:1646  */
+#line 1524 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
 #line 108 "parser.y" /* yacc.c:1646  */
     {(yyval.upardecllist) = makePDL(NULL);}
-#line 1477 "parser.tab.c" /* yacc.c:1646  */
+#line 1530 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
 #line 110 "parser.y" /* yacc.c:1646  */
     {(yyval.uvardecllist) = makeVDL((yyvsp[-2].uvartype),(yyvsp[0].uvardecllist));}
-#line 1483 "parser.tab.c" /* yacc.c:1646  */
+#line 1536 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
 #line 111 "parser.y" /* yacc.c:1646  */
     {(yyval.uvardecllist) = makeVDL((yyvsp[0].uvartype),NULL);}
-#line 1489 "parser.tab.c" /* yacc.c:1646  */
+#line 1542 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
 #line 113 "parser.y" /* yacc.c:1646  */
     {(yyval.uvartype) = makeVAR_TYPE((yyvsp[-2].uid),(yyvsp[0].utype));}
-#line 1495 "parser.tab.c" /* yacc.c:1646  */
+#line 1548 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
 #line 115 "parser.y" /* yacc.c:1646  */
     {(yyval.udecllist) = makeDECL_LIST((yyvsp[-1].udecl),(yyvsp[0].udecllist));}
-#line 1501 "parser.tab.c" /* yacc.c:1646  */
+#line 1554 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
 #line 116 "parser.y" /* yacc.c:1646  */
     {makeDECL_LIST(NULL, NULL);}
-#line 1507 "parser.tab.c" /* yacc.c:1646  */
+#line 1560 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
 #line 118 "parser.y" /* yacc.c:1646  */
     {printf("decl assi\n");}
-#line 1513 "parser.tab.c" /* yacc.c:1646  */
+#line 1566 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
 #line 119 "parser.y" /* yacc.c:1646  */
     {printf("decl func\n");}
-#line 1519 "parser.tab.c" /* yacc.c:1646  */
+#line 1572 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
 #line 120 "parser.y" /* yacc.c:1646  */
     {printf("decl var\n");}
-#line 1525 "parser.tab.c" /* yacc.c:1646  */
+#line 1578 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
 #line 122 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmtlist) = makeSTM_LISTstmtlist((yyvsp[0].ustmt),NULL);}
-#line 1531 "parser.tab.c" /* yacc.c:1646  */
+#line 1584 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
 #line 123 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmtlist) = makeSTM_LISTstmtlist((yyvsp[-1].ustmt),(yyvsp[0].ustmtlist));}
-#line 1537 "parser.tab.c" /* yacc.c:1646  */
+#line 1590 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
 #line 125 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmt) = makeSTMreturn((yyvsp[-1].uexp));}
-#line 1543 "parser.tab.c" /* yacc.c:1646  */
+#line 1596 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
 #line 126 "parser.y" /* yacc.c:1646  */
     { (yyval.ustmt) = makeSTMwrite((yyvsp[-1].uexp));}
-#line 1549 "parser.tab.c" /* yacc.c:1646  */
+#line 1602 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
 #line 127 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmt) = makeSTMallocate((yyvsp[-1].uvar));}
-#line 1555 "parser.tab.c" /* yacc.c:1646  */
+#line 1608 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
 #line 128 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmt) = makeSTMallocateLength((yyvsp[-4].uvar),(yyvsp[-1].uexp));}
-#line 1561 "parser.tab.c" /* yacc.c:1646  */
+#line 1614 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
 #line 129 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmt) = makeSTMassign((yyvsp[-3].uvar),(yyvsp[-1].uexp));}
-#line 1567 "parser.tab.c" /* yacc.c:1646  */
+#line 1620 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
 #line 130 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmt) = makeSTMif_then((yyvsp[-2].uexp),(yyvsp[0].ustmt));}
-#line 1573 "parser.tab.c" /* yacc.c:1646  */
+#line 1626 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
 #line 131 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmt) = makeSTMif_then_else((yyvsp[-4].uexp),(yyvsp[-2].ustmt),(yyvsp[0].ustmt));}
-#line 1579 "parser.tab.c" /* yacc.c:1646  */
+#line 1632 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
 #line 132 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmt) = makeSTMwhile_do((yyvsp[-2].uexp),(yyvsp[0].ustmt));}
-#line 1585 "parser.tab.c" /* yacc.c:1646  */
+#line 1638 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
 #line 133 "parser.y" /* yacc.c:1646  */
     {(yyval.ustmt) = makeSTMlist((yyvsp[-1].ustmtlist));}
-#line 1591 "parser.tab.c" /* yacc.c:1646  */
+#line 1644 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
 #line 135 "parser.y" /* yacc.c:1646  */
     {(yyval.uvar) = makeVARIABLEid((yyvsp[0].uid));}
-#line 1597 "parser.tab.c" /* yacc.c:1646  */
+#line 1650 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
 #line 136 "parser.y" /* yacc.c:1646  */
     {makeVARIABLEexp((yyvsp[-3].uvar),(yyvsp[-1].uexp));}
-#line 1603 "parser.tab.c" /* yacc.c:1646  */
+#line 1656 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
 #line 137 "parser.y" /* yacc.c:1646  */
-    {makeVARIABLEdot((yyvsp[0].uid),(yyvsp[-2].uvar))}
-#line 1609 "parser.tab.c" /* yacc.c:1646  */
+    {makeVARIABLEdot((yyvsp[0].uid),(yyvsp[-2].uvar));}
+#line 1662 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
 #line 139 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPplus((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1615 "parser.tab.c" /* yacc.c:1646  */
+#line 1668 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
 #line 140 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPminus((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1621 "parser.tab.c" /* yacc.c:1646  */
+#line 1674 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
 #line 141 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPtimes((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1627 "parser.tab.c" /* yacc.c:1646  */
+#line 1680 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
 #line 142 "parser.y" /* yacc.c:1646  */
     {printf("Modulo operation not yet implemented");}
-#line 1633 "parser.tab.c" /* yacc.c:1646  */
+#line 1686 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
 #line 143 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPdiv((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1639 "parser.tab.c" /* yacc.c:1646  */
+#line 1692 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
 #line 144 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPeq((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1645 "parser.tab.c" /* yacc.c:1646  */
+#line 1698 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
 #line 145 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPne((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1651 "parser.tab.c" /* yacc.c:1646  */
+#line 1704 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
 #line 146 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPle((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1657 "parser.tab.c" /* yacc.c:1646  */
+#line 1710 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
 #line 147 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPge((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1663 "parser.tab.c" /* yacc.c:1646  */
+#line 1716 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
 #line 148 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPless((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1669 "parser.tab.c" /* yacc.c:1646  */
+#line 1722 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
 #line 149 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPgreat((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1675 "parser.tab.c" /* yacc.c:1646  */
+#line 1728 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
 #line 150 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPand((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1681 "parser.tab.c" /* yacc.c:1646  */
+#line 1734 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
 #line 151 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPor((yyvsp[-2].uexp),(yyvsp[0].uexp));}
-#line 1687 "parser.tab.c" /* yacc.c:1646  */
+#line 1740 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
 #line 152 "parser.y" /* yacc.c:1646  */
     {(yyval.uexp) = makeEXPterm((yyvsp[0].uterm));}
-#line 1693 "parser.tab.c" /* yacc.c:1646  */
+#line 1746 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
 #line 154 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMvar((yyvsp[0].uvar));}
-#line 1699 "parser.tab.c" /* yacc.c:1646  */
+#line 1752 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
 #line 155 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMact_list((yyvsp[-3].uid),(yyvsp[-1].uactlist));}
-#line 1705 "parser.tab.c" /* yacc.c:1646  */
+#line 1758 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
 #line 156 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMexp((yyvsp[-1].uexp));}
-#line 1711 "parser.tab.c" /* yacc.c:1646  */
+#line 1764 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
 #line 157 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMnotTerm((yyvsp[0].uterm));}
-#line 1717 "parser.tab.c" /* yacc.c:1646  */
+#line 1770 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
 #line 158 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMexpCard((yyvsp[-1].uexp));}
-#line 1723 "parser.tab.c" /* yacc.c:1646  */
+#line 1776 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
 #line 159 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMnum((yyvsp[0].uint));}
-#line 1729 "parser.tab.c" /* yacc.c:1646  */
+#line 1782 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
 #line 160 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMtrue();}
-#line 1735 "parser.tab.c" /* yacc.c:1646  */
+#line 1788 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
 #line 161 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMfalse();}
-#line 1741 "parser.tab.c" /* yacc.c:1646  */
+#line 1794 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
 #line 162 "parser.y" /* yacc.c:1646  */
     {(yyval.uterm) = makeTERMnull();}
-#line 1747 "parser.tab.c" /* yacc.c:1646  */
+#line 1800 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
 #line 164 "parser.y" /* yacc.c:1646  */
     {(yyval.uactlist) = makeACT_LIST((yyvsp[0].uexplist));}
-#line 1753 "parser.tab.c" /* yacc.c:1646  */
+#line 1806 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
 #line 165 "parser.y" /* yacc.c:1646  */
     {(yyval.uactlist) = makeACT_LIST(NULL);}
-#line 1759 "parser.tab.c" /* yacc.c:1646  */
+#line 1812 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
 #line 167 "parser.y" /* yacc.c:1646  */
     {(yyval.uexplist) = makeEXP_LIST((yyvsp[0].uexp),NULL);}
-#line 1765 "parser.tab.c" /* yacc.c:1646  */
+#line 1818 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
 #line 168 "parser.y" /* yacc.c:1646  */
     {(yyval.uexplist) = makeEXP_LIST((yyvsp[-2].uexp),(yyvsp[0].uexplist));}
-#line 1771 "parser.tab.c" /* yacc.c:1646  */
+#line 1824 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1775 "parser.tab.c" /* yacc.c:1646  */
+#line 1828 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
