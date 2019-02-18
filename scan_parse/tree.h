@@ -125,11 +125,8 @@ typedef struct STATEMENT {
     struct EXP *write;
     struct VARIABLE *allocate;
     struct {VARIABLE *var; EXP *exp;} allocatelength;
-    struct EXP *if_;
-    struct STATEMENT *then;
-    struct STATEMENT *else_;
-    struct EXP *while_;
-    struct STATEMENT *do_;
+    struct {struct EXP *cond; struct STATEMENT *thenbody; struct STATEMENT *elsebody;} ifthenelse;
+    struct {struct EXP *cond; struct STATEMENT *body} while_;
     struct STATEMENT_LIST *list;
   } val;
 } STATEMENT;

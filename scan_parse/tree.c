@@ -331,8 +331,9 @@ STATEMENT *makeSTMif_then(EXP *if_, STATEMENT *then){
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
   stm->kind = ifK;
-  stm->val.if_ = if_;
-  stm->val.then = then;
+  stm->val.ifthenelse.cond = if_;
+  stm->val.ifthenelse.thenbody = then;
+  stm->val.ifthenelse.elsebody = NULL;
   return stm;
 }
 
@@ -341,9 +342,9 @@ STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_){
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
   stm->kind = ifK;
-  stm->val.if_ = if_;
-  stm->val.then = then;
-  stm->val.else_ = else_;
+  stm->val.ifthenelse.cond = if_;
+  stm->val.ifthenelse.thenbody = then;
+  stm->val.ifthenelse.elsebody = else_;
   return stm;
 }
 
@@ -352,8 +353,8 @@ STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_){
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
   stm->kind = whileK;
-  stm->val.while_ = while_;
-  stm->val.do_ = do_;
+  stm->val.while_.cond = while_;
+  stm->val.while.body = do_;
   return stm;
 }
 
