@@ -65,19 +65,19 @@ extern int lineno;
 <INITIAL>"do"       { return tDO;}
 
 <INITIAL>0|[1-9][0-9]*          { yylval.uint = atoi(yytext);
-                                  printf("lex int\n");
                                   return tINT;}
-<INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { /*TODO yylval.stringconst = (char *) malloc(strlen(yytext)+1);
-                                  sprintf(yylval.stringconst, "%s", yytext);
-                                  return tID;*/}
+<INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { yylval.uid = (char *) malloc(strlen(yytext)+1);
+                                  sprintf(yylval.uid, "%s", yytext);
+                                  return tID;}
 
-<INITIAL>[ \t]  /*ignore*/
-<INITIAL>"(*"   { BEGIN COMMENT;}
-<INITIAL>#      { BEGIN ONELINECOMMENT;}
-<INITIAL>\n     { lineno++;}
-<INITIAL>.      /*TODO errors*/
 
-<COMMENT>"*)"   { BEGIN INITIAL;}
+<INITIAL>[ \t\r]  /*ignore*/
+<INITIAL>"(*"     { BEGIN COMMENT;}
+<INITIAL>#        { BEGIN ONELINECOMMENT;}
+<INITIAL>\n       { lineno++;}
+<INITIAL>.        /*TODO errors*/
+
+<COMMENT>"*)"     { BEGIN INITIAL;}
 <COMMENT>\n     { lineno++;}
 <COMMENT>.      /*ignore*/
 

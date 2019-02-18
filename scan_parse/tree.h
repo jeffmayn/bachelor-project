@@ -68,6 +68,7 @@ typedef struct TERM {
   int lineno;
   enum {varK, idTermK, expK, notTermK, expCardK, numK, trueK, falseK, nullK} kind;
   union {
+    struct {char *id; struct ACT_LIST *list;} idact;
     struct VARIABLE *var; //changed from char*
     struct ACT_LIST * id;
     struct EXP *exp;
@@ -76,6 +77,7 @@ typedef struct TERM {
     int num; //changed to int from *int
     bool *true;
     bool *false;
+    void* null;
   } val;
 } TERM;
 
@@ -101,10 +103,8 @@ typedef struct VARIABLE {
 
 typedef struct VAR_TYPE {
   int lineno;
-  union {
-    char *id;
-    struct TYPE *type;
-  } val;
+  char *id;
+  struct TYPE *type;
 } VAR_TYPE;
 
 typedef struct DECLARATION {
@@ -124,7 +124,7 @@ typedef struct STATEMENT {
     struct EXP *return_;
     struct EXP *write;
     struct VARIABLE *allocate;
-    struct VARIABLE *allocateLength;
+    struct {VARIABLE *var; EXP *exp;} allocatelength;
     struct EXP *if_;
     struct STATEMENT *then;
     struct STATEMENT *else_;
@@ -136,11 +136,8 @@ typedef struct STATEMENT {
 
 typedef struct DECL_LIST {
   int lineno;
-  enum {declarationK, decl_listK} kind;
-  union {
-    struct DECLARATION *decl;
-    struct DECL_LIST *decl_list;
-  } val;
+  struct DECLARATION *decl;
+  struct DECL_LIST *decl_list;
 } DECL_LIST;
 
 FUNCTION *makeFUNCTION(HEAD *head, BODY *body, TAIL *tail);
