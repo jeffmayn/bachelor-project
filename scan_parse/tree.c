@@ -354,7 +354,7 @@ STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_){
   stm->lineno = lineno;
   stm->kind = whileK;
   stm->val.while_.cond = while_;
-  stm->val.while.body = do_;
+  stm->val.while_.body = do_;
   return stm;
 }
 
@@ -428,17 +428,43 @@ EXP_LIST *makeEXP_LIST(EXP *exp, EXP_LIST *list){
 }
 
 STATEMENT *makeSTMassign(VARIABLE *var, EXP *exp){
-  //TODO
+  STATEMENT *ass; // sorry :-P
+  ass = (STATEMENT*)Malloc(sizeof(ass));
+  ass->lineno = lineno;
+  ass->kind = allocateLengthK; // måske ændre navnet i vores typedef struct?
+  ass->val.allocatelength.var = var;
+  ass->val.allocatelength.exp = exp;
+  return ass;
 }
+
 STATEMENT_LIST *makeSTM_LISTstmtlist(STATEMENT *stmt, STATEMENT_LIST *list){
-  //TODO
+  STATEMENT_LIST *stml;
+  stml = (STATEMENT_LIST*)Malloc(sizeof(stml));
+  stml->lineno = lineno;
+  stml->statement = stmt;
+  stml->statementList = list;
+  return stml;
 }
 VARIABLE *makeVARIABLEid(char *id){
-  //TODO
+  VARIABLE *varId;
+  varId = (VARIABLE*)Malloc(sizeof(varId));
+  varId->lineno = lineno;
+  varId->val.id = id;
+  return varId;
 }
 VARIABLE *makeVARIABLEexp(VARIABLE *var, EXP *exp){
-  //TODO
+  VARIABLE *varExp;
+  varExp = (VARIABLE*)Malloc(sizeof(varExp));
+  varExp->lineno = lineno;
+  varExp->val.var = var;
+  varExp->val.exp = exp;
+  return varExp;
 }
 VARIABLE *makeVARIABLEdot(char *id, VARIABLE *var){
-  //TODO
+  VARIABLE *varDot;
+  varDot = (VARIABLE*)Malloc(sizeof(varDot));
+  varDot->lineno = lineno;
+  varDot->val.id = id;
+  varDot->val.var = var;
+  return varDot;
 }
