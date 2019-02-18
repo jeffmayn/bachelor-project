@@ -96,7 +96,7 @@ EXP *makeEXPminus(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPplusK(EXP *left, EXP *right){
+EXP *makeEXPplus(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -106,7 +106,7 @@ EXP *makeEXPplusK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPtimesK(EXP *left, EXP *right){
+EXP *makeEXPtimes(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -116,7 +116,7 @@ EXP *makeEXPtimesK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPdivK(EXP *left, EXP *right){
+EXP *makeEXPdiv(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -126,7 +126,7 @@ EXP *makeEXPdivK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPeqK(EXP *left, EXP *right){
+EXP *makeEXPeq(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -136,7 +136,7 @@ EXP *makeEXPeqK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPleK(EXP *left, EXP *right){
+EXP *makeEXPle(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -146,7 +146,7 @@ EXP *makeEXPleK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPgeK(EXP *left, EXP *right){
+EXP *makeEXPge(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -156,7 +156,7 @@ EXP *makeEXPgeK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPgreatK(EXP *left, EXP *right){
+EXP *makeEXPgreat(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -166,7 +166,7 @@ EXP *makeEXPgreatK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPlessK(EXP *left, EXP *right){
+EXP *makeEXPless(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -176,7 +176,7 @@ EXP *makeEXPlessK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPneK(EXP *left, EXP *right){
+EXP *makeEXPne(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -186,7 +186,7 @@ EXP *makeEXPneK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPandK(EXP *left, EXP *right){
+EXP *makeEXPand(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -196,7 +196,7 @@ EXP *makeEXPandK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPorK(EXP *left, EXP *right){
+EXP *makeEXPor(EXP *left, EXP *right){
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -363,4 +363,36 @@ STATEMENT *makeSTMlist(STATEMENT_LIST *list){
   stm->kind = listK;
   stm->val.list = list;
   return stm;
+}
+
+PAR_DECL_LIST *makePDL(VAR_DECL_LIST *vList){
+  STATEMENT *stm;
+  stm = (STATEMENT*)Malloc(sizeof(stm));
+  stm->lineno = lineno;
+  stm->kind = listK;
+  stm->val.list = list;
+  return stm;
+}
+
+VAR_DECL_LIST *makeVDL(VAR_TYPE *vType, VAR_DECL_LIST *vList){
+  //TODO
+}
+
+VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type){
+  //TODO
+}
+
+DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list){
+  //TODO
+}
+
+TERM *makeTERMnull(){
+  //TODO
+}
+
+ACT_LIST *makeACT_LIST(EXP_LIST *list){
+  //TODO
+}
+EXP_LIST *makeEXP_LIST(EXP *exp, EXP_LIST *list){
+  //TODO
 }

@@ -154,6 +154,33 @@ TYPE *makeBOOL();
 TYPE *makeARRAY(TYPE *arrayType);
 TYPE *makeRECORD(VAR_DECL_LIST *vList);
 
+PAR_DECL_LIST *makePDL(VAR_DECL_LIST *vList);
+
+VAR_DECL_LIST *makeVDL(VAR_TYPE *vType, VAR_DECL_LIST *vList);
+
+VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type);
+
+DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list);
+
+DECLARATION *makeDECLid(TYPE *id);
+DECLARATION *makeDECLvar(VAR_DECL_LIST *var, FUNCTION *func);
+
+STATEMENT_LIST *makeSTM_LISTstmtlist(STATEMENT *stmt, STATEMENT_LIST *list);
+
+STATEMENT *makeSTMreturn(EXP *return_);
+STATEMENT *makeSTMwrite(EXP *write);
+STATEMENT *makeSTMallocate(VARIABLE *allocate);
+STATEMENT *makeSTMallocateLength(VARIABLE *var, EXP *exp);
+STATEMENT *makeSTMassign(VARIABLE *var, EXP *exp);
+STATEMENT *makeSTMif_then(EXP *if_, STATEMENT *then);
+STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_);
+STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_);
+STATEMENT *makeSTMlist(STATEMENT_LIST *list);
+
+VARIABLE *makeVARIABLEid(char *id);
+VARIABLE *makeVARIABLEexp(VARIABLE *var, EXP *exp);
+VARIABLE *makeVARIABLEdot(char *id, VARIABLE *var);
+
 EXP *makeEXPplus(EXP *left, EXP *right);
 EXP *makeEXPminus(EXP *left, EXP *right);
 EXP *makeEXPtimes(EXP *left, EXP *right);
@@ -178,33 +205,8 @@ TERM *makeTERMtrue();
 TERM *makeTERMfalse();
 TERM *makeTERMnull();
 
-STATEMENT *makeSTMreturn(EXP *return_);
-STATEMENT *makeSTMwrite(EXP *write);
-STATEMENT *makeSTMallocate(VARIABLE *allocate);
-STATEMENT *makeSTMallocateLength(VARIABLE *var, EXP *exp);
-STATEMENT *makeSTMif_then(EXP *if_, STATEMENT *then);
-STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_);
-STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_);
-STATEMENT *makeSTMlist(STATEMENT_LIST *list);
-
-PAR_DECL_LIST *makePDL(VAR_DECL_LIST *vList);
-VAR_DECL_LIST *makeVDL(VAR_TYPE *vType, VAR_DECL_LIST *vList);
-
-VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type);
-
-DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list);
-
-DECLARATION *makeDECLid(TYPE *id);
-DECLARATION *makeDECLvar(VAR_DECL_LIST *var, FUNCTION *func);
-
-VARIABLE *makeVARIABLEexp(char *id, VARIABLE *var, EXP *exp);
-
 ACT_LIST *makeACT_LIST(EXP_LIST *list);
+
 EXP_LIST *makeEXP_LIST(EXP *exp, EXP_LIST *list);
-
-
-
-
-
 
 #endif
