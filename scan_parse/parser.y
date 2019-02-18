@@ -115,9 +115,9 @@ var_type : tID tCOL type {$$ = makeVAR_TYPE($1,$3);}
 decl_list : decl decl_list {$$ = makeDECL_LIST($1,$2);}
       | {makeDECL_LIST(NULL, NULL);}//empty string
 
-decl :  tTYPE tID tASSI type tSEMI {printf("decl assi\n");}
-      | func {printf("decl func\n");}
-      | tVAR var_decl_list tSEMI {printf("decl var\n");}
+decl :  tTYPE tID tASSI type tSEMI {$$ = makeDECLid($2,$4);}
+      | func {$$ = makeDECLfunc($1);}
+      | tVAR var_decl_list tSEMI {$$ = makeDECLlist($2);}
 
 stmt_list : stmt {$$ = makeSTM_LISTstmtlist($1,NULL);}
       | stmt stmt_list {$$ = makeSTM_LISTstmtlist($1,$2);}

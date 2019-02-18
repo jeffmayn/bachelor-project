@@ -393,6 +393,30 @@ VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type){
   return vtp;
 }
 
+DECLARATION *makeDECLid(char *id, TYPE *type){
+  DECLARATION *decl;
+  decl = (DECLARATION*)Malloc(sizeof(decl));
+  decl->lineno = lineno;
+  decl->val.id.id = id;
+  decl->val.id.type = type;
+  return decl;
+
+}
+DECLARATION *makeDECLfunc(FUNCTION *func){
+  DECLARATION *decl;
+  decl = (DECLARATION*)Malloc(sizeof(decl));
+  decl->lineno = lineno;
+  decl->val.func = func;
+  return decl;
+}
+DECLARATION *makeDECLlist(VAR_DECL_LIST *list){
+  DECLARATION *decl;
+  decl = (DECLARATION*)Malloc(sizeof(decl));
+  decl->lineno = lineno;
+  decl->val.list = list;
+  return decl;
+}
+
 DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list){
   DECL_LIST *list;
   list = (DECL_LIST*)Malloc(sizeof(list));

@@ -110,9 +110,9 @@ typedef struct VAR_TYPE {
 typedef struct DECLARATION {
   int lineno;
   union {
+    struct {char *id; TYPE *type;} id;
     struct FUNCTION *func;
-    struct TYPE *id;
-    struct VAR_DECL_LIST *var;
+    struct VAR_DECL_LIST *list;
   } val;
 } DECLARATION;
 
@@ -156,8 +156,9 @@ VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type);
 
 DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list);
 
-DECLARATION *makeDECLid(TYPE *id);
-DECLARATION *makeDECLvar(VAR_DECL_LIST *var, FUNCTION *func);
+DECLARATION *makeDECLid(char *id, TYPE *type);
+DECLARATION *makeDECLfunc(FUNCTION *func);
+DECLARATION *makeDECLlist(VAR_DECL_LIST *list);
 
 STATEMENT_LIST *makeSTM_LISTstmtlist(STATEMENT *stmt, STATEMENT_LIST *list);
 
