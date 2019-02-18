@@ -425,3 +425,19 @@ EXP_LIST *makeEXP_LIST(EXP *exp, EXP_LIST *list){
   new->exp = exp;
   return new;
 }
+
+STATEMENT *makeSTMassign(VARIABLE *var, EXP *exp){
+  //TODO
+}
+STATEMENT_LIST *makeSTM_LISTstmtlist(STATEMENT *stmt, STATEMENT_LIST *list){
+  //TODO
+}
+VARIABLE *makeVARIABLEid(char *id){
+  //TODO
+}
+VARIABLE *makeVARIABLEexp(VARIABLE *var, EXP *exp){
+  //TODO
+}
+VARIABLE *makeVARIABLEdot(char *id, VARIABLE *var){
+  //TODO
+}
