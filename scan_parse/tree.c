@@ -207,11 +207,11 @@ EXP *makeEXPor(EXP *left, EXP *right){
 }
 
 EXP *makeEXPterm(TERM *term){
-    //TODO term stuff
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
   exp->kind = termK;
+  exp->val.term = term;
   return exp;
 }
 
@@ -225,12 +225,12 @@ TERM *makeTERMvar(VARIABLE *var){
 }
 
 TERM *makeTERMact_list(char * id, ACT_LIST *list){
-    //TODO possibly stuff
   TERM *term;
   term = (TERM*)Malloc(sizeof(term));
   term->lineno = lineno;
   term->kind = idTermK;
-  term->val.id = list;
+  term->val.idact.id = id;
+  term->val.idact.list = list;
   return term;
 }
 
@@ -316,12 +316,13 @@ STATEMENT *makeSTMallocate(VARIABLE *allocate){
 }
 
 STATEMENT *makeSTMallocateLength(VARIABLE *var, EXP *exp){
-    //TODO do stuff with exp
   STATEMENT *stm;
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
   stm->kind = allocateLengthK;
-  stm->val.allocateLength = var;
+  stm->val.allocatelength.var = var;
+  stm->val.allocatelength.exp = exp;
+
   return stm;
 }
 
@@ -366,33 +367,61 @@ STATEMENT *makeSTMlist(STATEMENT_LIST *list){
 }
 
 PAR_DECL_LIST *makePDL(VAR_DECL_LIST *vList){
-  STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(stm));
-  stm->lineno = lineno;
-  stm->kind = listK;
-  stm->val.list = list;
-  return stm;
+  PAR_DECL_LIST *pdl;
+  pdl = (PAR_DECL_LIST*)Malloc(sizeof(pdl));
+  pdl->lineno = lineno;
+  pdl->vList = vList;
+  return pdl;
 }
 
 VAR_DECL_LIST *makeVDL(VAR_TYPE *vType, VAR_DECL_LIST *vList){
-  //TODO
+  VAR_DECL_LIST *vdl;
+  vdl = (VAR_DECL_LIST*)Malloc(sizeof(vdl));
+  vdl->lineno = lineno;
+  vdl->vType = vType;
+  vdl->vList = vList;
+  return vdl;
 }
 
 VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type){
-  //TODO
+  VAR_TYPE *vtp;
+  vtp = (VAR_TYPE*)Malloc(sizeof(vtp));
+  vtp->lineno = lineno;
+  vtp->id = id;
+  vtp->type = type;
+  return vtp;
 }
 
 DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list){
-  //TODO
+  DECL_LIST *list;
+  list = (DECL_LIST*)Malloc(sizeof(list));
+  list->lineno = lineno;
+  list->decl = decl;
+  list->decl_list = decl_list;
+  return list;
 }
 
 TERM *makeTERMnull(){
-  //TODO
+  TERM *term;
+  term = (TERM*)Malloc(sizeof(term));
+  term->lineno = lineno;
+  term->kind = nullK;
+  term->val.null = NULL;
+  return term;
 }
 
 ACT_LIST *makeACT_LIST(EXP_LIST *list){
-  //TODO
+  ACT_LIST *act;
+  act = (ACT_LIST*)Malloc(sizeof(act));
+  act->lineno = lineno;
+  act->expList = list;
+  return act;
 }
 EXP_LIST *makeEXP_LIST(EXP *exp, EXP_LIST *list){
-  //TODO
+  EXP_LIST *new;
+  new = (EXP_LIST*)Malloc(sizeof(new));
+  new->lineno = lineno;
+  new->expList = list;
+  new->exp = exp;
+  return new;
 }
