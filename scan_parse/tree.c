@@ -24,7 +24,7 @@ HEAD *makeHEAD(char *id, struct PAR_DECL_LIST *pList, struct TYPE *type){
   return head;
 }
 
-BODY *makeBODY(struct VAR_DECL_LIST *vList, struct STATEMENT_LIST *sList){
+BODY *makeBODY( DECL_LIST *vList, STATEMENT_LIST *sList){
   BODY *body;
   body = (BODY*)Malloc(sizeof(body));
   body->lineno = lineno;
@@ -82,7 +82,7 @@ TYPE *makeRECORD(VAR_DECL_LIST *vList){
   type = (TYPE*)Malloc(sizeof(type));
   type->lineno = lineno;
   type->kind = recordK;
-  type->val.vList;
+  type->val.vList = vList;
   return type;
 }
 
@@ -206,7 +206,8 @@ EXP *makeEXPorK(EXP *left, EXP *right){
   return exp;
 }
 
-EXP *makeEXPterm(EXP *term){
+EXP *makeEXPterm(TERM *term){
+    //TODO term stuff
   EXP *exp;
   exp = (EXP*)Malloc(sizeof(exp));
   exp->lineno = lineno;
@@ -214,7 +215,7 @@ EXP *makeEXPterm(EXP *term){
   return exp;
 }
 
-TERM *makeTERMvar(char *var){
+TERM *makeTERMvar(VARIABLE *var){
   TERM *term;
   term = (TERM*)Malloc(sizeof(term));
   term->lineno = lineno;
@@ -223,12 +224,13 @@ TERM *makeTERMvar(char *var){
   return term;
 }
 
-TERM *makeTERMact_list(ACT_LIST *id){
+TERM *makeTERMact_list(char * id, ACT_LIST *list){
+    //TODO possibly stuff
   TERM *term;
   term = (TERM*)Malloc(sizeof(term));
   term->lineno = lineno;
   term->kind = idTermK;
-  term->val.id = id;
+  term->val.id = list;
   return term;
 }
 
@@ -259,7 +261,7 @@ TERM *makeTERMexpCard(EXP *expCard){
   return term;
 }
 
-TERM *makeTERMnum(int *num){
+TERM *makeTERMnum(int num){
   TERM *term;
   term = (TERM*)Malloc(sizeof(term));
   term->lineno = lineno;
@@ -313,12 +315,13 @@ STATEMENT *makeSTMallocate(VARIABLE *allocate){
   return stm;
 }
 
-STATEMENT *makeSTMallocateLength(VARIABLE *allocateLength){
+STATEMENT *makeSTMallocateLength(VARIABLE *var, EXP *exp){
+    //TODO do stuff with exp
   STATEMENT *stm;
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
   stm->kind = allocateLengthK;
-  stm->val.allocateLength = allocateLength;
+  stm->val.allocateLength = var;
   return stm;
 }
 

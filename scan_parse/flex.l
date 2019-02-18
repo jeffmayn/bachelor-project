@@ -1,7 +1,8 @@
 %{
 #include <stdio.h>
 #include "y.tab.h"
-extern int lineno = 0;
+#include <string.h>
+extern int lineno;
 /*int linePos = 0;*/
 %}
 

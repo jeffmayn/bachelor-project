@@ -1,7 +1,7 @@
 #include "tree.h"
 //#include "pretty.h"
 
-int lineno;
+int lineno = 0;
 
 void yyparse();
 

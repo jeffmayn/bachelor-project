@@ -18,7 +18,7 @@ typedef struct HEAD {
 
 typedef struct BODY {
   int lineno;
-  struct VAR_DECL_LIST *vList;
+  struct DECL_LIST *vList;
   struct STATEMENT_LIST *sList;
 } BODY;
 
@@ -68,12 +68,12 @@ typedef struct TERM {
   int lineno;
   enum {varK, idTermK, expK, notTermK, expCardK, numK, trueK, falseK, nullK} kind;
   union {
-    char *var;
+    struct VARIABLE *var; //changed from char*
     struct ACT_LIST * id;
     struct EXP *exp;
     struct TERM *notTerm;
     struct EXP *expCard;
-    int *num;
+    int num; //changed to int from *int
     bool *true;
     bool *false;
   } val;
