@@ -48,11 +48,57 @@ typedef struct VAR_DECL_LIST {
   struct VAR_DECL_LIST *vList;
 } VAR_DECL_LIST;
 
+typedef struct VAR_TYPE {
+  int lineno;
+  char *id;
+  struct TYPE *type;
+} VAR_TYPE;
+
+typedef struct DECL_LIST {
+  int lineno;
+  struct DECLARATION *decl;
+  struct DECL_LIST *decl_list;
+} DECL_LIST;
+
+typedef struct DECLARATION {
+  int lineno;
+  union {
+    struct {char *id; TYPE *type;} id;
+    struct FUNCTION *func;
+    struct VAR_DECL_LIST *list;
+  } val;
+} DECLARATION;
+
 typedef struct STATEMENT_LIST {
   int lineno;
   struct STATEMENT_LIST *statementList;
   struct STATEMENT *statement;
 } STATEMENT_LIST;
+
+typedef struct STATEMENT {
+  int lineno;
+  enum {returnK, writeK, allocateK, allocateLengthK, ifK, thenK, elseK,\
+        whileK, doK, listK} kind;
+  union {
+    struct EXP *return_;
+    struct EXP *write;
+    struct VARIABLE *allocate;
+    struct {VARIABLE *var; EXP *exp;} allocatelength;
+    struct {struct EXP *cond; struct STATEMENT *thenbody; struct STATEMENT *elsebody;} ifthenelse;
+    struct {struct EXP *cond; struct STATEMENT *body;} while_;
+    struct STATEMENT_LIST *list;
+  } val;
+} STATEMENT;
+
+typedef struct VARIABLE {
+  int lineno;
+  enum {idK, expK, dotK} kind;
+  union {
+    char *id;
+    struct {struct VARIABLE *var; struct EXP *exp;} varexp;
+    struct {struct VARIABLE *var; char *id} vardot;
+  } val;
+} VARIABLE;
 
 typedef struct EXP {
   int lineno;
@@ -91,51 +137,6 @@ typedef struct EXP_LIST {
   struct EXP *exp;
   struct EXP_LIST *expList;
 } EXP_LIST;
-
-typedef struct VARIABLE {
-  int lineno;
-  union {
-    char *id;
-    struct VARIABLE *var;
-    struct EXP *exp;
-  } val;
-} VARIABLE;
-
-typedef struct VAR_TYPE {
-  int lineno;
-  char *id;
-  struct TYPE *type;
-} VAR_TYPE;
-
-typedef struct DECLARATION {
-  int lineno;
-  union {
-    struct {char *id; TYPE *type;} id;
-    struct FUNCTION *func;
-    struct VAR_DECL_LIST *list;
-  } val;
-} DECLARATION;
-
-typedef struct STATEMENT {
-  int lineno;
-  enum {returnK, writeK, allocateK, allocateLengthK, ifK, thenK, elseK,\
-        whileK, doK, listK} kind;
-  union {
-    struct EXP *return_;
-    struct EXP *write;
-    struct VARIABLE *allocate;
-    struct {VARIABLE *var; EXP *exp;} allocatelength;
-    struct {struct EXP *cond; struct STATEMENT *thenbody; struct STATEMENT *elsebody;} ifthenelse;
-    struct {struct EXP *cond; struct STATEMENT *body;} while_;
-    struct STATEMENT_LIST *list;
-  } val;
-} STATEMENT;
-
-typedef struct DECL_LIST {
-  int lineno;
-  struct DECLARATION *decl;
-  struct DECL_LIST *decl_list;
-} DECL_LIST;
 
 FUNCTION *makeFUNCTION(HEAD *head, BODY *body, TAIL *tail);
 HEAD *makeHEAD(char *id, PAR_DECL_LIST *pList, TYPE *type);

@@ -472,6 +472,7 @@ STATEMENT_LIST *makeSTM_LISTstmtlist(STATEMENT *stmt, STATEMENT_LIST *list){
 VARIABLE *makeVARIABLEid(char *id){
   VARIABLE *varId;
   varId = (VARIABLE*)Malloc(sizeof(varId));
+  varId->kind = idK;
   varId->lineno = lineno;
   varId->val.id = id;
   return varId;
@@ -479,16 +480,18 @@ VARIABLE *makeVARIABLEid(char *id){
 VARIABLE *makeVARIABLEexp(VARIABLE *var, EXP *exp){
   VARIABLE *varExp;
   varExp = (VARIABLE*)Malloc(sizeof(varExp));
+  varExp->kind = expK;
   varExp->lineno = lineno;
-  varExp->val.var = var;
-  varExp->val.exp = exp;
+  varExp->val.varexp.var = var;
+  varExp->val.varexp.exp = exp;
   return varExp;
 }
 VARIABLE *makeVARIABLEdot(char *id, VARIABLE *var){
   VARIABLE *varDot;
   varDot = (VARIABLE*)Malloc(sizeof(varDot));
+  varDot->kind = dotK;
   varDot->lineno = lineno;
-  varDot->val.id = id;
-  varDot->val.var = var;
+  varDot->val.vardot.id = id;
+  varDot->val.vardot.var = var;
   return varDot;
 }

@@ -1,3 +1,6 @@
+#ifndef __pretty_h
+#define __pretty_h
+
 #include "tree.h"
 
 void prettyEXP(EXP *e);
@@ -20,3 +23,5 @@ void pEXP(EXP *e);
 void pTERM(TERM *t);
 void pACTLIST(ACT_LIST *al);
 void pEXPLIST(EXP_LIST *el);
+
+#endif
