@@ -238,7 +238,7 @@ TERM *makeTERMexp(EXP *exp){
   TERM *term;
   term = (TERM*)Malloc(sizeof(term));
   term->lineno = lineno;
-  term->kind = expK;
+  term->kind = expTermK;
   term->val.exp = exp;
   return term;
 }
@@ -341,7 +341,7 @@ STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_){
   STATEMENT *stm;
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
-  stm->kind = ifK;
+  stm->kind = thenK;
   stm->val.ifthenelse.cond = if_;
   stm->val.ifthenelse.thenbody = then;
   stm->val.ifthenelse.elsebody = else_;
@@ -475,7 +475,7 @@ STATEMENT_LIST *makeSTM_LISTstmtlist(STATEMENT *stmt, STATEMENT_LIST *list){
 VARIABLE *makeVARIABLEid(char *id){
   VARIABLE *varId;
   varId = (VARIABLE*)Malloc(sizeof(varId));
-  varId->kind = idK;
+  varId->kind = idVarK;
   varId->lineno = lineno;
   varId->val.id = id;
   return varId;

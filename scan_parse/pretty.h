@@ -3,9 +3,6 @@
 
 #include "tree.h"
 
-void prettyEXP(EXP *e);
-
-
 void pFUNC(FUNCTION *f);
 void pHEAD(HEAD *h);
 void pBODY(BODY *b);

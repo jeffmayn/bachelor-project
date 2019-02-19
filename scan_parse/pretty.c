@@ -60,7 +60,7 @@ void pTYPE(TYPE *t){
         break;
     case recordK:
         printf("(");
-        printf("%record of ");
+        printf("record of ");
         pVARDECLLIST(t->val.vList);
         printf(")");
         break;
@@ -109,8 +109,8 @@ void pDECL(DECLARATION *d){
   printf("(");
   switch(d->kind){
     case idDeclK:
-      printf("type %s = ", d->val.id);
-      pTYPE(d->val.type);
+      printf("type %s = ", d->val.id.id);
+      pTYPE(d->val.id.type);
     break;
     case funcK:
       pFUNC(d->val.func);
@@ -126,8 +126,13 @@ void pDECL(DECLARATION *d){
 
 //FØRST TIL MØLLE
 void pSTMTLIST(STATEMENT_LIST *sl){
-  printf("(%s)", sl->statement);
-  printf(" (%s)", sl->statementList);
+  printf("(");
+  pSTMT(sl->statement);
+  if(sl->statementList != NULL){
+    printf(" ");
+    pSTMTLIST(sl->statementList);
+  }
+  printf(")");
 }
 
 void pSTMT(STATEMENT *s){
@@ -148,7 +153,7 @@ void pSTMT(STATEMENT *s){
       printf("allocate ");
       pVARIABLE(s->val.allocatelength.var);
       printf(" of length ");
-      pEXP(s->allocatelength.exp);
+      pEXP(s->val.allocatelength.exp);
       break;
     case assiK:
       pVARIABLE(s->val.allocatelength.var);
@@ -160,14 +165,14 @@ void pSTMT(STATEMENT *s){
       pEXP(s->val.ifthenelse.cond);
       printf(")\n");
       printf(" then\n");
-      pTERM(s->val.ifthenelse.thenbody);
+      pSTMT(s->val.ifthenelse.thenbody);
       break;
     case thenK:
       printf("if ");
       pEXP(s->val.ifthenelse.cond);
       printf(")\n");
       printf("then\n");
-      pSTMT(s->ifthenelse.thenbody);
+      pSTMT(s->val.ifthenelse.thenbody);
       printf("\nelse\n");
       pSTMT(s->val.ifthenelse.elsebody);
       break;
@@ -175,7 +180,7 @@ void pSTMT(STATEMENT *s){
       printf("while(");
       pEXP(s->val.while_.cond);
       printf(") do\n");
-      pTERM(s->val.while_.body);
+      pSTMT(s->val.while_.body);
       break;
     case listStmtK:
       printf("{");
@@ -191,7 +196,7 @@ void pSTMT(STATEMENT *s){
 void pVARIABLE(VARIABLE *v){
   printf("(");
   switch(v->kind){
-    case idK:
+    case idVarK:
       printf("%s", v->val.id);
       //printf("%*s%s", INDENT, "", v->val.id);
       break;
@@ -206,7 +211,7 @@ void pVARIABLE(VARIABLE *v){
       //call print var print dot print id
       pVARIABLE(v->val.vardot.var);
       printf(".");
-      pVARIABLE(v->val.vardot.id);
+      printf("%s", v->val.vardot.id);
       break;
   }
   printf(")");
@@ -219,7 +224,7 @@ void pEXP(EXP *e){
       pTERM(e->val.term);
       break;
     default:
-      pEXP(e->binOP.left);
+      pEXP(e->val.binOP.left);
       switch(e->kind){
         case minusK:
           printf("-");
@@ -257,8 +262,10 @@ void pEXP(EXP *e){
         case orK:
           printf("||");
           break;
+        default:
+          break;
       }
-      pEXP(e->binOP.right);
+      pEXP(e->val.binOP.right);
       break;
   }
   printf(")");
@@ -271,11 +278,11 @@ void pTERM(TERM *t){
       pVARIABLE(t->val.var);
       break;
     case idTermK:
-      printf("%s(", t->idact.id);
-      pACTLIST(t->idact.list);
+      printf("%s(", t->val.idact.id);
+      pACTLIST(t->val.idact.list);
       printf(")");
       break;
-    case expK:
+    case expTermK:
       printf("(");
       pEXP(t->val.exp);
       printf(")");

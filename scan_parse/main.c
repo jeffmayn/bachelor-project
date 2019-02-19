@@ -1,15 +1,15 @@
 #include "tree.h"
-//#include "pretty.h"
+#include "pretty.h"
 
 int lineno = 0;
 
 void yyparse();
 
-EXP *theexpression;
+BODY *theexpression;
 
 int main()
 { lineno = 1;
   yyparse();
-//  prettyEXP(theexpression);
+  pBODY(theexpression);
   return 0;
 }

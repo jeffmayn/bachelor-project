@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -std=c11 -Wall -Wextra -pedantic
+CFLAGS = -std=c11 -Wall -Wextra -pedantic -g
 
 
 main:	y.tab.o lex.yy.o main.o tree.h tree.o pretty.h pretty.o memory.h memory.o

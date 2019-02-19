@@ -78,14 +78,14 @@ typedef struct STATEMENT_LIST {
 
 typedef struct STATEMENT {
   int lineno;
-  enum {returnK, writeK, allocateK, allocateLengthK, assiK, ifK, thenK, elseK,\
+  enum {returnK, writeK, allocateK, allocateLengthK, assiK, ifK, thenK,\
         whileK, listStmtK} kind;
   union {
     struct EXP *return_;
     struct EXP *write;
     struct VARIABLE *allocate;
-    struct {VARIABLE *var; EXP *exp;} allocatelength;
-    struct {VARIABLE *var; EXP *exp;} assign;
+    struct {struct VARIABLE *var; struct EXP *exp;} allocatelength;
+    struct {struct VARIABLE *var; struct EXP *exp;} assign;
     struct {struct EXP *cond; struct STATEMENT *thenbody; struct STATEMENT *elsebody;} ifthenelse;
     struct {struct EXP *cond; struct STATEMENT *body;} while_;
     struct STATEMENT_LIST *list;
@@ -94,17 +94,17 @@ typedef struct STATEMENT {
 
 typedef struct VARIABLE {
   int lineno;
-  enum {idK, expK, dotK} kind;
+  enum {idVarK, expK, dotK} kind;
   union {
     char *id;
     struct {struct VARIABLE *var; struct EXP *exp;} varexp;
-    struct {struct VARIABLE *var; char *id} vardot;
+    struct {struct VARIABLE *var; char *id;} vardot;
   } val;
 } VARIABLE;
 
 typedef struct EXP {
   int lineno;
-  enum {binOPK, termK, minusK, plusK, timesK, divK,\
+  enum {termK, minusK, plusK, timesK, divK,\
         leK, eqK, geK, greatK, lessK, neK, andK, orK} kind;
   union {
     struct {struct EXP *left; struct EXP *right;} binOP;
@@ -114,7 +114,7 @@ typedef struct EXP {
 
 typedef struct TERM {
   int lineno;
-  enum {varK, idTermK, expK, notTermK, expCardK, numK, trueK, falseK, nullK} kind;
+  enum {varK, idTermK, expTermK, notTermK, expCardK, numK, trueK, falseK, nullK} kind;
   union {
     struct {char *id; struct ACT_LIST *list;} idact;
     struct VARIABLE *var; //changed from char*
