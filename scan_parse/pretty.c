@@ -24,11 +24,12 @@ void pHEAD(HEAD *h){
 }
 
 void pBODY(BODY *b){
-  printf("(");
+  printf("body(\n");
+  printf("%p\n", b->vList);
   pDECLLIST(b->vList);
-  printf(" ");
+  printf(" body");
   pSTMTLIST(b->sList);
-  printf(")");
+  printf(")\n");
 }
 
 void pTAIL(TAIL *t){
@@ -95,16 +96,22 @@ void pVARTYPE(VAR_TYPE *vt){
 }
 
 void pDECLLIST(DECL_LIST *dl){
-  printf("(");
-  pDECL(dl->decl);
-  if(dl->decl_list == NULL){
+  printf("(pdecllist\n");
+  if(dl != NULL){
+    printf("Am %p\n", dl);
+    if(dl->decl != NULL){
+      printf("Am i inside hereeeeeeeeeeeeeeeeeeeeeeeeee?!?!?\n");
+      pDECL(dl->decl);
+    }
+    printf("Am i inside her?!?!?\n");
     pDECLLIST(dl->decl_list);
   }
-  printf(")");
+  printf(")\n");
 }
 
 void pDECL(DECLARATION *d){
   INDENT += 2;
+  printf("(pdecl\n");
   printf("\n%*s", INDENT, "");
   printf("(");
   switch(d->kind){
