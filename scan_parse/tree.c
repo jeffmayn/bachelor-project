@@ -397,6 +397,7 @@ DECLARATION *makeDECLid(char *id, TYPE *type){
   DECLARATION *decl;
   decl = (DECLARATION*)Malloc(sizeof(decl));
   decl->lineno = lineno;
+  decl->kind = idK;
   decl->val.id.id = id;
   decl->val.id.type = type;
   return decl;
@@ -406,6 +407,7 @@ DECLARATION *makeDECLfunc(FUNCTION *func){
   DECLARATION *decl;
   decl = (DECLARATION*)Malloc(sizeof(decl));
   decl->lineno = lineno;
+  decl->kind = funcK;
   decl->val.func = func;
   return decl;
 }
@@ -413,6 +415,7 @@ DECLARATION *makeDECLlist(VAR_DECL_LIST *list){
   DECLARATION *decl;
   decl = (DECLARATION*)Malloc(sizeof(decl));
   decl->lineno = lineno;
+  decl->kind = lsitK;
   decl->val.list = list;
   return decl;
 }

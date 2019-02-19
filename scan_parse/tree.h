@@ -109,6 +109,7 @@ typedef struct VAR_TYPE {
 
 typedef struct DECLARATION {
   int lineno;
+  enum {idK, funcK, listK} kind;
   union {
     struct {char *id; TYPE *type;} id;
     struct FUNCTION *func;
@@ -119,7 +120,7 @@ typedef struct DECLARATION {
 typedef struct STATEMENT {
   int lineno;
   enum {returnK, writeK, allocateK, allocateLengthK, ifK, thenK, elseK,\
-        whileK, doK, listK} kind;
+        whileK, listK} kind;
   union {
     struct EXP *return_;
     struct EXP *write;
