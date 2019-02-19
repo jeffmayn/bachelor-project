@@ -62,6 +62,7 @@ typedef struct DECL_LIST {
 
 typedef struct DECLARATION {
   int lineno;
+  enum {idDeclK, funcK, listK} kind;
   union {
     struct {char *id; TYPE *type;} id;
     struct FUNCTION *func;
@@ -77,13 +78,14 @@ typedef struct STATEMENT_LIST {
 
 typedef struct STATEMENT {
   int lineno;
-  enum {returnK, writeK, allocateK, allocateLengthK, ifK, thenK, elseK,\
-        whileK, doK, listK} kind;
+  enum {returnK, writeK, allocateK, allocateLengthK, assiK, ifK, thenK, elseK,\
+        whileK, listStmtK} kind;
   union {
     struct EXP *return_;
     struct EXP *write;
     struct VARIABLE *allocate;
     struct {VARIABLE *var; EXP *exp;} allocatelength;
+    struct {VARIABLE *var; EXP *exp;} assign;
     struct {struct EXP *cond; struct STATEMENT *thenbody; struct STATEMENT *elsebody;} ifthenelse;
     struct {struct EXP *cond; struct STATEMENT *body;} while_;
     struct STATEMENT_LIST *list;

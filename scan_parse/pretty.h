@@ -12,7 +12,7 @@ void pBODY(BODY *b);
 void pTAIL(TAIL *t);
 void pTYPE(TYPE *t);
 void pPARDECLLIST(PAR_DECL_LIST *pdl);
-void pVARDECLLIST(VARDECLLIST *vdl);
+void pVARDECLLIST(VAR_DECL_LIST *vdl);
 void pVARTYPE(VAR_TYPE *vt);
 void pDECLLIST(DECL_LIST *dl);
 void pDECL(DECLARATION *d);
