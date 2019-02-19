@@ -362,7 +362,7 @@ STATEMENT *makeSTMlist(STATEMENT_LIST *list){
   STATEMENT *stm;
   stm = (STATEMENT*)Malloc(sizeof(stm));
   stm->lineno = lineno;
-  stm->kind = listK;
+  stm->kind = listStmtK;
   stm->val.list = list;
   return stm;
 }
@@ -397,7 +397,7 @@ DECLARATION *makeDECLid(char *id, TYPE *type){
   DECLARATION *decl;
   decl = (DECLARATION*)Malloc(sizeof(decl));
   decl->lineno = lineno;
-  decl->kind = idK;
+  decl->kind = idDeclK;
   decl->val.id.id = id;
   decl->val.id.type = type;
   return decl;
@@ -415,7 +415,7 @@ DECLARATION *makeDECLlist(VAR_DECL_LIST *list){
   DECLARATION *decl;
   decl = (DECLARATION*)Malloc(sizeof(decl));
   decl->lineno = lineno;
-  decl->kind = lsitK;
+  decl->kind = listK;
   decl->val.list = list;
   return decl;
 }
@@ -458,9 +458,9 @@ STATEMENT *makeSTMassign(VARIABLE *var, EXP *exp){
   STATEMENT *ass; // sorry :-P
   ass = (STATEMENT*)Malloc(sizeof(ass));
   ass->lineno = lineno;
-  ass->kind = allocateLengthK; // måske ændre navnet i vores typedef struct?
-  ass->val.allocatelength.var = var;
-  ass->val.allocatelength.exp = exp;
+  ass->kind = assiK; // måske ændre navnet i vores typedef struct?
+  ass->val.assign.var = var;
+  ass->val.assign.exp = exp;
   return ass;
 }
 
