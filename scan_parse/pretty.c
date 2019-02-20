@@ -160,7 +160,7 @@ void pSTMT(STATEMENT *s){
       pEXP(s->val.ifthenelse.cond);
       printf(") then(\n");
       pSTMT(s->val.ifthenelse.thenbody);
-      printf("\n)");
+      printf("\n)\n");
       break;
     case thenK:
       printf("if(");
@@ -169,14 +169,14 @@ void pSTMT(STATEMENT *s){
       pSTMT(s->val.ifthenelse.thenbody);
       printf(")\nelse(\n");
       pSTMT(s->val.ifthenelse.elsebody);
-      printf(")");
+      printf("\n)\n");
       break;
     case whileK:
       printf("while(");
       pEXP(s->val.while_.cond);
       printf(") do (\n");
       pSTMT(s->val.while_.body);
-      printf(")");
+      printf("\n)\n");
       break;
     case listStmtK:
       printf("{");

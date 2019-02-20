@@ -1,25 +1,24 @@
 (*Declaration list*)
-allocate x of length 122-3*2;
-allocate y of length |x|;
 type Node = record of {
-  data : int
-  leaf : bool
-  left : node
-  right : node
-}
+  data : int ,
+  leaf : bool,
+  left : Node,
+  right : Node
+};
 
-func trav(Node n){
+func trav (n : Node): int
   if n.leaf == false
   then
-    return n.left;
+    return n.data;
   else
     return trav(n.right);
-}
+end trav
 
 var node : Node;
 
 
-
 (*statement list*)
+allocate x of length 122-3*2;
+allocate y of length |x|;
 node = null;
 x[7] = trav(node);
