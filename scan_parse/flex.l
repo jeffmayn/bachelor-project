@@ -3,6 +3,7 @@
 #include "y.tab.h"
 #include <string.h>
 extern int lineno;
+int nestedcomments = 0;
 /*int linePos = 0;*/
 %}
 
@@ -20,6 +21,7 @@ extern int lineno;
 <INITIAL>"<"    { return tLESS;}
 <INITIAL>">"    { return tGREAT;}
 <INITIAL>"&&"   { return tAND;}
+<INITIAL>" || " { return tOR;/*her kan der gøres noget smartere måske!*/}
 
 <INITIAL>"="    { return tASSI;}
 
@@ -71,12 +73,14 @@ extern int lineno;
 
 
 <INITIAL>[ \t\r]  /*ignore*/
-<INITIAL>"(*"     { BEGIN COMMENT;}
+<INITIAL>"(*"     { nestedcomments++; BEGIN COMMENT;}
 <INITIAL>#        { BEGIN ONELINECOMMENT;}
 <INITIAL>\n       { lineno++;}
 <INITIAL>.        /*TODO errors*/
 
-<COMMENT>"*)"     { BEGIN INITIAL;}
+<COMMENT>"(*"   { nestedcomments++;}
+<COMMENT>"*)"   { nestedcomments--;
+                  if(nestedcomments==0){BEGIN INITIAL;}}
 <COMMENT>\n     { lineno++;}
 <COMMENT>.      /*ignore*/
 
