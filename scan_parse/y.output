@@ -1,4 +1,4 @@
-Grammar
+Grammatik
 
     0 $accept: program $end
 
@@ -82,7 +82,7 @@ Grammar
    61         | exp tCOM exp_list
 
 
-Terminals, with rules where they appear
+Terminaler, med regler hvor de forekommer
 
 $end (0) 0
 error (256)
@@ -137,182 +137,183 @@ tSEMI (305) 18 20 23 24 25 26 27
 tMOD (306) 38
 
 
-Nonterminals, with rules where they appear
+Ikke-terminaler, med regler hvor de forekommer
 
 $accept (52)
-    on left: 0
+    til venstre: 0
 program (53)
-    on left: 1, on right: 0
+    til venstre: 1, til højre: 0
 func (54)
-    on left: 2, on right: 19
+    til venstre: 2, til højre: 19
 head (55)
-    on left: 3, on right: 2
+    til venstre: 3, til højre: 2
 body (56)
-    on left: 4, on right: 1 2
+    til venstre: 4, til højre: 1 2
 tail (57)
-    on left: 5, on right: 2
+    til venstre: 5, til højre: 2
 type (58)
-    on left: 6 7 8 9 10, on right: 3 9 15 18
+    til venstre: 6 7 8 9 10, til højre: 3 9 15 18
 par_decl_list (59)
-    on left: 11 12, on right: 3
+    til venstre: 11 12, til højre: 3
 var_decl_list (60)
-    on left: 13 14, on right: 10 11 13 20
+    til venstre: 13 14, til højre: 10 11 13 20
 var_type (61)
-    on left: 15, on right: 13 14
+    til venstre: 15, til højre: 13 14
 decl_list (62)
-    on left: 16 17, on right: 4 17
+    til venstre: 16 17, til højre: 4 17
 decl (63)
-    on left: 18 19 20, on right: 17
+    til venstre: 18 19 20, til højre: 17
 stmt_list (64)
-    on left: 21 22, on right: 4 22 31
+    til venstre: 21 22, til højre: 4 22 31
 stmt (65)
-    on left: 23 24 25 26 27 28 29 30 31, on right: 21 22 28 29 30
+    til venstre: 23 24 25 26 27 28 29 30 31, til højre: 21 22 28 29
+    30
 var (66)
-    on left: 32 33 34, on right: 25 26 27 33 34 49
+    til venstre: 32 33 34, til højre: 25 26 27 33 34 49
 exp (67)
-    on left: 35 36 37 38 39 40 41 42 43 44 45 46 47 48, on right: 23
-    24 26 27 28 29 30 33 35 36 37 38 39 40 41 42 43 44 45 46 47 51
-    53 60 61
+    til venstre: 35 36 37 38 39 40 41 42 43 44 45 46 47 48, til højre:
+    23 24 26 27 28 29 30 33 35 36 37 38 39 40 41 42 43 44 45 46 47
+    51 53 60 61
 term (68)
-    on left: 49 50 51 52 53 54 55 56 57, on right: 48 52
+    til venstre: 49 50 51 52 53 54 55 56 57, til højre: 48 52
 act_list (69)
-    on left: 58 59, on right: 50
+    til venstre: 58 59, til højre: 50
 exp_list (70)
-    on left: 60 61, on right: 58 61
+    til venstre: 60 61, til højre: 58 61
 
 
 State 0
 
     0 $accept: . program $end
 
-    tTYPE  shift, and go to state 1
-    tVAR   shift, and go to state 2
-    tFUNC  shift, and go to state 3
+    tTYPE  skift, og gå til tilstand 1
+    tVAR   skift, og gå til tilstand 2
+    tFUNC  skift, og gå til tilstand 3
 
-    $default  reduce using rule 16 (decl_list)
+    $default  reducér med regel 16 (decl_list)
 
-    program    go to state 4
-    func       go to state 5
-    head       go to state 6
-    body       go to state 7
-    decl_list  go to state 8
-    decl       go to state 9
+    program    gå til tilstand 4
+    func       gå til tilstand 5
+    head       gå til tilstand 6
+    body       gå til tilstand 7
+    decl_list  gå til tilstand 8
+    decl       gå til tilstand 9
 
 
 State 1
 
    18 decl: tTYPE . tID tASSI type tSEMI
 
-    tID  shift, and go to state 10
+    tID  skift, og gå til tilstand 10
 
 
 State 2
 
    20 decl: tVAR . var_decl_list tSEMI
 
-    tID  shift, and go to state 11
+    tID  skift, og gå til tilstand 11
 
-    var_decl_list  go to state 12
-    var_type       go to state 13
+    var_decl_list  gå til tilstand 12
+    var_type       gå til tilstand 13
 
 
 State 3
 
     3 head: tFUNC . tID tLPAR par_decl_list tRPAR tCOL type
 
-    tID  shift, and go to state 14
+    tID  skift, og gå til tilstand 14
 
 
 State 4
 
     0 $accept: program . $end
 
-    $end  shift, and go to state 15
+    $end  skift, og gå til tilstand 15
 
 
 State 5
 
    19 decl: func .
 
-    $default  reduce using rule 19 (decl)
+    $default  reducér med regel 19 (decl)
 
 
 State 6
 
     2 func: head . body tail
 
-    tTYPE  shift, and go to state 1
-    tVAR   shift, and go to state 2
-    tFUNC  shift, and go to state 3
+    tTYPE  skift, og gå til tilstand 1
+    tVAR   skift, og gå til tilstand 2
+    tFUNC  skift, og gå til tilstand 3
 
-    $default  reduce using rule 16 (decl_list)
+    $default  reducér med regel 16 (decl_list)
 
-    func       go to state 5
-    head       go to state 6
-    body       go to state 16
-    decl_list  go to state 8
-    decl       go to state 9
+    func       gå til tilstand 5
+    head       gå til tilstand 6
+    body       gå til tilstand 16
+    decl_list  gå til tilstand 8
+    decl       gå til tilstand 9
 
 
 State 7
 
     1 program: body .
 
-    $default  reduce using rule 1 (program)
+    $default  reducér med regel 1 (program)
 
 
 State 8
 
     4 body: decl_list . stmt_list
 
-    tID      shift, and go to state 17
-    tLCURL   shift, and go to state 18
-    tRETURN  shift, and go to state 19
-    tWRITE   shift, and go to state 20
-    tALLOC   shift, and go to state 21
-    tIF      shift, and go to state 22
-    tWHILE   shift, and go to state 23
+    tID      skift, og gå til tilstand 17
+    tLCURL   skift, og gå til tilstand 18
+    tRETURN  skift, og gå til tilstand 19
+    tWRITE   skift, og gå til tilstand 20
+    tALLOC   skift, og gå til tilstand 21
+    tIF      skift, og gå til tilstand 22
+    tWHILE   skift, og gå til tilstand 23
 
-    stmt_list  go to state 24
-    stmt       go to state 25
-    var        go to state 26
+    stmt_list  gå til tilstand 24
+    stmt       gå til tilstand 25
+    var        gå til tilstand 26
 
 
 State 9
 
    17 decl_list: decl . decl_list
 
-    tTYPE  shift, and go to state 1
-    tVAR   shift, and go to state 2
-    tFUNC  shift, and go to state 3
+    tTYPE  skift, og gå til tilstand 1
+    tVAR   skift, og gå til tilstand 2
+    tFUNC  skift, og gå til tilstand 3
 
-    $default  reduce using rule 16 (decl_list)
+    $default  reducér med regel 16 (decl_list)
 
-    func       go to state 5
-    head       go to state 6
-    decl_list  go to state 27
-    decl       go to state 9
+    func       gå til tilstand 5
+    head       gå til tilstand 6
+    decl_list  gå til tilstand 27
+    decl       gå til tilstand 9
 
 
 State 10
 
    18 decl: tTYPE tID . tASSI type tSEMI
 
-    tASSI  shift, and go to state 28
+    tASSI  skift, og gå til tilstand 28
 
 
 State 11
 
    15 var_type: tID . tCOL type
 
-    tCOL  shift, and go to state 29
+    tCOL  skift, og gå til tilstand 29
 
 
 State 12
 
    20 decl: tVAR var_decl_list . tSEMI
 
-    tSEMI  shift, and go to state 30
+    tSEMI  skift, og gå til tilstand 30
 
 
 State 13
@@ -320,92 +321,92 @@ State 13
    13 var_decl_list: var_type . tCOM var_decl_list
    14              | var_type .
 
-    tCOM  shift, and go to state 31
+    tCOM  skift, og gå til tilstand 31
 
-    $default  reduce using rule 14 (var_decl_list)
+    $default  reducér med regel 14 (var_decl_list)
 
 
 State 14
 
     3 head: tFUNC tID . tLPAR par_decl_list tRPAR tCOL type
 
-    tLPAR  shift, and go to state 32
+    tLPAR  skift, og gå til tilstand 32
 
 
 State 15
 
     0 $accept: program $end .
 
-    $default  accept
+    $default  acceptér
 
 
 State 16
 
     2 func: head body . tail
 
-    tEND  shift, and go to state 33
+    tEND  skift, og gå til tilstand 33
 
-    tail  go to state 34
+    tail  gå til tilstand 34
 
 
 State 17
 
    32 var: tID .
 
-    $default  reduce using rule 32 (var)
+    $default  reducér med regel 32 (var)
 
 
 State 18
 
    31 stmt: tLCURL . stmt_list tRCURL
 
-    tID      shift, and go to state 17
-    tLCURL   shift, and go to state 18
-    tRETURN  shift, and go to state 19
-    tWRITE   shift, and go to state 20
-    tALLOC   shift, and go to state 21
-    tIF      shift, and go to state 22
-    tWHILE   shift, and go to state 23
+    tID      skift, og gå til tilstand 17
+    tLCURL   skift, og gå til tilstand 18
+    tRETURN  skift, og gå til tilstand 19
+    tWRITE   skift, og gå til tilstand 20
+    tALLOC   skift, og gå til tilstand 21
+    tIF      skift, og gå til tilstand 22
+    tWHILE   skift, og gå til tilstand 23
 
-    stmt_list  go to state 35
-    stmt       go to state 25
-    var        go to state 26
+    stmt_list  gå til tilstand 35
+    stmt       gå til tilstand 25
+    var        gå til tilstand 26
 
 
 State 19
 
    23 stmt: tRETURN . exp tSEMI
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 45
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 45
+    term  gå til tilstand 46
 
 
 State 20
 
    24 stmt: tWRITE . exp tSEMI
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 47
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 47
+    term  gå til tilstand 46
 
 
 State 21
@@ -413,9 +414,9 @@ State 21
    25 stmt: tALLOC . var tSEMI
    26     | tALLOC . var tOF tLEN exp tSEMI
 
-    tID  shift, and go to state 17
+    tID  skift, og gå til tilstand 17
 
-    var  go to state 48
+    var  gå til tilstand 48
 
 
 State 22
@@ -423,43 +424,43 @@ State 22
    28 stmt: tIF . exp tTHEN stmt
    29     | tIF . exp tTHEN stmt tELSE stmt
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 49
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 49
+    term  gå til tilstand 46
 
 
 State 23
 
    30 stmt: tWHILE . exp tDO stmt
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 50
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 50
+    term  gå til tilstand 46
 
 
 State 24
 
     4 body: decl_list stmt_list .
 
-    $default  reduce using rule 4 (body)
+    $default  reducér med regel 4 (body)
 
 
 State 25
@@ -467,19 +468,19 @@ State 25
    21 stmt_list: stmt .
    22          | stmt . stmt_list
 
-    tID      shift, and go to state 17
-    tLCURL   shift, and go to state 18
-    tRETURN  shift, and go to state 19
-    tWRITE   shift, and go to state 20
-    tALLOC   shift, and go to state 21
-    tIF      shift, and go to state 22
-    tWHILE   shift, and go to state 23
+    tID      skift, og gå til tilstand 17
+    tLCURL   skift, og gå til tilstand 18
+    tRETURN  skift, og gå til tilstand 19
+    tWRITE   skift, og gå til tilstand 20
+    tALLOC   skift, og gå til tilstand 21
+    tIF      skift, og gå til tilstand 22
+    tWHILE   skift, og gå til tilstand 23
 
-    $default  reduce using rule 21 (stmt_list)
+    $default  reducér med regel 21 (stmt_list)
 
-    stmt_list  go to state 51
-    stmt       go to state 25
-    var        go to state 26
+    stmt_list  gå til tilstand 51
+    stmt       gå til tilstand 25
+    var        gå til tilstand 26
 
 
 State 26
@@ -488,100 +489,100 @@ State 26
    33 var: var . tLSQ exp tRSQ
    34    | var . tDOT tID
 
-    tLSQ   shift, and go to state 52
-    tASSI  shift, and go to state 53
-    tDOT   shift, and go to state 54
+    tLSQ   skift, og gå til tilstand 52
+    tASSI  skift, og gå til tilstand 53
+    tDOT   skift, og gå til tilstand 54
 
 
 State 27
 
    17 decl_list: decl decl_list .
 
-    $default  reduce using rule 17 (decl_list)
+    $default  reducér med regel 17 (decl_list)
 
 
 State 28
 
    18 decl: tTYPE tID tASSI . type tSEMI
 
-    tID          shift, and go to state 55
-    tINTTYPE     shift, and go to state 56
-    tBOOLTYPE    shift, and go to state 57
-    tARRAYTYPE   shift, and go to state 58
-    tRECORDTYPE  shift, and go to state 59
+    tID          skift, og gå til tilstand 55
+    tINTTYPE     skift, og gå til tilstand 56
+    tBOOLTYPE    skift, og gå til tilstand 57
+    tARRAYTYPE   skift, og gå til tilstand 58
+    tRECORDTYPE  skift, og gå til tilstand 59
 
-    type  go to state 60
+    type  gå til tilstand 60
 
 
 State 29
 
    15 var_type: tID tCOL . type
 
-    tID          shift, and go to state 55
-    tINTTYPE     shift, and go to state 56
-    tBOOLTYPE    shift, and go to state 57
-    tARRAYTYPE   shift, and go to state 58
-    tRECORDTYPE  shift, and go to state 59
+    tID          skift, og gå til tilstand 55
+    tINTTYPE     skift, og gå til tilstand 56
+    tBOOLTYPE    skift, og gå til tilstand 57
+    tARRAYTYPE   skift, og gå til tilstand 58
+    tRECORDTYPE  skift, og gå til tilstand 59
 
-    type  go to state 61
+    type  gå til tilstand 61
 
 
 State 30
 
    20 decl: tVAR var_decl_list tSEMI .
 
-    $default  reduce using rule 20 (decl)
+    $default  reducér med regel 20 (decl)
 
 
 State 31
 
    13 var_decl_list: var_type tCOM . var_decl_list
 
-    tID  shift, and go to state 11
+    tID  skift, og gå til tilstand 11
 
-    var_decl_list  go to state 62
-    var_type       go to state 13
+    var_decl_list  gå til tilstand 62
+    var_type       gå til tilstand 13
 
 
 State 32
 
     3 head: tFUNC tID tLPAR . par_decl_list tRPAR tCOL type
 
-    tID  shift, and go to state 11
+    tID  skift, og gå til tilstand 11
 
-    $default  reduce using rule 12 (par_decl_list)
+    $default  reducér med regel 12 (par_decl_list)
 
-    par_decl_list  go to state 63
-    var_decl_list  go to state 64
-    var_type       go to state 13
+    par_decl_list  gå til tilstand 63
+    var_decl_list  gå til tilstand 64
+    var_type       gå til tilstand 13
 
 
 State 33
 
     5 tail: tEND . tID
 
-    tID  shift, and go to state 65
+    tID  skift, og gå til tilstand 65
 
 
 State 34
 
     2 func: head body tail .
 
-    $default  reduce using rule 2 (func)
+    $default  reducér med regel 2 (func)
 
 
 State 35
 
    31 stmt: tLCURL stmt_list . tRCURL
 
-    tRCURL  shift, and go to state 66
+    tRCURL  skift, og gå til tilstand 66
 
 
 State 36
 
    54 term: tINT .
 
-    $default  reduce using rule 54 (term)
+    $default  reducér med regel 54 (term)
 
 
 State 37
@@ -589,83 +590,83 @@ State 37
    32 var: tID .
    50 term: tID . tLPAR act_list tRPAR
 
-    tLPAR  shift, and go to state 67
+    tLPAR  skift, og gå til tilstand 67
 
-    $default  reduce using rule 32 (var)
+    $default  reducér med regel 32 (var)
 
 
 State 38
 
    51 term: tLPAR . exp tRPAR
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 68
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 68
+    term  gå til tilstand 46
 
 
 State 39
 
    57 term: tNULL .
 
-    $default  reduce using rule 57 (term)
+    $default  reducér med regel 57 (term)
 
 
 State 40
 
    55 term: tTRUE .
 
-    $default  reduce using rule 55 (term)
+    $default  reducér med regel 55 (term)
 
 
 State 41
 
    56 term: tFALSE .
 
-    $default  reduce using rule 56 (term)
+    $default  reducér med regel 56 (term)
 
 
 State 42
 
    52 term: tNEG . term
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    term  go to state 69
+    var   gå til tilstand 44
+    term  gå til tilstand 69
 
 
 State 43
 
    53 term: tBAR . exp tBAR
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 70
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 70
+    term  gå til tilstand 46
 
 
 State 44
@@ -674,10 +675,10 @@ State 44
    34    | var . tDOT tID
    49 term: var .
 
-    tLSQ  shift, and go to state 52
-    tDOT  shift, and go to state 54
+    tLSQ  skift, og gå til tilstand 52
+    tDOT  skift, og gå til tilstand 54
 
-    $default  reduce using rule 49 (term)
+    $default  reducér med regel 49 (term)
 
 
 State 45
@@ -697,27 +698,27 @@ State 45
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tSEMI   shift, and go to state 83
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tSEMI   skift, og gå til tilstand 83
+    tMOD    skift, og gå til tilstand 84
 
 
 State 46
 
    48 exp: term .
 
-    $default  reduce using rule 48 (exp)
+    $default  reducér med regel 48 (exp)
 
 
 State 47
@@ -737,20 +738,20 @@ State 47
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tSEMI   shift, and go to state 85
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tSEMI   skift, og gå til tilstand 85
+    tMOD    skift, og gå til tilstand 84
 
 
 State 48
@@ -760,10 +761,10 @@ State 48
    33 var: var . tLSQ exp tRSQ
    34    | var . tDOT tID
 
-    tLSQ   shift, and go to state 52
-    tOF    shift, and go to state 86
-    tDOT   shift, and go to state 54
-    tSEMI  shift, and go to state 87
+    tLSQ   skift, og gå til tilstand 52
+    tOF    skift, og gå til tilstand 86
+    tDOT   skift, og gå til tilstand 54
+    tSEMI  skift, og gå til tilstand 87
 
 
 State 49
@@ -784,20 +785,20 @@ State 49
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tTHEN   shift, and go to state 88
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tTHEN   skift, og gå til tilstand 88
+    tMOD    skift, og gå til tilstand 84
 
 
 State 50
@@ -817,176 +818,176 @@ State 50
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tDO     shift, and go to state 89
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tDO     skift, og gå til tilstand 89
+    tMOD    skift, og gå til tilstand 84
 
 
 State 51
 
    22 stmt_list: stmt stmt_list .
 
-    $default  reduce using rule 22 (stmt_list)
+    $default  reducér med regel 22 (stmt_list)
 
 
 State 52
 
    33 var: var tLSQ . exp tRSQ
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 90
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 90
+    term  gå til tilstand 46
 
 
 State 53
 
    27 stmt: var tASSI . exp tSEMI
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 91
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 91
+    term  gå til tilstand 46
 
 
 State 54
 
    34 var: var tDOT . tID
 
-    tID  shift, and go to state 92
+    tID  skift, og gå til tilstand 92
 
 
 State 55
 
     6 type: tID .
 
-    $default  reduce using rule 6 (type)
+    $default  reducér med regel 6 (type)
 
 
 State 56
 
     7 type: tINTTYPE .
 
-    $default  reduce using rule 7 (type)
+    $default  reducér med regel 7 (type)
 
 
 State 57
 
     8 type: tBOOLTYPE .
 
-    $default  reduce using rule 8 (type)
+    $default  reducér med regel 8 (type)
 
 
 State 58
 
     9 type: tARRAYTYPE . tOF type
 
-    tOF  shift, and go to state 93
+    tOF  skift, og gå til tilstand 93
 
 
 State 59
 
    10 type: tRECORDTYPE . tOF tLCURL var_decl_list tRCURL
 
-    tOF  shift, and go to state 94
+    tOF  skift, og gå til tilstand 94
 
 
 State 60
 
    18 decl: tTYPE tID tASSI type . tSEMI
 
-    tSEMI  shift, and go to state 95
+    tSEMI  skift, og gå til tilstand 95
 
 
 State 61
 
    15 var_type: tID tCOL type .
 
-    $default  reduce using rule 15 (var_type)
+    $default  reducér med regel 15 (var_type)
 
 
 State 62
 
    13 var_decl_list: var_type tCOM var_decl_list .
 
-    $default  reduce using rule 13 (var_decl_list)
+    $default  reducér med regel 13 (var_decl_list)
 
 
 State 63
 
     3 head: tFUNC tID tLPAR par_decl_list . tRPAR tCOL type
 
-    tRPAR  shift, and go to state 96
+    tRPAR  skift, og gå til tilstand 96
 
 
 State 64
 
    11 par_decl_list: var_decl_list .
 
-    $default  reduce using rule 11 (par_decl_list)
+    $default  reducér med regel 11 (par_decl_list)
 
 
 State 65
 
     5 tail: tEND tID .
 
-    $default  reduce using rule 5 (tail)
+    $default  reducér med regel 5 (tail)
 
 
 State 66
 
    31 stmt: tLCURL stmt_list tRCURL .
 
-    $default  reduce using rule 31 (stmt)
+    $default  reducér med regel 31 (stmt)
 
 
 State 67
 
    50 term: tID tLPAR . act_list tRPAR
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    $default  reduce using rule 59 (act_list)
+    $default  reducér med regel 59 (act_list)
 
-    var       go to state 44
-    exp       go to state 97
-    term      go to state 46
-    act_list  go to state 98
-    exp_list  go to state 99
+    var       gå til tilstand 44
+    exp       gå til tilstand 97
+    term      gå til tilstand 46
+    act_list  gå til tilstand 98
+    exp_list  gå til tilstand 99
 
 
 State 68
@@ -1006,27 +1007,27 @@ State 68
    47    | exp . tOR exp
    51 term: tLPAR exp . tRPAR
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tRPAR   shift, and go to state 100
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tRPAR   skift, og gå til tilstand 100
+    tMOD    skift, og gå til tilstand 84
 
 
 State 69
 
    52 term: tNEG term .
 
-    $default  reduce using rule 52 (term)
+    $default  reducér med regel 52 (term)
 
 
 State 70
@@ -1046,282 +1047,282 @@ State 70
    47    | exp . tOR exp
    53 term: tBAR exp . tBAR
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tBAR    shift, and go to state 101
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tBAR    skift, og gå til tilstand 101
+    tMOD    skift, og gå til tilstand 84
 
 
 State 71
 
    35 exp: exp tPLUS . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 102
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 102
+    term  gå til tilstand 46
 
 
 State 72
 
    36 exp: exp tMINUS . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 103
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 103
+    term  gå til tilstand 46
 
 
 State 73
 
    37 exp: exp tTIMES . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 104
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 104
+    term  gå til tilstand 46
 
 
 State 74
 
    39 exp: exp tDIV . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 105
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 105
+    term  gå til tilstand 46
 
 
 State 75
 
    40 exp: exp tEQ . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 106
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 106
+    term  gå til tilstand 46
 
 
 State 76
 
    41 exp: exp tNE . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 107
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 107
+    term  gå til tilstand 46
 
 
 State 77
 
    42 exp: exp tLE . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 108
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 108
+    term  gå til tilstand 46
 
 
 State 78
 
    43 exp: exp tGE . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 109
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 109
+    term  gå til tilstand 46
 
 
 State 79
 
    44 exp: exp tLESS . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 110
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 110
+    term  gå til tilstand 46
 
 
 State 80
 
    45 exp: exp tGREAT . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 111
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 111
+    term  gå til tilstand 46
 
 
 State 81
 
    46 exp: exp tAND . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 112
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 112
+    term  gå til tilstand 46
 
 
 State 82
 
    47 exp: exp tOR . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 113
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 113
+    term  gå til tilstand 46
 
 
 State 83
 
    23 stmt: tRETURN exp tSEMI .
 
-    $default  reduce using rule 23 (stmt)
+    $default  reducér med regel 23 (stmt)
 
 
 State 84
 
    38 exp: exp tMOD . exp
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 114
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 114
+    term  gå til tilstand 46
 
 
 State 85
 
    24 stmt: tWRITE exp tSEMI .
 
-    $default  reduce using rule 24 (stmt)
+    $default  reducér med regel 24 (stmt)
 
 
 State 86
 
    26 stmt: tALLOC var tOF . tLEN exp tSEMI
 
-    tLEN  shift, and go to state 115
+    tLEN  skift, og gå til tilstand 115
 
 
 State 87
 
    25 stmt: tALLOC var tSEMI .
 
-    $default  reduce using rule 25 (stmt)
+    $default  reducér med regel 25 (stmt)
 
 
 State 88
@@ -1329,32 +1330,32 @@ State 88
    28 stmt: tIF exp tTHEN . stmt
    29     | tIF exp tTHEN . stmt tELSE stmt
 
-    tID      shift, and go to state 17
-    tLCURL   shift, and go to state 18
-    tRETURN  shift, and go to state 19
-    tWRITE   shift, and go to state 20
-    tALLOC   shift, and go to state 21
-    tIF      shift, and go to state 22
-    tWHILE   shift, and go to state 23
+    tID      skift, og gå til tilstand 17
+    tLCURL   skift, og gå til tilstand 18
+    tRETURN  skift, og gå til tilstand 19
+    tWRITE   skift, og gå til tilstand 20
+    tALLOC   skift, og gå til tilstand 21
+    tIF      skift, og gå til tilstand 22
+    tWHILE   skift, og gå til tilstand 23
 
-    stmt  go to state 116
-    var   go to state 26
+    stmt  gå til tilstand 116
+    var   gå til tilstand 26
 
 
 State 89
 
    30 stmt: tWHILE exp tDO . stmt
 
-    tID      shift, and go to state 17
-    tLCURL   shift, and go to state 18
-    tRETURN  shift, and go to state 19
-    tWRITE   shift, and go to state 20
-    tALLOC   shift, and go to state 21
-    tIF      shift, and go to state 22
-    tWHILE   shift, and go to state 23
+    tID      skift, og gå til tilstand 17
+    tLCURL   skift, og gå til tilstand 18
+    tRETURN  skift, og gå til tilstand 19
+    tWRITE   skift, og gå til tilstand 20
+    tALLOC   skift, og gå til tilstand 21
+    tIF      skift, og gå til tilstand 22
+    tWHILE   skift, og gå til tilstand 23
 
-    stmt  go to state 117
-    var   go to state 26
+    stmt  gå til tilstand 117
+    var   gå til tilstand 26
 
 
 State 90
@@ -1374,20 +1375,20 @@ State 90
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tRSQ    shift, and go to state 118
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tRSQ    skift, og gå til tilstand 118
+    tMOD    skift, og gå til tilstand 84
 
 
 State 91
@@ -1407,61 +1408,61 @@ State 91
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tSEMI   shift, and go to state 119
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tSEMI   skift, og gå til tilstand 119
+    tMOD    skift, og gå til tilstand 84
 
 
 State 92
 
    34 var: var tDOT tID .
 
-    $default  reduce using rule 34 (var)
+    $default  reducér med regel 34 (var)
 
 
 State 93
 
     9 type: tARRAYTYPE tOF . type
 
-    tID          shift, and go to state 55
-    tINTTYPE     shift, and go to state 56
-    tBOOLTYPE    shift, and go to state 57
-    tARRAYTYPE   shift, and go to state 58
-    tRECORDTYPE  shift, and go to state 59
+    tID          skift, og gå til tilstand 55
+    tINTTYPE     skift, og gå til tilstand 56
+    tBOOLTYPE    skift, og gå til tilstand 57
+    tARRAYTYPE   skift, og gå til tilstand 58
+    tRECORDTYPE  skift, og gå til tilstand 59
 
-    type  go to state 120
+    type  gå til tilstand 120
 
 
 State 94
 
    10 type: tRECORDTYPE tOF . tLCURL var_decl_list tRCURL
 
-    tLCURL  shift, and go to state 121
+    tLCURL  skift, og gå til tilstand 121
 
 
 State 95
 
    18 decl: tTYPE tID tASSI type tSEMI .
 
-    $default  reduce using rule 18 (decl)
+    $default  reducér med regel 18 (decl)
 
 
 State 96
 
     3 head: tFUNC tID tLPAR par_decl_list tRPAR . tCOL type
 
-    tCOL  shift, and go to state 122
+    tCOL  skift, og gå til tilstand 122
 
 
 State 97
@@ -1482,50 +1483,50 @@ State 97
    60 exp_list: exp .
    61         | exp . tCOM exp_list
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tCOM    shift, and go to state 123
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tCOM    skift, og gå til tilstand 123
+    tMOD    skift, og gå til tilstand 84
 
-    $default  reduce using rule 60 (exp_list)
+    $default  reducér med regel 60 (exp_list)
 
 
 State 98
 
    50 term: tID tLPAR act_list . tRPAR
 
-    tRPAR  shift, and go to state 124
+    tRPAR  skift, og gå til tilstand 124
 
 
 State 99
 
    58 act_list: exp_list .
 
-    $default  reduce using rule 58 (act_list)
+    $default  reducér med regel 58 (act_list)
 
 
 State 100
 
    51 term: tLPAR exp tRPAR .
 
-    $default  reduce using rule 51 (term)
+    $default  reducér med regel 51 (term)
 
 
 State 101
 
    53 term: tBAR exp tBAR .
 
-    $default  reduce using rule 53 (term)
+    $default  reducér med regel 53 (term)
 
 
 State 102
@@ -1545,16 +1546,16 @@ State 102
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
 
-    $default  reduce using rule 35 (exp)
+    $default  reducér med regel 35 (exp)
 
 
 State 103
@@ -1574,16 +1575,16 @@ State 103
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
 
-    $default  reduce using rule 36 (exp)
+    $default  reducér med regel 36 (exp)
 
 
 State 104
@@ -1603,18 +1604,18 @@ State 104
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
 
-    $default  reduce using rule 37 (exp)
+    $default  reducér med regel 37 (exp)
 
 
 State 105
@@ -1634,18 +1635,18 @@ State 105
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
 
-    $default  reduce using rule 39 (exp)
+    $default  reducér med regel 39 (exp)
 
 
 State 106
@@ -1665,10 +1666,10 @@ State 106
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tAND  shift, and go to state 81
-    tOR   shift, and go to state 82
+    tAND  skift, og gå til tilstand 81
+    tOR   skift, og gå til tilstand 82
 
-    $default  reduce using rule 40 (exp)
+    $default  reducér med regel 40 (exp)
 
 
 State 107
@@ -1688,10 +1689,10 @@ State 107
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tAND  shift, and go to state 81
-    tOR   shift, and go to state 82
+    tAND  skift, og gå til tilstand 81
+    tOR   skift, og gå til tilstand 82
 
-    $default  reduce using rule 41 (exp)
+    $default  reducér med regel 41 (exp)
 
 
 State 108
@@ -1711,12 +1712,12 @@ State 108
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tEQ   shift, and go to state 75
-    tNE   shift, and go to state 76
-    tAND  shift, and go to state 81
-    tOR   shift, and go to state 82
+    tEQ   skift, og gå til tilstand 75
+    tNE   skift, og gå til tilstand 76
+    tAND  skift, og gå til tilstand 81
+    tOR   skift, og gå til tilstand 82
 
-    $default  reduce using rule 42 (exp)
+    $default  reducér med regel 42 (exp)
 
 
 State 109
@@ -1736,12 +1737,12 @@ State 109
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tEQ   shift, and go to state 75
-    tNE   shift, and go to state 76
-    tAND  shift, and go to state 81
-    tOR   shift, and go to state 82
+    tEQ   skift, og gå til tilstand 75
+    tNE   skift, og gå til tilstand 76
+    tAND  skift, og gå til tilstand 81
+    tOR   skift, og gå til tilstand 82
 
-    $default  reduce using rule 43 (exp)
+    $default  reducér med regel 43 (exp)
 
 
 State 110
@@ -1761,12 +1762,12 @@ State 110
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tEQ   shift, and go to state 75
-    tNE   shift, and go to state 76
-    tAND  shift, and go to state 81
-    tOR   shift, and go to state 82
+    tEQ   skift, og gå til tilstand 75
+    tNE   skift, og gå til tilstand 76
+    tAND  skift, og gå til tilstand 81
+    tOR   skift, og gå til tilstand 82
 
-    $default  reduce using rule 44 (exp)
+    $default  reducér med regel 44 (exp)
 
 
 State 111
@@ -1786,12 +1787,12 @@ State 111
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tEQ   shift, and go to state 75
-    tNE   shift, and go to state 76
-    tAND  shift, and go to state 81
-    tOR   shift, and go to state 82
+    tEQ   skift, og gå til tilstand 75
+    tNE   skift, og gå til tilstand 76
+    tAND  skift, og gå til tilstand 81
+    tOR   skift, og gå til tilstand 82
 
-    $default  reduce using rule 45 (exp)
+    $default  reducér med regel 45 (exp)
 
 
 State 112
@@ -1811,9 +1812,9 @@ State 112
    46    | exp tAND exp .
    47    | exp . tOR exp
 
-    tOR  shift, and go to state 82
+    tOR  skift, og gå til tilstand 82
 
-    $default  reduce using rule 46 (exp)
+    $default  reducér med regel 46 (exp)
 
 
 State 113
@@ -1833,7 +1834,7 @@ State 113
    47    | exp . tOR exp
    47    | exp tOR exp .
 
-    $default  reduce using rule 47 (exp)
+    $default  reducér med regel 47 (exp)
 
 
 State 114
@@ -1853,36 +1854,36 @@ State 114
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
 
-    $default  reduce using rule 38 (exp)
+    $default  reducér med regel 38 (exp)
 
 
 State 115
 
    26 stmt: tALLOC var tOF tLEN . exp tSEMI
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var   go to state 44
-    exp   go to state 125
-    term  go to state 46
+    var   gå til tilstand 44
+    exp   gå til tilstand 125
+    term  gå til tilstand 46
 
 
 State 116
@@ -1890,86 +1891,86 @@ State 116
    28 stmt: tIF exp tTHEN stmt .
    29     | tIF exp tTHEN stmt . tELSE stmt
 
-    tELSE  shift, and go to state 126
+    tELSE  skift, og gå til tilstand 126
 
-    $default  reduce using rule 28 (stmt)
+    $default  reducér med regel 28 (stmt)
 
 
 State 117
 
    30 stmt: tWHILE exp tDO stmt .
 
-    $default  reduce using rule 30 (stmt)
+    $default  reducér med regel 30 (stmt)
 
 
 State 118
 
    33 var: var tLSQ exp tRSQ .
 
-    $default  reduce using rule 33 (var)
+    $default  reducér med regel 33 (var)
 
 
 State 119
 
    27 stmt: var tASSI exp tSEMI .
 
-    $default  reduce using rule 27 (stmt)
+    $default  reducér med regel 27 (stmt)
 
 
 State 120
 
     9 type: tARRAYTYPE tOF type .
 
-    $default  reduce using rule 9 (type)
+    $default  reducér med regel 9 (type)
 
 
 State 121
 
    10 type: tRECORDTYPE tOF tLCURL . var_decl_list tRCURL
 
-    tID  shift, and go to state 11
+    tID  skift, og gå til tilstand 11
 
-    var_decl_list  go to state 127
-    var_type       go to state 13
+    var_decl_list  gå til tilstand 127
+    var_type       gå til tilstand 13
 
 
 State 122
 
     3 head: tFUNC tID tLPAR par_decl_list tRPAR tCOL . type
 
-    tID          shift, and go to state 55
-    tINTTYPE     shift, and go to state 56
-    tBOOLTYPE    shift, and go to state 57
-    tARRAYTYPE   shift, and go to state 58
-    tRECORDTYPE  shift, and go to state 59
+    tID          skift, og gå til tilstand 55
+    tINTTYPE     skift, og gå til tilstand 56
+    tBOOLTYPE    skift, og gå til tilstand 57
+    tARRAYTYPE   skift, og gå til tilstand 58
+    tRECORDTYPE  skift, og gå til tilstand 59
 
-    type  go to state 128
+    type  gå til tilstand 128
 
 
 State 123
 
    61 exp_list: exp tCOM . exp_list
 
-    tINT    shift, and go to state 36
-    tID     shift, and go to state 37
-    tLPAR   shift, and go to state 38
-    tNULL   shift, and go to state 39
-    tTRUE   shift, and go to state 40
-    tFALSE  shift, and go to state 41
-    tNEG    shift, and go to state 42
-    tBAR    shift, and go to state 43
+    tINT    skift, og gå til tilstand 36
+    tID     skift, og gå til tilstand 37
+    tLPAR   skift, og gå til tilstand 38
+    tNULL   skift, og gå til tilstand 39
+    tTRUE   skift, og gå til tilstand 40
+    tFALSE  skift, og gå til tilstand 41
+    tNEG    skift, og gå til tilstand 42
+    tBAR    skift, og gå til tilstand 43
 
-    var       go to state 44
-    exp       go to state 97
-    term      go to state 46
-    exp_list  go to state 129
+    var       gå til tilstand 44
+    exp       gå til tilstand 97
+    term      gå til tilstand 46
+    exp_list  gå til tilstand 129
 
 
 State 124
 
    50 term: tID tLPAR act_list tRPAR .
 
-    $default  reduce using rule 50 (term)
+    $default  reducér med regel 50 (term)
 
 
 State 125
@@ -1989,75 +1990,75 @@ State 125
    46    | exp . tAND exp
    47    | exp . tOR exp
 
-    tPLUS   shift, and go to state 71
-    tMINUS  shift, and go to state 72
-    tTIMES  shift, and go to state 73
-    tDIV    shift, and go to state 74
-    tEQ     shift, and go to state 75
-    tNE     shift, and go to state 76
-    tLE     shift, and go to state 77
-    tGE     shift, and go to state 78
-    tLESS   shift, and go to state 79
-    tGREAT  shift, and go to state 80
-    tAND    shift, and go to state 81
-    tOR     shift, and go to state 82
-    tSEMI   shift, and go to state 130
-    tMOD    shift, and go to state 84
+    tPLUS   skift, og gå til tilstand 71
+    tMINUS  skift, og gå til tilstand 72
+    tTIMES  skift, og gå til tilstand 73
+    tDIV    skift, og gå til tilstand 74
+    tEQ     skift, og gå til tilstand 75
+    tNE     skift, og gå til tilstand 76
+    tLE     skift, og gå til tilstand 77
+    tGE     skift, og gå til tilstand 78
+    tLESS   skift, og gå til tilstand 79
+    tGREAT  skift, og gå til tilstand 80
+    tAND    skift, og gå til tilstand 81
+    tOR     skift, og gå til tilstand 82
+    tSEMI   skift, og gå til tilstand 130
+    tMOD    skift, og gå til tilstand 84
 
 
 State 126
 
    29 stmt: tIF exp tTHEN stmt tELSE . stmt
 
-    tID      shift, and go to state 17
-    tLCURL   shift, and go to state 18
-    tRETURN  shift, and go to state 19
-    tWRITE   shift, and go to state 20
-    tALLOC   shift, and go to state 21
-    tIF      shift, and go to state 22
-    tWHILE   shift, and go to state 23
+    tID      skift, og gå til tilstand 17
+    tLCURL   skift, og gå til tilstand 18
+    tRETURN  skift, og gå til tilstand 19
+    tWRITE   skift, og gå til tilstand 20
+    tALLOC   skift, og gå til tilstand 21
+    tIF      skift, og gå til tilstand 22
+    tWHILE   skift, og gå til tilstand 23
 
-    stmt  go to state 131
-    var   go to state 26
+    stmt  gå til tilstand 131
+    var   gå til tilstand 26
 
 
 State 127
 
    10 type: tRECORDTYPE tOF tLCURL var_decl_list . tRCURL
 
-    tRCURL  shift, and go to state 132
+    tRCURL  skift, og gå til tilstand 132
 
 
 State 128
 
     3 head: tFUNC tID tLPAR par_decl_list tRPAR tCOL type .
 
-    $default  reduce using rule 3 (head)
+    $default  reducér med regel 3 (head)
 
 
 State 129
 
    61 exp_list: exp tCOM exp_list .
 
-    $default  reduce using rule 61 (exp_list)
+    $default  reducér med regel 61 (exp_list)
 
 
 State 130
 
    26 stmt: tALLOC var tOF tLEN exp tSEMI .
 
-    $default  reduce using rule 26 (stmt)
+    $default  reducér med regel 26 (stmt)
 
 
 State 131
 
    29 stmt: tIF exp tTHEN stmt tELSE stmt .
 
-    $default  reduce using rule 29 (stmt)
+    $default  reducér med regel 29 (stmt)
 
 
 State 132
 
    10 type: tRECORDTYPE tOF tLCURL var_decl_list tRCURL .
 
-    $default  reduce using rule 10 (type)
+    $default  reducér med regel 10 (type)
