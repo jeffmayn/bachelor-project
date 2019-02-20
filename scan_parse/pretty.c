@@ -15,9 +15,9 @@ void pFUNC(FUNCTION *f){
 
 void pHEAD(HEAD *h){
   fflush(stdout);
-  printf("func %s", h->id);
+  printf("func %s(", h->id);
   pPARDECLLIST(h->pList);
-  printf(":");
+  printf("):");
   pTYPE(h->type);
   printf("\n");
 }
