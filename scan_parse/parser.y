@@ -106,7 +106,7 @@ type :  tID {$$ = makeID($1);}
       | tRECORDTYPE tOF tLCURL var_decl_list tRCURL {$$ = makeRECORD($4);}
 
 par_decl_list : var_decl_list {$$ = makePDL($1);}
-      | {$$ = makePDL(NULL);};//empty string
+      | {$$ = makePDL(NULL);}//empty string
 
 var_decl_list : var_type tCOM var_decl_list {$$ = makeVDL($1,$3);}
       | var_type {$$ = makeVDL($1,NULL);}

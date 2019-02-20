@@ -5,6 +5,7 @@ int INDENT = 0;
 
 //JEFF
 void pFUNC(FUNCTION *f){
+  fflush(stdout);
   pHEAD(f->head);
   //INDENT += 2;
   pBODY(f->body);
@@ -13,6 +14,7 @@ void pFUNC(FUNCTION *f){
 }
 
 void pHEAD(HEAD *h){
+  fflush(stdout);
   printf("func %s", h->id);
   pPARDECLLIST(h->pList);
   printf(":");
@@ -21,17 +23,18 @@ void pHEAD(HEAD *h){
 }
 
 void pBODY(BODY *b){
-  printf("STARTBODY\n");
+  fflush(stdout);
   pDECLLIST(b->vList);
   pSTMTLIST(b->sList);
-  printf("ENDBODY\n");
 }
 
 void pTAIL(TAIL *t){
-  printf("(end %s)", t->id);
+  fflush(stdout);
+  printf("\nend %s", t->id);
 }
 
 void pTYPE(TYPE *t){
+  fflush(stdout);
   switch (t->kind) {
     case idK:
         printf("%s", t->val.id);
@@ -57,13 +60,23 @@ void pTYPE(TYPE *t){
 
 //ANDREAS
 void pPARDECLLIST(PAR_DECL_LIST *pdl){
+  fflush(stdout);
+  //printf("pPARDECLLIST debug1\n");
+  //printf("%p\n", pdl);
+  //printf("%p\n", pdl->vList);
   if(pdl == NULL){
+    //printf("pPARDECLLIST debug2\n");
     return;
   }
-  pVARDECLLIST(pdl->vList);
+  //printf("pPARDECLLIST debug3\n");
+  if(pdl->vList != NULL){
+    pVARDECLLIST(pdl->vList);
+  }
+  //printf("pPARDECLLIST debug4\n");
 }
 
 void pVARDECLLIST(VAR_DECL_LIST *vdl){
+  fflush(stdout);
   pVARTYPE(vdl->vType);
   if(vdl->vList != NULL){
     printf(", ");
@@ -72,11 +85,13 @@ void pVARDECLLIST(VAR_DECL_LIST *vdl){
 }
 
 void pVARTYPE(VAR_TYPE *vt){
+  fflush(stdout);
   printf("%s : ", vt->id);
   pTYPE(vt->type);
 }
 
 void pDECLLIST(DECL_LIST *dl){
+  fflush(stdout);
   if(dl != NULL){
     if(dl->decl != NULL){
       pDECL(dl->decl);
@@ -88,6 +103,7 @@ void pDECLLIST(DECL_LIST *dl){
 
 void pDECL(DECLARATION *d){
   //printf("%*s", INDENT, "", "");
+  fflush(stdout);
   switch(d->kind){
     case idDeclK:
       printf("type %s = ", d->val.id.id);
@@ -105,6 +121,7 @@ void pDECL(DECLARATION *d){
 
 //FØRST TIL MØLLE
 void pSTMTLIST(STATEMENT_LIST *sl){
+  fflush(stdout);
   pSTMT(sl->statement);
   if(sl->statementList != NULL){
     printf("\n");
@@ -113,6 +130,7 @@ void pSTMTLIST(STATEMENT_LIST *sl){
 }
 
 void pSTMT(STATEMENT *s){
+  fflush(stdout);
   switch(s->kind){
     case returnK:
       printf("return ");
@@ -172,6 +190,7 @@ void pSTMT(STATEMENT *s){
 
 //MADS
 void pVARIABLE(VARIABLE *v){
+  fflush(stdout);
   switch(v->kind){
     case idVarK:
       printf("%s", v->val.id);
@@ -194,6 +213,7 @@ void pVARIABLE(VARIABLE *v){
 }
 
 void pEXP(EXP *e){
+  fflush(stdout);
   printf("(");
   switch(e->kind){
     case termK:
@@ -248,6 +268,7 @@ void pEXP(EXP *e){
 }
 
 void pTERM(TERM *t){
+  fflush(stdout);
   switch(t->kind){
     case varK:
       pVARIABLE(t->val.var);
@@ -287,6 +308,7 @@ void pTERM(TERM *t){
 }
 
 void pACTLIST(ACT_LIST *al){
+  fflush(stdout);
   if(al->expList == NULL){
     printf("empty");
   } else {
@@ -295,6 +317,7 @@ void pACTLIST(ACT_LIST *al){
 }
 
 void pEXPLIST(EXP_LIST *el){
+  fflush(stdout);
   pEXP(el->exp);
   if(el->expList == NULL){
     printf("empty");
