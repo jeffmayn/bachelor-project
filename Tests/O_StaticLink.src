@@ -1,0 +1,22 @@
+# Code generation for static link, referencing of a variable for which
+# multiple static links must be followed in sequence
+func func1() : int
+  func func2() : int
+    func func3() : int
+    {
+      i = 10;
+      return 5;
+    }
+    end func3
+  return func3();
+  end func2
+return func2();
+end func1
+
+var i : int;
+
+i = 0;
+write i;
+write func1();
+write i;
+

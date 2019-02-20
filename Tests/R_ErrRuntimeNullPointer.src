@@ -1,0 +1,8 @@
+# Runtime checks, dereferencing a null pointer, should fail if checked
+type a = array of int;
+
+var b : a;
+
+b = null;
+write b[0];
+

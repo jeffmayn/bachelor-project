@@ -1,0 +1,19 @@
+# Runtime checks, allocation of array of negative size,
+# should fail if checked
+func echo(i : int, j : int) : int
+  if ( j == 0 ) then
+    return i;
+  else
+    return echo(i, j-1);
+end echo
+
+type b = array of int;
+var arr1 : b;
+var l : int;
+
+l = echo(0-5,3);
+
+allocate arr1 of length(l);
+
+write |arr1|;
+

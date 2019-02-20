@@ -1,0 +1,29 @@
+# Typecheck, check of symbol table jumping during typecheck
+# The inner types, up and down, should both be array of record of {q : bool}
+# With incorrect table jumping they might be array of bool
+type a = record of { q : bool };
+type b = array of a;
+
+func doMagic() : int
+	type a = bool;
+	type up = b;
+	type down = y;
+	type e = a;
+
+	var vUp : up, vDown : down;
+	var ve : e;
+	ve = false;
+
+	allocate vUp of length 13;
+	allocate vUp[0];	# this should be ok
+	vUp[0].q = ve;		# this should be ok
+	
+	allocate vDown of length 37;
+	allocate vDown[0];	# this should be ok
+	vDown[0].q = ve;	# this should be ok
+
+	return 0;	
+end doMagic
+type y = array of a;
+
+write 42;

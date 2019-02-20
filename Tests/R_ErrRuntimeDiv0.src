@@ -1,0 +1,13 @@
+# Runtime checks, division by zero, should fail if checked
+func echo(i : int, j : int) : int
+  if ( j == 0 ) then
+    return i;
+  else
+    return echo(i, j-1);
+end echo
+
+var dummy : int;
+
+dummy = echo(0,3);
+write 3 / dummy;
+

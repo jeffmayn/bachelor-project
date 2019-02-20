@@ -1,0 +1,18 @@
+# Runtime checks, out of memory, should fail if checked
+type intarr = array of int;
+var arr : intarr;
+var counter : int;
+var dummy : int;
+
+func outOfMem() : int
+  var subArr : intarr;
+  write counter;
+  counter = counter + 1;
+  allocate arr of length 2000;
+  allocate subArr of length 2000;
+  return outOfMem();
+end outOfMem
+
+counter = 0;
+dummy = outOfMem();
+

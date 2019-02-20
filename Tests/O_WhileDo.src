@@ -1,0 +1,16 @@
+# Code generation, simple while loop
+var i: int;
+
+i = 3;
+while i < 3 do {
+   write 9;
+   i = i + 1;
+}
+write 2;
+
+while i <= 4 do {
+   write i;
+   i = i + 1;
+}
+write 2;
+

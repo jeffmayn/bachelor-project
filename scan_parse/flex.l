@@ -20,7 +20,6 @@ extern int lineno;
 <INITIAL>"<"    { return tLESS;}
 <INITIAL>">"    { return tGREAT;}
 <INITIAL>"&&"   { return tAND;}
-<INITIAL>"||"   { return tOR;}
 
 <INITIAL>"="    { return tASSI;}
 

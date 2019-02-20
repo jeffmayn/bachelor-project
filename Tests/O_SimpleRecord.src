@@ -1,0 +1,14 @@
+# Typecheck of records, simple example of use of records
+type recordType = record of {
+                    x: int,
+                    y: int
+                  };
+var p : recordType;
+
+allocate p;
+
+p.x = 1;
+p.y = 2;
+write p.x;
+write p.y;
+write p.x + p.y;
