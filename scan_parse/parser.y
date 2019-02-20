@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include "tree.h"
 
+extern lineno;
 extern char *yytext;
 extern BODY *theexpression; //the root of AST
 
 void yyerror() {
-   printf("syntax error before %s\n",yytext);
+   printf("syntax error before %s, at line %d\n",yytext, lineno);
 }
 %}
 
@@ -112,8 +113,8 @@ var_decl_list : var_type tCOM var_decl_list {$$ = makeVDL($1,$3);}
 
 var_type : tID tCOL type {$$ = makeVAR_TYPE($1,$3);}
 
-decl_list : decl decl_list {$$ = makeDECL_LIST($1,$2);}
-      | {makeDECL_LIST(NULL, NULL);}//empty string
+decl_list : {$$ = makeDECL_LIST(0, 0);}//empty string
+          | decl decl_list {$$ = makeDECL_LIST($1,$2);}
 
 decl :  tTYPE tID tASSI type tSEMI {$$ = makeDECLid($2,$4);}
       | func {$$ = makeDECLfunc($1);}
@@ -133,8 +134,8 @@ stmt :  tRETURN exp tSEMI {$$ = makeSTMreturn($2);}
       | tLCURL stmt_list tRCURL {$$ = makeSTMlist($2);}
 
 var :   tID {$$ = makeVARIABLEid($1);}
-      | var tLSQ exp tRSQ {makeVARIABLEexp($1,$3);}
-      | var tDOT tID {makeVARIABLEdot($3,$1);}
+      | var tLSQ exp tRSQ {$$ = makeVARIABLEexp($1,$3);}
+      | var tDOT tID {$$ = makeVARIABLEdot($3,$1);}
 
 exp :   exp tPLUS exp {$$ = makeEXPplus($1,$3);}
       | exp tMINUS exp {$$ = makeEXPminus($1,$3);}

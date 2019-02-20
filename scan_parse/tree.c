@@ -6,7 +6,7 @@ extern int lineno;
 
 FUNCTION *makeFUNCTION(struct HEAD *head, struct BODY *body, struct TAIL *tail){
   FUNCTION *function;
-  function = (FUNCTION*)Malloc(sizeof(FUNCTION));
+  function = NEW(FUNCTION);
   function->lineno = lineno;
   function->head = head;
   function->body = body;
@@ -16,7 +16,7 @@ FUNCTION *makeFUNCTION(struct HEAD *head, struct BODY *body, struct TAIL *tail){
 
 HEAD *makeHEAD(char *id, struct PAR_DECL_LIST *pList, struct TYPE *type){
   HEAD *head;
-  head = (HEAD*)Malloc(sizeof(HEAD));
+  head = NEW(HEAD);
   head->lineno = lineno;
   head->id = id;
   head->pList = pList;
@@ -26,7 +26,7 @@ HEAD *makeHEAD(char *id, struct PAR_DECL_LIST *pList, struct TYPE *type){
 
 BODY *makeBODY( DECL_LIST *vList, STATEMENT_LIST *sList){
   BODY *body;
-  body = (BODY*)Malloc(sizeof(BODY));
+  body = NEW(BODY);
   body->lineno = lineno;
   body->vList = vList;
   body->sList = sList;
@@ -35,7 +35,7 @@ BODY *makeBODY( DECL_LIST *vList, STATEMENT_LIST *sList){
 
 TAIL *makeTAIL(char *id){
   TAIL *tail;
-  tail = (TAIL*)Malloc(sizeof(TAIL));
+  tail = NEW(TAIL);
   tail->lineno = lineno;
   tail->id = id;
   return tail;
@@ -43,7 +43,7 @@ TAIL *makeTAIL(char *id){
 
 TYPE *makeID(char *id){
   TYPE *type;
-  type = (TYPE*)Malloc(sizeof(TYPE));
+  type = NEW(TYPE);
   type->lineno = lineno;
   type->kind = idK;
   type->val.id = id;
@@ -52,7 +52,7 @@ TYPE *makeID(char *id){
 
 TYPE *makeINT(){
   TYPE *type;
-  type = (TYPE*)Malloc(sizeof(TYPE));
+  type = NEW(TYPE);
   type->lineno = lineno;
   type->kind = intK;
   //type->val.integer = integer;
@@ -61,7 +61,7 @@ TYPE *makeINT(){
 
 TYPE *makeBOOL(){
   TYPE *type;
-  type = (TYPE*)Malloc(sizeof(TYPE));
+  type = NEW(TYPE);
   type->lineno = lineno;
   type->kind = boolK;
   //type->val.bool = bool;
@@ -70,7 +70,7 @@ TYPE *makeBOOL(){
 
 TYPE *makeARRAY(TYPE *typo){
   TYPE *type;
-  type = (TYPE*)Malloc(sizeof(TYPE));
+  type = NEW(TYPE);
   type->lineno = lineno;
   type->kind = arrayK;
   type->val.arrayType = typo;
@@ -79,7 +79,7 @@ TYPE *makeARRAY(TYPE *typo){
 
 TYPE *makeRECORD(VAR_DECL_LIST *vList){
   TYPE *type;
-  type = (TYPE*)Malloc(sizeof(TYPE));
+  type = NEW(TYPE);
   type->lineno = lineno;
   type->kind = recordK;
   type->val.vList = vList;
@@ -88,7 +88,7 @@ TYPE *makeRECORD(VAR_DECL_LIST *vList){
 
 EXP *makeEXPminus(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = minusK;
   exp->val.binOP.left = left;
@@ -98,7 +98,7 @@ EXP *makeEXPminus(EXP *left, EXP *right){
 
 EXP *makeEXPplus(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = plusK;
   exp->val.binOP.left = left;
@@ -108,7 +108,7 @@ EXP *makeEXPplus(EXP *left, EXP *right){
 
 EXP *makeEXPtimes(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = timesK;
   exp->val.binOP.left = left;
@@ -118,7 +118,7 @@ EXP *makeEXPtimes(EXP *left, EXP *right){
 
 EXP *makeEXPdiv(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = divK;
   exp->val.binOP.left = left;
@@ -128,7 +128,7 @@ EXP *makeEXPdiv(EXP *left, EXP *right){
 
 EXP *makeEXPeq(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = eqK;
   exp->val.binOP.left = left;
@@ -138,7 +138,7 @@ EXP *makeEXPeq(EXP *left, EXP *right){
 
 EXP *makeEXPle(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = leK;
   exp->val.binOP.left = left;
@@ -148,7 +148,7 @@ EXP *makeEXPle(EXP *left, EXP *right){
 
 EXP *makeEXPge(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = geK;
   exp->val.binOP.left = left;
@@ -158,7 +158,7 @@ EXP *makeEXPge(EXP *left, EXP *right){
 
 EXP *makeEXPgreat(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = greatK;
   exp->val.binOP.left = left;
@@ -168,7 +168,7 @@ EXP *makeEXPgreat(EXP *left, EXP *right){
 
 EXP *makeEXPless(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = lessK;
   exp->val.binOP.left = left;
@@ -178,7 +178,7 @@ EXP *makeEXPless(EXP *left, EXP *right){
 
 EXP *makeEXPne(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = neK;
   exp->val.binOP.left = left;
@@ -188,7 +188,7 @@ EXP *makeEXPne(EXP *left, EXP *right){
 
 EXP *makeEXPand(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = andK;
   exp->val.binOP.left = left;
@@ -198,7 +198,7 @@ EXP *makeEXPand(EXP *left, EXP *right){
 
 EXP *makeEXPor(EXP *left, EXP *right){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = orK;
   exp->val.binOP.left = left;
@@ -208,7 +208,7 @@ EXP *makeEXPor(EXP *left, EXP *right){
 
 EXP *makeEXPterm(TERM *term){
   EXP *exp;
-  exp = (EXP*)Malloc(sizeof(EXP));
+  exp = NEW(EXP);
   exp->lineno = lineno;
   exp->kind = termK;
   exp->val.term = term;
@@ -217,7 +217,7 @@ EXP *makeEXPterm(TERM *term){
 
 TERM *makeTERMvar(VARIABLE *var){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = varK;
   term->val.var = var;
@@ -226,7 +226,7 @@ TERM *makeTERMvar(VARIABLE *var){
 
 TERM *makeTERMact_list(char * id, ACT_LIST *list){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = idTermK;
   term->val.idact.id = id;
@@ -236,7 +236,7 @@ TERM *makeTERMact_list(char * id, ACT_LIST *list){
 
 TERM *makeTERMexp(EXP *exp){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = expTermK;
   term->val.exp = exp;
@@ -245,7 +245,7 @@ TERM *makeTERMexp(EXP *exp){
 
 TERM *makeTERMnotTerm(TERM *notTerm){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = notTermK;
   term->val.notTerm = notTerm;
@@ -254,7 +254,7 @@ TERM *makeTERMnotTerm(TERM *notTerm){
 
 TERM *makeTERMexpCard(EXP *expCard){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = expCardK;
   term->val.expCard = expCard;
@@ -263,7 +263,7 @@ TERM *makeTERMexpCard(EXP *expCard){
 
 TERM *makeTERMnum(int num){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = numK;
   term->val.num = num;
@@ -272,7 +272,7 @@ TERM *makeTERMnum(int num){
 
 TERM *makeTERMtrue(bool *trueE){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = trueK;
   term->val.true = trueE;
@@ -281,7 +281,7 @@ TERM *makeTERMtrue(bool *trueE){
 
 TERM *makeTERMfalse(bool *falseE){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = falseK;
   term->val.false = falseE;
@@ -290,7 +290,7 @@ TERM *makeTERMfalse(bool *falseE){
 
 STATEMENT *makeSTMreturn(EXP *return_){
   STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  stm = NEW(STATEMENT);
   stm->lineno = lineno;
   stm->kind = returnK;
   stm->val.return_ = return_;
@@ -299,7 +299,7 @@ STATEMENT *makeSTMreturn(EXP *return_){
 
 STATEMENT *makeSTMwrite(EXP *write){
   STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  stm = NEW(STATEMENT);
   stm->lineno = lineno;
   stm->kind = writeK;
   stm->val.write = write;
@@ -308,7 +308,7 @@ STATEMENT *makeSTMwrite(EXP *write){
 
 STATEMENT *makeSTMallocate(VARIABLE *allocate){
   STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  stm = NEW(STATEMENT);
   stm->lineno = lineno;
   stm->kind = allocateK;
   stm->val.allocate = allocate;
@@ -317,7 +317,7 @@ STATEMENT *makeSTMallocate(VARIABLE *allocate){
 
 STATEMENT *makeSTMallocateLength(VARIABLE *var, EXP *exp){
   STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  stm = NEW(STATEMENT);
   stm->lineno = lineno;
   stm->kind = allocateLengthK;
   stm->val.allocatelength.var = var;
@@ -328,7 +328,7 @@ STATEMENT *makeSTMallocateLength(VARIABLE *var, EXP *exp){
 
 STATEMENT *makeSTMif_then(EXP *if_, STATEMENT *then){
   STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  stm = NEW(STATEMENT);
   stm->lineno = lineno;
   stm->kind = ifK;
   stm->val.ifthenelse.cond = if_;
@@ -339,7 +339,7 @@ STATEMENT *makeSTMif_then(EXP *if_, STATEMENT *then){
 
 STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_){
   STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  stm = NEW(STATEMENT);
   stm->lineno = lineno;
   stm->kind = thenK;
   stm->val.ifthenelse.cond = if_;
@@ -350,7 +350,7 @@ STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_){
 
 STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_){
   STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  stm = NEW(STATEMENT);
   stm->lineno = lineno;
   stm->kind = whileK;
   stm->val.while_.cond = while_;
@@ -360,7 +360,7 @@ STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_){
 
 STATEMENT *makeSTMlist(STATEMENT_LIST *list){
   STATEMENT *stm;
-  stm = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  stm = NEW(STATEMENT);
   stm->lineno = lineno;
   stm->kind = listStmtK;
   stm->val.list = list;
@@ -369,7 +369,7 @@ STATEMENT *makeSTMlist(STATEMENT_LIST *list){
 
 PAR_DECL_LIST *makePDL(VAR_DECL_LIST *vList){
   PAR_DECL_LIST *pdl;
-  pdl = (PAR_DECL_LIST*)Malloc(sizeof(PAR_DECL_LIST));
+  pdl = NEW(PAR_DECL_LIST);
   pdl->lineno = lineno;
   pdl->vList = vList;
   return pdl;
@@ -377,7 +377,7 @@ PAR_DECL_LIST *makePDL(VAR_DECL_LIST *vList){
 
 VAR_DECL_LIST *makeVDL(VAR_TYPE *vType, VAR_DECL_LIST *vList){
   VAR_DECL_LIST *vdl;
-  vdl = (VAR_DECL_LIST*)Malloc(sizeof(VAR_DECL_LIST));
+  vdl = NEW(VAR_DECL_LIST);
   vdl->lineno = lineno;
   vdl->vType = vType;
   vdl->vList = vList;
@@ -386,7 +386,7 @@ VAR_DECL_LIST *makeVDL(VAR_TYPE *vType, VAR_DECL_LIST *vList){
 
 VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type){
   VAR_TYPE *vtp;
-  vtp = (VAR_TYPE*)Malloc(sizeof(VAR_TYPE));
+  vtp = NEW(VAR_TYPE);
   vtp->lineno = lineno;
   vtp->id = id;
   vtp->type = type;
@@ -395,7 +395,7 @@ VAR_TYPE *makeVAR_TYPE(char *id, TYPE *type){
 
 DECLARATION *makeDECLid(char *id, TYPE *type){
   DECLARATION *decl;
-  decl = (DECLARATION*)Malloc(sizeof(DECLARATION));
+  decl = NEW(DECLARATION);
   decl->lineno = lineno;
   decl->kind = idDeclK;
   decl->val.id.id = id;
@@ -405,7 +405,7 @@ DECLARATION *makeDECLid(char *id, TYPE *type){
 }
 DECLARATION *makeDECLfunc(FUNCTION *func){
   DECLARATION *decl;
-  decl = (DECLARATION*)Malloc(sizeof(DECLARATION));
+  decl = NEW(DECLARATION);
   decl->lineno = lineno;
   decl->kind = funcK;
   decl->val.func = func;
@@ -413,7 +413,7 @@ DECLARATION *makeDECLfunc(FUNCTION *func){
 }
 DECLARATION *makeDECLlist(VAR_DECL_LIST *list){
   DECLARATION *decl;
-  decl = (DECLARATION*)Malloc(sizeof(DECLARATION));
+  decl = NEW(DECLARATION);
   decl->lineno = lineno;
   decl->kind = listK;
   decl->val.list = list;
@@ -422,7 +422,7 @@ DECLARATION *makeDECLlist(VAR_DECL_LIST *list){
 
 DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list){
   DECL_LIST *list;
-  list = (DECL_LIST*)Malloc(sizeof(DECL_LIST));
+  list = NEW(DECL_LIST);
   list->lineno = lineno;
   list->decl = decl;
   list->decl_list = decl_list;
@@ -431,7 +431,7 @@ DECL_LIST *makeDECL_LIST(DECLARATION *decl, DECL_LIST *decl_list){
 
 TERM *makeTERMnull(){
   TERM *term;
-  term = (TERM*)Malloc(sizeof(TERM));
+  term = NEW(TERM);
   term->lineno = lineno;
   term->kind = nullK;
   term->val.null = NULL;
@@ -440,14 +440,14 @@ TERM *makeTERMnull(){
 
 ACT_LIST *makeACT_LIST(EXP_LIST *list){
   ACT_LIST *act;
-  act = (ACT_LIST*)Malloc(sizeof(ACT_LIST));
+  act = NEW(ACT_LIST);
   act->lineno = lineno;
   act->expList = list;
   return act;
 }
 EXP_LIST *makeEXP_LIST(EXP *exp, EXP_LIST *list){
   EXP_LIST *new;
-  new = (EXP_LIST*)Malloc(sizeof(EXP_LIST));
+  new = NEW(EXP_LIST);
   new->lineno = lineno;
   new->expList = list;
   new->exp = exp;
@@ -456,7 +456,7 @@ EXP_LIST *makeEXP_LIST(EXP *exp, EXP_LIST *list){
 
 STATEMENT *makeSTMassign(VARIABLE *var, EXP *exp){
   STATEMENT *ass; // sorry :-P
-  ass = (STATEMENT*)Malloc(sizeof(STATEMENT));
+  ass = NEW(STATEMENT);
   ass->lineno = lineno;
   ass->kind = assiK; // måske ændre navnet i vores typedef struct?
   ass->val.assign.var = var;
@@ -466,7 +466,7 @@ STATEMENT *makeSTMassign(VARIABLE *var, EXP *exp){
 
 STATEMENT_LIST *makeSTM_LISTstmtlist(STATEMENT *stmt, STATEMENT_LIST *list){
   STATEMENT_LIST *stml;
-  stml = (STATEMENT_LIST*)Malloc(sizeof(STATEMENT_LIST));
+  stml = NEW(STATEMENT_LIST);
   stml->lineno = lineno;
   stml->statement = stmt;
   stml->statementList = list;
@@ -474,7 +474,7 @@ STATEMENT_LIST *makeSTM_LISTstmtlist(STATEMENT *stmt, STATEMENT_LIST *list){
 }
 VARIABLE *makeVARIABLEid(char *id){
   VARIABLE *varId;
-  varId = (VARIABLE*)Malloc(sizeof(VARIABLE));
+  varId = NEW(VARIABLE);
   varId->kind = idVarK;
   varId->lineno = lineno;
   varId->val.id = id;
@@ -482,7 +482,7 @@ VARIABLE *makeVARIABLEid(char *id){
 }
 VARIABLE *makeVARIABLEexp(VARIABLE *var, EXP *exp){
   VARIABLE *varExp;
-  varExp = (VARIABLE*)Malloc(sizeof(VARIABLE));
+  varExp = NEW(VARIABLE);
   varExp->kind = expK;
   varExp->lineno = lineno;
   varExp->val.varexp.var = var;
@@ -491,7 +491,7 @@ VARIABLE *makeVARIABLEexp(VARIABLE *var, EXP *exp){
 }
 VARIABLE *makeVARIABLEdot(char *id, VARIABLE *var){
   VARIABLE *varDot;
-  varDot = (VARIABLE*)Malloc(sizeof(VARIABLE));
+  varDot = NEW(VARIABLE);
   varDot->kind = dotK;
   varDot->lineno = lineno;
   varDot->val.vardot.id = id;

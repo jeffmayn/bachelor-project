@@ -5,115 +5,89 @@ int INDENT = 0;
 
 //JEFF
 void pFUNC(FUNCTION *f){
-  printf("(");
   pHEAD(f->head);
-  INDENT += 2;
+  //INDENT += 2;
   pBODY(f->body);
-  INDENT -= 2;
+  //INDENT -= 2;
   pTAIL(f->tail);
-  printf(")");
 }
 
 void pHEAD(HEAD *h){
-  printf("(");
-  printf("%s ", h->id);
+  printf("func %s", h->id);
   pPARDECLLIST(h->pList);
   printf(":");
   pTYPE(h->type);
-  printf(")");
+  printf("\n");
 }
 
 void pBODY(BODY *b){
-  printf("body(\n");
-  printf("%p\n", b->vList);
+  printf("STARTBODY\n");
   pDECLLIST(b->vList);
-  printf(" body");
   pSTMTLIST(b->sList);
-  printf(")\n");
+  printf("ENDBODY\n");
 }
 
 void pTAIL(TAIL *t){
-  printf("(%s)", t->id);
+  printf("(end %s)", t->id);
 }
 
 void pTYPE(TYPE *t){
   switch (t->kind) {
     case idK:
-        printf("(");
         printf("%s", t->val.id);
-        printf(")");
         break;
     case intK:
-        printf("(");
         printf("int");
-        printf(")");
         break;
     case boolK:
-        printf("(");
         printf("bool");
-        printf(")");
         break;
     case arrayK:
-        printf("(");
-        printf("array of ");
+        printf("array of [");
         pTYPE(t->val.arrayType);
-        printf(")");
+        printf("]");
         break;
     case recordK:
-        printf("(");
-        printf("record of ");
+        printf("record of {");
         pVARDECLLIST(t->val.vList);
-        printf(")");
+        printf("}");
         break;
   }
 }
 
 //ANDREAS
 void pPARDECLLIST(PAR_DECL_LIST *pdl){
-  printf("(");
   if(pdl == NULL){
     return;
   }
   pVARDECLLIST(pdl->vList);
-  printf(")");
 }
 
 void pVARDECLLIST(VAR_DECL_LIST *vdl){
-  printf("(");
   pVARTYPE(vdl->vType);
   if(vdl->vList != NULL){
     printf(", ");
     pVARDECLLIST(vdl->vList);
   }
-  printf(")");
 }
 
 void pVARTYPE(VAR_TYPE *vt){
-  printf("(");
   printf("%s : ", vt->id);
   pTYPE(vt->type);
-  printf(")");
 }
 
 void pDECLLIST(DECL_LIST *dl){
-  printf("(pdecllist\n");
   if(dl != NULL){
-    printf("Am %p\n", dl);
     if(dl->decl != NULL){
-      printf("Am i inside hereeeeeeeeeeeeeeeeeeeeeeeeee?!?!?\n");
       pDECL(dl->decl);
+      printf("\n");
     }
-    printf("Am i inside her?!?!?\n");
     pDECLLIST(dl->decl_list);
   }
-  printf(")\n");
 }
 
 void pDECL(DECLARATION *d){
-  INDENT += 2;
-  printf("(pdecl\n");
-  printf("\n%*s", INDENT, "");
-  printf("(");
+  //printf("%*s", INDENT, "", "");
   switch(d->kind){
     case idDeclK:
       printf("type %s = ", d->val.id.id);
@@ -123,43 +97,39 @@ void pDECL(DECLARATION *d){
       pFUNC(d->val.func);
     break;
     case listK:
-      printf("var");
+      printf("var ");
       pVARDECLLIST(d->val.list);
     break;
-    printf(")");
   }
-  INDENT -= 2;
 }
 
 //FØRST TIL MØLLE
 void pSTMTLIST(STATEMENT_LIST *sl){
-  printf("(");
   pSTMT(sl->statement);
   if(sl->statementList != NULL){
-    printf(" ");
+    printf("\n");
     pSTMTLIST(sl->statementList);
   }
-  printf(")");
 }
 
 void pSTMT(STATEMENT *s){
   switch(s->kind){
     case returnK:
-      printf("return");
+      printf("return ");
       pEXP(s->val.return_);
       break;
     case writeK:
-      printf("write");
+      printf("write ");
       pEXP(s->val.write);
       break;
     case allocateK:
-      printf("allocate");
+      printf("allocate ");
       pVARIABLE(s->val.allocate);
       break;
     case allocateLengthK:
       printf("allocate ");
       pVARIABLE(s->val.allocatelength.var);
-      printf(" of length ");
+      printf("of length ");
       pEXP(s->val.allocatelength.exp);
       break;
     case assiK:
@@ -170,28 +140,29 @@ void pSTMT(STATEMENT *s){
     case ifK:
       printf("if(");
       pEXP(s->val.ifthenelse.cond);
-      printf(")\n");
-      printf(" then\n");
+      printf(") then(\n");
       pSTMT(s->val.ifthenelse.thenbody);
+      printf("\n)");
       break;
     case thenK:
-      printf("if ");
+      printf("if(");
       pEXP(s->val.ifthenelse.cond);
-      printf(")\n");
-      printf("then\n");
+      printf(") then(\n");
       pSTMT(s->val.ifthenelse.thenbody);
-      printf("\nelse\n");
+      printf(")\nelse(\n");
       pSTMT(s->val.ifthenelse.elsebody);
+      printf(")");
       break;
     case whileK:
       printf("while(");
       pEXP(s->val.while_.cond);
-      printf(") do\n");
+      printf(") do (\n");
       pSTMT(s->val.while_.body);
+      printf(")");
       break;
     case listStmtK:
       printf("{");
-      INDENT += 2;
+      //INDENT += 2;
       pSTMTLIST(s->val.list);
       printf("}");
       break;
@@ -201,7 +172,6 @@ void pSTMT(STATEMENT *s){
 
 //MADS
 void pVARIABLE(VARIABLE *v){
-  printf("(");
   switch(v->kind){
     case idVarK:
       printf("%s", v->val.id);
@@ -221,7 +191,6 @@ void pVARIABLE(VARIABLE *v){
       printf("%s", v->val.vardot.id);
       break;
   }
-  printf(")");
 }
 
 void pEXP(EXP *e){
@@ -279,7 +248,6 @@ void pEXP(EXP *e){
 }
 
 void pTERM(TERM *t){
-  printf("(");
   switch(t->kind){
     case varK:
       pVARIABLE(t->val.var);
@@ -316,26 +284,21 @@ void pTERM(TERM *t){
       printf("null");
       break;
   }
-  printf(")");
 }
 
 void pACTLIST(ACT_LIST *al){
-  printf("(");
   if(al->expList == NULL){
     printf("empty");
   } else {
     pEXPLIST(al->expList);
   }
-  printf(")");
 }
 
 void pEXPLIST(EXP_LIST *el){
-  printf("(");
   pEXP(el->exp);
   if(el->expList == NULL){
     printf("empty");
   } else {
     pEXPLIST(el->expList);
   }
-  printf(")");
 }
