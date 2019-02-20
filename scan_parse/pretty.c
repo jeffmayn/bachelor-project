@@ -253,10 +253,10 @@ void pEXP(EXP *e){
           printf("!=");
           break;
         case andK:
-          printf("&&");
+          printf("AND");
           break;
         case orK:
-          printf("||");
+          printf("OR");
           break;
         default:
           break;
