@@ -34,9 +34,7 @@ void pHEAD(HEAD *h){
 
 void pBODY(BODY *b){
   fflush(stdout);
-  indent();
   pDECLLIST(b->vList);
-  indent();
   pSTMTLIST(b->sList);
 }
 
@@ -73,19 +71,12 @@ void pTYPE(TYPE *t){
 //ANDREAS
 void pPARDECLLIST(PAR_DECL_LIST *pdl){
   fflush(stdout);
-
-  //printf("pPARDECLLIST debug1\n");
-  //printf("%p\n", pdl);
-  //printf("%p\n", pdl->vList);
   if(pdl == NULL){
-    //printf("pPARDECLLIST debug2\n");
     return;
   }
-  //printf("pPARDECLLIST debug3\n");
   if(pdl->vList != NULL){
     pVARDECLLIST(pdl->vList);
   }
-  //printf("pPARDECLLIST debug4\n");
 }
 
 void pVARDECLLIST(VAR_DECL_LIST *vdl){
@@ -107,6 +98,7 @@ void pDECLLIST(DECL_LIST *dl){
   fflush(stdout);
   if(dl != NULL){
     if(dl->decl != NULL){
+      indent();
       pDECL(dl->decl);
       printf("\n");
     }
@@ -144,9 +136,10 @@ void pSTMTLIST(STATEMENT_LIST *sl){
 
 void pSTMT(STATEMENT *s){
   fflush(stdout);
+  //indent();
   switch(s->kind){
     case returnK:
-      indent();
+      //indent();
       printf("return ");
       pEXP(s->val.return_);
       break;
@@ -170,7 +163,7 @@ void pSTMT(STATEMENT *s){
       pEXP(s->val.allocatelength.exp);
       break;
     case ifK:
-      printf("\nif ");
+      printf("if ");
       pEXP(s->val.ifthenelse.cond);
       printf(" then(\n");
       pSTMT(s->val.ifthenelse.thenbody);
@@ -183,7 +176,9 @@ void pSTMT(STATEMENT *s){
       INDENT++;
       indent();
       pSTMT(s->val.ifthenelse.thenbody);
-      printf(")\nelse(\n");
+      printf(")\n");
+      indent();
+      printf("else(\n");
       indent();
       pSTMT(s->val.ifthenelse.elsebody);
       INDENT--;
@@ -198,7 +193,7 @@ void pSTMT(STATEMENT *s){
       break;
     case listStmtK:
       printf("{");
-      indent();
+      //indent();
       pSTMTLIST(s->val.list);
       printf("}");
       break;
