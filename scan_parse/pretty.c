@@ -20,11 +20,12 @@ void pFUNC(FUNCTION *f){
   pBODY(f->body);
   INDENT--;
   pTAIL(f->tail);
-  printf("\n");
+  //printf("\n");
 }
 
 void pHEAD(HEAD *h){
   fflush(stdout);
+  //indent();
   printf("func %s(", h->id);
   pPARDECLLIST(h->pList);
   printf("):");
@@ -36,11 +37,15 @@ void pBODY(BODY *b){
   fflush(stdout);
   pDECLLIST(b->vList);
   pSTMTLIST(b->sList);
+  //printf("\n");
 }
 
 void pTAIL(TAIL *t){
   fflush(stdout);
-  printf("\nend %s", t->id);
+  //printf("\n");
+  indent();
+  printf("end %s", t->id);
+  //printf("\n");
 }
 
 void pTYPE(TYPE *t){
@@ -107,7 +112,6 @@ void pDECLLIST(DECL_LIST *dl){
 }
 
 void pDECL(DECLARATION *d){
-  //printf("%*s", INDENT, "", "");
   fflush(stdout);
   switch(d->kind){
     case idDeclK:
@@ -129,14 +133,14 @@ void pSTMTLIST(STATEMENT_LIST *sl){
   fflush(stdout);
   pSTMT(sl->statement);
   if(sl->statementList != NULL){
-    printf("\n");
+    //printf("\n");
     pSTMTLIST(sl->statementList);
   }
 }
 
 void pSTMT(STATEMENT *s){
   fflush(stdout);
-  //indent();
+  indent();
   switch(s->kind){
     case returnK:
       //indent();
@@ -165,39 +169,60 @@ void pSTMT(STATEMENT *s){
     case ifK:
       printf("if ");
       pEXP(s->val.ifthenelse.cond);
-      printf(" then(\n");
+      printf("\n");
+      indent();
+      printf("then (\n");
+      //indent();
+      INDENT++;
       pSTMT(s->val.ifthenelse.thenbody);
-      printf("\n)\n");
+      INDENT--;
+      indent();
+      printf(")");
       break;
     case thenK:
       printf("if ");
       pEXP(s->val.ifthenelse.cond);
-      printf(" then(\n");
-      INDENT++;
+      printf("\n");
       indent();
+      printf("then (\n");
+      INDENT++;
       pSTMT(s->val.ifthenelse.thenbody);
+      INDENT--;
+      indent();
       printf(")\n");
       indent();
-      printf("else(\n");
-      indent();
+      printf("else (\n");
+      INDENT++;
       pSTMT(s->val.ifthenelse.elsebody);
       INDENT--;
-      printf("\n)");
+      indent();
+      printf(")");
       break;
     case whileK:
-      printf("\nwhile ");
+      printf("while ");
       pEXP(s->val.while_.cond);
-      printf(" do (\n");
+      printf("\n");
+      indent();
+      printf("do (\n");
+      INDENT++;
       pSTMT(s->val.while_.body);
-      printf("\n)\n");
+      INDENT--;
+      indent();
+      printf(")");
       break;
     case listStmtK:
       printf("{");
+      printf("\n");
+      INDENT++;
       //indent();
       pSTMTLIST(s->val.list);
+      INDENT--;
+      indent();
       printf("}");
+      //printf("\n");
       break;
   }
+  printf("\n");
 }
 
 
@@ -233,7 +258,7 @@ void pEXP(EXP *e){
       pTERM(e->val.term);
       break;
     default:
-printf("(");
+      printf("(");
       pEXP(e->val.binOP.left);
 
       switch(e->kind){
@@ -326,9 +351,7 @@ void pTERM(TERM *t){
 
 void pACTLIST(ACT_LIST *al){
   fflush(stdout);
-  if(al->expList == NULL){
-    printf("empty");
-  } else {
+  if(al->expList != NULL){
     pEXPLIST(al->expList);
   }
 }
@@ -336,9 +359,8 @@ void pACTLIST(ACT_LIST *al){
 void pEXPLIST(EXP_LIST *el){
   fflush(stdout);
   pEXP(el->exp);
-  if(el->expList == NULL){
-    printf(" = empty"); // ??
-  } else {
+  if(el->expList != NULL){
+    printf(", ");
     pEXPLIST(el->expList);
   }
 }
