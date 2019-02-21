@@ -2,6 +2,7 @@
 #include "pretty.h"
 
 int lineno = 0;
+int charpos = 0;
 
 void yyparse();
 
