@@ -73,6 +73,8 @@ void yyerror() {
 %start program
 
 
+
+%right tTHEN tELSE
 //Precedence rules for operators
 %left tASSI
 %left tOR
@@ -82,7 +84,8 @@ void yyerror() {
 %left tPLUS tMINUS
 %left tTIMES tDIV tMOD
 %left tNEG
-%right tTHEN tELSE
+
+
 %%
 //Rule for returning the AST
 program: body

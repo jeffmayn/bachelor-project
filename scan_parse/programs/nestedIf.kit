@@ -1,0 +1,33 @@
+if (true) then x=false; else x=true;
+
+(*b1 was not meant to have any else clause
+however due to %right of else-tokens it gets the else clause from a*)
+(*in the else-clause c does not take the else-clause from b2, as c is
+inside {} from the then-clause of b2*)
+
+if(a)
+then
+  if(b1)
+  then
+    write 1;
+else
+  if(b2)
+  then
+  {
+    if(c)
+    then
+      write 3;
+  }
+  else
+    write 4;
+
+(*the inner if-statmenet is an if-then-else*)
+if(x)
+then
+  if(y)
+  then
+    write 5;
+  else
+    write 6;
+else
+  write 7;
