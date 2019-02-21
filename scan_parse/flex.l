@@ -2,88 +2,91 @@
 #include <stdio.h>
 #include "y.tab.h"
 #include <string.h>
+
 extern int lineno;
+extern int charpos;
+
+#define NCP (charpos+=yyleng)
+
 int nestedcomments = 0;
-/*int linePos = 0;*/
 %}
 
 %option noyywrap
 %x COMMENT ONELINECOMMENT
 %%
-<INITIAL>"+"    { return tPLUS;}
-<INITIAL>"-"    { return tMINUS;}
-<INITIAL>"*"    { return tTIMES;}
-<INITIAL>"/"    { return tDIV;}
-<INITIAL>"=="   { return tEQ;}
-<INITIAL>"!="   { return tNE;}
-<INITIAL>"<="   { return tLE;}
-<INITIAL>">="   { return tGE;}
-<INITIAL>"<"    { return tLESS;}
-<INITIAL>">"    { return tGREAT;}
-<INITIAL>"&&"   { return tAND;}
-<INITIAL>" || " { return tOR;/*her kan der gøres noget smartere måske!*/}
+<INITIAL>"+"    { NCP; return tPLUS;}
+<INITIAL>"-"    { NCP; return tMINUS;}
+<INITIAL>"*"    { NCP; return tTIMES;}
+<INITIAL>"/"    { NCP; return tDIV;}
+<INITIAL>"=="   { NCP; return tEQ;}
+<INITIAL>"!="   { NCP; return tNE;}
+<INITIAL>"<="   { NCP; return tLE;}
+<INITIAL>">="   { NCP; return tGE;}
+<INITIAL>"<"    { NCP; return tLESS;}
+<INITIAL>">"    { NCP; return tGREAT;}
+<INITIAL>"&&"   { NCP; return tAND;}
+<INITIAL>" || " { NCP; return tOR;}
 
-<INITIAL>"="    { return tASSI;}
+<INITIAL>"="    { NCP; return tASSI;}
 
-<INITIAL>"("    { return tLPAR;}
-<INITIAL>")"    { return tRPAR;}
-<INITIAL>"["    { return tLSQ;}
-<INITIAL>"]"    { return tRSQ;}
-<INITIAL>"{"    { return tLCURL;}
-<INITIAL>"}"    { return tRCURL;}
-<INITIAL>"|"    { return tBAR;}
+<INITIAL>"("    { NCP; return tLPAR;}
+<INITIAL>")"    { NCP; return tRPAR;}
+<INITIAL>"["    { NCP; return tLSQ;}
+<INITIAL>"]"    { NCP; return tRSQ;}
+<INITIAL>"{"    { NCP; return tLCURL;}
+<INITIAL>"}"    { NCP; return tRCURL;}
+<INITIAL>"|"    { NCP; return tBAR;}
 
-<INITIAL>"!"    { return tNEG;}
+<INITIAL>"!"    { NCP; return tNEG;}
 
-<INITIAL>";"    { return tSEMI;}
-<INITIAL>":"    { return tCOL;}
-<INITIAL>","    { return tCOM;}
-<INITIAL>"."    { return tDOT;}
+<INITIAL>";"    { NCP; return tSEMI;}
+<INITIAL>":"    { NCP; return tCOL;}
+<INITIAL>","    { NCP; return tCOM;}
+<INITIAL>"."    { NCP; return tDOT;}
 
-<INITIAL>"true"     { return tTRUE;}
-<INITIAL>"false"    { return tFALSE;}
-<INITIAL>"null"     { return tNULL;}
+<INITIAL>"true"     { NCP; return tTRUE;}
+<INITIAL>"false"    { NCP; return tFALSE;}
+<INITIAL>"null"     { NCP; return tNULL;}
 
-<INITIAL>"int"      { return tINTTYPE;}
-<INITIAL>"bool"     { return tBOOLTYPE;}
-<INITIAL>"array"    { return tARRAYTYPE;}
-<INITIAL>"record"   { return tRECORDTYPE;}
+<INITIAL>"int"      { NCP; return tINTTYPE;}
+<INITIAL>"bool"     { NCP; return tBOOLTYPE;}
+<INITIAL>"array"    { NCP; return tARRAYTYPE;}
+<INITIAL>"record"   { NCP; return tRECORDTYPE;}
 
-<INITIAL>"of"       { return tOF;}
+<INITIAL>"of"       { NCP; return tOF;}
 
-<INITIAL>"func"     { return tFUNC;}
-<INITIAL>"type"     { return tTYPE;}
-<INITIAL>"end"      { return tEND;}
-<INITIAL>"var"      { return tVAR;}
-<INITIAL>"return"   { return tRETURN;}
-<INITIAL>"write"    { return tWRITE;}
-<INITIAL>"allocate" { return tALLOC;}
-<INITIAL>"length"   { return tLEN;}
-<INITIAL>"if"       { return tIF;}
-<INITIAL>"else"     { return tELSE;}
-<INITIAL>"then"     { return tTHEN;}
-<INITIAL>"while"    { return tWHILE;}
-<INITIAL>"do"       { return tDO;}
+<INITIAL>"func"     { NCP; return tFUNC;}
+<INITIAL>"type"     { NCP; return tTYPE;}
+<INITIAL>"end"      { NCP; return tEND;}
+<INITIAL>"var"      { NCP; return tVAR;}
+<INITIAL>"return"   { NCP; return tRETURN;}
+<INITIAL>"write"    { NCP; return tWRITE;}
+<INITIAL>"allocate" { NCP; return tALLOC;}
+<INITIAL>"length"   { NCP; return tLEN;}
+<INITIAL>"if"       { NCP; return tIF;}
+<INITIAL>"else"     { NCP; return tELSE;}
+<INITIAL>"then"     { NCP; return tTHEN;}
+<INITIAL>"while"    { NCP; return tWHILE;}
+<INITIAL>"do"       { NCP; return tDO;}
 
 <INITIAL>0|[1-9][0-9]*          { yylval.uint = atoi(yytext);
-                                  return tINT;}
+                                  NCP; return tINT;}
 <INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { yylval.uid = (char *) malloc(strlen(yytext)+1);
                                   sprintf(yylval.uid, "%s", yytext);
-                                  return tID;}
+                                  NCP; return tID;}
 
+<INITIAL>[ \t\r]  { NCP; /*ignore*/}
+<INITIAL>"(*"     { NCP; nestedcomments++; BEGIN COMMENT;}
+<INITIAL>#        { NCP; BEGIN ONELINECOMMENT;}
+<INITIAL>\n       { charpos = 0; lineno++;}
+<INITIAL>.        { NCP; /*TODO Errors*/}
 
-<INITIAL>[ \t\r]  /*ignore*/
-<INITIAL>"(*"     { nestedcomments++; BEGIN COMMENT;}
-<INITIAL>#        { BEGIN ONELINECOMMENT;}
-<INITIAL>\n       { lineno++;}
-<INITIAL>.        /*TODO errors*/
-
-<COMMENT>"(*"   { nestedcomments++;}
-<COMMENT>"*)"   { nestedcomments--;
+<COMMENT>"(*"   { NCP; nestedcomments++;}
+<COMMENT>"*)"   { NCP; nestedcomments--;
                   if(nestedcomments==0){BEGIN INITIAL;}}
-<COMMENT>\n     { lineno++;}
-<COMMENT>.      /*ignore*/
+<COMMENT>\n     { charpos = 0; lineno++;}
+<COMMENT>.      { NCP; /*ignore*/}
 
-<ONELINECOMMENT>\n  { lineno++; BEGIN INITIAL;}
-<ONELINECOMMENT>.   /*ignore*/
+<ONELINECOMMENT>\n  { charpos = 0; lineno++; BEGIN INITIAL;}
+<ONELINECOMMENT>.   { NCP; /*ignore*/}
 %%

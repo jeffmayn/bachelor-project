@@ -3,11 +3,12 @@
 #include "tree.h"
 
 extern lineno;
+extern charpos;
 extern char *yytext;
 extern BODY *theexpression; //the root of AST
 
 void yyerror() {
-   printf("syntax error before %s, at line %d\n",yytext, lineno);
+   printf("Syntax Error line %d position %d before %s\n",lineno, charpos, yytext);
 }
 %}
 
