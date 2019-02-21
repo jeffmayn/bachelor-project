@@ -273,10 +273,10 @@ printf("(");
           printf(" != ");
           break;
         case andK:
-          printf(" AND ");
+          printf(" && ");
           break;
         case orK:
-          printf(" OR ");
+          printf(" || ");
           break;
 
         default:
