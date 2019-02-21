@@ -1,16 +1,26 @@
 #include <stdio.h>
+#include <string.h>
 #include "pretty.h"
 
 int INDENT = 0;
+
+void indent(){
+  int i = 0;
+  int space = INDENT * 2;
+  for (i = space; i > 0; i--){
+    printf("%s", " ");
+    }
+  }
 
 //JEFF
 void pFUNC(FUNCTION *f){
   fflush(stdout);
   pHEAD(f->head);
-  //INDENT += 2;
+  INDENT++;
   pBODY(f->body);
-  //INDENT -= 2;
+  INDENT--;
   pTAIL(f->tail);
+  printf("\n");
 }
 
 void pHEAD(HEAD *h){
@@ -24,7 +34,9 @@ void pHEAD(HEAD *h){
 
 void pBODY(BODY *b){
   fflush(stdout);
+  indent();
   pDECLLIST(b->vList);
+  indent();
   pSTMTLIST(b->sList);
 }
 
@@ -61,6 +73,7 @@ void pTYPE(TYPE *t){
 //ANDREAS
 void pPARDECLLIST(PAR_DECL_LIST *pdl){
   fflush(stdout);
+
   //printf("pPARDECLLIST debug1\n");
   //printf("%p\n", pdl);
   //printf("%p\n", pdl->vList);
@@ -86,7 +99,7 @@ void pVARDECLLIST(VAR_DECL_LIST *vdl){
 
 void pVARTYPE(VAR_TYPE *vt){
   fflush(stdout);
-  printf("%s : ", vt->id);
+  printf("%s: ", vt->id);
   pTYPE(vt->type);
 }
 
@@ -133,6 +146,7 @@ void pSTMT(STATEMENT *s){
   fflush(stdout);
   switch(s->kind){
     case returnK:
+      indent();
       printf("return ");
       pEXP(s->val.return_);
       break;
@@ -156,31 +170,35 @@ void pSTMT(STATEMENT *s){
       pEXP(s->val.allocatelength.exp);
       break;
     case ifK:
-      printf("if(");
+      printf("\nif ");
       pEXP(s->val.ifthenelse.cond);
-      printf(") then(\n");
+      printf(" then(\n");
       pSTMT(s->val.ifthenelse.thenbody);
       printf("\n)\n");
       break;
     case thenK:
-      printf("if(");
+      printf("if ");
       pEXP(s->val.ifthenelse.cond);
-      printf(") then(\n");
+      printf(" then(\n");
+      INDENT++;
+      indent();
       pSTMT(s->val.ifthenelse.thenbody);
       printf(")\nelse(\n");
+      indent();
       pSTMT(s->val.ifthenelse.elsebody);
-      printf("\n)\n");
+      INDENT--;
+      printf("\n)");
       break;
     case whileK:
-      printf("while(");
+      printf("\nwhile ");
       pEXP(s->val.while_.cond);
-      printf(") do (\n");
+      printf(" do (\n");
       pSTMT(s->val.while_.body);
       printf("\n)\n");
       break;
     case listStmtK:
       printf("{");
-      //INDENT += 2;
+      indent();
       pSTMTLIST(s->val.list);
       printf("}");
       break;
@@ -214,57 +232,61 @@ void pVARIABLE(VARIABLE *v){
 
 void pEXP(EXP *e){
   fflush(stdout);
-  printf("(");
+
   switch(e->kind){
     case termK:
       pTERM(e->val.term);
       break;
     default:
+printf("(");
       pEXP(e->val.binOP.left);
+
       switch(e->kind){
         case minusK:
-          printf("-");
+          printf(" - ");
           break;
         case plusK:
-          printf("+");
+          printf(" + ");
           break;
         case timesK:
-          printf("*");
+          printf(" * ");
           break;
         case divK:
-          printf("/");
+          printf(" / ");
           break;
         case leK:
-          printf("<=");
+          printf(" <= ");
           break;
         case eqK:
-          printf("==");
+          printf(" == ");
           break;
         case geK:
-          printf(">=");
+          printf(" >= ");
           break;
         case greatK:
-          printf(">");
+          printf(" > ");
           break;
         case lessK:
-          printf("<");
+          printf(" < ");
           break;
         case neK:
-          printf("!=");
+          printf(" != ");
           break;
         case andK:
-          printf("AND");
+          printf(" AND ");
           break;
         case orK:
-          printf("OR");
+          printf(" OR ");
           break;
+
         default:
           break;
       }
       pEXP(e->val.binOP.right);
+      printf(")");
       break;
   }
-  printf(")");
+
 }
 
 void pTERM(TERM *t){
@@ -320,7 +342,7 @@ void pEXPLIST(EXP_LIST *el){
   fflush(stdout);
   pEXP(el->exp);
   if(el->expList == NULL){
-    printf("empty");
+    printf(" = empty"); // ??
   } else {
     pEXPLIST(el->expList);
   }
