@@ -4,7 +4,7 @@ CFLAGS = -std=c11 -Wall -Wextra -pedantic -g
 
 
 main:	y.tab.o lex.yy.o main.o tree.h tree.o pretty.h pretty.o memory.h memory.o
-	          $(CC) lex.yy.o y.tab.o tree.o pretty.o memory.o main.o -o exp -lfl
+	          $(CC) lex.yy.o y.tab.o tree.o pretty.o memory.o main.o -o compiler -lfl
 
 y.tab.c y.tab.h:  parser.y
 	          bison -y -d -v parser.y
