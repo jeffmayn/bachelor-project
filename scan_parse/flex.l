@@ -6,7 +6,7 @@
 extern int lineno;
 extern int charpos;
 
-#define NCP (charpos+=yyleng)
+#define NCP (charpos+=yyleng) /*Next Character Position*/
 
 int nestedcomments = 0;
 %}
