@@ -73,16 +73,15 @@ void yyerror() {
 
 
 //Precedence rules for operators
-%left tNEG
-%left tTIMES tDIV tMOD
-%left tPLUS tMINUS
-%left tLESS tGREAT tLE tGE
-%left tEQ tNE
-%left tAND
-%left tOR
 %left tASSI
+%left tOR
+%left tAND
+%left tEQ tNE
+%left tLESS tGREAT tLE tGE
+%left tPLUS tMINUS
+%left tTIMES tDIV tMOD
+%left tNEG
 %right tTHEN tELSE
-
 %%
 //Rule for returning the AST
 program: body
