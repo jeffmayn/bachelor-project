@@ -14,4 +14,4 @@ lex.yy.c:	flex.l y.tab.h
 
 .PHONY: clean
 clean:
-	-rm exp *.o y.tab.c y.tab.h lex.yy.c y.output
+	-rm compiler *.o y.tab.c y.tab.h lex.yy.c y.output
