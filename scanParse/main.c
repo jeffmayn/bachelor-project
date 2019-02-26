@@ -10,7 +10,11 @@ BODY *theexpression;
 
 int main()
 { lineno = 1;
-  yyparse();
+
+  if(yyparse()){
+    printf("remember to print something to std error\n");
+    return 0;
+  }
   pBODY(theexpression);
   return 0;
 }
