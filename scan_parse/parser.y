@@ -7,7 +7,7 @@ extern int charpos;
 extern char *yytext;
 extern BODY *theexpression; //the root of AST
 
-void yyerror() {
+void yyerror(int i) {
    printf("Syntax Error line %d position %d before %s\n",lineno, charpos, yytext);
 }
 %}
