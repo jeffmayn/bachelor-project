@@ -1,4 +1,6 @@
-
+#ifndef __typecheck_h
+#define __typecheck_h
+#include "symbol.h"
 /*
 Whenever a function definition (with deklarations)
 then insert a new scope.
@@ -16,12 +18,16 @@ Værdien i en variable? Den skal vel ikke bruges endnu
 /**
   Finds the types of all declared types
 */
-void idTypeFinder();
+SymbolTable* idTypeFinder();
 
 /**
  t is the root of the current scope
 */
-void idFinderRec(symbolTable *t, BODY node);
+void idFinderRec(SymbolTable *t, BODY* node);
+
+void travDecls(SymbolTable *t, DECL_LIST *decls);
+
+void travVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
 
 /**
  * Finds the types of expressions
@@ -32,3 +38,4 @@ void expTypeFinder();
  * Checks if expression types match variable and context types
 */
 void checkTypes();
+#endif

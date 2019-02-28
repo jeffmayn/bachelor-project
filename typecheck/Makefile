@@ -3,14 +3,14 @@ CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -pedantic -g
 
 
-main:	y.tab.o lex.yy.o main.o ../scan_parse/tree.h tree.o ../scan_parse/pretty.h pretty.o ../scan_parse/memory.h memory.o ../compiler/symbol.h symbol.o
-	          $(CC) lex.yy.o y.tab.o tree.o pretty.o memory.o main.o -o compiler -lfl
+main:	y.tab.o lex.yy.o main.o tree.h tree.o pretty.h pretty.o memory.h memory.o symbol.h symbol.o typecheck.h typecheck.o
+	          $(CC) lex.yy.o y.tab.o tree.o pretty.o memory.o typecheck.o main.o -o compiler -lfl
 
-y.tab.c y.tab.h:  ../scan_parse/parser.y
-	          bison -y -d -v ../scan_parse/parser.y
+y.tab.c y.tab.h:  parser.y
+	          bison -y -d -v parser.y
 
-lex.yy.c:	../scan_parse/flex.l y.tab.h
-	          flex ../scan_parse/flex.l
+lex.yy.c:	flex.l y.tab.h
+	          flex flex.l
 
 .PHONY: clean
 clean:
