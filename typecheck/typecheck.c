@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 extern BODY *theexpression;
+extern SymbolTable *childScopeForDebugging;
 
 /**
   Finds the types of all declared types
@@ -23,7 +24,7 @@ SymbolTable* idTypeFinder(){
  t is the root of the current scope
 */
 void idFinderRec(SymbolTable *t, BODY *body){
-  //printf("idFinderRec\n");
+  printf("idFinderRec\n");
   travDecls(t,body->vList);
 }
 
@@ -47,19 +48,26 @@ void travDecls(SymbolTable *t, DECL_LIST *decls){
       putSymbol(t, d->val.func->head->id, 0, func, d->val.func->head->type->kind); //add some shit for named types, records and arrays
       //create new scope
       SymbolTable *child = scopeSymbolTable(t);
+      childScopeForDebugging = child;
       //add parametrs to that scope
       PAR_DECL_LIST *pList = d->val.func->head->pList;
-      if(pList == NULL){
-        break;
+      if(pList != NULL){
+        VAR_DECL_LIST *vList = pList->vList;
+        printf("vList %d\n", vList);
+        if(vList != NULL){
+          while(vList->vList != NULL){
+            printf("about to put params\n");
+            putParam(child, vList->vType->id, 0, var, vList->vType->type->kind); //can a parameter be anything different from a variable (func or type)
+            vList = vList->vList;
+          }
+        }
       }
-      VAR_DECL_LIST *vList = pList->vList;
+
       //I may use travVDecls instead of using this while loop
       //NO because its putParam and not Symbol, which is used.
       //segmentation fault right here/below (When there is no parameters) *********************************************************************************************************
-      while(vList->vList != NULL){
-        putParam(child, vList->vType->id, 0, var, vList->vType->type->kind); //can a parameter be anything different from a variable (func or type)
-        vList = vList->vList;
-      }
+      //Solved by if above
+
       //recursively call idFinderRec on body of function
       idFinderRec(child,d->val.func->body);
     break;

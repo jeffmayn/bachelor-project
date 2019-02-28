@@ -8,6 +8,7 @@ int charpos = 0;
 void yyparse();
 
 BODY *theexpression;
+SymbolTable *childScopeForDebugging;
 
 printSymbol(SymbolTable *t, char *id){
   SYMBOL *s = getSymbol(t,id);
@@ -31,5 +32,12 @@ int main()
   printSymbol(t, "y");
   printSymbol(t, "z");
   printSymbol(t, "a");
+  printSymbol(t, "f");
+  printSymbol(t, "v");
+  printSymbol(childScopeForDebugging, "v");
+  printSymbol(childScopeForDebugging, "x");
+  printSymbol(childScopeForDebugging, "g");
+  printSymbol(childScopeForDebugging, "x");
+  printSymbol(childScopeForDebugging, "u");
   return 0;
 }
