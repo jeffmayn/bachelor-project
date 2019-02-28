@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include "symbol.h"
+#include "symbol.c"
 #include "weeder.h"
 
 extern BODY *theexpression;
@@ -12,7 +14,7 @@ FUNCTION *weederFunction(FUNCTION *node){
   // check header-id og tail-id er ens
   if (strcmp (node->head->id, node->tail->id) ){
     printf("same");
-    return FUNCTION;
+    return node;
   } else {
     printf("not same");
     // TODO: do stuff

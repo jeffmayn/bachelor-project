@@ -1,0 +1,9 @@
+var x:int;
+var y:bool;
+var z:int;
+type a = int;
+func f():int
+return 7;
+end f
+x = 2;
+y = z;
