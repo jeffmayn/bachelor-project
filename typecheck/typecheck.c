@@ -3,6 +3,7 @@
 #include "symbol.h"
 #include "symbol.c" //does not work without this??
 #include <stdlib.h>
+#include <stdio.h>
 
 extern BODY *theexpression;
 extern SymbolTable *childScopeForDebugging;
@@ -53,10 +54,10 @@ void travDecls(SymbolTable *t, DECL_LIST *decls){
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
         VAR_DECL_LIST *vList = pList->vList;
-        printf("vList %d\n", vList);
+        printf("vList %p\n", (void*) vList);
         if(vList != NULL){
-          while(vList->vList != NULL){
-            printf("about to put params\n");
+          while(vList != NULL){
+            printf("about to put params for %s\n", d->val.func->head->id);
             putParam(child, vList->vType->id, 0, var, vList->vType->type->kind); //can a parameter be anything different from a variable (func or type)
             vList = vList->vList;
           }

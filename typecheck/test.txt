@@ -7,6 +7,7 @@ var v:bool;
 return 7;
 end f
 func g(x:bool,u:int):bool
+var w:bool;
 return true;
 end g
 x = 2;

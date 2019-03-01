@@ -6,6 +6,8 @@
 
 /* SYMBOL will be extended later.
    Function calls will take more parameters later.
+
+   Use scope when type is func as pointer to the scope of the function
 */
 
 typedef struct SYMBOL {
@@ -13,6 +15,7 @@ typedef struct SYMBOL {
   enum Typekind type; //this should be the enum from the TYPE struct
   char *name;
   int value;
+  SymbolTable* scope;
   struct SYMBOL *next;
 } SYMBOL;
 
