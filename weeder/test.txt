@@ -3,7 +3,13 @@ var y:bool;
 var z:int;
 type a = int;
 func f():int
+func g():int
+return 8;
+end q
 return 7;
 end f
+func v():int
+return 8;
+end y
 x = 2;
 y = z;

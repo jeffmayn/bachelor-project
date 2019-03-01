@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "tree.h"
 #include "pretty.h"
 #include "weeder.h"
@@ -13,8 +14,8 @@ int main()
 { lineno = 1;
   yyparse();
   pBODY(theexpression);
-  printf("Calling weeder\n");
-  weederFunction(f);
+  printf("CALLING -> weeder\n");
+  weederBody(theexpression);
 
   return 0;
 }
