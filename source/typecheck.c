@@ -1,7 +1,7 @@
 #include "tree.h"
 #include "typecheck.h"
 #include "symbol.h"
-#include "symbol.c" //does not work without this??
+/*#include "symbol.c" //virker ikke uden //virker ikke med!*/ 
 #include <stdlib.h>
 #include <stdio.h>
 

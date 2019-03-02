@@ -15,7 +15,7 @@ typedef struct SYMBOL {
   enum Typekind type; //this should be the enum from the TYPE struct
   char *name;
   int value;
-  SymbolTable* scope;
+  struct SymbolTable* scope;
   struct SYMBOL *next;
 } SYMBOL;
 
