@@ -102,7 +102,162 @@ void travVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
 /**
  * Finds the types of expressions
 */
-void expTypeFinder();
+void expTypeFinder(){
+  expFinderRec(table,  theexpression);
+}
+
+void expFinderRec(SymbolTable *t,  BODY *body){
+  travStmt(SymbolTable *t, body->sList);
+}
+
+void travStmts(SymbolTable *t, STATEMENT_LIST *sList){
+  expTypeTravStmt(t, sList->statement);
+  if(sList->statementList != NULL){
+    travStmts(t, sList->statementList);
+  }
+}
+
+void expTypeTravStmt(SymbolTable *t, STATEMENT *s){
+  switch(s->kind){
+    case returnK:
+      expTypeTravExp(t, s->val.return_);
+      break;
+    case writeK:
+      expTypeTravExp(t, s->val.write);
+      break;
+    case allocateK:
+      printf("expTypeTravStmt allocateK not implemented\n");
+      break;
+    case allocateLengthK:
+      printf("expTypeTravStmt allocateLengthK not implemented\n");
+      break;
+    case assiK:
+      expTypeTravExp(t, s->val.allocatelength.exp);
+      //Kunne i teorien tjekke typer her
+      break;
+    case ifK:
+      expTypeTravExp(t, s->val.ifthenelse.cond);
+      expTypeTravStmt(t, s->val.ifthenelse.thenbody);
+      break;
+    case thenK:
+      expTypeTravExp(t, s->val.ifthenelse.cond);
+      expTypeTravStmt(t, s->val.ifthenelse.thenbody);
+      expTypeTravStmt(t, s->val.ifthenelse.elsebody);
+      break;
+    case whileK:
+      expTypeTravExp(t, s->val.while_.cond);
+      expTypeTravStmt(t, s->val.while_.body);
+      break;
+    case listStmtK:
+      travStmts(t, s->val.list)
+      break;
+  }
+  printf("\n");
+}
+
+int expTypeTravExp(SymbolTable *t, EXP *exp){
+  //error cheking needed from recursive calls
+  switch(exp->kind){
+    case termK:
+      exp->type = expTypeTravTerm(t, exp->val.term);
+    default:
+      int type1 = expTypeTravExp(t, exp->val.binOP.left);
+      int type2 = expTypeTravExp(t, exp->val.binOP.right);
+      //Here we could check if the two types are the same
+      if(type1 == type2){
+        exp->type = type1;
+      }
+      printf("The two subxpressions of the binary expression does not have the same type");
+      return -1;
+  }
+}
+
+int expTypeTravTerm(SymbolTable *t, TERM *term){
+  switch(term->kind){
+    case varK:
+      return expTypeTravVar(t, t->val.var);
+      break;
+    case idTermK:
+      SYMBOL s = getSymbol(t, t->val.idact.id);
+      if(s == NULL){
+        printf("Symbol '%s' where not found\n", t->val.idact.id);
+      }
+      //maybe i should check if this is a function or something else
+      ACT_LIST act = term->val.idact.list;
+      if(act != NULL){
+        expTypeTravExps(t, act->expList);
+      }
+      return s->type;
+      printf("expTypeTravTerm: maybe funktion calls not yet implemented\n")
+      break;
+    case expTermK:
+      return expTypeTravEXP(t, term->val.exp);
+      break;
+    case notTermK:
+      int type = expTypeTravTerm(t, term->val.notTerm);
+      if(type != boolK){
+        printf("Cannot negate something of different type than boolean\n");
+        return -1;
+      }
+      return type;
+      break;
+    case expCardK:
+      printf("expTypeTravTerm: cardinality not yet fully supported\n");
+      //check if term->val.expCard == array or int or maybe record
+      return intK;
+      //pEXP(t->val.expCard);
+      break;
+    case numK:
+      return intK;
+      //printf("%d", t->val.num);
+      break;
+    case trueK:
+      return boolK;
+      break;
+    case falseK:
+      return boolK;
+      break;
+    case nullK:
+      printf("expTypeTravTerm: What type is a NULL???!?!");
+      break;
+  }
+}
+
+int expTypeTravVar(SymbolTable *t, VARIABLE *v){
+  switch(v->kind){
+    case idVarK:
+      SYMBOL s = getSymbol(t, v->val.name);
+      if(s != NULL){
+        return s->type;
+      }
+      printf("ID %s, not found\n", v->val.name);
+      return -1;
+      break;
+    case expK:
+      printf("expTypeTravVar: Arrays not yet supported\n");
+      return -1;
+      // pVARIABLE(v->val.varexp.var);
+      // printf("[");
+      // pEXP(v->val.varexp.exp);
+      // printf("]");
+      break;
+    case dotK:
+      printf("expTypeTravVar: records not yet supported\n");
+      return -1;
+      // pVARIABLE(v->val.vardot.var);
+      // printf(".");
+      // printf("%s", v->val.vardot.id);
+      break;
+  }
+}
+
+void expTypeTravExps(SymbolTable *t, EXP_LIST *eList){
+  expTypeTravExp(t, eList->exp);
+  if(eList->expList != NULL){
+    travStmt(t, sList->statementList);
+  }
+}
+
 
 /**
  * Checks if expression types match variable and context types
