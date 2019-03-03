@@ -35,7 +35,7 @@ SymbolTable *scopeSymbolTable(SymbolTable *t){
  * return NULL* if the name is already in the table
  * return SYMBOL* to the new symbol on success
  */
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type){
+SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope){
   //make new symbol add name and value
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
   newSym->kind = kind;
@@ -43,6 +43,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type){
   newSym->value = value;
   newSym->name = Malloc(strlen(name)+1);
   memcpy(newSym->name, name, strlen(name)+1);
+  newSym->scope = scope;
   newSym->next = NULL;
 
   //find index via hash value
@@ -77,52 +78,22 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type){
 
 
 SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type){
-  printf("PutParam not yet fully supported\n");
-  //return NULL;
-
-  SYMBOL* s = putSymbol(t, name, value, kind, type);
-  printf("debug1\n");
+  SYMBOL* s = putSymbol(t, name, value, kind, type, NULL); //assuming param is variable, so no scope is relevant
   if(s == NULL){
-    printf("The id already exists \n");
+    printf("PutParam: The id already exists \n");
     return NULL;
   }
-  printf("debug2\n");
   SYMBOL *param = t->param;
   if(param == NULL){
     param = s;
   }
-  printf("debug3\n");
   while(param->next != NULL){
     param = param->next;
   }
   param->next = s;
-  printf("debug4\n");
   return s;
 }
 
-/*
-//check if symbol is already defined in given symbolTable
-bool *symbolExists(SymbolTable *t, char *name){
-  int hashIndex = Hash(name);
-  SYMBOL *temp = table[hashIndex];
-  if(!strcmp(name,temp->name)){
-    //name is already in this table
-    free(newSym->name);
-    free(newSym);
-    return true;
-  }
-  while(temp->next != NULL){
-    temp = temp->next;
-    if(!strcmp(name,temp->name)){
-      //name is already in this table
-      free(newSym->name);
-      free(newSym);
-      return true;
-    }
-  }
-  return false;
-}
-*/
 
 SYMBOL *getSymbol(SymbolTable *t, char *name){
   //find index via hash

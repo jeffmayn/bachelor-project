@@ -1,7 +1,7 @@
 #include "tree.h"
 #include "typecheck.h"
 #include "symbol.h"
-/*#include "symbol.c" //virker ikke uden //virker ikke med!*/ 
+/*#include "symbol.c" //virker ikke uden //virker ikke med!*/
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -45,11 +45,13 @@ void travDecls(SymbolTable *t, DECL_LIST *decls){
       travVDecls(t, d->val.list);
     break;
     case funcK:
-      //add function to current scope
-      putSymbol(t, d->val.func->head->id, 0, func, d->val.func->head->type->kind); //add some shit for named types, records and arrays
+      ; //empty statement
+      //^labels may only be followed by statments, and declarations are not statements
       //create new scope
       SymbolTable *child = scopeSymbolTable(t);
       childScopeForDebugging = child;
+      //add function to current scope
+      putSymbol(t, d->val.func->head->id, 0, func, d->val.func->head->type->kind, child); //add some shit for named types, records and arrays
       //add parametrs to that scope
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
@@ -74,7 +76,7 @@ void travDecls(SymbolTable *t, DECL_LIST *decls){
     break;
     case idDeclK:
       printf("%s of type %d put into SymbolTable\n", d->val.id.id, d->val.id.type->kind);
-      putSymbol(t, d->val.id.id, 0, type, d->val.id.type->kind);
+      putSymbol(t, d->val.id.id, 0, type, d->val.id.type->kind, NULL);
     break;
   }
 
@@ -89,7 +91,7 @@ void travVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   //TODO: may be done
   VAR_TYPE *vty = vDecls->vType;
   printf("%s of type %d put into SymbolTable\n", vty->id, vty->type->kind);
-  putSymbol(t, vty->id, 0, var, vty->type->kind); //last param is the type of the variable //further shit to be added for named types, records and arrays
+  putSymbol(t, vty->id, 0, var, vty->type->kind, NULL); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
   travVDecls(t, vDecls->vList);
 }
 

@@ -31,7 +31,7 @@ SymbolTable *initSymbolTable();
 
 SymbolTable *scopeSymbolTable(SymbolTable *t);
 
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type);
+SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope);
 
 /**
  * Add a parameter to the scop given by SymbolTable

@@ -14,11 +14,24 @@ SymbolTable *childScopeForDebugging;
 void printSymbol(SymbolTable *t, char *id){
   SYMBOL *s = getSymbol(t,id);
   if(s!=0){
-    printf("Successfully found the variable '%s' with which is of kind %d and type %d it has the value %d\n", s->name, s->kind, s->type, s->value);
+    printf("Successfully found '%s' of kind %d and type %d with value %d\n", s->name, s->kind, s->type, s->value);
   }
   else{
     printf("unfortunately '%s' where not found in current scope\n", id);
   }
+}
+
+SymbolTable* findFunctionScope(SymbolTable *t, char *fId){
+  SYMBOL *s = getSymbol(t,fId);
+  if(s == NULL){
+    printf("'%s' where not found in current scope\n", fId);
+    return NULL;
+  }
+  if(s->kind != funcK){
+    printf("'%s' is not a function", s->name);
+    return NULL;
+  }
+  return s->scope;
 }
 
 int main()
@@ -35,11 +48,16 @@ int main()
   printSymbol(t, "a");
   printSymbol(t, "f");
   printSymbol(t, "v");
-  printSymbol(childScopeForDebugging, "v");
-  printSymbol(childScopeForDebugging, "x");
-  printSymbol(childScopeForDebugging, "g");
-  printSymbol(childScopeForDebugging, "x");
-  printSymbol(childScopeForDebugging, "u");
-  printSymbol(childScopeForDebugging, "w");
+  SymbolTable *t2 = findFunctionScope(t,"f");
+  SymbolTable *t10 = findFunctionScope(t2,"f");
+  SymbolTable *t3 = findFunctionScope(t,"g");
+  printSymbol(t2, "v");
+  printSymbol(t2, "x");
+  printSymbol(t2, "g");
+  printSymbol(t2, "x");
+  printSymbol(t2, "u");
+  printSymbol(t2, "w");
+  printSymbol(t3, "u");
+  printSymbol(t3, "w");
   return 0;
 }
