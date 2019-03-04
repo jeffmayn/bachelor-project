@@ -109,6 +109,7 @@ typedef struct EXP {
   int lineno;
   enum {termK, minusK, plusK, timesK, divK,\
         leK, eqK, geK, greatK, lessK, neK, andK, orK} kind;
+  Typekind type; //the type of the expression
   union {
     struct {struct EXP *left; struct EXP *right;} binOP;
     struct TERM *term;

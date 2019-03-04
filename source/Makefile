@@ -6,7 +6,7 @@ obj = $(src:.c=.o) #navngiver .o filer
 
 #compiler flex, bison og vores egne c filer
 main:	y.tab.o lex.yy.o $(obj)
-	          $(CC) lex.yy.o y.tab.o $(obj) -o compiler -lfl
+	          $(CC) lex.yy.o y.tab.o $(obj) -o compiler -lfl -g
 
 #laver nødvendige filer ud fra bison
 y.tab.c y.tab.h:  parser.y

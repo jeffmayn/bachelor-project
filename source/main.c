@@ -39,7 +39,7 @@ int main()
   yyparse();
   pBODY(theexpression);
   printf("Calling idTypeFinder\n");
-  SymbolTable* t = idTypeFinder();
+  SymbolTable* t = typeCheck();
   printf("table: %p\n", (void* )t);
   printf("printing symbol\n");
   printSymbol(t, "x");
