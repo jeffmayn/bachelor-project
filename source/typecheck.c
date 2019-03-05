@@ -156,8 +156,7 @@ void expTypeTravStmt(SymbolTable *t, STATEMENT *s){
       printf("expTypeTravStmt allocateLengthK not implemented\n");
       break;
     case assiK:
-      //something is wrong here ***********************************************************
-      expTypeTravExp(t, s->val.allocatelength.exp);
+      expTypeTravExp(t, s->val.assign.exp);
       //Kunne i teorien tjekke typer her
       break;
     case ifK:
