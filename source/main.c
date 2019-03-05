@@ -29,7 +29,7 @@ SymbolTable* findFunctionScope(SymbolTable *t, char *fId){
     return NULL;
   }
   if(s->kind != funcK){
-    printf("'%s' is not a function", s->name);
+    printf("'%s' is not a function\n", s->name);
     return NULL;
   }
   return s->scope;

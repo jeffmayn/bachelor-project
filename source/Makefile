@@ -6,9 +6,11 @@ obj = $(src:.c=.o) #navngiver .o filer
 
 #compiler flex, bison og vores egne c filer
 compiler:	y.tab.o lex.yy.o $(obj)
-	          $(CC) $^ -o $@.out $(CFLAGS) #$^ referere til venstresiden på
-																				#reglen, $@ referere til højresiden
-																				#på reglen
+	          $(CC) $^ -o $@.out $(CFLAGS)
+
+#$^ referere til venstresiden på
+#reglen, $@ referere til højresiden
+#på reglen
 
 #laver nødvendige filer ud fra bison
 y.tab.c y.tab.h:  parser.y

@@ -61,7 +61,7 @@ void pTYPE(TYPE *t){
         printf("]");
         break;
     case recordK:
-        printf("record of {");
+        printf("record of {\n");
         pVARDECLLIST(t->val.vList);
         printf("}");
         break;
@@ -110,8 +110,9 @@ void pDECL(DECLARATION *d){
   fflush(stdout);
   switch(d->kind){
     case idDeclK:
-      printf("type %s = ;", d->val.id.id);
+      printf("type %s = ", d->val.id.id);
       pTYPE(d->val.id.type);
+      printf(";");
     break;
     case funcK:
       pFUNC(d->val.func);

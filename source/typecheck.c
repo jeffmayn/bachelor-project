@@ -282,7 +282,7 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
       return boolK;
       break;
     case nullK:
-      printf("expTypeTravTerm: What type is a NULL?!?!?!");
+      printf("expTypeTravTerm: What type is a NULL?!?!?!\n");
       return -1;
       break;
   }
@@ -397,7 +397,7 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
       }
       type = s->val.allocatelength.exp->type;
       if(type != intK){
-        printf("Amount to be allocated is not a number");
+        printf("Amount to be allocated is not a number\n");
       }
       break;
     case assiK:
@@ -409,14 +409,14 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
       }
       type = sym->type;
       if(type != s->val.assign.exp->type){
-        printf("Variable %s with type %d, does not match type %d of expression", s->val.assign.var->val.id, type, s->val.assign.exp->type);
+        printf("Variable %s with type %d, does not match type %d of expression\n", s->val.assign.var->val.id, type, s->val.assign.exp->type);
       }
       break;
     case ifK:
       //check if the expression is bool
       type = s->val.ifthenelse.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean");
+        printf("Type of condition in if-statmemt should be boolean\n");
       }
       //traverse body
       checkTypeTravStmt(t, s->val.ifthenelse.thenbody);
@@ -425,7 +425,7 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
       //check if the expression is bool
       type = s->val.ifthenelse.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean");
+        printf("Type of condition in if-statmemt should be boolean\n");
       }
       //traverse both bodies
       checkTypeTravStmt(t, s->val.ifthenelse.thenbody);
@@ -435,7 +435,7 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
       //check if the expression is bool
       type = s->val.while_.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean");
+        printf("Type of condition in if-statmemt should be boolean\n");
       }
       //traverse body
       checkTypeTravStmt(t, s->val.while_.body);
