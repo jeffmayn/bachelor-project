@@ -26,7 +26,7 @@ void pHEAD(HEAD *h){
   fflush(stdout);
   printf("func %s(", h->id);
   pPARDECLLIST(h->pList);
-  printf("):");
+  printf(") : ");
   pTYPE(h->type);
   printf("\n");
 }
@@ -40,7 +40,7 @@ void pBODY(BODY *b){
 void pTAIL(TAIL *t){
   fflush(stdout);
   indent();
-  printf("end %s", t->id);
+  printf("end %s;", t->id);
 }
 
 void pTYPE(TYPE *t){
@@ -110,7 +110,7 @@ void pDECL(DECLARATION *d){
   fflush(stdout);
   switch(d->kind){
     case idDeclK:
-      printf("type %s = ", d->val.id.id);
+      printf("type %s = ;", d->val.id.id);
       pTYPE(d->val.id.type);
     break;
     case funcK:
@@ -119,6 +119,7 @@ void pDECL(DECLARATION *d){
     case listK:
       printf("var ");
       pVARDECLLIST(d->val.list);
+      printf(";");
     break;
   }
 }
@@ -139,31 +140,31 @@ void pSTMT(STATEMENT *s){
     case returnK:
       printf("return( ");
       pEXP(s->val.return_);
-      printf(" )");
+      printf(" );");
       break;
     case writeK:
       printf("write( ");
       pEXP(s->val.write);
-      printf(" )");
+      printf(" );");
       break;
     case allocateK:
       printf("allocate( ");
       pVARIABLE(s->val.allocate);
-      printf(" )");
+      printf(" );");
       break;
     case allocateLengthK:
       printf("allocate( ");
       pVARIABLE(s->val.allocatelength.var);
       printf(" ) of length( ");
       pEXP(s->val.allocatelength.exp);
-      printf(")");
+      printf(");");
       break;
     case assiK:
       printf("(");
       pVARIABLE(s->val.allocatelength.var);
       printf(" = ");
       pEXP(s->val.allocatelength.exp);
-      printf(")");
+      printf(");");
       break;
     case ifK:
       printf("if( ");
@@ -174,7 +175,7 @@ void pSTMT(STATEMENT *s){
       pSTMT(s->val.ifthenelse.thenbody);
       INDENT--;
       indent();
-      printf(")");
+      printf(");");
       break;
     case thenK:
       printf("if( ");
@@ -190,7 +191,7 @@ void pSTMT(STATEMENT *s){
       pSTMT(s->val.ifthenelse.elsebody);
       INDENT--;
       indent();
-      printf(")");
+      printf(");");
       break;
     case whileK:
       printf("while( ");
@@ -200,7 +201,7 @@ void pSTMT(STATEMENT *s){
       pSTMT(s->val.while_.body);
       INDENT--;
       indent();
-      printf(")");
+      printf(");");
       break;
     case listStmtK:
       printf("{");

@@ -197,30 +197,39 @@ enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp){
       Typekind type2 = expTypeTravExp(t, exp->val.binOP.right);
       //Here we could check if the two types are the same
       if(type1 == type2 && type1 == intK){
-        exp->type = type1;
-        return type1;
+        exp->type = intK;
+        return intK;
       }
-      printf("The two subxpressions of the binary expression does not have the same type");
+      printf("expTypeTravExp left and right not both integers.\n");
       return -1;
     case andK:
     case orK:
       ; //empty statement
-      Typekind type1 = expTypeTravExp(t, exp->val.binOP.left);
-      Typekind type2 = expTypeTravExp(t, exp->val.binOP.right);
+      Typekind type3 = expTypeTravExp(t, exp->val.binOP.left);
+      Typekind type4 = expTypeTravExp(t, exp->val.binOP.right);
       //Here we could check if the two types are the same
-      if(type1 == type2 && type1 == boolK){
-        exp->type = type1;
-        return type1;
+      if(type3 == type4 && type3== boolK){
+        exp->type = boolK;
+        return boolK;
       }
-      printf("The two subxpressions of the binary expression does not have the same type");
+      printf("expTypeTravExp left and right not both booleans.\n");
       return -1;
-    case leK:
+    case leK: //TODO er det ok at left og right bare er ens og vi så returnere en bool
     case eqK:
     case geK:
     case greatK:
     case lessK:
     case neK:
-      //TODO;
+      ; //empty statement
+      Typekind type5 = expTypeTravExp(t, exp->val.binOP.left);
+      Typekind type6 = expTypeTravExp(t, exp->val.binOP.right);
+      //Here we could check if the two types are the same
+      if(type5 == type6){
+        exp->type = boolK;
+        return boolK;
+      }
+      printf("expTypeTravExp left and right not same type.\n");
+      return -1;
 
   }
 }
