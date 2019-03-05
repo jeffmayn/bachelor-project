@@ -20,12 +20,10 @@ void pFUNC(FUNCTION *f){
   pBODY(f->body);
   INDENT--;
   pTAIL(f->tail);
-  //printf("\n");
 }
 
 void pHEAD(HEAD *h){
   fflush(stdout);
-  //indent();
   printf("func %s(", h->id);
   pPARDECLLIST(h->pList);
   printf("):");
@@ -37,15 +35,12 @@ void pBODY(BODY *b){
   fflush(stdout);
   pDECLLIST(b->vList);
   pSTMTLIST(b->sList);
-  //printf("\n");
 }
 
 void pTAIL(TAIL *t){
   fflush(stdout);
-  //printf("\n");
   indent();
   printf("end %s", t->id);
-  //printf("\n");
 }
 
 void pTYPE(TYPE *t){
@@ -133,7 +128,6 @@ void pSTMTLIST(STATEMENT_LIST *sl){
   fflush(stdout);
   pSTMT(sl->statement);
   if(sl->statementList != NULL){
-    //printf("\n");
     pSTMTLIST(sl->statementList);
   }
 }
@@ -143,36 +137,39 @@ void pSTMT(STATEMENT *s){
   indent();
   switch(s->kind){
     case returnK:
-      //indent();
-      printf("return ");
+      printf("return( ");
       pEXP(s->val.return_);
+      printf(" )");
       break;
     case writeK:
-      printf("write ");
+      printf("write( ");
       pEXP(s->val.write);
+      printf(" )");
       break;
     case allocateK:
-      printf("allocate ");
+      printf("allocate( ");
       pVARIABLE(s->val.allocate);
+      printf(" )");
       break;
     case allocateLengthK:
-      printf("allocate ");
+      printf("allocate( ");
       pVARIABLE(s->val.allocatelength.var);
-      printf("of length ");
+      printf(" ) of length( ");
       pEXP(s->val.allocatelength.exp);
+      printf(")");
       break;
     case assiK:
+      printf("(");
       pVARIABLE(s->val.allocatelength.var);
       printf(" = ");
       pEXP(s->val.allocatelength.exp);
+      printf(")");
       break;
     case ifK:
-      printf("if ");
+      printf("if( ");
       pEXP(s->val.ifthenelse.cond);
-      printf("\n");
+      printf(" ) then(\n");
       indent();
-      printf("then (\n");
-      //indent();
       INDENT++;
       pSTMT(s->val.ifthenelse.thenbody);
       INDENT--;
@@ -180,18 +177,15 @@ void pSTMT(STATEMENT *s){
       printf(")");
       break;
     case thenK:
-      printf("if ");
+      printf("if( ");
       pEXP(s->val.ifthenelse.cond);
-      printf("\n");
+      printf(" ) then(\n");
       indent();
-      printf("then (\n");
       INDENT++;
       pSTMT(s->val.ifthenelse.thenbody);
       INDENT--;
       indent();
-      printf(")\n");
-      indent();
-      printf("else (\n");
+      printf(") else (\n");
       INDENT++;
       pSTMT(s->val.ifthenelse.elsebody);
       INDENT--;
@@ -199,11 +193,9 @@ void pSTMT(STATEMENT *s){
       printf(")");
       break;
     case whileK:
-      printf("while ");
+      printf("while( ");
       pEXP(s->val.while_.cond);
-      printf("\n");
-      indent();
-      printf("do (\n");
+      printf(" ) do ( \n");
       INDENT++;
       pSTMT(s->val.while_.body);
       INDENT--;
@@ -214,12 +206,10 @@ void pSTMT(STATEMENT *s){
       printf("{");
       printf("\n");
       INDENT++;
-      //indent();
       pSTMTLIST(s->val.list);
       INDENT--;
       indent();
       printf("}");
-      //printf("\n");
       break;
   }
   printf("\n");
@@ -232,17 +222,14 @@ void pVARIABLE(VARIABLE *v){
   switch(v->kind){
     case idVarK:
       printf("%s", v->val.id);
-      //printf("%*s%s", INDENT, "", v->val.id);
       break;
     case expK:
-      //call print var print brackets call print exp
       pVARIABLE(v->val.varexp.var);
       printf("[");
       pEXP(v->val.varexp.exp);
       printf("]");
       break;
     case dotK:
-      //call print var print dot print id
       pVARIABLE(v->val.vardot.var);
       printf(".");
       printf("%s", v->val.vardot.id);
@@ -255,7 +242,9 @@ void pEXP(EXP *e){
 
   switch(e->kind){
     case termK:
+      printf("(");
       pTERM(e->val.term);
+      printf(")");
       break;
     default:
       printf("(");
@@ -326,13 +315,17 @@ void pTERM(TERM *t){
       printf(")");
       break;
     case notTermK:
+      printf("(");
       printf("!");
       pTERM(t->val.notTerm);
+      printf(")");
       break;
     case expCardK:
+      printf("(");
       printf("|");
       pEXP(t->val.expCard);
       printf("|");
+      printf(")");
       break;
     case numK:
       printf("%d", t->val.num);

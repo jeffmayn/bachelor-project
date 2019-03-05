@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include "symbol.h"
-#include "symbol.c"
 #include "weeder.h"
 
 extern BODY *theexpression;
