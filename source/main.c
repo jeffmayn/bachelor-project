@@ -1,6 +1,7 @@
 #include "tree.h"
 #include "pretty.h"
 #include "typecheck.h"
+#include "weeder.h"
 #include <stdio.h>
 
 int lineno = 0;
@@ -59,5 +60,6 @@ int main()
   printSymbol(t2, "w");
   printSymbol(t3, "u");
   printSymbol(t3, "w");
+  weederBody(theexpression);
   return 0;
 }
