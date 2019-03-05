@@ -197,7 +197,7 @@ enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp){
         exp->type = type1;
         return type1;
       }
-      printf("The two subxpressions of the binary expression does not have the same type");
+      printf("The two subxpressions of the binary expression does not have the same type\n");
       return -1;
   }
 }
@@ -216,10 +216,10 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
       //maybe i should check if this is a function or something else
       ACT_LIST *act = term->val.idact.list;
       if(act != NULL){
-        expTypeTravExps(t, act->expList);
+        expTypeTravExps(s->scope, act->expList);
       }
       return s->type;
-      printf("expTypeTravTerm: maybe funktion calls not yet implemented\n");
+      printf("expTypeTravTerm: maybe function calls not yet implemented\n");
       break;
     case expTermK:
       return expTypeTravExp(t, term->val.exp);
@@ -365,7 +365,7 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
       }
       type = s->val.allocatelength.exp->type;
       if(type != intK){
-        printf("Amount to be allocated is not a number");
+        printf("Amount to be allocated is not a number\n");
       }
       break;
     case assiK:
@@ -384,7 +384,7 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
       //check if the expression is bool
       type = s->val.ifthenelse.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean");
+        printf("Type of condition in if-statmemt should be boolean\n");
       }
       //traverse body
       checkTypeTravStmt(t, s->val.ifthenelse.thenbody);
