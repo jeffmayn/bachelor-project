@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include "symbol.h"
-#include "symbol.c"
 #include "weeder.h"
 
 extern BODY *theexpression;
@@ -10,6 +8,7 @@ void *weederBody(BODY *body){
   printf("ENTERING weederBody\n");
   body = theexpression;
   traverseBody(body);
+  checkForReturn(body);
 }
 
 void *traverseBody(BODY *body){
@@ -25,7 +24,6 @@ void *traverseDECL(DECL_LIST *decl){
       printf(" --> kind = function\n");
     } else {
     //  printf(" --> kind = %d\n", decl->decl->kind);
-
     }
     traverseDECL(decl->decl_list);
   }
@@ -45,6 +43,26 @@ FUNCTION *weederFunction(FUNCTION *f){
     printf("not same");
     // TODO: do stuff
   }
-
   traverseBody(f->body);
+}
+
+
+// NEW STUFF
+
+void *checkForReturn(BODY *body){
+  printf("ENTERING checkForReturn\n");
+  traverseSTMTlist(body->sList);
+}
+
+void *traverseSTMTlist(STATEMENT_LIST *stmtList){
+  printf("ENTERING traverseSTMTlist\n");
+  while (stmtList != NULL){
+    printf("!!!! --> %d\n", stmtList->statement->kind);
+  }
+//  if(stmtList != NULL){
+//    printf("!!!! --> %d\n", stmtList->statement->kind);
+//    traverseSTMTlist()
+
+  //}
+
 }
