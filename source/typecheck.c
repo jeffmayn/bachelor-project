@@ -2,7 +2,6 @@
 #include "typecheck.h"
 #include "symbol.h"
 #include "memory.h"
-/*#include "symbol.c" //virker ikke uden //virker ikke med!*/
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -179,7 +178,7 @@ void expTypeTravStmt(SymbolTable *t, STATEMENT *s){
   }
   printf("\n");
 }
-
+//MADS TODO sørg for binære operatorer.
 enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp){
   //error cheking needed from recursive calls
   switch(exp->kind){
@@ -189,17 +188,40 @@ enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp){
       exp->type = type;
       return type;
       break;
-    default:
+    case minusK:
+    case plusK:
+    case divK:
+    case timesK:
       ; //empty statement
-      int type1 = expTypeTravExp(t, exp->val.binOP.left);
-      int type2 = expTypeTravExp(t, exp->val.binOP.right);
+      Typekind type1 = expTypeTravExp(t, exp->val.binOP.left);
+      Typekind type2 = expTypeTravExp(t, exp->val.binOP.right);
       //Here we could check if the two types are the same
-      if(type1 == type2){
+      if(type1 == type2 && type1 == intK){
         exp->type = type1;
         return type1;
       }
       printf("The two subxpressions of the binary expression does not have the same type");
       return -1;
+    case andK:
+    case orK:
+      ; //empty statement
+      Typekind type1 = expTypeTravExp(t, exp->val.binOP.left);
+      Typekind type2 = expTypeTravExp(t, exp->val.binOP.right);
+      //Here we could check if the two types are the same
+      if(type1 == type2 && type1 == boolK){
+        exp->type = type1;
+        return type1;
+      }
+      printf("The two subxpressions of the binary expression does not have the same type");
+      return -1;
+    case leK:
+    case eqK:
+    case geK:
+    case greatK:
+    case lessK:
+    case neK:
+      //TODO;
+
   }
 }
 

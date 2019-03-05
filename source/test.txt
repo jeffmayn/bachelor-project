@@ -8,6 +8,7 @@ return 7;
 end f
 func g(x:bool,u:int):bool
 var w:bool;
+if(x) then u = 7;
 return true;
 end g
 x = 2;

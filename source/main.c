@@ -18,7 +18,7 @@ void printSymbol(SymbolTable *t, char *id){
     printf("Successfully found '%s' of kind %d and type %d with value %d\n", s->name, s->kind, s->type, s->value);
   }
   else{
-    printf("unfortunately '%s' where not found in current scope\n", id);
+    printf("unfortunately '%s' were not found in current scope\n", id);
   }
 }
 
@@ -39,9 +39,10 @@ int main()
 { lineno = 1;
   yyparse();
   pBODY(theexpression);
-  printf("Calling idTypeFinder\n");
+  weederBody(theexpression);
+  //printf("Calling idTypeFinder\n");
   SymbolTable* t = typeCheck();
-  printf("table: %p\n", (void* )t);
+  /*printf("table: %p\n", (void* )t);
   printf("printing symbol\n");
   printSymbol(t, "x");
   printSymbol(t, "y");
@@ -59,7 +60,7 @@ int main()
   printSymbol(t2, "u");
   printSymbol(t2, "w");
   printSymbol(t3, "u");
-  printSymbol(t3, "w");
-  weederBody(theexpression);
+  printSymbol(t3, "w");*/
+  //TODO PRINT STDERROR
   return 0;
 }

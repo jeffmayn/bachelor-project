@@ -1,6 +1,7 @@
 CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -pedantic -g
 
+
 src = $(wildcard *.c) #finder .c filer
 obj = $(src:.c=.o) #navngiver .o filer
 
