@@ -1,6 +1,6 @@
 #ifndef __weeder_h
 #define __weeder_h
-#include "../scan_parse/tree.h"
+#include "tree.h"
 
 void *weederBody(BODY *body);
 
