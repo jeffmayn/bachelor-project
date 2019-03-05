@@ -15,16 +15,16 @@ SymbolTable* typeCheck(){
   SymbolTable *table = initSymbolTable();
   bodyList *bodies = initBodyList();
   idTypeFinder(table, bodies);
-  BODY *body = getBody(bodies);
-  while(body != NULL){
-    expTypeFinder(table, body);
-    body = getBody(bodies);
+  bodyListElm *bElm = getBody(bodies);
+  while(bElm != NULL){
+    expTypeFinder(bElm->scope, bElm->body);
+    bElm = getBody(bodies);
   }
   resetbodyListIndex(bodies);
-  body = getBody(bodies);
-  while(body != NULL){
-    checkTypes(table, body);
-    body = getBody(bodies);
+  bElm = getBody(bodies);
+  while(bElm != NULL){
+    checkTypes(bElm->scope, bElm->body, bElm->funcId);
+    bElm = getBody(bodies);
   }
   //TODO: destroy body list
   return table;
@@ -39,7 +39,7 @@ SymbolTable* typeCheck(){
   Nej, den må hellere være lokal i de rekursive funktioner, så vi kan bestemme roden
 */
 void idTypeFinder(SymbolTable *table, bodyList *bList){
-  saveBody(bList, theexpression);
+  saveBody(bList, theexpression, table, NULL);
   idTypeTravBody(table, theexpression, bList);
 }
 
@@ -96,7 +96,7 @@ void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       //recursively call idFinderRec on body of function
       idTypeTravBody(child,d->val.func->body, bList);
       //save body for statement traversal
-      saveBody(bList, d->val.func->body);
+      saveBody(bList, d->val.func->body, child, d->val.func->head->id);
     break;
     case idDeclK:
       printf("%s of type %d put into SymbolTable\n", d->val.id.id, d->val.id.type->kind);
@@ -250,7 +250,7 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
       return boolK;
       break;
     case nullK:
-      printf("expTypeTravTerm: What type is a NULL?!?!?!");
+      printf("expTypeTravTerm: What type is a NULL?!?!?!\n");
       return -1;
       break;
   }
@@ -298,27 +298,27 @@ void expTypeTravExps(SymbolTable *t, EXP_LIST *eList){
 /**
  * Checks if expression types match variable and context types
 */
-void checkTypes(SymbolTable *t, BODY *body){
-  checkTypeTravBody(t, body);
+void checkTypes(SymbolTable *t, BODY *body, char* funcId){
+  checkTypeTravBody(t, body, funcId);
 }
 
 /*
 løb over alle statements og check om expressions passer til statements
 */
 
-void checkTypeTravBody(SymbolTable *t,  BODY *body){
-  checkTypeTravStmts(t, body->sList);
+void checkTypeTravBody(SymbolTable *t,  BODY *body, char* funcId){
+  checkTypeTravStmts(t, body->sList, funcId);
 }
 
-void checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList){
+void checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId){
   printf("checkTypeTravStmts\n");
-  checkTypeTravStmt(t, sList->statement);
+  checkTypeTravStmt(t, sList->statement, funcId);
   if(sList->statementList != NULL){
-    checkTypeTravStmts(t, sList->statementList);
+    checkTypeTravStmts(t, sList->statementList, funcId);
   }
 }
 
-void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
+void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
   printf("checkTypeTravStmt\n");
   SYMBOL *sym;
   Typekind type;
@@ -332,13 +332,26 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
         //we assume the return type is int
         type = intK;
       }
+      else{
+        sym = getSymbol(parentScope, funcId);
+        if(sym == NULL){
+          printf("The surrounding function '%s' was not found", funcId);
+        }
+        type = sym->type;
+      }
+      if(type != s->val.return_->type){
+        printf("The type %d, does not match the return type %d of %s", s->val.return_->type, type, sym->name);
+      }
       //SYMBOL *sym = getSymbol(parentScope, id) //what is the name of this function
-      printf("CheckTypeTravStmt: Typecheck of return not implemented\n");
+      //printf("CheckTypeTravStmt: Typecheck of return not implemented\n");
       //expTypeTravExp(t, s->val.return_);
       break;
     case writeK:
       //What to do?????
-      printf("CheckTypeTravStmt: Typecheck of write not implemented\n");
+      if(s->val.write->type != intK && s->val.write->type != boolK){
+        printf("type of expression to be written is not int og bool");
+      }
+      //printf("CheckTypeTravStmt: Typecheck of write not implemented\n");
       //expTypeTravExp(t, s->val.write);
       break;
     case allocateK:
@@ -372,8 +385,9 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
       printf("checkTypeTravStmt: assiK\n");
       //check if expression type is the same as variable type
       sym = getSymbol(t, s->val.assign.var->val.id);
-      if(s == NULL){
+      if(sym == NULL){
         printf("Symbol '%s' was not found\n", s->val.assign.var->val.id);
+        break;
       }
       type = sym->type;
       if(type != s->val.assign.exp->type){
@@ -387,30 +401,30 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s){
         printf("Type of condition in if-statmemt should be boolean\n");
       }
       //traverse body
-      checkTypeTravStmt(t, s->val.ifthenelse.thenbody);
+      checkTypeTravStmt(t, s->val.ifthenelse.thenbody, funcId);
       break;
     case thenK:
       //check if the expression is bool
       type = s->val.ifthenelse.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean");
+        printf("Type of condition in if-statmemt should be boolean\n");
       }
       //traverse both bodies
-      checkTypeTravStmt(t, s->val.ifthenelse.thenbody);
-      checkTypeTravStmt(t, s->val.ifthenelse.elsebody);
+      checkTypeTravStmt(t, s->val.ifthenelse.thenbody, funcId);
+      checkTypeTravStmt(t, s->val.ifthenelse.elsebody, funcId);
       break;
     case whileK:
       //check if the expression is bool
       type = s->val.while_.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean");
+        printf("Type of condition in if-statmemt should be boolean\n");
       }
       //traverse body
-      checkTypeTravStmt(t, s->val.while_.body);
+      checkTypeTravStmt(t, s->val.while_.body, funcId);
       break;
     case listStmtK:
       //traverse statements
-      checkTypeTravStmts(t, s->val.list);
+      checkTypeTravStmts(t, s->val.list, funcId);
       break;
   }
   printf("\n");
@@ -430,7 +444,7 @@ bodyList* initBodyList(){
   return l;
 }
 
-void saveBody(bodyList *list, BODY *body){
+void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId){
   bodyListElm *ble = Malloc(sizeof(bodyListElm));
   ble->next = NULL;
   if(list->head == NULL){
@@ -445,13 +459,15 @@ void saveBody(bodyList *list, BODY *body){
     list->tail = list->tail->next;
   }
   list->tail->body = body;
+  list->tail->scope = scope;
+  list->tail->funcId = funcId;
 }
 
-BODY* getBody(bodyList *list){
+bodyListElm* getBody(bodyList *list){
   bodyListElm *ble = list->next;
   if(ble != NULL){
     list->next = ble->next;
-    return ble->body;
+    return ble;
   }
   return NULL;
 }
