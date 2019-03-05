@@ -88,7 +88,7 @@ int test_putSymbol(){
   int mistakes = 123;
   SymbolTable *table = initSymbolTable();
 
-  SYMBOL *newSym = putSymbol(table, "kitty", 199);
+  SYMBOL *newSym = putSymbol(table, "kitty", 199, var);
 
   if((newSym != NULL) && (!strcmp(newSym->name, "kitty"))\
                       && (newSym->value == 199)){
@@ -107,7 +107,7 @@ int test_putSymbol(){
 int test_getSymbol(){
   int mistakes = 123;
   SymbolTable *table = initSymbolTable();
-  putSymbol(table, "kitty", 199);
+  putSymbol(table, "kitty", 199, var);
   SYMBOL *retrieved = getSymbol(table, "kitty");
   if(retrieved == NULL){
     printf("failed: getsymbol null pointer\n");
@@ -132,8 +132,8 @@ int test_scopeSymbolTable(){
   SymbolTable *t = initSymbolTable();
   SymbolTable *childTable = scopeSymbolTable(t);
 
-  putSymbol(t, "kitty", 199);
-  putSymbol(childTable, "Arnold", 155);
+  putSymbol(t, "kitty", 199, var);
+  putSymbol(childTable, "Arnold", 155, var);
 
   SYMBOL *retrieved = getSymbol(childTable, "kitty");
   SYMBOL *retrieved2 = getSymbol(childTable, "Arnold");
@@ -158,7 +158,7 @@ int test_doublePutSymbol(){
   SymbolTable *t = initSymbolTable();
 
   // create first 'kitty' symbol and insert
-  SYMBOL *firstSym = putSymbol(t, "kitty", 199);
+  SYMBOL *firstSym = putSymbol(t, "kitty", 199, var);
 
   if((firstSym != NULL) && (!strcmp(firstSym->name, "kitty"))\
       && (firstSym->value == 199)){
@@ -167,7 +167,7 @@ int test_doublePutSymbol(){
     printf("failed ");
   }
 
-  SYMBOL *secondSym = putSymbol(t, "kitty", 199); //should return NULL
+  SYMBOL *secondSym = putSymbol(t, "kitty", 199, var); //should return NULL
 
   if(secondSym == NULL){
     mistakes = 0;
@@ -187,8 +187,8 @@ int test_doubleScopeSymbolTable(){
   SymbolTable *t = initSymbolTable();
   SymbolTable *childTable = scopeSymbolTable(t);
 
-  putSymbol(t, "kitty", 1);
-  putSymbol(childTable, "kitty", 2);
+  putSymbol(t, "kitty", 1, var);
+  putSymbol(childTable, "kitty", 2, var);
 
   SYMBOL *retrieved = getSymbol(t, "kitty");
   SYMBOL *retrieved2 = getSymbol(childTable, "kitty");

@@ -80,20 +80,20 @@ void createTree(){
       j++;
       j = j%20;
     }
-    putSymbol(tables[j], words[i], i); //add symbol to table
+    putSymbol(tables[j], words[i], i, var); //add symbol to table
   }
 
   //add 1 string from each table to each table, including a repetition
   for(int i = 0; i<wordCount/20; i++){
     for(int j = 0; j<20; j++){
-      putSymbol(tables[j], words[i*20], i+j*10000); //add symbol to table
+      putSymbol(tables[j], words[i*20], i+j*10000, var); //add symbol to table
     }
   }
 
   //add all the strings of table 0 to table 0 again (with new value)
   for(int i = 0; i<wordCount/20; i++){
     for(int j = 0; j<20; j++){
-      putSymbol(tables[0], words[i], i+j*900000); //add symbol to table
+      putSymbol(tables[0], words[i], i+j*900000, var); //add symbol to table
     }
   }
 

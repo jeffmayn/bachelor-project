@@ -35,9 +35,10 @@ SymbolTable *scopeSymbolTable(SymbolTable *t){
  * return NULL* if the name is already in the table
  * return SYMBOL* to the new symbol on success
  */
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value){
+SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind){
   //make new symbol add name and value
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
+  newSym->kind = kind;
   newSym->value = value;
   newSym->name = Malloc(strlen(name)+1);
   memcpy(newSym->name, name, strlen(name)+1);

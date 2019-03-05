@@ -1,6 +1,7 @@
 #ifndef __tree_h
 #define __tree_h
 typedef enum {false, true} bool;
+typedef enum Typekind{idK, intK, boolK, arrayK, recordK} Typekind;
 
 typedef struct FUNCTION {
   int lineno;
@@ -29,7 +30,9 @@ typedef struct TAIL {
 
 typedef struct TYPE {
   int lineno;
-  enum {idK, intK, boolK, arrayK, recordK} kind;
+  //enum {idK, intK, boolK, arrayK, recordK} kind;
+  Typekind kind;
+  //?!?!?!?!?!
   union{
     char *id;
     struct TYPE *arrayType;
@@ -106,6 +109,7 @@ typedef struct EXP {
   int lineno;
   enum {termK, minusK, plusK, timesK, divK,\
         leK, eqK, geK, greatK, lessK, neK, andK, orK} kind;
+  Typekind type; //the type of the expression
   union {
     struct {struct EXP *left; struct EXP *right;} binOP;
     struct TERM *term;
