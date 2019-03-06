@@ -2,14 +2,28 @@ var x:int;
 var y:bool;
 var z:int;
 type a = int;
+
 func f():int
 var v:bool;
 return 7;
 end f
+
 func g(x:bool,u:int):bool
 var w:bool;
 if(x) then u = 7;
 return true;
 end g
+
+func add(x:bool,u:int) : bool
+  if(x)
+  then{
+    u = 7;
+  }
+  else{
+    u = 9;
+  }
+  return 0;
+end add
+
 x = 2;
 y = z;
