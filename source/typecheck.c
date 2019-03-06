@@ -350,7 +350,7 @@ void checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId){
 }
 
 void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
-  printf("checkTypeTravStmt\n");
+  fprintf(stderr, "checkTypeTravStmt\n");
   SYMBOL *sym;
   Typekind type;
   switch(s->kind){
@@ -366,23 +366,23 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       else{
         sym = getSymbol(parentScope, funcId);
         if(sym == NULL){
-          printf("The surrounding function '%s' was not found", funcId);
+          fprintf(stderr, "The surrounding function '%s' was not found", funcId);
         }
         type = sym->type;
       }
       if(type != s->val.return_->type){
-        printf("The type %d, does not match the return type %d of %s", s->val.return_->type, type, sym->name);
+        fprintf(stderr, "The type %d, does not match the return type %d of %s", s->val.return_->type, type, sym->name);
       }
       //SYMBOL *sym = getSymbol(parentScope, id) //what is the name of this function
-      //printf("CheckTypeTravStmt: Typecheck of return not implemented\n");
+      //fprintf(stderr, "CheckTypeTravStmt: Typecheck of return not implemented\n");
       //expTypeTravExp(t, s->val.return_);
       break;
     case writeK:
       //What to do?????
       if(s->val.write->type != intK && s->val.write->type != boolK){
-        printf("type of expression to be written is not int og bool");
+        fprintf(stderr, "type of expression to be written is not int og bool");
       }
-      //printf("CheckTypeTravStmt: Typecheck of write not implemented\n");
+      //fprintf(stderr, "CheckTypeTravStmt: Typecheck of write not implemented\n");
       //expTypeTravExp(t, s->val.write);
       break;
     case allocateK:
@@ -416,8 +416,9 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       fprintf(stderr,"checkTypeTravStmt: assiK\n");
       //check if expression type is the same as variable type
       sym = getSymbol(t, s->val.assign.var->val.id);
+      //dumpSymbolTable(t);
       if(sym == NULL){
-        printf("Symbol '%s' was not found\n", s->val.assign.var->val.id);
+        fprintf(stderr, "Line %d: Symbol '%s' in function '%s' was not found\n",s->lineno, s->val.assign.var->val.id, funcId);
         break;
       }
       type = sym->type;

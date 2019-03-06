@@ -6,7 +6,7 @@ obj = $(src:.c=.o) #navngiver .o filer
 
 #compiler flex, bison og vores egne c filer
 compiler:	y.tab.o lex.yy.o $(obj)
-	          $(CC) $^ -o $@.out $(CFLAGS)
+	          $(CC) $^ -o $@.out $(CFLAGS) -g
 
 #$^ referere til højresiden på
 #reglen, $@ referere til venstresiden
@@ -21,6 +21,6 @@ lex.yy.c:	flex.l y.tab.h
 	          flex flex.l
 
 .PHONY: y.tab.c y.tab.h lex.yy.c clean
-	
+
 clean:
 						-rm compiler.out *.o y.tab.c y.tab.h lex.yy.c y.output

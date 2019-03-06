@@ -82,6 +82,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
 
 
 SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type){
+  fprintf(stderr, "putParam*****************************\n");
   SYMBOL* s = putSymbol(t, name, value, kind, type, NULL); //assuming param is variable, so no scope is relevant
   if(s == NULL){
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);
@@ -95,6 +96,9 @@ SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type){
     param = param->next;
   }
   param->next = s;
+  if(getSymbol(t, name) == NULL){
+    fprintf(stderr, "param %s not found after putting it\n", name);
+  }
   return s;
 }
 
