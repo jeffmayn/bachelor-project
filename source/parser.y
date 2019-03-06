@@ -113,6 +113,7 @@ par_decl_list : var_decl_list {$$ = makePDL($1);}
 
 var_decl_list : var_type tCOM var_decl_list {$$ = makeVDL($1,$3);}
               | var_type {$$ = makeVDL($1,NULL);}
+              | var_type tCOM error var_decl_list {yyerrok; }
 
 var_type : tID tCOL type {$$ = makeVAR_TYPE($1,$3);}
 
@@ -124,8 +125,7 @@ decl : tTYPE tID tASSI type tSEMI {$$ = makeDECLid($2,$4);}
      | tVAR var_decl_list tSEMI {$$ = makeDECLlist($2);}
 
 stmt_list : stmt {$$ = makeSTM_LISTstmtlist($1,NULL);}
-          | stmt stmt_list {$$ = makeSTM_LISTstmtlist($1,$2);}
-          | error stmt_list {yyerrok; }
+          | stmt stmt_list {$$ = makeSTM_LISTstmtlist($1,$2); }
 
 stmt : tRETURN exp tSEMI {$$ = makeSTMreturn($2);}
      | tWRITE exp tSEMI { $$ = makeSTMwrite($2);}
@@ -136,6 +136,7 @@ stmt : tRETURN exp tSEMI {$$ = makeSTMreturn($2);}
      | tIF exp tTHEN stmt tELSE stmt {$$ = makeSTMif_then_else($2,$4,$6);}
      | tWHILE exp tDO stmt {$$ = makeSTMwhile_do($2,$4);}
      | tLCURL stmt_list tRCURL {$$ = makeSTMlist($2);}
+     | error tSEMI {yyerrok; }
 
 var : tID {$$ = makeVARIABLEid($1);}
     | var tLSQ exp tRSQ {$$ = makeVARIABLEexp($1,$3);}

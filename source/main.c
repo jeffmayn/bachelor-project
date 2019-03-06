@@ -43,8 +43,8 @@ int main() {
   if(!SYNTAX_ERROR){
     fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
     weederBody(theexpression);
-    fprintf(stderr, "\n%s\n", "######## STARTING TYPECHECK ########");
-    SymbolTable* t = typeCheck();
+    //fprintf(stderr, "\n%s\n", "######## STARTING TYPECHECK ########");
+    //SymbolTable* t = typeCheck();
     //TODO PRINT STDERROR
     fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
     pBODY(theexpression);
