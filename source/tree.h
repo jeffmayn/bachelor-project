@@ -81,6 +81,7 @@ typedef struct STATEMENT_LIST {
 
 typedef struct STATEMENT {
   int lineno;
+  // ifK = if_then, thenK = if_then_else
   enum {returnK, writeK, allocateK, allocateLengthK, assiK, ifK, thenK,\
         whileK, listStmtK} kind;
   union {
