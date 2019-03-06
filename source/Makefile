@@ -1,20 +1,16 @@
 CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -pedantic -g
 
-builddir = build
-
-src = y.tab.c
-src += lex.yy.c
-src += $(wildcard *.c) #finder .c filer
-
-obj = $(patsubst %.c, $(builddir)/%.o,$(src)) #navngiver .o filer
+src = $(wildcard *.c) #finder .c filer
+obj = $(src:.c=.o) #navngiver .o filer
 
 #compiler flex, bison og vores egne c filer
-main: dir  $(obj)
-	echo $(src)
-	echo $(obj)
-	$(CC) $(obj) -o compiler -lfl
+compiler:	y.tab.o lex.yy.o $(obj)
+	          $(CC) $^ -o $@.out $(CFLAGS)
 
+#$^ referere til højresiden på
+#reglen, $@ referere til venstresiden
+#på reglen
 
 #laver nødvendige filer ud fra bison
 y.tab.c y.tab.h:  parser.y
@@ -24,13 +20,7 @@ y.tab.c y.tab.h:  parser.y
 lex.yy.c:	flex.l y.tab.h
 	          flex flex.l
 
-$(obj): $(src)
-	$(CC) $(CFLAGS) -c  $< -o $@
-
-dir:
-	mkdir -p build
-
-.PHONY: clean
+.PHONY: y.tab.c y.tab.h lex.yy.c clean
+	
 clean:
-	-rm compiler *.o y.tab.c y.tab.h lex.yy.c y.output
-	rm -r $(builddir)
+						-rm compiler.out *.o y.tab.c y.tab.h lex.yy.c y.output

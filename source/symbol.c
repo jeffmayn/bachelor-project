@@ -55,19 +55,23 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
     table[hashIndex] = newSym;
   } else {
     SYMBOL *temp = table[hashIndex];
-    if(!strcmp(name,temp->name)){
+    /*if(!strcmp(name,temp->name)){
       //name is already in this table
       free(newSym->name);
       free(newSym);
       return NULL;
-    }
-    while(temp->next != NULL){
-      temp = temp->next;
+    }*/
+    while(temp != NULL){
+      //temp = temp->next;
       if(!strcmp(name,temp->name)){
         //name is already in this table
+        fprintf(stderr, "putSymbol(): SYMBOL name: %s alredy in table\n", name);
         free(newSym->name);
         free(newSym);
         return NULL;
+      }
+      if(temp->next != NULL){//as long as there is a next, check the next one.
+        temp = temp->next;
       }
     }
     temp->next = newSym;
@@ -80,7 +84,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
 SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type){
   SYMBOL* s = putSymbol(t, name, value, kind, type, NULL); //assuming param is variable, so no scope is relevant
   if(s == NULL){
-    printf("PutParam: The id already exists \n");
+    fprintf(stderr, "putParam(): The id: %s already exists\n", name);
     return NULL;
   }
   SYMBOL *param = t->param;
@@ -125,27 +129,27 @@ void dumpSymbolTable(SymbolTable *t){
 
   dumpSymbolTable(t->next);
   if(t->next != NULL){
-    printf("\n%8s\n","/\\ ");
-    printf("%8s\n","/||\\");
-    printf("%8s\n"," || ");
-    printf("%8s\n"," || ");
-    printf(".:childnode:.\n");
+    fprintf(stderr,"\n%8s\n","/\\ ");
+    fprintf(stderr,"%8s\n","/||\\");
+    fprintf(stderr,"%8s\n"," || ");
+    fprintf(stderr,"%8s\n"," || ");
+    fprintf(stderr,".:childnode:.\n");
   } else {
-    printf(".:root:.\n");
+    fprintf(stderr,".:root:.\n");
   }
   SYMBOL **table = t->table;
-  printf("%-9s %-15s %-10s %s\n", "hashIndex", "name", "value",
+  fprintf(stderr,"%-9s %-15s %-10s %s\n", "hashIndex", "name", "value",
    "chained pairs->");
   for(int i=0; i<HashSize; i++){
     if(table[i]!=NULL){
       SYMBOL *elm = table[i];
-      printf("%9d %-15s %-10d", i, elm->name, elm->value);
+      fprintf(stderr,"%9d %-15s %-10d", i, elm->name, elm->value);
       elm = elm->next;
       while(elm != NULL){
-        printf(" -> (%s,%d)",elm->name,elm->value);
+        fprintf(stderr," -> (%s,%d)",elm->name,elm->value);
         elm = elm->next;
       }
-      printf("\n");
+      fprintf(stderr,"\n");
     }
   }
 

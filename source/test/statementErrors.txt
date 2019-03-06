@@ -1,0 +1,8 @@
+type x = int;
+x = 1+2;
+return write ();
+(**)
+x = 7-3;
+return write ();
+return write ();
+x = 2+4;

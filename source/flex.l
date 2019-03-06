@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "y.tab.h"
 #include <string.h>
+#include "memory.h"
 
 extern int lineno;
 extern int charpos;
@@ -71,7 +72,7 @@ int nestedcomments = 0;
 
 <INITIAL>0|[1-9][0-9]*          { yylval.uint = atoi(yytext);
                                   NCP; return tINT;}
-<INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { yylval.uid = (char *) malloc(strlen(yytext)+1);
+<INITIAL>[a-zA-Z][a-zA-Z0-9_]*  { yylval.uid = (char *) Malloc(strlen(yytext)+1);
                                   sprintf(yylval.uid, "%s", yytext);
                                   NCP; return tID;}
 

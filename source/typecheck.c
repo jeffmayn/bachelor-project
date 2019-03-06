@@ -2,7 +2,6 @@
 #include "typecheck.h"
 #include "symbol.h"
 #include "memory.h"
-/*#include "symbol.c" //virker ikke uden //virker ikke med!*/
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -11,7 +10,7 @@ extern SymbolTable *childScopeForDebugging;
 
 
 
-SymbolTable* typeCheck(){
+SymbolTable* typeCheck(){//TODO error reporting, perhaps (int typeCheck(Symboltable* target){})
   SymbolTable *table = initSymbolTable();
   bodyList *bodies = initBodyList();
   idTypeFinder(table, bodies);
@@ -47,7 +46,7 @@ void idTypeFinder(SymbolTable *table, bodyList *bList){
  t is the root of the current scope
 */
 void idTypeTravBody(SymbolTable *t, BODY *body, bodyList *bList){
-  printf("idFinderRec\n");
+  fprintf(stderr,"idFinderRec\n");
   idTypeTravDecls(t,body->vList, bList);
 }
 
@@ -58,10 +57,10 @@ void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
   //TODO things
   DECLARATION *d = decls->decl;
   if(d == NULL){
-    printf("null\n");
+    fprintf(stderr,"null\n");
     return;
   }
-  printf("id of kind %d found in travDecls\n", d->kind);
+  fprintf(stderr,"id of kind %d found in travDecls\n", d->kind);
   switch (d->kind) {
     case listK:
       idTypeTravVDecls(t, d->val.list);
@@ -78,10 +77,10 @@ void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
         VAR_DECL_LIST *vList = pList->vList;
-        printf("vList %p\n", (void*) vList);
+        fprintf(stderr,"vList %p\n", (void*) vList);
         if(vList != NULL){
           while(vList != NULL){
-            printf("about to put params for %s\n", d->val.func->head->id);
+            fprintf(stderr,"about to put params for %s\n", d->val.func->head->id);
             putParam(child, vList->vType->id, 0, var, vList->vType->type->kind); //can a parameter be anything different from a variable (func or type)
             vList = vList->vList;
           }
@@ -90,7 +89,7 @@ void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
 
       //I may use travVDecls instead of using this while loop
       //NO because its putParam and not Symbol, which is used.
-      //segmentation fault right here/below (When there is no parameters) *********************************************************************************************************
+      //segmentation fault right here/below (When there is no parameters)
       //Solved by if above
 
       //recursively call idFinderRec on body of function
@@ -99,7 +98,7 @@ void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       saveBody(bList, d->val.func->body, child, d->val.func->head->id);
     break;
     case idDeclK:
-      printf("%s of type %d put into SymbolTable\n", d->val.id.id, d->val.id.type->kind);
+      fprintf(stderr,"%s of type %d put into SymbolTable\n", d->val.id.id, d->val.id.type->kind);
       putSymbol(t, d->val.id.id, 0, type, d->val.id.type->kind, NULL);
     break;
   }
@@ -114,7 +113,7 @@ void idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   }
   //TODO: may be done
   VAR_TYPE *vty = vDecls->vType;
-  printf("%s of type %d put into SymbolTable\n", vty->id, vty->type->kind);
+  fprintf(stderr,"%s of type %d put into SymbolTable\n", vty->id, vty->type->kind);
   putSymbol(t, vty->id, 0, var, vty->type->kind, NULL); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
   idTypeTravVDecls(t, vDecls->vList);
 }
@@ -150,10 +149,10 @@ void expTypeTravStmt(SymbolTable *t, STATEMENT *s){
       expTypeTravExp(t, s->val.write);
       break;
     case allocateK:
-      printf("expTypeTravStmt allocateK not implemented\n");
+      fprintf(stderr,"expTypeTravStmt allocateK not implemented\n");
       break;
     case allocateLengthK:
-      printf("expTypeTravStmt allocateLengthK not implemented\n");
+      fprintf(stderr,"expTypeTravStmt allocateLengthK not implemented\n");
       break;
     case assiK:
       expTypeTravExp(t, s->val.assign.exp);
@@ -176,9 +175,9 @@ void expTypeTravStmt(SymbolTable *t, STATEMENT *s){
       expTypeTravStmts(t, s->val.list);
       break;
   }
-  printf("\n");
+  fprintf(stderr,"\n");
 }
-
+//MADS TODO sørg for binære operatorer.
 enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp){
   //error cheking needed from recursive calls
   switch(exp->kind){
@@ -188,17 +187,49 @@ enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp){
       exp->type = type;
       return type;
       break;
-    default:
+    case minusK:
+    case plusK:
+    case divK:
+    case timesK:
       ; //empty statement
-      int type1 = expTypeTravExp(t, exp->val.binOP.left);
-      int type2 = expTypeTravExp(t, exp->val.binOP.right);
+      Typekind type1 = expTypeTravExp(t, exp->val.binOP.left);
+      Typekind type2 = expTypeTravExp(t, exp->val.binOP.right);
       //Here we could check if the two types are the same
-      if(type1 == type2){
-        exp->type = type1;
-        return type1;
+      if(type1 == type2 && type1 == intK){
+        exp->type = intK;
+        return intK;
       }
-      printf("The two subxpressions of the binary expression does not have the same type\n");
+      fprintf(stderr,"expTypeTravExp left and right not both integers.\n");
       return -1;
+    case andK:
+    case orK:
+      ; //empty statement
+      Typekind type3 = expTypeTravExp(t, exp->val.binOP.left);
+      Typekind type4 = expTypeTravExp(t, exp->val.binOP.right);
+      //Here we could check if the two types are the same
+      if(type3 == type4 && type3== boolK){
+        exp->type = boolK;
+        return boolK;
+      }
+      fprintf(stderr,"expTypeTravExp left and right not both booleans.\n");
+      return -1;
+    case leK: //TODO er det ok at left og right bare er ens og vi så returnere en bool
+    case eqK:
+    case geK:
+    case greatK:
+    case lessK:
+    case neK:
+      ; //empty statement
+      Typekind type5 = expTypeTravExp(t, exp->val.binOP.left);
+      Typekind type6 = expTypeTravExp(t, exp->val.binOP.right);
+      //Here we could check if the two types are the same
+      if(type5 == type6){
+        exp->type = boolK;
+        return boolK;
+      }
+      fprintf(stderr,"expTypeTravExp left and right not same type.\n");
+      return -1;
+
   }
 }
 
@@ -211,7 +242,7 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
       ; //empty statement
       SYMBOL *s = getSymbol(t, term->val.idact.id);
       if(s == NULL){
-        printf("Symbol '%s' where not found\n", term->val.idact.id);
+        fprintf(stderr,"Symbol '%s' where not found\n", term->val.idact.id);
       }
       //maybe i should check if this is a function or something else
       ACT_LIST *act = term->val.idact.list;
@@ -219,7 +250,7 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
         expTypeTravExps(s->scope, act->expList);
       }
       return s->type;
-      printf("expTypeTravTerm: maybe function calls not yet implemented\n");
+      fprintf(stderr,"expTypeTravTerm: maybe funktion calls not yet implemented\n");
       break;
     case expTermK:
       return expTypeTravExp(t, term->val.exp);
@@ -228,20 +259,20 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
       ; //empty statement
       int type = expTypeTravTerm(t, term->val.notTerm);
       if(type != boolK){
-        printf("Cannot negate something of different type than boolean\n");
+        fprintf(stderr,"Cannot negate something of different type than boolean\n");
         return -1;
       }
       return type;
       break;
     case expCardK:
-      printf("expTypeTravTerm: cardinality not yet fully supported\n");
+      fprintf(stderr,"expTypeTravTerm: cardinality not yet fully supported\n");
       //check if term->val.expCard == array or int or maybe record
       return intK;
       //pEXP(t->val.expCard);
       break;
     case numK:
       return intK;
-      //printf("%d", t->val.num);
+      //fprintf(stderr,"%d", t->val.num);
       break;
     case trueK:
       return boolK;
@@ -250,7 +281,7 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
       return boolK;
       break;
     case nullK:
-      printf("expTypeTravTerm: What type is a NULL?!?!?!\n");
+      fprintf(stderr,"expTypeTravTerm: What type is a NULL?!?!?!\n");
       return -1;
       break;
   }
@@ -265,23 +296,23 @@ int expTypeTravVar(SymbolTable *t, VARIABLE *v){
       if(s != NULL){
         return s->type;
       }
-      printf("ID %s, not found\n", v->val.id);
+      fprintf(stderr,"ID %s, not found\n", v->val.id);
       return -1;
       break;
     case expK:
-      printf("expTypeTravVar: Arrays not yet supported\n");
+      fprintf(stderr,"expTypeTravVar: Arrays not yet supported\n");
       return -1;
       // pVARIABLE(v->val.varexp.var);
-      // printf("[");
+      // fprintf(stderr,"[");
       // pEXP(v->val.varexp.exp);
-      // printf("]");
+      // fprintf(stderr,"]");
       break;
     case dotK:
-      printf("expTypeTravVar: records not yet supported\n");
+      fprintf(stderr,"expTypeTravVar: records not yet supported\n");
       return -1;
       // pVARIABLE(v->val.vardot.var);
-      // printf(".");
-      // printf("%s", v->val.vardot.id);
+      // fprintf(stderr,".");
+      // fprintf(stderr,"%s", v->val.vardot.id);
       break;
   }
   return -1; //compiler warning
@@ -311,7 +342,7 @@ void checkTypeTravBody(SymbolTable *t,  BODY *body, char* funcId){
 }
 
 void checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId){
-  printf("checkTypeTravStmts\n");
+  fprintf(stderr, "checkTypeTravStmts\n");
   checkTypeTravStmt(t, sList->statement, funcId);
   if(sList->statementList != NULL){
     checkTypeTravStmts(t, sList->statementList, funcId);
@@ -358,10 +389,10 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       //check if variable.id is a var or a record not a function
       sym = getSymbol(t, s->val.allocate->val.id);
       if(s == NULL){
-        printf("Symbol '%s' was not found\n", s->val.allocate->val.id);
+        fprintf(stderr,"Symbol '%s' was not found\n", s->val.allocate->val.id);
       }
       if(s->kind == funcK){
-        printf("Cannot allocate a function\n");
+        fprintf(stderr,"Cannot allocate a function\n");
         break;
       }
       break;
@@ -370,19 +401,19 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       //check if expression is a INT
       sym = getSymbol(t, s->val.allocatelength.var->val.id);
       if(s == NULL){
-        printf("Symbol '%s' was not found\n", s->val.allocatelength.var->val.id);
+        fprintf(stderr,"Symbol '%s' was not found\n", s->val.allocatelength.var->val.id);
       }
       if(s->kind == funcK){
-        printf("Cannot allocate a function\n");
+        fprintf(stderr,"Cannot allocate a function\n");
         break;
       }
       type = s->val.allocatelength.exp->type;
       if(type != intK){
-        printf("Amount to be allocated is not a number\n");
+        fprintf(stderr,"Amount to be allocated is not a number\n");
       }
       break;
     case assiK:
-      printf("checkTypeTravStmt: assiK\n");
+      fprintf(stderr,"checkTypeTravStmt: assiK\n");
       //check if expression type is the same as variable type
       sym = getSymbol(t, s->val.assign.var->val.id);
       if(sym == NULL){
@@ -391,14 +422,14 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       }
       type = sym->type;
       if(type != s->val.assign.exp->type){
-        printf("Variable %s with type %d, does not match type %d of expression", s->val.assign.var->val.id, type, s->val.assign.exp->type);
+        fprintf(stderr,"Variable %s with type %d, does not match type %d of expression\n", s->val.assign.var->val.id, type, s->val.assign.exp->type);
       }
       break;
     case ifK:
       //check if the expression is bool
       type = s->val.ifthenelse.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean\n");
+        fprintf(stderr,"Type of condition in if-statmemt should be boolean\n");
       }
       //traverse body
       checkTypeTravStmt(t, s->val.ifthenelse.thenbody, funcId);
@@ -407,7 +438,7 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       //check if the expression is bool
       type = s->val.ifthenelse.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean\n");
+        fprintf(stderr,"Type of condition in if-statmemt should be boolean\n");
       }
       //traverse both bodies
       checkTypeTravStmt(t, s->val.ifthenelse.thenbody, funcId);
@@ -417,7 +448,7 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       //check if the expression is bool
       type = s->val.while_.cond->type;
       if(type != boolK){
-        printf("Type of condition in if-statmemt should be boolean\n");
+        fprintf(stderr,"Type of condition in if-statmemt should be boolean\n");
       }
       //traverse body
       checkTypeTravStmt(t, s->val.while_.body, funcId);
@@ -427,7 +458,7 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       checkTypeTravStmts(t, s->val.list, funcId);
       break;
   }
-  printf("\n");
+  fprintf(stderr,"\n");
 }
 
 
