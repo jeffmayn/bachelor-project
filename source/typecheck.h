@@ -66,7 +66,7 @@ enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp);
 
 int expTypeTravTerm(SymbolTable *t, TERM *term);
 
-int expTypeTravVar(SymbolTable *t, VARIABLE *v);
+SYMBOL* expTypeTravVar(SymbolTable *t, VARIABLE *v);
 
 void expTypeTravExps(SymbolTable *t, EXP_LIST *eList);
 
@@ -80,6 +80,8 @@ void checkTypeTravBody(SymbolTable *t,  BODY *body, char* funcId);
 void checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId);
 
 void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId);
+
+SYMBOL* checkTypeTravVar(SymbolTable *t, VARIABLE *v);
 
 
 

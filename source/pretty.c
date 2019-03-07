@@ -162,9 +162,9 @@ void pSTMT(STATEMENT *s){
       break;
     case assiK:
       fprintf(stderr,"(");
-      pVARIABLE(s->val.allocatelength.var);
+      pVARIABLE(s->val.assign.var);
       fprintf(stderr," = ");
-      pEXP(s->val.allocatelength.exp);
+      pEXP(s->val.assign.exp);
       fprintf(stderr,");");
       break;
     case ifK:

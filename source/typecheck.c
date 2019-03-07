@@ -111,10 +111,18 @@ void idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   if(vDecls == NULL){
     return;
   }
-  //TODO: may be done
+  //TODO: may have been done
   VAR_TYPE *vty = vDecls->vType;
   fprintf(stderr,"%s of type %d put into SymbolTable\n", vty->id, vty->type->kind);
-  putSymbol(t, vty->id, 0, var, vty->type->kind, NULL); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
+  SYMBOL *sym = putSymbol(t, vty->id, 0, var, vty->type->kind, NULL); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
+  //fprintf(stderr, "do i ever go here*********************************************************************************** \n");
+  fprintf(stderr, "vty->type->kind: %d for id %s\n", vty->type->kind, vty->id );
+  if(vty->type->kind == recordK){
+    fprintf(stderr, "type 4: vty->type->kind: %d for id %s\n", vty->type->kind, vty->id );
+    //put all variables of record vty->id
+    sym->content=initSymbolTable();
+    idTypeTravVDecls(sym->content, vty->type->val.vList);
+  }
   idTypeTravVDecls(t, vDecls->vList);
 }
 
@@ -231,18 +239,25 @@ enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp){
       return -1;
 
   }
+  return -1; //compiler warning
 }
 
 int expTypeTravTerm(SymbolTable *t, TERM *term){
   switch(term->kind){
     case varK:
-      return expTypeTravVar(t, term->val.var);
+      ; //empty statement
+      SYMBOL* sym = expTypeTravVar(t, term->val.var);
+      if(sym == NULL){
+        //error message should be printed in expTypeTravVar
+        return -1;
+      }
+      return sym->type;
       break;
     case idTermK:
       ; //empty statement
       SYMBOL *s = getSymbol(t, term->val.idact.id);
       if(s == NULL){
-        fprintf(stderr,"Symbol '%s' where not found\n", term->val.idact.id);
+        fprintf(stderr,"idtermK: Symbol '%s' where not found\n", term->val.idact.id);
       }
       //maybe i should check if this is a function or something else
       ACT_LIST *act = term->val.idact.list;
@@ -288,20 +303,21 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
     return -1; //compiler warning
 }
 
-int expTypeTravVar(SymbolTable *t, VARIABLE *v){
+SYMBOL* expTypeTravVar(SymbolTable *t, VARIABLE *v){
   switch(v->kind){
     case idVarK:
       ; //empty statement
       SYMBOL *s = getSymbol(t, v->val.id);
-      if(s != NULL){
-        return s->type;
+      if(s == NULL){
+        fprintf(stderr,"ID %s, not found\n", v->val.id);
+        return NULL;
+
       }
-      fprintf(stderr,"ID %s, not found\n", v->val.id);
-      return -1;
+      return s;
       break;
     case expK:
       fprintf(stderr,"expTypeTravVar: Arrays not yet supported\n");
-      return -1;
+      return NULL;
       // pVARIABLE(v->val.varexp.var);
       // fprintf(stderr,"[");
       // pEXP(v->val.varexp.exp);
@@ -309,13 +325,25 @@ int expTypeTravVar(SymbolTable *t, VARIABLE *v){
       break;
     case dotK:
       fprintf(stderr,"expTypeTravVar: records not yet supported\n");
-      return -1;
-      // pVARIABLE(v->val.vardot.var);
-      // fprintf(stderr,".");
-      // fprintf(stderr,"%s", v->val.vardot.id);
+      SYMBOL* sym = expTypeTravVar(t, v->val.vardot.var);
+      if(sym == NULL){
+        fprintf(stderr, "Line %d: The record '%s' was not found\n", v->lineno, v->val.vardot.var->val.id);
+        return NULL;
+      }
+      if(sym->type != recordK){
+        fprintf(stderr, "Line %d: The variable '%s' is not a record", v->lineno, v->val.vardot.id);
+        return NULL;
+      }
+
+      SYMBOL *sym2 = getSymbol(sym->content, v->val.vardot.id);
+      if(sym2 == NULL){
+        fprintf(stderr, "Unfortunately '%s' was not found insides '%s'\n", v->val.vardot.id, sym2->name);
+        return NULL;
+      }
+      return sym2;
       break;
   }
-  return -1; //compiler warning
+  return NULL; //compiler warning
 }
 
 void expTypeTravExps(SymbolTable *t, EXP_LIST *eList){
@@ -413,17 +441,23 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       }
       break;
     case assiK:
-      fprintf(stderr,"checkTypeTravStmt: assiK\n");
+      fprintf(stderr,"Line '%d': checkTypeTravStmt: assiK\n", s->lineno);
       //check if expression type is the same as variable type
-      sym = getSymbol(t, s->val.assign.var->val.id);
-      //dumpSymbolTable(t);
+      //sym = getSymbol(t, s->val.assign.var->val.id);
+      SYMBOL *sym = checkTypeTravVar(t, s->val.assign.var);
       if(sym == NULL){
-        fprintf(stderr, "Line %d: Symbol '%s' in function '%s' was not found\n",s->lineno, s->val.assign.var->val.id, funcId);
+        //error should be printed in checkTypeTravVar
         break;
       }
-      type = sym->type;
+      Typekind type = sym->type;
+      //dumpSymbolTable(t);
+      // if(sym == NULL){
+      //   fprintf(stderr, "Line %d: Symbol '%s' in function '%s' was not found\n",s->lineno, s->val.assign.var->val.id, funcId);
+      //   break;
+      // }
+      // type = sym->type;
       if(type != s->val.assign.exp->type){
-        fprintf(stderr,"Variable %s with type %d, does not match type %d of expression\n", s->val.assign.var->val.id, type, s->val.assign.exp->type);
+        fprintf(stderr,"Line %d: Variable %s with type %d, does not match type %d of expression\n", s->lineno, sym->name, type, s->val.assign.exp->type);
       }
       break;
     case ifK:
@@ -460,6 +494,49 @@ void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       break;
   }
   fprintf(stderr,"\n");
+}
+
+SYMBOL* checkTypeTravVar(SymbolTable *t, VARIABLE *v){
+  fprintf(stderr, "checkTypeTravVar: going into\n");
+  SYMBOL *sym;
+  switch (v->kind) {
+    case idVarK:
+      sym = getSymbol(t, v->val.id);
+      if(sym == NULL){
+        fprintf(stderr, "Line %d: idVarK: Symbol '%s' was not found\n",v->lineno, v->val.id);
+        return NULL;
+      }
+      //fprintf(stderr, "Line %d: Variable '%s' was found\n",v->lineno, v->val.id);
+      return sym;
+      break;
+    case expK:
+      //sym = getSymbol(t, s->val.assign.var->val.varexp.id);
+      fprintf(stderr, "Line %d: Cannot typecheck array assignment yet\n", v->lineno);
+      return NULL;
+      break;
+    case dotK:
+      //sym = getSymbol(t, NameOfStruct);
+      sym = checkTypeTravVar(t, v->val.vardot.var);
+      if(sym == NULL){
+        fprintf(stderr, "Line %d: checkTypeTravVar: something went wrong\n", v->lineno);
+        fprintf(stderr, "Line %d: Could not find struct containing '%s'\n", v->lineno, v->val.vardot.id );
+        return NULL;
+        break;
+      }
+      if(sym->content == NULL){
+        fprintf(stderr, "Line %d: holy shit, the struct '%s' does not have any content", v->lineno, sym->name);
+        return NULL;
+      }
+      sym = getSymbol(sym->content, v->val.vardot.id);
+      if(sym == NULL){
+        fprintf(stderr, "Line %d: dotK: Symbol '%s' was not found\n",v->lineno, v->val.vardot.id);
+        return NULL;
+      }
+      //fprintf(stderr, "Line %d: Struct '%s' wasfound\n",v->lineno, v->val.vardot.id);
+      return sym;
+      break;
+  }
+  return NULL; //compiler warning
 }
 
 

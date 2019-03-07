@@ -21,6 +21,11 @@ var x:int, y:int, empty:bool, list:List, nodes:array of ListNode;
 var i:int;
 var node:ListNode;
 
+var r : record of {
+  a : int,
+  b : bool
+};
+
 func add(l:List, n:ListNode) : int
   if(list.head == null)
   then{
@@ -56,6 +61,9 @@ func removeLast(l:List) : ListNode
 end removeLast
 
 (*statement list*)
+
+r.a = 7;
+r.b = false;
 
 allocate list;
 allocate nodes of length 42;
