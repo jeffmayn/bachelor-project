@@ -49,20 +49,20 @@ FUNCTION *weederFunction(FUNCTION *f){//TODO return statement.
 
 // NEW STUFF
 void *checkForReturn(BODY *body){
-  printf("ENTERING checkForReturn\n");
+  fprintf(stderr, "ENTERING checkForReturn\n");
   traverseSTMTlist(body->sList);
 
 }
 
 void *traverseSTMTlist(STATEMENT_LIST *stmtList){
-  printf("ENTERING traverseSTMTlist\n");
+  fprintf(stderr, "ENTERING traverseSTMTlist\n");
   if(stmtList != NULL){
-    printf("kind --> %d\n", stmtList->statement->kind);
+    fprintf(stderr, "kind --> %d\n", stmtList->statement->kind);
     if(stmtList->statement->kind == 5){
-      printf("return stmnt found\n");
+      fprintf(stderr, "return stmnt found\n");
       // ifthenelse();
     } else {
-      printf("no return stmnt found\n");
+      fprintf(stderr, "no return stmnt found\n");
     }
   }
 }
