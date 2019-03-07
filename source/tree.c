@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 extern int lineno;
+extern int charpos;
 
 FUNCTION *makeFUNCTION(struct HEAD *head, struct BODY *body, struct TAIL *tail){
   FUNCTION *function;
