@@ -68,7 +68,7 @@ int expTypeTravTerm(SymbolTable *t, TERM *term);
 
 SYMBOL* expTypeTravVar(SymbolTable *t, VARIABLE *v);
 
-void expTypeTravExps(SymbolTable *t, EXP_LIST *eList);
+int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param);
 
 /**
  * Checks if expression types match variable and context types

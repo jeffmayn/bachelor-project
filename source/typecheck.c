@@ -262,7 +262,10 @@ int expTypeTravTerm(SymbolTable *t, TERM *term){
       //maybe i should check if this is a function or something else
       ACT_LIST *act = term->val.idact.list;
       if(act != NULL){
-        expTypeTravExps(s->scope, act->expList);
+        int error = expTypeTravExps(s->scope, act->expList, s->scope->param);
+        if(error){
+          return -1; //error message should be printed in expTypeTravExps
+        }
       }
       return s->type;
       fprintf(stderr,"expTypeTravTerm: maybe funktion calls not yet implemented\n");
@@ -346,10 +349,36 @@ SYMBOL* expTypeTravVar(SymbolTable *t, VARIABLE *v){
   return NULL; //compiler warning
 }
 
-void expTypeTravExps(SymbolTable *t, EXP_LIST *eList){
-  expTypeTravExp(t, eList->exp);
+int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
+  //Dette virker vist ikke korrekt****************************************
+  //printer altid more arguments than needed
+  //tror der er noget galt med param argumentet
+  Typekind type = expTypeTravExp(t, eList->exp);
+  if(type == -1){
+    return -1; //error in argument
+  }
+  if(param == NULL){
+    //no parameters left
+    if(eList != NULL){
+      //But still more arguments
+      fprintf(stderr, "Line %d: The function was given more arguments than needed", eList->lineno);
+      return -1;
+    }
+  }
+  else{
+    //still more Parameters
+    if(eList == NULL){
+      //but no more arguments given
+      fprintf(stderr, "Line %d: The function was not given enough arguments", eList->lineno);
+      return -1;
+    }
+  }
+  if(type != param->type){
+    fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, type, param->type );
+    return -1;
+  }
   if(eList->expList != NULL){
-    expTypeTravExps(t, eList->expList);
+    return expTypeTravExps(t, eList->expList, param->next);
   }
 }
 
