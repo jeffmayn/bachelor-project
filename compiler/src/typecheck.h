@@ -17,6 +17,8 @@ Værdien i en variable? Den skal vel ikke bruges endnu
 
 typedef struct bodyListElm {
   BODY *body;
+  SymbolTable *scope;
+  char* funcId;
   struct bodyListElm *prev;
   struct bodyListElm *next;
 } bodyListElm;
@@ -71,22 +73,22 @@ void expTypeTravExps(SymbolTable *t, EXP_LIST *eList);
 /**
  * Checks if expression types match variable and context types
 */
-void checkTypes(SymbolTable *t, BODY *body);
+void checkTypes(SymbolTable *t, BODY *body, char* funcId);
 
-void checkTypeTravBody(SymbolTable *t,  BODY *body);
+void checkTypeTravBody(SymbolTable *t,  BODY *body, char* funcId);
 
-void checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList);
+void checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId);
 
-void checkTypeTravStmt(SymbolTable *t, STATEMENT *s);
+void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId);
 
 
 
 
 bodyList* initBodyList();
 
-void saveBody(bodyList *list, BODY *body);
+void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId);
 
-BODY* getBody(bodyList *list);
+bodyListElm* getBody(bodyList *list);
 
 void resetbodyListIndex(bodyList *list);
 
