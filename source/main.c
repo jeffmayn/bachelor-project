@@ -43,11 +43,13 @@ int main() {
   if(!SYNTAX_ERROR){
     fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
     weederBody(theexpression);
+    /*   kommenteret typecheck ud for bedre at kunne overskue min egen debug -jeff
     fprintf(stderr, "\n%s\n", "######## STARTING TYPECHECK ########");
     SymbolTable* t = typeCheck();
     //TODO PRINT STDERROR
     fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
     pBODY(theexpression);
+    */
     return 0;
   }
   fprintf(stderr, "\n%s\n", "compilation ended in error\n");

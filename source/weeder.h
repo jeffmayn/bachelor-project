@@ -10,6 +10,6 @@ void *traverseDECL(DECL_LIST *decl);
 void *checkForReturn(BODY *body);
 void *traverseSTMTlist(STATEMENT_LIST *stmtList);
 
-void *travStmts(STATEMENT_LIST *stmtList);
-void *travStmt(STATEMENT *s);
+void *expTravStmts(STATEMENT_LIST *stmtList);
+void *expTravStmt(STATEMENT *s);
 #endif

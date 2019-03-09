@@ -8,11 +8,21 @@ var v:bool;
 return 7;
 end f
 
+func f2():int
+var v:bool;
+return true;
+end f2
+
 func g(x:bool,u:int):bool
 var w:bool;
 if(x) then u = 7;
 return true;
 end g
+
+func g2(x:bool,u:int):bool
+var w:bool;
+if(x) then u = 7;
+end g2
 
 func add(x:bool,u:int) : bool
   if(x)
@@ -24,6 +34,26 @@ func add(x:bool,u:int) : bool
   }
   return 0;
 end add
+
+func add2(x:bool,u:int) : bool
+  if(x)
+  then{
+    u = 7;
+  }
+  else{
+    u = 9;
+  }
+end add2
+
+func add3(x:bool,u:int) : bool
+  if(x)
+  then{
+    return 42;
+  }
+  else{
+    return 43;
+  }
+end add3
 
 x = 2;
 y = z;
