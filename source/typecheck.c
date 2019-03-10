@@ -354,40 +354,73 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
   //Dette virker vist ikke korrekt****************************************
   //printer altid more arguments than needed
   //tror der er noget galt med param argumentet
-  fprintf(stderr, "Line %d: expTypeTravExps\n", eList->lineno);
-  int type = expTypeTravExp(t, eList->exp);
-  if(type == -1){
-    fprintf(stderr, "Line %d: expTypeTravExps: type Error\n", eList->lineno);
-    return -1; //error in argument
+  if(eList == NULL){
+    //No arguments
+    if(param == NULL){
+      //no more parameters and arguments
+      return 0; //everything is good
+    }
+    else{
+      //still more parameters
+      fprintf(stderr, "Line 'unknown': The function was not given enough arguments");
+      return -1;
+    }
   }
-  if(param == NULL){
-    //no parameters left
-    if(eList != NULL){
-      //But still more arguments
+  else{
+    //still more arguments given
+    if(param == NULL){
+      //but no more parameters found
       fprintf(stderr, "Line %d: The function was given more arguments than needed", eList->lineno);
       return -1;
     }
     else{
-      //no more parameters and arguments
-      return 0; //everything is good
+      //still more parameters
+      int type = expTypeTravExp(t, eList->exp);
+      if(type == -1){
+        fprintf(stderr, "Line %d: expTypeTravExps: type error in argument\n", eList->lineno);
+        return -1; //error in argument
+      }
+      if(type != param->type){
+        fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, type, param->type );
+        return -1;
+      }
+      return expTypeTravExps(t, eList->expList, param->next);
     }
   }
-  else{
-    //still more Parameters
-    if(eList == NULL){
-      //but no more arguments given
-      fprintf(stderr, "Line %d: The function was not given enough arguments", eList->lineno);
-      return -1;
-    }
-  }
-  if(type != param->type){
-    fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, type, param->type );
-    return -1;
-  }
-  //if(eList->expList != NULL){
-    return expTypeTravExps(t, eList->expList, param->next);
-  //}
-  return 0;
+  // fprintf(stderr, "Line %d: expTypeTravExps\n", eList->lineno);
+  // int type = expTypeTravExp(t, eList->exp);
+  // if(type == -1){
+  //   fprintf(stderr, "Line %d: expTypeTravExps: type Error\n", eList->lineno);
+  //   return -1; //error in argument
+  // }
+  // if(param == NULL){
+  //   //no parameters left
+  //   if(eList != NULL){
+  //     //But still more arguments
+  //     fprintf(stderr, "Line %d: The function was given more arguments than needed", eList->lineno);
+  //     return -1;
+  //   }
+  //   else{
+  //     //no more parameters and arguments
+  //     return 0; //everything is good
+  //   }
+  // }
+  // else{
+  //   //still more Parameters
+  //   if(eList == NULL){
+  //     //but no more arguments given
+  //     fprintf(stderr, "Line %d: The function was not given enough arguments", eList->lineno);
+  //     return -1;
+  //   }
+  // }
+  // if(type != param->type){
+  //   fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, type, param->type );
+  //   return -1;
+  // }
+  // //if(eList->expList != NULL){
+  //   return expTypeTravExps(t, eList->expList, param->next);
+  // //}
+  // return 0;
 }
 
 
