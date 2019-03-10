@@ -8,7 +8,11 @@
 extern BODY *theexpression;
 extern SymbolTable *childScopeForDebugging;
 
-
+/*
+  NOTE: 10/3-18
+  epxressions should be able to save a pointer to the corresponding TYPE*
+  representing that expression.
+*/
 
 SymbolTable* typeCheck(){//TODO error reporting, perhaps (int typeCheck(Symboltable* target){})
   SymbolTable *table = initSymbolTable();
@@ -72,7 +76,7 @@ void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       SymbolTable *child = scopeSymbolTable(t);
       childScopeForDebugging = child;
       //add function to current scope
-      putSymbol(t, d->val.func->head->id, 0, func, d->val.func->head->type->kind, child); //add some shit for named types, records and arrays
+      putSymbol(t, d->val.func->head->id, 0, func, d->val.func->head->type->kind, child, NULL); //add some shit for named types, records and arrays
       //add parametrs to that scope
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
@@ -81,7 +85,12 @@ void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
         if(vList != NULL){
           while(vList != NULL){
             fprintf(stderr,"about to put params for %s\n", d->val.func->head->id);
-            putParam(child, vList->vType->id, 0, var, vList->vType->type->kind); //can a parameter be anything different from a variable (func or type)
+            if(vList->vType->type->kind == arrayK){
+              putParam(child, vList->vType->id, 0, var, vList->vType->type->kind, vList->vType->type); //can a parameter be anything different from a variable (func or type)
+            }
+            else{
+              putParam(child, vList->vType->id, 0, var, vList->vType->type->kind, NULL); //can a parameter be anything different from a variable (func or type)
+            }
             vList = vList->vList;
           }
         }
@@ -99,7 +108,7 @@ void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
     break;
     case idDeclK:
       fprintf(stderr,"%s of type %d put into SymbolTable\n", d->val.id.id, d->val.id.type->kind);
-      putSymbol(t, d->val.id.id, 0, type, d->val.id.type->kind, NULL);
+      putSymbol(t, d->val.id.id, 0, type, d->val.id.type->kind, NULL, NULL);
     break;
   }
 
@@ -113,18 +122,32 @@ void idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   }
   //TODO: may have been done
   VAR_TYPE *vty = vDecls->vType;
-  fprintf(stderr,"%s of type %d put into SymbolTable\n", vty->id, vty->type->kind);
-  SYMBOL *sym = putSymbol(t, vty->id, 0, var, vty->type->kind, NULL); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
+  SYMBOL *sym = NULL;
   //fprintf(stderr, "do i ever go here*********************************************************************************** \n");
   fprintf(stderr, "vty->type->kind: %d for id %s\n", vty->type->kind, vty->id );
   if(vty->type->kind == recordK){
     fprintf(stderr, "type 4: vty->type->kind: %d for id %s\n", vty->type->kind, vty->id );
+    SYMBOL *sym = putSymbol(t, vty->id, 0, var, vty->type->kind, NULL, NULL); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
     //put all variables of record vty->id
     sym->content=initSymbolTable();
     idTypeTravVDecls(sym->content, vty->type->val.vList);
   }
+  else if(vty->type->kind == arrayK){
+    SYMBOL *sym = putSymbol(t, vty->id, 0, var, vty->type->kind, NULL, vty->type); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
+  }
+  else{
+    fprintf(stderr,"%s of type %d put into SymbolTable\n", vty->id, vty->type->kind);
+    SYMBOL *sym = putSymbol(t, vty->id, 0, var, vty->type->kind, NULL, NULL); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
+  }
+  if(sym == NULL){
+    fprintf(stderr, "Line %d: The symbol '%s' already exist\n", vty->lineno, vty->id);
+  }
   idTypeTravVDecls(t, vDecls->vList);
 }
+
+// int idTypeTravType(SymbolTable *t, TYPE *ty){
+//   return 0;
+// }
 
 
 
@@ -320,6 +343,19 @@ SYMBOL* expTypeTravVar(SymbolTable *t, VARIABLE *v){
       break;
     case expK:
       fprintf(stderr,"expTypeTravVar: Arrays not yet supported\n");
+      SYMBOL *s = getSymbol(t, v->val.varexp.var);
+      if(s == NULL){
+        fprintf(stderr,"ID %s, not found\n", v->val.id);
+        return NULL;
+      }
+      TYPE *ty = expTypeTravType(t,v,s);
+      if(ty == NULL){
+        //Some error in expTypeTravType
+        return NULL;
+        //fprintf(stderr, "%s\n", );
+      }
+      return ty; //This is the thing i want to put in the expression
+      //********We are in deep shit trouble right now*******//
       return NULL;
       // pVARIABLE(v->val.varexp.var);
       // fprintf(stderr,"[");
@@ -348,6 +384,22 @@ SYMBOL* expTypeTravVar(SymbolTable *t, VARIABLE *v){
       break;
   }
   return NULL; //compiler warning
+}
+
+TYPE* expTypeTravType(SymbolTable *t, VARIABLE *v, SYMBOL *sym){ //used to traverse types for arrays
+  if(v->kind == expK){
+    int type = expTypeTravExp(t, v->val.varexp.exp);
+    if(type != 1){
+      fprintf(stderr, "Line %d: the index-expression have type %d, and does not cohere with type %d, expected here\n", v->lineno, type, intK);
+      return NULL;
+    }
+    TYPE* ty = expTypeTravType(t, v->val.varexp.var, sym);
+    return ty->val.arrayType;
+  }
+  else{
+    SYMBOL *sym = expTypeTravVar(t, v);
+    return sym->arraType;
+  }
 }
 
 int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){

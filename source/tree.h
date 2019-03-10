@@ -110,6 +110,7 @@ typedef struct EXP {
   enum {termK, minusK, plusK, timesK, divK,\
         leK, eqK, geK, greatK, lessK, neK, andK, orK} kind;
   Typekind type; //the type of the expression
+  TYPE *type2; //we should use this instead of type, like everywhere *******************
   union {
     struct {struct EXP *left; struct EXP *right;} binOP;
     struct TERM *term;

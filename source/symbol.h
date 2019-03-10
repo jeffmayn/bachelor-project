@@ -17,6 +17,8 @@ typedef struct SYMBOL {
   int value;
   struct SymbolTable* scope; //only relevant for functions
   struct SymbolTable* content; //only relevant for records
+  struct TYPE* arrayType; //only relevant for arrays
+  char* typeId; //only relevant for user types. Containing the name of the type. Not yet in use
   struct SYMBOL *next;
 } SYMBOL;
 
