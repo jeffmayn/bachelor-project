@@ -88,14 +88,16 @@ SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type){
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);
     return NULL;
   }
-  SYMBOL *param = t->param;
-  if(param == NULL){
-    param = s;
+  if(t->param == NULL){
+    t->param = s;
   }
-  while(param->next != NULL){
-    param = param->next;
+  else{
+    SYMBOL *param = t->param;
+    while(param->next != NULL){
+      param = param->next;
+    }
+    param->next = s;
   }
-  param->next = s;
   if(getSymbol(t, name) == NULL){
     fprintf(stderr, "param %s not found after putting it\n", name);
   }

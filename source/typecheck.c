@@ -186,7 +186,7 @@ void expTypeTravStmt(SymbolTable *t, STATEMENT *s){
   fprintf(stderr,"\n");
 }
 //MADS TODO sørg for binære operatorer.
-enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp){
+int expTypeTravExp(SymbolTable *t, EXP *exp){
   //error cheking needed from recursive calls
   switch(exp->kind){
     case termK:
@@ -327,7 +327,8 @@ SYMBOL* expTypeTravVar(SymbolTable *t, VARIABLE *v){
       // fprintf(stderr,"]");
       break;
     case dotK:
-      fprintf(stderr,"expTypeTravVar: records not yet supported\n");
+      //fprintf(stderr,"expTypeTravVar: records not yet supported\n");
+      ; //empty statement
       SYMBOL* sym = expTypeTravVar(t, v->val.vardot.var);
       if(sym == NULL){
         fprintf(stderr, "Line %d: The record '%s' was not found\n", v->lineno, v->val.vardot.var->val.id);
@@ -353,8 +354,10 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
   //Dette virker vist ikke korrekt****************************************
   //printer altid more arguments than needed
   //tror der er noget galt med param argumentet
-  Typekind type = expTypeTravExp(t, eList->exp);
+  fprintf(stderr, "Line %d: expTypeTravExps\n", eList->lineno);
+  int type = expTypeTravExp(t, eList->exp);
   if(type == -1){
+    fprintf(stderr, "Line %d: expTypeTravExps: type Error\n", eList->lineno);
     return -1; //error in argument
   }
   if(param == NULL){
@@ -363,6 +366,10 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
       //But still more arguments
       fprintf(stderr, "Line %d: The function was given more arguments than needed", eList->lineno);
       return -1;
+    }
+    else{
+      //no more parameters and arguments
+      return 0; //everything is good
     }
   }
   else{
@@ -377,9 +384,10 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
     fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, type, param->type );
     return -1;
   }
-  if(eList->expList != NULL){
+  //if(eList->expList != NULL){
     return expTypeTravExps(t, eList->expList, param->next);
-  }
+  //}
+  return 0;
 }
 
 

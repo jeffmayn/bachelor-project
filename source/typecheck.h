@@ -62,7 +62,7 @@ void expTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList);
 
 void expTypeTravStmt(SymbolTable *t, STATEMENT *s);
 
-enum Typekind expTypeTravExp(SymbolTable *t, EXP *exp);
+int expTypeTravExp(SymbolTable *t, EXP *exp);
 
 int expTypeTravTerm(SymbolTable *t, TERM *term);
 
