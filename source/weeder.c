@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "weeder.h"
+#include "memory.h"
 
 extern BODY *theexpression;
 
@@ -33,28 +34,48 @@ FUNCTION *weederFunction(FUNCTION *f){//TODO return statement.
     fprintf(stderr,"return code: -1\n\n");
   }
   traverseBody(f->body);
-  checkForReturn(f->body);
+  travCheckForReturn(f->body);
+  //checkForReturn(f->body);
 }
 
+
+
 // NEW STUFF
-void *checkForReturn(BODY *body){
+
+void *travCheckForReturn(BODY *body){
+  int* listRet = NEW(int);
+  *listRet = -1;
+  expTravStmts(body->sList, listRet);
+  int temp = *listRet;
+  fprintf(stderr, "end value: %d\n", *listRet);
+  free(listRet);
+  //return temp;
+}
+
+int checkForReturn(STATEMENT_LIST *sList){
+  int* listRet = NEW(int);
+  *listRet = -1;
   fprintf(stderr, " >> CHECK FOR RETURN STATEMENTS\n");
-  if(body != NULL){
-    if(body->sList->statement->kind == 0){
+  if(sList != NULL){
+    if(sList->statement->kind == returnK){
       fprintf(stderr, "found the return, yaaah\n");
       fprintf(stderr,"return code: 0\n\n");
+      *listRet = 0;
     }
 
-    if(body->sList->statement->kind == 5){
-      fprintf(stderr, "no return, but found: if_else\n");
-      expTravStmts(body->sList);
+    if(sList->statement->kind == ifK){
+      fprintf(stderr, "no return, but found: if_then\n");
+      expTravStmts(sList, listRet);
     }
 
-    if(body->sList->statement->kind == 6){
+    if(sList->statement->kind == thenK){
       fprintf(stderr, "no return, but found: if_else_then\n");
-      expTravStmts(body->sList);
+      expTravStmts(sList, listRet);
     }
   }
+  int temp = *listRet;
+  free(listRet);
+  return temp;
 }
 
 /*
@@ -65,16 +86,23 @@ void *traverseSTMTlist(STATEMENT_LIST *stmtList){
   }
 }
 */
-void *expTravStmts(STATEMENT_LIST *stmtList){
+void *expTravStmts(STATEMENT_LIST *stmtList, int* listRet){
   if(stmtList != NULL){
     if (stmtList->statement != NULL){
       fprintf(stderr, " >> STATEMENT_LIST\n");
-      expTravStmt(stmtList);
+      if(*listRet < expTravStmt(stmtList->statement)){
+        *listRet = 0;
+      }
+
+      if(stmtList->statementList != NULL){
+        expTravStmts(stmtList->statementList, listRet);
+      }
     }
   }
 }
 
-void *expTravStmt(STATEMENT *s){
+int expTravStmt(STATEMENT *s){
+  int retVal = 0;
   switch(s->kind){
     case returnK:
       fprintf(stderr, "found the return, yaaah\n");
@@ -83,14 +111,18 @@ void *expTravStmt(STATEMENT *s){
       break;
     case ifK:
       printf("!! ifK !!\n\n");
-      checkForReturn(s->val.ifthenelse.elsebody);
+      retVal = checkForReturn(s->val.ifthenelse.thenbody->val.list);
       break;
     case thenK:
-      printf("!! thenK !!\n\n");
-      checkForReturn(s->val.ifthenelse.thenbody);
+      printf("!! thenbody !!\n\n");
+      retVal = checkForReturn(s->val.ifthenelse.thenbody->val.list);
+      printf("!! elsebody !!\n\n");
+      if(retVal > checkForReturn(s->val.ifthenelse.elsebody->val.list)){
+        retVal = -1;
+      }
       break;
     default:
-      printf("kiss my ass\n\n");
       break;
   }
+  return retVal;
 }

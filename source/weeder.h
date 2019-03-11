@@ -7,9 +7,11 @@ FUNCTION *weederFunction(FUNCTION *f);
 void *traverseBody(BODY *body);
 void *traverseDECL(DECL_LIST *decl);
 
-void *checkForReturn(BODY *body);
+int checkForReturn(STATEMENT_LIST *sList);
 void *traverseSTMTlist(STATEMENT_LIST *stmtList);
 
-void *expTravStmts(STATEMENT_LIST *stmtList);
-void *expTravStmt(STATEMENT *s);
+void *expTravStmts(STATEMENT_LIST *stmtList, int* listRet);
+int expTravStmt(STATEMENT *s);
+
+void *travCheckForReturn(BODY *body);
 #endif

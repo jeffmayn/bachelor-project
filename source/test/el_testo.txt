@@ -16,7 +16,6 @@ func add(x:bool,u:int) : bool
   else{
     u = 9;
   }
-  return 0;
 end add
 
 x = 2;
