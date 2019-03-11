@@ -3,12 +3,24 @@ var y:bool;
 var z:int;
 type a = int;
 
-func f():int
+func f1():int
 var v:bool;
-return 7;
-end f
+#return 7;
+u=7;
+end f1
 
-func add(x:bool,u:int) : bool
+func f2(x:bool,u:int) : bool
+  if(x)
+  then{
+    u = 9;
+    return u;
+  }
+  else{
+    return u;
+  }
+end f2
+
+func f3(x:bool,u:int) : bool
   if(x)
   then{
     u = 7;
@@ -16,7 +28,33 @@ func add(x:bool,u:int) : bool
   else{
     u = 9;
   }
-end add
+end f3
+
+func f4(x:bool,u:int) : bool
+  if(x)
+  then{
+    u = 7;
+  }
+  else{
+    u = 9;
+  }
+  return 7;
+end f4
+
+func f5(x:bool,u:int) : bool
+  if(x)
+  then{
+    u = 5;
+    return u;
+  }
+  else{
+    return u;
+  }
+
+  u = 8;
+end f5
+
+
 
 x = 2;
 y = z;

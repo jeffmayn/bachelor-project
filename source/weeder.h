@@ -8,9 +8,9 @@ void *traverseBody(BODY *body);
 void *traverseDECL(DECL_LIST *decl);
 
 int checkForReturn(STATEMENT_LIST *sList);
-void *traverseSTMTlist(STATEMENT_LIST *stmtList);
+//void *traverseSTMTlist(STATEMENT_LIST *stmtList);
 
-void *expTravStmts(STATEMENT_LIST *stmtList, int* listRet);
+int *expTravStmts(STATEMENT_LIST *stmtList);
 int expTravStmt(STATEMENT *s);
 
 void *travCheckForReturn(BODY *body);
