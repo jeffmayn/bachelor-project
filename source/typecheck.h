@@ -35,16 +35,16 @@ SymbolTable* typeCheck();
 /**
   Finds the types of all declared types
 */
-void idTypeFinder(SymbolTable *table, bodyList *bList);
+int idTypeFinder(SymbolTable *table, bodyList *bList);
 
 /**
  t is the root of the current scope
 */
-void idTypeTravBody(SymbolTable *t, BODY* node, bodyList *bList);
+int idTypeTravBody(SymbolTable *t, BODY* node, bodyList *bList);
 
-void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList);
+int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList);
 
-void idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
+int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
 
 /**
  * Finds the types of expressions
@@ -54,21 +54,21 @@ void idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
  * For each body declaration i could put the stmtlist into a list
  * traversed by this function.
 */
-void expTypeFinder(SymbolTable *table, BODY *body);
+int expTypeFinder(SymbolTable *table, BODY *body);
 
-void expTypeTravBody(SymbolTable *t,  BODY *body);
+int expTypeTravBody(SymbolTable *t,  BODY *body);
 
-void expTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList);
+int expTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList);
 
-void expTypeTravStmt(SymbolTable *t, STATEMENT *s);
+int expTypeTravStmt(SymbolTable *t, STATEMENT *s);
 
 int expTypeTravExp(SymbolTable *t, EXP *exp);
 
-int expTypeTravTerm(SymbolTable *t, TERM *term, SYMBOL **sym, TYPE **arrayType);
+Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type);
 
-int expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **arrayType);
+Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type);
 
-TYPE* expTypeTravType(SymbolTable *t, VARIABLE *v, SYMBOL *sym);
+//TYPE* expTypeTravType(SymbolTable *t, VARIABLE *v, SYMBOL *sym);
 
 int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param);
 

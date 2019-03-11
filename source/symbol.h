@@ -3,6 +3,7 @@
 #include "tree.h"
 #define HashSize 317
 //enum typeKind {idK, intK, boolK, arrayK, recordK};
+typedef enum Symbolkind{typeS,funcS,varS} Symbolkind;
 
 /* SYMBOL will be extended later.
    Function calls will take more parameters later.
@@ -11,13 +12,13 @@
 */
 
 typedef struct SYMBOL {
-  enum {type,func,var} kind;
-  enum Typekind type; //this should be the enum from the TYPE struct
+  Symbolkind kind;
+  enum Typekind typeVal; //this should be the enum from the TYPE struct
   char *name;
   int value;
   struct SymbolTable* scope; //only relevant for functions
   struct SymbolTable* content; //only relevant for records
-  struct TYPE* arrayType; //only relevant for arrays
+  struct TYPE* typePtr; //only relevant for arrays
   char* typeId; //only relevant for user types. Containing the name of the type. Not yet in use
   struct SYMBOL *next;
 } SYMBOL;
