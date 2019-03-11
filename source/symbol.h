@@ -34,12 +34,12 @@ SymbolTable *initSymbolTable();
 
 SymbolTable *scopeSymbolTable(SymbolTable *t);
 
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope);
+SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope, TYPE* arrayType);
 
 /**
  * Add a parameter to the scop given by SymbolTable
 */
-SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type);
+SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType);
 
 
 SYMBOL *getSymbol(SymbolTable *t, char *name);
