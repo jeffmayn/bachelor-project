@@ -64,9 +64,9 @@ void expTypeTravStmt(SymbolTable *t, STATEMENT *s);
 
 int expTypeTravExp(SymbolTable *t, EXP *exp);
 
-int expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **arrayType);
+int expTypeTravTerm(SymbolTable *t, TERM *term, SYMBOL **sym, TYPE **arrayType);
 
-int expTypeTravVar(SymbolTable *t, VARIABLE *v, TYPE **arrayType);
+int expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **arrayType);
 
 TYPE* expTypeTravType(SymbolTable *t, VARIABLE *v, SYMBOL *sym);
 

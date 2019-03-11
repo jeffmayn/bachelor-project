@@ -14,6 +14,14 @@ extern SymbolTable *childScopeForDebugging;
   representing that expression.
 */
 
+
+/**
+  Main function for type checking
+  This function has three phases
+  idTypeFinder collects all identifiers into the SymbolTable
+  expTypeFinder collects the types of expressions
+  checkTypes checks if expressions and variables fits
+*/
 SymbolTable* typeCheck(){//TODO error reporting, perhaps (int typeCheck(Symboltable* target){})
   SymbolTable *table = initSymbolTable();
   bodyList *bodies = initBodyList();
@@ -36,10 +44,9 @@ SymbolTable* typeCheck(){//TODO error reporting, perhaps (int typeCheck(Symbolta
 
 /**
   Finds the types of all declared types
+  First parameter is the current scope
+  Second parameter is for saving bodies for later traversals
 
-  måske denne skal returnere symboltabellen
-  Eller skal den være global
-  Nej, den må hellere være lokal i de rekursive funktioner, så vi kan bestemme roden
 */
 void idTypeFinder(SymbolTable *table, bodyList *bList){
   saveBody(bList, theexpression, table, NULL);
@@ -47,13 +54,19 @@ void idTypeFinder(SymbolTable *table, bodyList *bList){
 }
 
 /**
- t is the root of the current scope
+ Traverses the body of a given function
+ Firsst parameter is the current scope
+ Second paramter is the body
+ Third parameter is the list of bodies for later phases
 */
 void idTypeTravBody(SymbolTable *t, BODY *body, bodyList *bList){
   fprintf(stderr,"idFinderRec\n");
   idTypeTravDecls(t,body->vList, bList);
 }
 
+/**
+  traverse declarations for collecting
+*/
 void idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
   if(decls == NULL){
     return;
@@ -152,7 +165,7 @@ void idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
 
 
 
-
+//**********************************PHASE 2*********************//
 /**
  * Finds the types of expressions
 */
@@ -214,8 +227,9 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
   switch(exp->kind){
     case termK:
       ; //empty statement
+      SYMBOL *sym;
       TYPE *arrayType = NULL;
-      enum Typekind type = expTypeTravTerm(t, exp->val.term, &arrayType);
+      enum Typekind type = expTypeTravTerm(t, exp->val.term, &sym, &arrayType);
       exp->type = type;
       exp->arrayType = arrayType;
       return type;
@@ -267,11 +281,11 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
   return -1; //compiler warning
 }
 
-int expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **arrayType){
+int expTypeTravTerm(SymbolTable *t, TERM *term, SYMBOL **sym, TYPE **arrayType){
   switch(term->kind){
     case varK:
       ; //empty statement
-      Typekind typekind = expTypeTravVar(t, term->val.var, arrayType);
+      Typekind typekind = expTypeTravVar(t, term->val.var, sym, arrayType);
       if((*arrayType) != NULL){
         return (*arrayType)->kind;
       }
@@ -303,7 +317,7 @@ int expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **arrayType){
       break;
     case notTermK:
       ; //empty statement
-      int type = expTypeTravTerm(t, term->val.notTerm, arrayType);
+      int type = expTypeTravTerm(t, term->val.notTerm, sym, arrayType);
       if(type != boolK){
         fprintf(stderr,"Cannot negate something of different type than boolean\n");
         return -1;
@@ -334,7 +348,7 @@ int expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **arrayType){
     return -1; //compiler warning
 }
 
-int expTypeTravVar(SymbolTable *t, VARIABLE *v, TYPE **arrayType){
+int expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **arrayType){
   SYMBOL *s;
   switch(v->kind){
     case idVarK:
@@ -345,6 +359,7 @@ int expTypeTravVar(SymbolTable *t, VARIABLE *v, TYPE **arrayType){
         return -1;
 
       }
+      *sym = s;
       return s->type;
       break;
     case expK:
@@ -374,11 +389,9 @@ int expTypeTravVar(SymbolTable *t, VARIABLE *v, TYPE **arrayType){
     case dotK:
       //fprintf(stderr,"expTypeTravVar: records not yet supported\n");
       ; //empty statement
-      SYMBOL *sym = NULL;
-      TYPE *arrayType = NULL;
-      Typekind type = expTypeTravVar(t, v->val.vardot.var, &arrayType);
+      Typekind type = expTypeTravVar(t, v->val.vardot.var, sym, arrayType);
       if(type == arrayK){
-        if(arrayType != NULL){
+        if(*arrayType != NULL){
           printf("Line %d: expTypeTravVar: case dotk: array found??", v->lineno);
           //arrayType->kind;
           return -1;
@@ -386,16 +399,16 @@ int expTypeTravVar(SymbolTable *t, VARIABLE *v, TYPE **arrayType){
         }
       }
       if(type == recordK){
-        if(sym == NULL){
+        if(*sym == NULL){
           fprintf(stderr, "Line %d: The record '%s' was not found\n", v->lineno, v->val.vardot.var->val.id);
           return -1;
         }
-        SYMBOL *sym2 = getSymbol(sym->content, v->val.vardot.id);
-        if(sym2 == NULL){
-          fprintf(stderr, "Unfortunately '%s' was not found insides '%s'\n", v->val.vardot.id, sym2->name);
+        *sym = getSymbol((*sym)->content, v->val.vardot.id);
+        if(sym == NULL){
+          fprintf(stderr, "Unfortunately '%s' was not found insides '%s'\n", v->val.vardot.id, (*sym)->name);
           return -1;
         }
-        return sym2->type;
+        return (*sym)->type;
         break;
       }
   }
@@ -413,7 +426,13 @@ TYPE* expTypeTravType(SymbolTable *t, VARIABLE *v, SYMBOL *sym){ //used to trave
     return ty->val.arrayType;
   }
   else{
-    SYMBOL *sym = expTypeTravVar(t, v, NULL);
+    SYMBOL *sym = NULL;
+    TYPE *type = NULL;
+    Typekind typekind = expTypeTravVar(t, v, &sym, &type);
+    if(sym == NULL){
+      fprintf(stderr, "Line %d: ExpTypeTravType: no symbol found\n", v->lineno);
+      return NULL;
+    }
     return sym->arrayType;
   }
 }
@@ -491,6 +510,8 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
   // return 0;
 }
 
+
+//**********************************PHASE 3*********************//
 
 /**
  * Checks if expression types match variable and context types
