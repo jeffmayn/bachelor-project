@@ -21,18 +21,20 @@ var x:int, y:int, empty:bool, list:List, nodes:array of ListNode;
 var i:int;
 var node:ListNode;
 
-func adssd(l:List, n:ListNode) : int
+func add(l:List, n:ListNode) : int
   if(list.head == null)
   then{
     list.head = n;
     list.tail = n;
     empty = false;
+    return n;
   }
   else{
     n.next = list.head;
     n.next.prev = n;
     n.prev = null;
     l.head = n;
+    return n;
   }
 end add
 
