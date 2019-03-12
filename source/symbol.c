@@ -39,12 +39,12 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
   //make new symbol add name and value
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
   newSym->kind = kind;
-  newSym->type = type;
+  newSym->typeVal = type;
   newSym->value = value;
   newSym->name = Malloc(strlen(name)+1);
   memcpy(newSym->name, name, strlen(name)+1);
   newSym->scope = scope;
-  newSym->arrayType = arrayType;
+  newSym->typePtr = arrayType;
   newSym->next = NULL;
 
   //find index via hash value

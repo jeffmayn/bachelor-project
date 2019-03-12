@@ -46,11 +46,11 @@ void pTAIL(TAIL *t){
 void pTYPE(TYPE *t){
   fflush(stdout);
   switch (t->kind) {
-    case idK:
-        fprintf(stderr,"%s", t->val.id);
-        break;
     case intK:
         fprintf(stderr,"int");
+        break;
+    case idK:
+        fprintf(stderr,"%s", t->val.id);
         break;
     case boolK:
         fprintf(stderr,"bool");

@@ -16,7 +16,7 @@ SymbolTable *childScopeForDebugging;
 void printSymbol(SymbolTable *t, char *id){
   SYMBOL *s = getSymbol(t,id);
   if(s!=0){
-    fprintf(stderr,"Successfully found '%s' of kind %d and type %d with value %d\n", s->name, s->kind, s->type, s->value);
+    fprintf(stderr,"Successfully found '%s' of kind %d and type %d with value %d\n", s->name, s->kind, s->typeVal, s->value);
   }
   else{
     fprintf(stderr,"unfortunately '%s' were not found in current scope\n", id);
@@ -46,8 +46,8 @@ int main() {
   }
 
 
-  fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
-  weederBody(theexpression);
+  // fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
+  // weederBody(theexpression);
   fprintf(stderr, "\n%s\n", "######## STARTING TYPECHECK ########");
   SymbolTable* t = typeCheck();
   fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");

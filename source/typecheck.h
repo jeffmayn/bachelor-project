@@ -75,18 +75,27 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param);
 /**
  * Checks if expression types match variable and context types
 */
-void checkTypes(SymbolTable *t, BODY *body, char* funcId);
+int checkTypes(SymbolTable *t, BODY *body, char* funcId);
 
-void checkTypeTravBody(SymbolTable *t,  BODY *body, char* funcId);
+int checkTypeTravBody(SymbolTable *t,  BODY *body, char* funcId);
 
-void checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId);
+int checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId);
 
-void checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId);
+int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId);
 
-int checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type);
+TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym);
 
+Typekind expOfType(SymbolTable *t, EXP *exp);
 
+Typekind typeOfType(SymbolTable *t, TYPE *type);
 
+int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp);
+
+int compareSymNSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2);
+
+int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp);
+
+int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym);
 
 bodyList* initBodyList();
 
