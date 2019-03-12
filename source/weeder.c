@@ -5,44 +5,73 @@
 
 extern BODY *theexpression;
 
-void *weederBody(BODY *body){//TODO return -1 on error.
+int *weederBody(BODY *body){//TODO return -1 on error.
+  int retVal = -2;
   body = theexpression;
-  traverseBody(body);
+  retVal = traverseBody(body);
+  printf("main return: %d\n", retVal);
+  return retVal;
 }
 
-void *traverseBody(BODY *body){
-  traverseDECL(body->vList);
+int *traverseBody(BODY *body){
+  int retVal = -2;
+  retVal = traverseDECL(body->vList);
+  printf("traverseBody return: %d\n", retVal);
+  return retVal;
 }
 
-void *traverseDECL(DECL_LIST *decl){
+int *traverseDECL(DECL_LIST *decl){
+  int retVal = -2;
   if(decl != NULL){                    // kind 1 = function
     if (decl->decl != NULL && decl->decl->kind == 1){
-      weederFunction(decl->decl->val.func);
-    } else {
+      retVal = weederFunction(decl->decl->val.func);
+      if(retVal == -1){
+        return -1;
+      }
+
+      printf("traverseDECL return: %d\n", retVal);
     }
-    traverseDECL(decl->decl_list);
+    return traverseDECL(decl->decl_list);
+    //return traverseDECL(decl->decl_list);
   }
 }
 
-FUNCTION *weederFunction(FUNCTION *f){//TODO return statement.
+int *weederFunction(FUNCTION *f){//TODO return statement.
+  int retVal = -2;
+  int retVal2 = -2;
+  //int retVal3 = -2;
 //  fprintf(stderr, " >> CHECK FOR HEAD-TAIL ID\n");
-  fprintf(stderr,"function: %s\n", f->head->id);
+  fprintf(stderr,"\nfunction: %s\n", f->head->id);
 //  fprintf(stderr,"function tail-id: %s\n", f->tail->id);
   if ((strcmp (f->head->id, f->tail->id))==0 ){
-  //  fprintf(stderr,"return code: 0\n\n");
-  // TODO: retuner 0
+    fprintf(stderr," --> id return-code: 0\n");
+    return 0;
   } else {
-    //fprintf(stderr,"return code: -1\n\n");
-  // TODO: retuner -1
+    fprintf(stderr, "Line %d: mismatch in header-id and tail-id\n", f->head->lineno);
+    return -1;
   }
-  traverseBody(f->body);
-  travCheckForReturn(f->body);
+
+  retVal = traverseBody(f->body);
+  retVal2 = travCheckForReturn(f->body);
+
+  fprintf(stderr, "--> retVal2: %d\n", retVal2);
+
+
+  if(retVal == -1 || retVal2 == -1){
+  //  fprintf(stderr, "Line %d: error\n", f->head->lineno);
+    return -1;
+  } else {
+    return 0;
+  }
+
 }
 
 // NEW STUFF
-void *travCheckForReturn(BODY *body){
+int *travCheckForReturn(BODY *body){
+  fprintf(stderr, " >>> enters travCheckForReturn\n");
   int result = expTravStmts(body->sList);
-  fprintf(stderr, "end value: %d\n\n", result);
+  fprintf(stderr, "end value: %d\n", result);
+  return result;
 }
 
 int *expTravStmts(STATEMENT_LIST *stmtList){
@@ -73,6 +102,7 @@ int expTravStmt(STATEMENT *s){
       if(retVal == 0){
         return expTravStmts(s->val.ifthenelse.elsebody->val.list);
       }
+      fprintf(stderr, "Line %d: missing return statement\n", s->lineno);
       return -1;
       break;
     default:

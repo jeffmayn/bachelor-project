@@ -5,7 +5,7 @@ type a = int;
 
 func f1():int
 var v:bool;
-return u;
+return 7;
 u=7;
 end f1
 
@@ -17,7 +17,6 @@ func f2(x:bool,u:int) : bool
   }
   else{
     return u;
-    u = 7;
   }
 end f2
 
@@ -29,6 +28,7 @@ func f3(x:bool,u:int) : bool
   else{
     u = 9;
   }
+  return u;
 end f3
 
 func f4(x:bool,u:int) : bool
@@ -51,6 +51,7 @@ func f5(x:bool,u:int) : bool
   else{
     return u;
   }
+
   u = 8;
 end f5
 

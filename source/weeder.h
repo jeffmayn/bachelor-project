@@ -2,10 +2,10 @@
 #define __weeder_h
 #include "tree.h"
 
-void *weederBody(BODY *body);
-FUNCTION *weederFunction(FUNCTION *f);
-void *traverseBody(BODY *body);
-void *traverseDECL(DECL_LIST *decl);
+int *weederBody(BODY *body);
+int *weederFunction(FUNCTION *f);
+int *traverseBody(BODY *body);
+int *traverseDECL(DECL_LIST *decl);
 
 int checkForReturn(STATEMENT_LIST *sList);
 //void *traverseSTMTlist(STATEMENT_LIST *stmtList);
@@ -13,5 +13,5 @@ int checkForReturn(STATEMENT_LIST *sList);
 int *expTravStmts(STATEMENT_LIST *stmtList);
 int expTravStmt(STATEMENT *s);
 
-void *travCheckForReturn(BODY *body);
+int *travCheckForReturn(BODY *body);
 #endif
