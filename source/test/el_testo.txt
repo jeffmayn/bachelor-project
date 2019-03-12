@@ -5,19 +5,19 @@ type a = int;
 
 func f1():int
 var v:bool;
-return u;
 u=7;
+return u;
 end f1
 
-func f2dd(x:bool,u:int) : bool
+func f2(x:bool,u:int) : bool
   if(x)
   then{
     u = 9;
     return u;
   }
   else{
-    return u;
     u = 7;
+    return u;
   }
 end f2
 
@@ -44,10 +44,6 @@ func f4(x:bool,u:int) : bool
   }
   return 7;
 end f4
-
-
-
-
 
 x = 2;
 y = z;
