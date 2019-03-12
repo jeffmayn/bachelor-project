@@ -2,6 +2,7 @@
 #include "pretty.h"
 #include "typecheck.h"
 #include "weeder.h"
+#include "del3Pretty.h"
 #include <stdio.h>
 
 int lineno = 0;
@@ -41,13 +42,14 @@ int main() {
   fprintf(stderr, "\n%s\n", "######## STARTING PARSING ########");
   yyparse();
   if(!SYNTAX_ERROR){
-    fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
-    weederBody(theexpression);
+    //fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
+    //weederBody(theexpression);
     //fprintf(stderr, "\n%s\n", "######## STARTING TYPECHECK ########");
     //SymbolTable* t = typeCheck();
     //TODO PRINT STDERROR
     fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
-    pBODY(theexpression);
+    //pBODY(theexpression);
+    prettyDel3PrintStart(theexpression);
     return 0;
   }
   fprintf(stderr, "\n%s\n", "compilation ended in error\n");
