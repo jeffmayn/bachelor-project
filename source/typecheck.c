@@ -758,6 +758,9 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
         return NULL;
         break;
       }
+
+      //TODO: check if symbol os of type id
+      //following only valid if type is recordk
       if((*sym)->content == NULL){
         fprintf(stderr, "Line %d: holy shit, the struct '%s' does not have any content\n", v->lineno, (*sym)->name);
         return NULL;
