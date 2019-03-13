@@ -754,7 +754,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
       type = checkTypeTravVar(t, v->val.vardot.var, sym);
       SYMBOL* newSym = recursiveSymbolRetrieval(t, type->val.id);
       if(newSym->typeVal != recordK){
-        fprintf("checkTypeTravVar: returned symbol was not recordK type!\n");
+        fprintf(stderr, "checkTypeTravVar: returned symbol was not recordK type!\n");
         return NULL;
       }
       if(newSym == NULL){

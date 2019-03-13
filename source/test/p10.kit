@@ -1,12 +1,9 @@
-type A = int;
-type B = A;
-type Q = record of {
-  x : bool,
-  y : bool
+type Tree = record of {
+  left: Tree,
+  right: Tree
 };
-var x:int, y:int, z:bool;
-var a:A, b:B;
-var q:Q;
-x = 3;
-b=a;
-q.x = true;
+
+var root : Tree;
+var leaf : Tree;
+
+root.left = leaf;
