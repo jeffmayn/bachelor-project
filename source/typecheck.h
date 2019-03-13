@@ -105,7 +105,7 @@ bodyListElm* getBody(bodyList *list);
 
 void resetbodyListIndex(bodyList *list);
 
-SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID)//YAY mads har lavet noget
+SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID);//YAY mads har lavet noget
 
 
 

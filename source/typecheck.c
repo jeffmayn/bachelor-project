@@ -752,19 +752,23 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
     case dotK:
       ;
       type = checkTypeTravVar(t, v->val.vardot.var, sym);
-      //SYMBOL sym1234 = getSymbol(t, type->val.id);
-      if(*sym == NULL){
+      SYMBOL* newSym = recursiveSymbolRetrieval(t, type->val.id);
+      if(newSym->typeVal != recordK){
+        fprintf("checkTypeTravVar: returned symbol was not recordK type!\n");
+        return NULL;
+      }
+      if(newSym == NULL){
         fprintf(stderr, "Line %d: checkTypeTravVar: something went wrong\n", v->lineno);
         fprintf(stderr, "Line %d: Could not find struct containing '%s'\n", v->lineno, v->val.vardot.id );
         return NULL;
         break;
       }
-      if((*sym)->content == NULL){
+      if(newSym->content == NULL){
         fprintf(stderr, "%d\n", (*sym)->typeVal);
         fprintf(stderr, "Line %d: holy shit, the struct '%s' does not have any content\n", v->lineno, (*sym)->name);
         return NULL;
       }
-      *sym = getSymbol((*sym)->content, v->val.vardot.id);
+      *sym = getSymbol(newSym->content, v->val.vardot.id);
       if(*sym == NULL){
         fprintf(stderr, "Line %d: dotK: Symbol '%s' was not found\n",v->lineno, v->val.vardot.id);
         return NULL;
