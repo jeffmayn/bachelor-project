@@ -146,7 +146,7 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   VAR_TYPE *vty = vDecls->vType;
   SYMBOL *sym = NULL;
   if(vty->type->kind == recordK){
-    SYMBOL *sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
+    sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
     //put all variables of record vty->id
     sym->content=initSymbolTable();
     idTypeTravVDecls(sym->content, vty->type->val.vList);
@@ -533,13 +533,17 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       //     break;
       //   }
       // }
+      //type->kind == ty??
+      if((*type)->kind == idK){//added by andreas
+        *sym = recursiveSymbolRetrieval(t, (*type)->val.id);
+      }
       if(*sym == NULL){
         fprintf(stderr, "Line %d: The record was not found\n", v->lineno);
         return errorK;
       }
       //TODO: check if it is a userdefined record type
       //Probably need this check a lot of other places for all kindes of types
-      if(type != recordK){
+      if((*sym)->typeVal != recordK){
         fprintf(stderr, "Line %d: the symbol '%s' is not a record\n", v->lineno, (*sym)->name);
         return errorK;
       }
@@ -548,6 +552,8 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
         fprintf(stderr, "Unfortunately '%s' was not found insides '%s'\n", v->val.vardot.id, (*sym)->name);
         return -1;
       }
+      //sym should be updated already
+      *type = (*sym)->typePtr;
       return (*sym)->typeVal;
       break;
   }
@@ -598,13 +604,13 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
     }
     else{
       //still more parameters
-      int type = expTypeTravExp(t, eList->exp);
-      if(type == -1){
+      int error = expTypeTravExp(t, eList->exp);
+      if(error == -1){
         fprintf(stderr, "Line %d: expTypeTravExps: type error in argument\n", eList->lineno);
         return -1; //error in argument
       }
-      if(type != param->typeVal){
-        fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, type, param->typeVal );
+      if(eList->exp->typekind != param->typeVal){
+        fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, eList->exp->typekind, param->typeVal );
         return -1;
       }
       return expTypeTravExps(t, eList->expList, param->next);
@@ -827,10 +833,16 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
        break;
     case dotK:
       ;
+      SYMBOL* newSym;
       type = checkTypeTravVar(t, v->val.vardot.var, sym);
-      SYMBOL* newSym = recursiveSymbolRetrieval(t, type->val.id);
+      if(type->kind == idK){//added by andreas
+        newSym = recursiveSymbolRetrieval(t, type->val.id);
+      }
+      else{
+        newSym = *sym; //added by andreas
+      }
       if(newSym->typeVal != recordK){
-        fprintf(stderr, "checkTypeTravVar: returned symbol was not recordK type!\n");
+        fprintf(stderr, "Line %d: checkTypeTravVar: returned symbol was not recordK type!\n", v->lineno);
         return NULL;
       }
       if(newSym == NULL){
