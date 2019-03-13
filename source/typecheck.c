@@ -263,6 +263,8 @@ int expTypeTravStmt(SymbolTable *t, STATEMENT *s){
 */
 int expTypeTravExp(SymbolTable *t, EXP *exp){
   //error cheking needed from recursive calls
+  int error1;
+  int error2;
   switch(exp->kind){
     case termK:
       ; //empty statement
@@ -280,26 +282,42 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
     case divK:
     case timesK:
       ; //empty statement
-      Typekind type1 = expTypeTravExp(t, exp->val.binOP.left);
-      Typekind type2 = expTypeTravExp(t, exp->val.binOP.right);
-      if(type1 == type2 && type1 == intK){
-        exp->typekind = intK;
-        return 0;
+      error1 = expTypeTravExp(t, exp->val.binOP.left);
+      error2 = expTypeTravExp(t, exp->val.binOP.right);
+      if(error1 == 0 && error2 == 0){
+        Typekind type1 = exp->val.binOP.left->typekind;
+        Typekind type2 = exp->val.binOP.right->typekind;
+        if(type1 == type2 && type1 == intK){
+          exp->typekind = intK;
+          return 0;
+        }
+        fprintf(stderr,"Line %d: expTypeTravExp left and right not both integers.\n", exp->lineno);
+        exp->typekind = errorK;
+        return -1;
       }
-      fprintf(stderr,"Line %d: expTypeTravExp left and right not both integers.\n", exp->lineno);
+      fprintf(stderr, "Line %d: error happened in binary expression%s\n", exp->lineno);
       exp->typekind = errorK;
       return -1;
     case andK:
     case orK:
       ; //empty statement
-      Typekind type3 = expTypeTravExp(t, exp->val.binOP.left);
-      Typekind type4 = expTypeTravExp(t, exp->val.binOP.right);
+      // Typekind type3 = expTypeTravExp(t, exp->val.binOP.left);
+      // Typekind type4 = expTypeTravExp(t, exp->val.binOP.right);
+      error1 = expTypeTravExp(t, exp->val.binOP.left);
+      error2 = expTypeTravExp(t, exp->val.binOP.right);
       //Here we could check if the two types are the same
-      if(type3 == type4 && type3== boolK){
-        exp->typekind = boolK;
-        return 0;
+      if(error1 == 0 && error2 == 0){
+        Typekind type3 = exp->val.binOP.left->typekind;
+        Typekind type4 = exp->val.binOP.right->typekind;
+        if(type3 == type4 && type3== boolK){
+          exp->typekind = boolK;
+          return 0;
+        }
+        fprintf(stderr,"Line %d: expTypeTravExp left and right not both booleans.\n", exp->lineno);
+        exp->typekind = errorK;
+        return -1;
       }
-      fprintf(stderr,"Line %d: expTypeTravExp left and right not both booleans.\n", exp->lineno);
+      fprintf(stderr, "Line %d: error happened in binary expression%s\n", exp->lineno);
       exp->typekind = errorK;
       return -1;
     case leK: //TODO er det ok at left og right bare er ens og vi så returnere en bool
@@ -310,14 +328,23 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
     case neK:
       ; //empty statement
       //TODO: need to check for user types here also
-      Typekind type5 = expTypeTravExp(t, exp->val.binOP.left);
-      Typekind type6 = expTypeTravExp(t, exp->val.binOP.right);
+      // Typekind type5 = expTypeTravExp(t, exp->val.binOP.left);
+      // Typekind type6 = expTypeTravExp(t, exp->val.binOP.right);
+      error1 = expTypeTravExp(t, exp->val.binOP.left);
+      error2 = expTypeTravExp(t, exp->val.binOP.right);
       //Here we could check if the two types are the same
-      if(type5 == type6){
-        exp->typekind = boolK;
-        return 0;
+      if(error1 == 0 && error2 == 0){
+        Typekind type5 = exp->val.binOP.left->typekind;
+        Typekind type6 = exp->val.binOP.right->typekind;
+        if(type5 == type6){
+          exp->typekind = boolK;
+          return 0;
+        }
+        fprintf(stderr,"Line %d: expTypeTravExp left and right not same type.\n", exp->lineno);
+        exp->typekind = errorK;
+        return -1;
       }
-      fprintf(stderr,"expTypeTravExp left and right not same type.\n");
+        fprintf(stderr, "Line %d: error happened in binary expression%s\n", exp->lineno);
       exp->typekind = errorK;
       return -1;
   }
