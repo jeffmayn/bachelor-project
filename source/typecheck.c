@@ -322,7 +322,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
   //TYPE *type;
   Typekind ty;
   switch(term->kind){
-    case varK:
+    case varK: //variable
       ; //empty statement
       SYMBOL *sym = NULL; //to avoid dereferencing null
       ty = expTypeTravVar(t, term->val.var, &sym, type); //the symbol is not used
@@ -337,7 +337,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       // }
       // return typekind;
       break;
-    case idTermK:
+    case idTermK: //function call
       ; //empty statement
       SYMBOL *s = getSymbol(t, term->val.idact.id);
       if(s == NULL){
@@ -360,7 +360,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       return s->typePtr->kind;
       //fprintf(stderr,"expTypeTravTerm: maybe funktion calls not yet implemented\n");
       break;
-    case expTermK:
+    case expTermK: //parentheses
     ;
       int error = expTypeTravExp(t, term->val.exp);
       if(error == -1){
@@ -369,7 +369,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       *type = term->val.exp->type;
       return term->val.exp->typekind;
       break;
-    case notTermK:
+    case notTermK: //negation
       ; //empty statement
       ty = expTypeTravTerm(t, term->val.notTerm, type);
       if(*type == NULL){
@@ -384,7 +384,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       }
       return ty;
       break;
-    case expCardK:
+    case expCardK: //cardinality
       fprintf(stderr,"expTypeTravTerm: cardinality not yet fully supported\n");
       //check if term->val.expCard == array or int or maybe record
       return intK;
@@ -436,8 +436,9 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
         fprintf(stderr, "Line %d: Hopefully the error was already printed\n", v->lineno);
         return errorK;
       }
-      if(v->val.varexp.exp->typekind != intK){
-        fprintf(stderr, "Line %d: the index-expression have type %d, and does not cohere with type %d, expected here\n", v->lineno, v->val.varexp.exp->typekind, intK);
+      Typekind ty = expOfType(t, v->val.varexp.exp);
+      if(ty != intK){
+        fprintf(stderr, "Line %d: the index-expression have type %d, and does not cohere with type %d, expected here\n", v->lineno, ty, intK);
         return errorK;
       }
       // s = getSymbol(t, v->val.varexp.var->val.id);
@@ -669,7 +670,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         fprintf(stderr, "Line %d: Unfortunately no type where found\n", s->lineno);
         return -1;
       }
-      if(type->kind == recordK){
+      if(type->kind != recordK){ //Changed this from == to != ***********************************
         error = compareTypeNExp(t, type, s->val.assign.exp);
       }
       else{
@@ -854,7 +855,7 @@ Typekind typeOfType(SymbolTable *t, TYPE *type){
     if(sym == NULL){
       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", type->lineno, type->val.id);
     }
-    return typeOfType(t, type);
+    return typeOfType(t, sym->typePtr);
   }
   else
     return type->kind;
@@ -910,6 +911,9 @@ int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
       case boolK:
         return 0;
       break;
+      case arrayK:
+        return compareTypeNType(t, sym->typePtr, exp->type);
+        break;
       default:
       break;
     }
@@ -973,6 +977,9 @@ int compareSymNSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
       case boolK:
         return 0;
       break;
+      case arrayK:
+        return compareTypeNType(t, sym1->typePtr, sym2->typePtr);
+        break;
       default:
       break;
     }
@@ -1007,7 +1014,7 @@ int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp){
       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, type->val.id);
       return -1;
     }
-    compareTypeNSym(t, ty, sym2);
+    return compareTypeNSym(t, ty, sym2);
   }
   //TODO: need check for functions also??
   if(ty->kind == recordK){
@@ -1029,6 +1036,9 @@ int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp){
       case boolK:
         return 0;
       break;
+      case arrayK:
+        return compareTypeNType(t, ty, exp->type);
+        break;
       default:
       break;
     }
@@ -1084,6 +1094,9 @@ int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym){
       case boolK:
         return 0;
       break;
+      case arrayK:
+        return compareTypeNType(t, ty, sym->typePtr);
+        break;
       default:
       break;
     }
@@ -1091,6 +1104,61 @@ int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym){
     return -1;
   }
   return -1; //compiler warning
+}
+
+//this function is exclusively meant to check the types of Arrays
+int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2){
+  SYMBOL *sym;
+  if(t1->kind != arrayK && t2->kind != arrayK){
+    fprintf(stderr, "Line %d: Tried to compare types '%d' and '%d' which are not both of type '%d' (array)\n", t1->lineno, t1->kind, t2->kind, arrayK);
+    return -1;
+  }
+  t1 = t1->val.arrayType;
+  t2 = t2->val.arrayType;
+  if(t1->kind == idK){
+    sym = getSymbol(t, t1->val.id);
+    if(sym == NULL){
+      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", t1->lineno, t1->val.id);
+      return -1;
+    }
+    return compareTypeNSym(t, t2, sym);
+  }
+  if(t2->kind == idK){
+    sym = getSymbol(t, t2->val.id);
+    if(sym == NULL){
+      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", t2->lineno, t1->val.id);
+      return -1;
+    }
+    return compareTypeNSym(t, t1, sym);
+  }
+  //TODO: need check for functions also??
+  if(t1->kind == recordK){
+    fprintf(stderr, "Line %d: The type is an anonymous record type\n", t1->lineno);
+    return -1;
+  }
+  if(t2->kind == recordK){
+    fprintf(stderr, "Line %d: The type is an anonymous record type\n", t2->lineno);
+    return -1;
+  }
+  if(t1->kind == t2->kind){
+    switch(t1->kind){
+      case recordK:
+        //not relevant
+      break;
+      case intK:
+        return 0;
+      break;
+      case boolK:
+        return 0;
+      break;
+      case arrayK:
+        return compareTypeNType(t, t1, t2);
+        break;
+      default:
+      break;
+    }
+  }
+
 }
 
 

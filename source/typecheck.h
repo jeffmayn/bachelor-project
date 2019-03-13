@@ -97,6 +97,8 @@ int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp);
 
 int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym);
 
+int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2);
+
 bodyList* initBodyList();
 
 void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId);

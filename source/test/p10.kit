@@ -1,14 +1,21 @@
 type A = int;
 type B = A;
+type INTS = array of int;
 var x:int, y:int, z:bool;
 var a:A, b:B;
+var g:array of int;
+var h:INTS;
 #x=3;
 #y=x;
 #a=x;
 #z=a;
 b=a;
-b=z;
-
+#b=z;
+a=g[1];
+a=g[x];
+a=g[a];
+g=h;
+g[1]=h[b];
 #x=z;
 
 #return 0;
