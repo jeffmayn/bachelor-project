@@ -1,14 +1,12 @@
 type A = int;
 type B = A;
+type Q = record of {
+  x : bool,
+  y : bool
+};
 var x:int, y:int, z:bool;
 var a:A, b:B;
-#x=3;
-#y=x;
-#a=x;
-#z=a;
+var q:Q;
+x = 3;
 b=a;
-b=z;
-
-#x=z;
-
-#return 0;
+q.x = true;

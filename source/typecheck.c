@@ -119,10 +119,11 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       //TODO: may be copied from somewhere else
       //fprintf(stderr,"%s of type %d put into SymbolTable\n", d->val.id.id, d->val.id.type->kind);
       ;
-      sym = putSymbol(t, d->val.id.id, 0, typeS, d->val.id.type->kind, NULL, d->val.id.type);
+      sym = putSymbol(t, d->val.id.id, 0, typeS, d->val.id.type->kind, NULL, d->val.id.type);//HEYHEY ANDREAS, det er ligesom om det der sker her ikke bliver gemt ordenligt
       //TODO: something more to add in case of struct
       //might be done
       if(d->val.id.type->kind == recordK){
+        fprintf(stderr, "%s\n", "DEBUG - idTypeTravDecls: A record was defined .");
         //put all variables of record vty->id
         sym->content = initSymbolTable();
         idTypeTravVDecls(sym->content, d->val.id.type->val.vList);
@@ -751,6 +752,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
     case dotK:
       ;
       type = checkTypeTravVar(t, v->val.vardot.var, sym);
+      //SYMBOL sym1234 = getSymbol(t, type->val.id);
       if(*sym == NULL){
         fprintf(stderr, "Line %d: checkTypeTravVar: something went wrong\n", v->lineno);
         fprintf(stderr, "Line %d: Could not find struct containing '%s'\n", v->lineno, v->val.vardot.id );
@@ -758,6 +760,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
         break;
       }
       if((*sym)->content == NULL){
+        fprintf(stderr, "%d\n", (*sym)->typeVal);
         fprintf(stderr, "Line %d: holy shit, the struct '%s' does not have any content\n", v->lineno, (*sym)->name);
         return NULL;
       }
@@ -772,8 +775,32 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
   }
   return NULL; //compiler warning
 }
+/**
+ * recursively moves through symbols untill we reach one that is not
+ * a user defined type, but a native type, bool, int, record or array.
+ * returns the symbol corresponding to this simple type.
+ * kigger altid i tætteste scope først der er nogle cases
+ * med flere definitioner af samme ting der gør nogle skøre ting
+ */
+SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID){
+  SYMBOL* sym = getSymbol(t, symbolID);
 
+  if(sym == NULL){
+    fprintf(stderr, "recursiveSymbolRetrieval: symbol id: %s not in scope\n", symbolID);
+    return NULL;
+  }
 
+  if(sym->typeVal == idK) {
+    if(sym->typePtr->kind == idK){
+      return recursiveSymbolRetrieval(t, sym->typePtr->val.id);
+    } else {
+      fprintf(stderr, "COMPILEERROR: typePtr of symbol not idK\n");
+      return NULL;
+    }
+  }
+
+  return sym;
+}
 
 // int checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
 //   fprintf(stderr, "checkTypeTravVar: going into\n");
