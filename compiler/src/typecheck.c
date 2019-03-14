@@ -256,6 +256,7 @@ int expTypeTravStmt(SymbolTable *t, STATEMENT *s){
       sym = NULL; //not used
       type = NULL; //not used
       tk = expTypeTravVar(t, s->val.assign.var, &sym, &type);
+      //TODO: return -1 here and other similar places
       if(tk != errorK){
         return expTypeTravExp(t, s->val.assign.exp);
       }
@@ -457,6 +458,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
         *type = NULL;
         return errorK; //Hopefully error is already printed;
       }
+      //TODO: Check userdefined types
       if((*type)->kind != boolK){
         fprintf(stderr,"Line %d: Cannot negate something of different type than boolean\n", term->lineno);
         *type = NULL;
@@ -678,6 +680,8 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       }
       break;
     case allocateK:
+      //TODO: check user type
+      //TODO: cannot do this
       //check if variable.id is a var or a record not a function
       sym = getSymbol(t, s->val.allocate->val.id);
       if(sym == NULL){
@@ -689,6 +693,8 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       }
       break;
     case allocateLengthK:
+      //TODO: check user type
+      //TODO: cannot do this
       sym = getSymbol(t, s->val.allocatelength.var->val.id);
       if(s == NULL){
         fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocatelength.var->val.id);
