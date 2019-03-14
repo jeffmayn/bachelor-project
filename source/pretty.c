@@ -14,6 +14,7 @@ void indent(){
 
 //JEFF
 void pFUNC(FUNCTION *f){
+  fflush(stdout);
   pHEAD(f->head);
   INDENT++;
   pBODY(f->body);
@@ -22,6 +23,7 @@ void pFUNC(FUNCTION *f){
 }
 
 void pHEAD(HEAD *h){
+  fflush(stdout);
   fprintf(stderr,"func %s(", h->id);
   pPARDECLLIST(h->pList);
   fprintf(stderr,") : ");
@@ -30,68 +32,45 @@ void pHEAD(HEAD *h){
 }
 
 void pBODY(BODY *b){
+  fflush(stdout);
   pDECLLIST(b->vList);
   pSTMTLIST(b->sList);
 }
 
 void pTAIL(TAIL *t){
+  fflush(stdout);
   indent();
   fprintf(stderr,"end %s;", t->id);
 }
 
 void pTYPE(TYPE *t){
+  fflush(stdout);
   switch (t->kind) {
     case intK:
-        fprintf(stderr,"<int>");
+        fprintf(stderr,"int");
         break;
     case idK:
-        fprintf(stderr,"<%s>", t->val.id);
+        fprintf(stderr,"%s", t->val.id);
         break;
     case boolK:
-        fprintf(stderr,"<bool>");
+        fprintf(stderr,"bool");
         break;
     case arrayK:
-        fprintf(stderr,"<array of [");
+        fprintf(stderr,"array of [");
         pTYPE(t->val.arrayType);
-        fprintf(stderr,"]>");
+        fprintf(stderr,"]");
         break;
     case recordK:
-        fprintf(stderr,"<record of {");
+        fprintf(stderr,"record of {\n");
         pVARDECLLIST(t->val.vList);
-        fprintf(stderr,"}>");
+        fprintf(stderr,"}");
         break;
-  }
-}
-
-void pEXPTYPE(Typekind tk, TYPE* t){
-  switch (tk){
-    case idK:
-      pTYPE(t);
-      break;
-    case intK:
-      fprintf(stderr, "<int>");
-      break;
-    case boolK:
-      fprintf(stderr, "<bool>");
-      break;
-    case arrayK:
-      fprintf(stderr,"<array of [");
-      pTYPE(t->val.arrayType);
-      fprintf(stderr,"]>");
-      break;
-    case recordK:
-      fprintf(stderr,"<record of {");
-      pVARDECLLIST(t->val.vList);
-      fprintf(stderr,"}>");
-      break;
-    default:
-      fprintf(stderr, "EXPTYPE: ERROR!");
-    break; //TODO error
   }
 }
 
 //ANDREAS
 void pPARDECLLIST(PAR_DECL_LIST *pdl){
+  fflush(stdout);
   if(pdl == NULL){
     return;
   }
@@ -101,6 +80,7 @@ void pPARDECLLIST(PAR_DECL_LIST *pdl){
 }
 
 void pVARDECLLIST(VAR_DECL_LIST *vdl){
+  fflush(stdout);
   pVARTYPE(vdl->vType);
   if(vdl->vList != NULL){
     fprintf(stderr,", ");
@@ -109,11 +89,13 @@ void pVARDECLLIST(VAR_DECL_LIST *vdl){
 }
 
 void pVARTYPE(VAR_TYPE *vt){
+  fflush(stdout);
   fprintf(stderr,"%s: ", vt->id);
   pTYPE(vt->type);
 }
 
 void pDECLLIST(DECL_LIST *dl){
+  fflush(stdout);
   if(dl != NULL){
     if(dl->decl != NULL){
       indent();
@@ -125,6 +107,7 @@ void pDECLLIST(DECL_LIST *dl){
 }
 
 void pDECL(DECLARATION *d){
+  fflush(stdout);
   switch(d->kind){
     case idDeclK:
       fprintf(stderr,"type %s = ", d->val.id.id);
@@ -144,6 +127,7 @@ void pDECL(DECLARATION *d){
 
 //FØRST TIL MØLLE
 void pSTMTLIST(STATEMENT_LIST *sl){
+  fflush(stdout);
   pSTMT(sl->statement);
   if(sl->statementList != NULL){
     pSTMTLIST(sl->statementList);
@@ -151,6 +135,7 @@ void pSTMTLIST(STATEMENT_LIST *sl){
 }
 
 void pSTMT(STATEMENT *s){
+  fflush(stdout);
   indent();
   switch(s->kind){
     case returnK:
@@ -235,6 +220,7 @@ void pSTMT(STATEMENT *s){
 
 //MADS
 void pVARIABLE(VARIABLE *v){
+  fflush(stdout);
   switch(v->kind){
     case idVarK:
       fprintf(stderr,"%s", v->val.id);
@@ -254,12 +240,14 @@ void pVARIABLE(VARIABLE *v){
 }
 
 void pEXP(EXP *e){
+  fflush(stdout);
+
   switch(e->kind){
     case termK:
       fprintf(stderr,"(");
       pTERM(e->val.term);
-      pEXPTYPE(e->typekind, e->type);
       fprintf(stderr,")");
+      pTYPE(e->type);
       break;
     default:
       fprintf(stderr,"(");
@@ -307,14 +295,15 @@ void pEXP(EXP *e){
           break;
       }
       pEXP(e->val.binOP.right);
-      pEXPTYPE(e->typekind, e->type);
       fprintf(stderr,")");
+      pTYPE(e->type);
       break;
   }
 
 }
 
 void pTERM(TERM *t){
+  fflush(stdout);
   switch(t->kind){
     case varK:
       pVARIABLE(t->val.var);
@@ -358,12 +347,14 @@ void pTERM(TERM *t){
 }
 
 void pACTLIST(ACT_LIST *al){
+  fflush(stdout);
   if(al->expList != NULL){
     pEXPLIST(al->expList);
   }
 }
 
 void pEXPLIST(EXP_LIST *el){
+  fflush(stdout);
   pEXP(el->exp);
   if(el->expList != NULL){
     fprintf(stderr,", ");
