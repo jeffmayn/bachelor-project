@@ -3,6 +3,7 @@
 #include "tree.h"
 #define HashSize 317
 //enum typeKind {idK, intK, boolK, arrayK, recordK};
+typedef enum Symbolkind{typeS,funcS,varS} Symbolkind;
 
 /* SYMBOL will be extended later.
    Function calls will take more parameters later.
@@ -11,11 +12,14 @@
 */
 
 typedef struct SYMBOL {
-  enum {type,func,var} kind;
-  enum Typekind type; //this should be the enum from the TYPE struct
+  Symbolkind kind;
+  enum Typekind typeVal; //this should be the enum from the TYPE struct
   char *name;
   int value;
-  struct SymbolTable* scope;
+  struct SymbolTable* scope; //only relevant for functions
+  struct SymbolTable* content; //only relevant for records
+  struct TYPE* typePtr; //only relevant for arrays
+  char* typeId; //only relevant for user types. Containing the name of the type. Not yet in use
   struct SYMBOL *next;
 } SYMBOL;
 
@@ -31,13 +35,12 @@ SymbolTable *initSymbolTable();
 
 SymbolTable *scopeSymbolTable(SymbolTable *t);
 
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope);
+SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope, TYPE* arrayType);
 
 /**
  * Add a parameter to the scop given by SymbolTable
- * TODO: implement
 */
-SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type);
+SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType);
 
 
 SYMBOL *getSymbol(SymbolTable *t, char *name);

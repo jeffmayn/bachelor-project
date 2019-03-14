@@ -4,6 +4,6 @@ make -C ../
 for file in *.kit
 do
   printf "\n\n\n /********* $file **********\\ \n"
-  ../compiler.out < "$file"
+  ../../compiler.out < "$file"
 done
-make clean -C ../ -s
+make clean -C ../../ -s

@@ -35,15 +35,16 @@ SymbolTable *scopeSymbolTable(SymbolTable *t){
  * return NULL* if the name is already in the table
  * return SYMBOL* to the new symbol on success
  */
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope){
+SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope, TYPE* arrayType){
   //make new symbol add name and value
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
   newSym->kind = kind;
-  newSym->type = type;
+  newSym->typeVal = type;
   newSym->value = value;
   newSym->name = Malloc(strlen(name)+1);
   memcpy(newSym->name, name, strlen(name)+1);
   newSym->scope = scope;
+  newSym->typePtr = arrayType;
   newSym->next = NULL;
 
   //find index via hash value
@@ -81,20 +82,26 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
 }
 
 
-SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type){
-  SYMBOL* s = putSymbol(t, name, value, kind, type, NULL); //assuming param is variable, so no scope is relevant
+SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType){
+  fprintf(stderr, "putParam*****************************\n");
+  SYMBOL* s = putSymbol(t, name, value, kind, type, NULL, arrayType); //assuming param is variable, so no scope is relevant
   if(s == NULL){
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);
     return NULL;
   }
-  SYMBOL *param = t->param;
-  if(param == NULL){
-    param = s;
+  if(t->param == NULL){
+    t->param = s;
   }
-  while(param->next != NULL){
-    param = param->next;
+  else{
+    SYMBOL *param = t->param;
+    while(param->next != NULL){
+      param = param->next;
+    }
+    param->next = s;
   }
-  param->next = s;
+  if(getSymbol(t, name) == NULL){
+    fprintf(stderr, "param %s not found after putting it\n", name);
+  }
   return s;
 }
 
