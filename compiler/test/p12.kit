@@ -3,12 +3,12 @@ var y: array of int;
 type X = int;
 type Y = bool;
 type Z = record of {a:int};
-func f(x:bool) : Z
+func f(x:bool) : int
   var z:Z;
   if(x) then
-    return z;
+    return 1;
   else
-    return null;
+    return 0;
 end f
 
 
