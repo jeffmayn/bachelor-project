@@ -61,7 +61,7 @@ int main() {
     return -1;
   }
   fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
-  //pBODY(theexpression);
+  pBODY(theexpression);
   return 0;
   // printf("table: %p\n", (void* )t);
   // printf("printing symbol\n");

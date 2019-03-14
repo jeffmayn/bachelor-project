@@ -6,7 +6,7 @@ int INDENT = 0;
 
 void indent(){
   int i = 0;
-  int space = INDENT * 2;
+  int space = INDENT * 4;
   for (i = space; i > 0; i--){
     fprintf(stderr,"%s", " ");
     }
@@ -14,7 +14,6 @@ void indent(){
 
 //JEFF
 void pFUNC(FUNCTION *f){
-  fflush(stdout);
   pHEAD(f->head);
   INDENT++;
   pBODY(f->body);
@@ -23,54 +22,90 @@ void pFUNC(FUNCTION *f){
 }
 
 void pHEAD(HEAD *h){
-  fflush(stdout);
-  fprintf(stderr,"func %s(", h->id);
+  fprintf(stderr,"func %s ( ", h->id);
   pPARDECLLIST(h->pList);
-  fprintf(stderr,") : ");
+  fprintf(stderr," ) : ");
   pTYPE(h->type);
   fprintf(stderr,"\n");
 }
 
 void pBODY(BODY *b){
-  fflush(stdout);
+  indent();
+  fprintf(stderr, "#start of decleration list\n");
   pDECLLIST(b->vList);
+  indent();
+  fprintf(stderr, "#end of decleration list, start of statement list\n");
   pSTMTLIST(b->sList);
+  indent();
+  fprintf(stderr, "#end of statement list\n");
 }
 
 void pTAIL(TAIL *t){
-  fflush(stdout);
   indent();
   fprintf(stderr,"end %s;", t->id);
 }
 
 void pTYPE(TYPE *t){
-  fflush(stdout);
   switch (t->kind) {
     case idK:
-        fprintf(stderr,"%s", t->val.id);
+        fprintf(stderr,"<%s>", t->val.id);
         break;
     case intK:
-        fprintf(stderr,"int");
+        fprintf(stderr,"<int>");
         break;
     case boolK:
-        fprintf(stderr,"bool");
+        fprintf(stderr,"<bool>");
         break;
     case arrayK:
-        fprintf(stderr,"array of [");
+        fprintf(stderr,"<array of [ ");
         pTYPE(t->val.arrayType);
-        fprintf(stderr,"]");
+        fprintf(stderr," ]>");
         break;
     case recordK:
-        fprintf(stderr,"record of {\n");
+        fprintf(stderr,"<record of {\n");
+        INDENT++;
+        indent();
         pVARDECLLIST(t->val.vList);
-        fprintf(stderr,"}");
+        fprintf(stderr, "\n");
+        indent();
+        fprintf(stderr,"}>");
+        INDENT--;
         break;
+  }
+}
+
+void pEXPTYPE(Typekind tk, TYPE* t){
+  switch (tk){
+    case idK:
+      pTYPE(t);
+      break;
+    case intK:
+      fprintf(stderr, "<int>");
+      break;
+    case boolK:
+      fprintf(stderr, "<bool>");
+      break;
+    case arrayK:
+      fprintf(stderr,"<array of [ ");
+      pTYPE(t->val.arrayType);
+      fprintf(stderr," ]>");
+      break;
+    case recordK:
+      fprintf(stderr,"<record of {");
+      pVARDECLLIST(t->val.vList);
+      fprintf(stderr,"}>");
+      break;
+    case nullKK:
+      fprintf(stderr, "<null>");
+      break;
+    default:
+      fprintf(stderr, "EXPTYPE: ERROR!");
+    break; //TODO error
   }
 }
 
 //ANDREAS
 void pPARDECLLIST(PAR_DECL_LIST *pdl){
-  fflush(stdout);
   if(pdl == NULL){
     return;
   }
@@ -80,22 +115,20 @@ void pPARDECLLIST(PAR_DECL_LIST *pdl){
 }
 
 void pVARDECLLIST(VAR_DECL_LIST *vdl){
-  fflush(stdout);
   pVARTYPE(vdl->vType);
   if(vdl->vList != NULL){
-    fprintf(stderr,", ");
+    //fprintf(stderr,",\n");
+    //indent();
     pVARDECLLIST(vdl->vList);
   }
 }
 
 void pVARTYPE(VAR_TYPE *vt){
-  fflush(stdout);
-  fprintf(stderr,"%s: ", vt->id);
+  fprintf(stderr,"%s : ", vt->id);
   pTYPE(vt->type);
 }
 
 void pDECLLIST(DECL_LIST *dl){
-  fflush(stdout);
   if(dl != NULL){
     if(dl->decl != NULL){
       indent();
@@ -107,7 +140,6 @@ void pDECLLIST(DECL_LIST *dl){
 }
 
 void pDECL(DECLARATION *d){
-  fflush(stdout);
   switch(d->kind){
     case idDeclK:
       fprintf(stderr,"type %s = ", d->val.id.id);
@@ -119,7 +151,9 @@ void pDECL(DECLARATION *d){
     break;
     case listK:
       fprintf(stderr,"var ");
+      INDENT++;
       pVARDECLLIST(d->val.list);
+      INDENT--;
       fprintf(stderr,";");
     break;
   }
@@ -127,7 +161,6 @@ void pDECL(DECLARATION *d){
 
 //FØRST TIL MØLLE
 void pSTMTLIST(STATEMENT_LIST *sl){
-  fflush(stdout);
   pSTMT(sl->statement);
   if(sl->statementList != NULL){
     pSTMTLIST(sl->statementList);
@@ -135,7 +168,6 @@ void pSTMTLIST(STATEMENT_LIST *sl){
 }
 
 void pSTMT(STATEMENT *s){
-  fflush(stdout);
   indent();
   switch(s->kind){
     case returnK:
@@ -171,7 +203,7 @@ void pSTMT(STATEMENT *s){
       fprintf(stderr,"if( ");
       pEXP(s->val.ifthenelse.cond);
       fprintf(stderr," ) then(\n");
-      indent();
+      //indent();
       INDENT++;
       pSTMT(s->val.ifthenelse.thenbody);
       INDENT--;
@@ -182,7 +214,7 @@ void pSTMT(STATEMENT *s){
       fprintf(stderr,"if( ");
       pEXP(s->val.ifthenelse.cond);
       fprintf(stderr," ) then(\n");
-      indent();
+      //indent();
       INDENT++;
       pSTMT(s->val.ifthenelse.thenbody);
       INDENT--;
@@ -208,7 +240,11 @@ void pSTMT(STATEMENT *s){
       fprintf(stderr,"{");
       fprintf(stderr,"\n");
       INDENT++;
+      indent();
+      fprintf(stderr,"#start of statement list\n");
       pSTMTLIST(s->val.list);
+      indent();
+      fprintf(stderr, "#end of statement list\n");
       INDENT--;
       indent();
       fprintf(stderr,"}");
@@ -220,16 +256,15 @@ void pSTMT(STATEMENT *s){
 
 //MADS
 void pVARIABLE(VARIABLE *v){
-  fflush(stdout);
   switch(v->kind){
     case idVarK:
       fprintf(stderr,"%s", v->val.id);
       break;
     case expK:
       pVARIABLE(v->val.varexp.var);
-      fprintf(stderr,"[");
+      fprintf(stderr,"[ ");
       pEXP(v->val.varexp.exp);
-      fprintf(stderr,"]");
+      fprintf(stderr," ]");
       break;
     case dotK:
       pVARIABLE(v->val.vardot.var);
@@ -240,16 +275,15 @@ void pVARIABLE(VARIABLE *v){
 }
 
 void pEXP(EXP *e){
-  fflush(stdout);
-
   switch(e->kind){
     case termK:
-      fprintf(stderr,"(");
+      fprintf(stderr,"( ");
       pTERM(e->val.term);
-      fprintf(stderr,")");
+      pEXPTYPE(e->typekind, e->type);
+      fprintf(stderr," )");
       break;
     default:
-      fprintf(stderr,"(");
+      fprintf(stderr,"( ");
       pEXP(e->val.binOP.left);
 
       switch(e->kind){
@@ -294,39 +328,39 @@ void pEXP(EXP *e){
           break;
       }
       pEXP(e->val.binOP.right);
-      fprintf(stderr,")");
+      pEXPTYPE(e->typekind, e->type);
+      fprintf(stderr," )");
       break;
   }
 
 }
 
 void pTERM(TERM *t){
-  fflush(stdout);
   switch(t->kind){
     case varK:
       pVARIABLE(t->val.var);
       break;
     case idTermK:
-      fprintf(stderr,"%s(", t->val.idact.id);
+      fprintf(stderr,"%s( ", t->val.idact.id);
       pACTLIST(t->val.idact.list);
-      fprintf(stderr,")");
+      fprintf(stderr," )");
       break;
     case expTermK:
-      fprintf(stderr,"(");
+      fprintf(stderr,"( ");
       pEXP(t->val.exp);
-      fprintf(stderr,")");
+      fprintf(stderr," )");
       break;
     case notTermK:
-      fprintf(stderr,"(");
+      fprintf(stderr,"( ");
       fprintf(stderr,"!");
       pTERM(t->val.notTerm);
-      fprintf(stderr,")");
+      fprintf(stderr," )");
       break;
     case expCardK:
       fprintf(stderr,"(");
-      fprintf(stderr,"|");
+      fprintf(stderr,"| ");
       pEXP(t->val.expCard);
-      fprintf(stderr,"|");
+      fprintf(stderr," |");
       fprintf(stderr,")");
       break;
     case numK:
@@ -345,14 +379,12 @@ void pTERM(TERM *t){
 }
 
 void pACTLIST(ACT_LIST *al){
-  fflush(stdout);
   if(al->expList != NULL){
     pEXPLIST(al->expList);
   }
 }
 
 void pEXPLIST(EXP_LIST *el){
-  fflush(stdout);
   pEXP(el->exp);
   if(el->expList != NULL){
     fprintf(stderr,", ");

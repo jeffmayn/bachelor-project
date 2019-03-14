@@ -20,5 +20,6 @@ void pEXP(EXP *e);
 void pTERM(TERM *t);
 void pACTLIST(ACT_LIST *al);
 void pEXPLIST(EXP_LIST *el);
+void pEXPTYPE(Typekind tk, TYPE* t);
 
 #endif
