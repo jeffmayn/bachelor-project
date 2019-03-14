@@ -20,6 +20,9 @@ type List = record of {
 var x:int, y:int, empty:bool, list:List, nodes:array of ListNode;
 var i:int;
 var node:ListNode;
+var dummyNode:ListNode;
+var dummyInt:ListNode;
+var wuhuuuuuuu:int;
 
 var r : record of {
   a : int,
@@ -70,7 +73,7 @@ allocate nodes of length 42;
 i = 0;
 while(i < 42)
 do{
-  dummy = add(list,nodes[i]);
+  dummyInt = add(list,nodes[i]);
   i = i + 1;
 }
 
@@ -80,9 +83,9 @@ then
   write(wuhuuuuuuu);
 
 if(!empty)
-then dummy = removeLast(list);
+then dummyNode = removeLast(list);
 
-x = add(list, x);
+#x = add(list, x);
 x = add(list);
 x = add(list, nodes[i], i);
 x = add(list, nodes[i]);
