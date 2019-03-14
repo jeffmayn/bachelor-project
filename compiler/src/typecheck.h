@@ -30,7 +30,7 @@ typedef struct bodyList {
 } bodyList;
 
 
-SymbolTable* typeCheck();
+int typeCheck(SymbolTable *table);
 
 /**
   Finds the types of all declared types

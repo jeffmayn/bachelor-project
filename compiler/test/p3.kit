@@ -21,7 +21,7 @@ var x:int, y:int, empty:bool, list:List, nodes:array of ListNode;
 var i:int;
 var node:ListNode;
 var dummyNode:ListNode;
-var dummyInt:ListNode;
+var dummyInt:int;
 var wuhuuuuuuu:int;
 
 var r : record of {
@@ -86,8 +86,8 @@ if(!empty)
 then dummyNode = removeLast(list);
 
 #x = add(list, x);
-x = add(list);
-x = add(list, nodes[i], i);
+#x = add(list);
+#x = add(list, nodes[i], i);
 x = add(list, nodes[i]);
 
 return 0;
