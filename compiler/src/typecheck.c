@@ -457,6 +457,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
         *type = NULL;
         return errorK; //Hopefully error is already printed;
       }
+      //TODO: Check userdefined types
       if((*type)->kind != boolK){
         fprintf(stderr,"Line %d: Cannot negate something of different type than boolean\n", term->lineno);
         *type = NULL;
