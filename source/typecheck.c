@@ -151,6 +151,9 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
     sym->content=initSymbolTable();
     idTypeTravVDecls(sym->content, vty->type->val.vList);
   }
+  else if(vty->type->kind == nullK){
+    fprintf(stderr, "Line %d: The type of symbol '%s' cannot be null\n", vty->lineno, vty->id);
+  }
   else if(vty->type->kind == arrayK){
     //redundant
     fprintf(stderr, "Line %d: putting id (of type array) %s into symboltable\n", vty->lineno, vty->id);
@@ -436,7 +439,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
     case nullK:
       fprintf(stderr,"expTypeTravTerm: What type is a NULL?!?!?!\n");
       fprintf(stderr,"expTypeTravTerm: Assuming a NULL is a record with no type\n");
-      return recordK;
+      return nullK;
       break;
   }
     return -1; //compiler warning
@@ -1011,6 +1014,12 @@ int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
     fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
     return -1;
   }
+  if(tk1 == nullKK){
+    fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", exp->lineno, sym->name);
+  }
+  if(((tk1 == recordK || tk1 == arrayK) && tk2 == nullKK)){
+    return 0;
+  }
   if(tk1 == tk2){
     switch(tk1){
       case recordK:
@@ -1073,6 +1082,12 @@ int compareSymNSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
     fprintf(stderr, "Line %d: The expression has anonymous record type\n", -1);
     return -1;
   }
+  if(tk1 == nullKK){
+    fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", -1, sym1->name);
+  }
+  if(tk2 == nullKK){
+    fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", -1, sym2->name);
+  }
   if(tk1==tk2){
     switch(tk1){
       case recordK:
@@ -1129,12 +1144,19 @@ int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp){
   }
   //TODO: need check for functions also??
   if(ty->kind == recordK){
-    fprintf(stderr, "Line %d: The symbol '%s' has anonymous record type\n", exp->lineno, sym2->name);
+    fprintf(stderr, "Line %d: The typr has anonymous record type\n", exp->lineno);
+    fprintf(stderr, "Maybe previous print is wrong\n");
     return -1;
   }
   if(exp->typekind == recordK){
     fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
     return -1;
+  }
+  if(tk1 == nullKK){
+    fprintf(stderr, "Line %d: Something probably not allowed to be an NULL is a NULL\n", ty->lineno);
+  }
+  if(((tk1 == recordK || tk1 == arrayK) && tk2 == nullKK)){
+    return 0;
   }
   if(tk1 == tk2){
     switch(tk1){
@@ -1194,6 +1216,13 @@ int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym){
     fprintf(stderr, "Line %d: The symbol '%s' has anonymous record type\n", ty->lineno, sym->name);
     return -1;
   }
+  if(tk2 == nullKK){
+    fprintf(stderr, "Line %d: Symbol '%s' have unallowed type nullKK\n", ty->lineno, sym->name);
+    return -1;
+  }
+  if(((tk2 == recordK || tk2 == arrayK) && tk1 == nullKK)){
+    return 0;
+  }
   if(tk1 == tk2){
     switch(tk1){
       case recordK:
@@ -1251,6 +1280,9 @@ int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2){
     fprintf(stderr, "Line %d: The type is an anonymous record type\n", t2->lineno);
     return -1;
   }
+  if(((t1->kind == recordK || t1->kind == arrayK) && t2->kind == nullKK) || ((t2->kind == recordK || t2->kind == arrayK) && t1->kind == nullK)){
+    return 0;
+  }
   if(t1->kind == t2->kind){
     switch(t1->kind){
       case recordK:
@@ -1265,11 +1297,13 @@ int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2){
       case arrayK:
         return compareTypeNType(t, t1, t2);
         break;
+      case nullKK:
+        return 0;
       default:
       break;
     }
   }
-
+  return -1;
 }
 
 

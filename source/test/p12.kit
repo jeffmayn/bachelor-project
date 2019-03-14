@@ -1,11 +1,14 @@
 var x:int;
+var y: array of int;
 type X = int;
 type Y = bool;
-func f(x:bool) : Y
+type Z = record
+func f(x:bool) : Z
   if(x) then
+    z:Z
     return true;
   else
-    return true;
+    return 1;
 end f
 
 

@@ -1,7 +1,7 @@
 #ifndef __tree_h
 #define __tree_h
 typedef enum {false, true} bool;
-typedef enum Typekind{idK, intK, boolK, arrayK, recordK, errorK} Typekind;
+typedef enum Typekind{idK, intK, boolK, arrayK, recordK, nullKK, errorK} Typekind;
 
 typedef struct FUNCTION {
   int lineno;

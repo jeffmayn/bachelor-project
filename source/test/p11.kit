@@ -3,8 +3,8 @@ type R = record of {x:int};
 var u:R;
 r.x = 3;
 #r.x = true;
-#r.x = r.x; #Should this be allowed
-#r = r; #should this be allowed
+r.x = r.x; #Should this be allowed
+r = r; #should this be allowed
 #u = r;
 #r = u;
 u.x = u.x;
