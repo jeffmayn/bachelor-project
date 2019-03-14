@@ -9,7 +9,7 @@ int *weederBody(BODY *body){//TODO return -1 on error.
   int retVal = -2;
   body = theexpression;
   retVal = traverseBody(body);
-  printf("main return: %d\n", retVal);
+//  printf("main return: %d\n", retVal);
   return retVal;
 }
 
@@ -96,8 +96,8 @@ int expTravStmt(STATEMENT *s){
         else{
           if(s->val.ifthenelse.elsebody->kind == listStmtK){
             return expTravStmts(s->val.ifthenelse.elsebody->val.list);
-
-          } else {
+          }
+          else {
             return -1;
           }
         }
@@ -105,7 +105,7 @@ int expTravStmt(STATEMENT *s){
       return -1;
       break;
     default:
-    return -1;
+      return -1;
       break;
   }
 }

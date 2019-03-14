@@ -8,7 +8,6 @@ int *traverseBody(BODY *body);
 int *traverseDECL(DECL_LIST *decl);
 
 int checkForReturn(STATEMENT_LIST *sList);
-//void *traverseSTMTlist(STATEMENT_LIST *stmtList);
 
 int *expTravStmts(STATEMENT_LIST *stmtList);
 int expTravStmt(STATEMENT *s);

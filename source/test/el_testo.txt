@@ -13,7 +13,6 @@ func f2(x:bool,u:int) : bool
   if(x)
   then{
     u = 9;
-    return u;
   }
   else{
     u = 7;
@@ -30,9 +29,10 @@ func f3(x:bool,u:int) : bool
     u = 9;
   }
   return 5;
+  u = 8;
 end f3
 
-func f4(x:bool,u:int) : bool
+func f4(x:bo4l,u:int) : bool
   if(x)
   then{
     u = 7;
