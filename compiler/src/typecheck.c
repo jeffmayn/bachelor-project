@@ -256,6 +256,7 @@ int expTypeTravStmt(SymbolTable *t, STATEMENT *s){
       sym = NULL; //not used
       type = NULL; //not used
       tk = expTypeTravVar(t, s->val.assign.var, &sym, &type);
+      //TODO: return -1 here and other similar places
       if(tk != errorK){
         return expTypeTravExp(t, s->val.assign.exp);
       }
