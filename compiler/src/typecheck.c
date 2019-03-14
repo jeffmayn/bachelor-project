@@ -680,6 +680,8 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       }
       break;
     case allocateK:
+      //TODO: check user type
+      //TODO: cannot do this
       //check if variable.id is a var or a record not a function
       sym = getSymbol(t, s->val.allocate->val.id);
       if(sym == NULL){
@@ -691,6 +693,8 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       }
       break;
     case allocateLengthK:
+      //TODO: check user type
+      //TODO: cannot do this
       sym = getSymbol(t, s->val.allocatelength.var->val.id);
       if(s == NULL){
         fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocatelength.var->val.id);
