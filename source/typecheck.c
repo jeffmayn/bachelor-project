@@ -779,6 +779,67 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
   }
   return 0;
 }
+// int checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
+//   fprintf(stderr, "checkTypeTravVar: going into\n");
+//   SYMBOL *symVal;
+//   Typekind typekind;
+//   switch (v->kind) {
+//     case idVarK:
+//       symVal = getSymbol(t, v->val.id);
+//       if(symVal == NULL){
+//         fprintf(stderr, "Line %d: idVarK: Symbol '%s' was not found\n",v->lineno, v->val.id);
+//         return -1;
+//       }
+//       //fprintf(stderr, "Line %d: Variable '%s' was found\n",v->lineno, v->val.id);
+//       *sym = symVal;
+//       return (*sym)->type;
+//       break;
+//     case expK:
+//       //sym = getSymbol(t, s->val.assign.var->val.varexp.id);
+//       fprintf(stderr, "Line %d: Cannot typecheck array assignment yet\n", v->lineno);
+//       if(v->val.varexp.exp->type != intK){
+//
+//       }
+//       typekind = checkTypeTravVar(t, v->val.varexp.var, sym, type);
+//       if(typekind == arrayK){
+//         *type = (*type)->val.arrayType;
+//         return (*type)->kind;
+//       }
+//       else{
+//         (*type) = (*sym)->arrayType;
+//         return (*sym)->type; //eller (*type)->kind
+//       }
+//       break;
+//     case dotK:
+//       //sym = getSymbol(t, NameOfStruct);
+//       ;
+//       typekind = checkTypeTravVar(t, v->val.vardot.var, sym, type);
+//       if(*sym == NULL){
+//         fprintf(stderr, "Line %d: checkTypeTravVar: something went wrong\n", v->lineno);
+//         fprintf(stderr, "Line %d: Could not find struct containing '%s'\n", v->lineno, v->val.vardot.id );
+//         return -1;
+//         break;
+//       }
+//       if((*sym)->content == NULL){
+//         fprintf(stderr, "Line %d: holy shit, the struct '%s' does not have any content", v->lineno, (*sym)->name);
+//         return -1;
+//       }
+//       *sym = getSymbol((*sym)->content, v->val.vardot.id);
+//       if(*sym == NULL){
+//         fprintf(stderr, "Line %d: dotK: Symbol '%s' was not found\n",v->lineno, v->val.vardot.id);
+//         return -1;
+//       }
+//       return (*sym)->type;
+//       break;
+//   }
+//   return -1; //compiler warning
+// }
+
+
+
+
+
+
 
 
 
