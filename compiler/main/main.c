@@ -38,7 +38,6 @@ SymbolTable* findFunctionScope(SymbolTable *t, char *fId){
 
 int main() {
   lineno = 1;
-  int result = 123;
   fprintf(stderr, "\n%s\n", "######## STARTING PARSING ########");
   yyparse();
   if(SYNTAX_ERROR){
@@ -47,16 +46,8 @@ int main() {
   }
 
 
-  // fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
-  // weederBody(theexpression);
-  fprintf(stderr, "\n%s\n", "######## STARTING WEEDER ########");
-  result = weederBody(theexpression);
-  if(result == 0){
-    printf("main.c return-code: 0\n");
-  } else {
-    printf("main.c return-code: -1\n");
-  }
-
+  fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
+  weederBody(theexpression);
   fprintf(stderr, "\n%s\n", "######## STARTING TYPECHECK ########");
   SymbolTable* t = typeCheck();
   fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");

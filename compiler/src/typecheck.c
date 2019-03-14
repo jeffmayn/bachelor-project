@@ -72,7 +72,7 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
   if(decls == NULL){ //no more declarations
     return 0;
   }
-  //TODO things
+  //TODO things... neat
   DECLARATION *d = decls->decl;
   if(d == NULL){
     fprintf(stderr,"Line %d: The declaration list did not contain any declarations\n", decls->lineno);
@@ -350,6 +350,7 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
         fprintf(stderr, "Line %d: error happened in binary expression%s\n", exp->lineno);
       exp->typekind = errorK;
       return -1;
+
   }
   return -1; //compiler warning
 }
