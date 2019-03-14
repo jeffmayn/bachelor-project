@@ -77,7 +77,11 @@ void pTYPE(TYPE *t){
 void pEXPTYPE(Typekind tk, TYPE* t){
   switch (tk){
     case idK:
-      pTYPE(t);
+      if(t != NULL){
+        pTYPE(t);
+      } else {
+        fprintf(stderr, "<not defined>");
+      }
       break;
     case intK:
       fprintf(stderr, "<int>");
@@ -99,7 +103,7 @@ void pEXPTYPE(Typekind tk, TYPE* t){
       fprintf(stderr, "<null>");
       break;
     default:
-      fprintf(stderr, "EXPTYPE: ERROR!");
+      fprintf(stderr, "<not defined>");
     break; //TODO error
   }
 }
