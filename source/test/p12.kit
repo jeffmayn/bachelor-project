@@ -2,13 +2,13 @@ var x:int;
 var y: array of int;
 type X = int;
 type Y = bool;
-type Z = record
+type Z = record of {a:int};
 func f(x:bool) : Z
+  var z:Z;
   if(x) then
-    z:Z
-    return true;
+    return z;
   else
-    return 1;
+    return null;
 end f
 
 

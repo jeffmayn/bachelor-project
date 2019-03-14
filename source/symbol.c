@@ -83,7 +83,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
 
 
 SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType){
-  fprintf(stderr, "putParam*****************************\n");
+  //fprintf(stderr, "putParam*****************************\n");
   SYMBOL* s = putSymbol(t, name, value, kind, type, NULL, arrayType); //assuming param is variable, so no scope is relevant
   if(s == NULL){
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);
