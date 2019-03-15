@@ -194,14 +194,14 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   else{//TODO
     /*jeg gætter på at det er her id variabler bliver
     defineret så jeg forsøger at tjekke eksistens*/
-    if(vty->type->kind == idK){//MADS har tilføjet denne blok
+    /*if(vty->type->kind == idK){//MADS har tilføjet denne blok
       fprintf(stderr, "DEBUG\t %s\n", vty->id);
       SYMBOL *sym123 = getSymbol(t, vty->type->val.id);
       if(sym123 == NULL){
         fprintf(stderr, "Line: %d, type %s not yet defined\n", vty->lineno, vty->type->val.id);
         return -1;//not sure if this is right.
       }
-    }
+    }*/
     sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
   }
   if(sym == NULL){
