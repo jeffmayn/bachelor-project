@@ -1,25 +1,26 @@
-var x:int;
-var y:int;
+var x:bool;
+var z:int;
+var u:int;
+var y:bool;
 
-func f2(x:bool,u:int) : bool
+func f2(x:bool,u:int,y:bool) : bool
   if(x)
   then{
     if(y)
     then{
       u = 10;
-      #return u;
+      #return x;
     }
     else {
       u = 9;
-      #return u;
+      #return x;
     }
-    return u;
+    return x;
   }
   else{
     u = 7;
-    return u;
+    return x;
   }
 end f2
 
-x = 2;
-y = z;
+x = false;

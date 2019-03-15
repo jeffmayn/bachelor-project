@@ -1,4 +1,6 @@
 type R = record of {x:K};
-type K = record if {y:R};
+type K = record of {y:R};
 var u:R;
+var i:K;
 u.x = null;
+u.x = i;
