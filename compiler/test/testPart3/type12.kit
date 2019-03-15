@@ -1,5 +1,6 @@
 type R = record of {x:K};
 type K = record of {y:R};
+type X : X;
 var u:R;
 var i:K;
 u.x = null;
