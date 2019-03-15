@@ -23,6 +23,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
   error = idTypeFinder(table, bodies);
   if(error == -1){
     fprintf(stderr, "Error: Symbol collection did not complete\n");
+    return -1;
   }
   else{
     fprintf(stderr, "Symbol collection completed successfully\n");
@@ -39,6 +40,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
   }
   if(error == -1){
     fprintf(stderr, "Error: Expression type collection did not complete\n");
+    return -1;
   }
   else{
     fprintf(stderr, "Expression type collection completed successfully\n");
@@ -56,6 +58,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
   }
   if(error == -1){
     fprintf(stderr, "Error: Expression type checking did not complete\n");
+    return -1;
   }
   else{
     fprintf(stderr, "Expression type checking completed successfully\n");
@@ -137,13 +140,24 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
     break;
     case idDeclK: //userdefined types
       //TODO: may be copied from somewhere else      ;
+      if(d->val.id.type->kind == idK){
+        //fprintf(stderr, "DEBUG line: %d\t%s\n", d->lineno, d->val.id.type->val.id);
+        SYMBOL *sym123 = getSymbol(t, d->val.id.type->val.id);
+        if(sym123 == NULL){
+          fprintf(stderr, "Line: %d, type %s not yet defined\n", d->lineno, d->val.id.type->val.id);
+          return -1;
+        }
+      }
       sym = putSymbol(t, d->val.id.id, 0, typeS, d->val.id.type->kind, NULL, d->val.id.type);
       //TODO: something more to add in case of struct
       //might be done
       if(d->val.id.type->kind == recordK){
         //put all variables of record vty->id
         sym->content = initSymbolTable();
-        idTypeTravVDecls(sym->content, d->val.id.type->val.vList);
+        int error123 =  idTypeTravVDecls(sym->content, d->val.id.type->val.vList);
+        if(error123 == -1){//MADS har tilføjet errorcheck her!
+          return -1;
+        }
         //TODO: if some of the content fails we should rollback the record symbol
       }
     break;
@@ -177,7 +191,17 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
     //redundant
     sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
   }
-  else{
+  else{//TODO
+    /*jeg gætter på at det er her id variabler bliver
+    defineret så jeg forsøger at tjekke eksistens*/
+    if(vty->type->kind == idK){//MADS har tilføjet denne blok
+      fprintf(stderr, "DEBUG\t %s\n", vty->id);
+      SYMBOL *sym123 = getSymbol(t, vty->type->val.id);
+      if(sym123 == NULL){
+        fprintf(stderr, "Line: %d, type %s not yet defined\n", vty->lineno, vty->type->val.id);
+        return -1;//not sure if this is right.
+      }
+    }
     sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
   }
   if(sym == NULL){
