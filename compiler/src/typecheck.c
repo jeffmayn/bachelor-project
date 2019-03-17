@@ -685,7 +685,7 @@ int checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId){
  * Checks types of a given statement
  */
 int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
-  SYMBOL *sym;
+  SYMBOL *sym = NULL;
   TYPE *type;
   int error;
   Typekind tk;
@@ -727,7 +727,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       //TODO: check user type
       //TODO: cannot do this
       //check if variable.id is a var or a record not a function
-      sym = checkTypeTravVar(t, s->val.allocate, &type);
+      type = checkTypeTravVar(t, s->val.allocate, &sym);
       if(sym == NULL){
         fprintf(stderr, "Line %d: Hopefully error is already printed\n", s->lineno);
         return -1;
@@ -743,30 +743,50 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           return -1;
         }
       }
-      sym = getSymbol(t, s->val.allocate->val.id);
+      //sym = getSymbol(t, s->val.allocate->val.id);
       if(sym == NULL){
         fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocate->val.id);
+        return -1;
       }
       if(sym->kind == funcK){
         fprintf(stderr,"Line %d: Cannot allocate a function\n");
-        break;
+        return -1;
       }
+      return 0;
       break;
     case allocateLengthK:
-      //TODO: check user type
-      //TODO: cannot do this
-      sym = getSymbol(t, s->val.allocatelength.var->val.id);
+      //check user type
+      type = checkTypeTravVar(t, s->val.allocatelength.var, &sym);
+      if(sym == NULL){
+        fprintf(stderr, "Line %d: Hopefully error is already printed\n", s->lineno);
+        return -1;
+      }
+      if(sym->typeVal == idK){
+        if(sym->typePtr->kind != idK){
+          fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
+          return -1;
+        }
+        sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id);
+        if(sym == -1){
+          fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
+          return -1;
+        }
+      }
+      //sym = getSymbol(t, s->val.allocatelength.var->val.id);
       if(s == NULL){
         fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocatelength.var->val.id);
+        return -1;
       }
       if(s->kind == funcK){
         fprintf(stderr,"Line %d: Cannot allocate a function\n");
-        break;
+        return -1;
       }
       tk = expOfType(t, s->val.allocatelength.exp);
       if(tk != intK){
         fprintf(stderr,"Line %d: Amount to be allocated is not a number\n", s->lineno);
+        return -1;
       }
+      return 0;
       break;
     case assiK:
     ;
@@ -818,18 +838,21 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       if(error == -1){
         return -1;
       }
+      return 0;
       break;
     case whileK:
       //check if the expression is bool
       tk = expOfType(t, s->val.ifthenelse.cond);
       if(tk != boolK){
         fprintf(stderr,"Line %d: Type of condition in if-statmemt should be boolean\n", s->lineno);
+        return -1;
       }
       //traverse body
       error = checkTypeTravStmt(t, s->val.while_.body, funcId);
       if(error == -1){
         return -1;
       }
+      return 0;
       break;
     case listStmtK:
       //traverse statements
@@ -837,6 +860,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       if(error == -1){
         return -1;
       }
+      return 0;
       break;
   }
   return 0;
