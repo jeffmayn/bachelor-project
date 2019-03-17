@@ -798,6 +798,8 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         return -1;
       }
       if(type->kind != recordK){ //Changed this from == to != ***********************************
+        //TODO: can't we just use sym and exp in any case
+        //then we need to adapt sym and exp to this of course
         error = compareTypeNExp(t, type, s->val.assign.exp);
       }
       else{
@@ -956,7 +958,6 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
 */
 SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID){
   SYMBOL* sym = getSymbol(t, symbolID);
-
   if(sym == NULL){
     fprintf(stderr, "Line %d: recursiveSymbolRetrieval: symbol id: %s not in scope\n", -1, symbolID);
     return NULL;

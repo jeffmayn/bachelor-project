@@ -99,6 +99,8 @@ int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym);
 
 int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2);
 
+SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID);//YAY mads har lavet noget
+
 bodyList* initBodyList();
 
 void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId);
@@ -106,8 +108,6 @@ void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId);
 bodyListElm* getBody(bodyList *list);
 
 void resetbodyListIndex(bodyList *list);
-
-SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID);//YAY mads har lavet noget
 
 
 
