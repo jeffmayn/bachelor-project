@@ -60,8 +60,8 @@ int main() {
   if(error == -1){
     return -1;
   }
-  fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
-  pBODY(theexpression);
+  //fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
+  //pBODY(theexpression);
   return 0;
   // printf("table: %p\n", (void* )t);
   // printf("printing symbol\n");

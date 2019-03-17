@@ -63,6 +63,10 @@ func removeLast(l:List) : ListNode
   }
 end removeLast
 
+func noArgs(): int
+  return 0;
+end noArgs
+
 (*statement list*)
 
 r.a = 7;
@@ -84,10 +88,11 @@ then
 
 if(!empty)
 then dummyNode = removeLast(list);
-
+#x = add();
 #x = add(list, x);
 #x = add(list);
 #x = add(list, nodes[i], i);
 x = add(list, nodes[i]);
-
+x = noArgs();
+#x = noArgs(x);
 return 0;
