@@ -707,7 +707,8 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           fprintf(stderr, "The surrounding function '%s' was not found", funcId);
           return -1;
         }
-        error = compareSymNExp(t, sym, s->val.return_);
+        //error = compareSymNExp(t, sym, s->val.return_);
+        error = cmpTypeSymExp(t, sym, s->val.return_);
         if(error){
           fprintf(stderr, "Line %d: checkTypeTravStmt: return type error\n", s->lineno);
           return -1;
@@ -797,14 +798,19 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         fprintf(stderr, "Line %d: Unfortunately no type where found\n", s->lineno);
         return -1;
       }
-      if(type->kind != recordK){ //Changed this from == to != ***********************************
-        //TODO: can't we just use sym and exp in any case
-        //then we need to adapt sym and exp to this of course
-        error = compareTypeNExp(t, type, s->val.assign.exp);
+      if(sym == NULL){
+        fprintf(stderr, "Line %d: Unfortunately no symbol where found\n", s->lineno);
+        return -1;
       }
-      else{
-        error = compareSymNExp(t, sym, s->val.assign.exp);
-      }
+      error = cmpTypeSymExp(t, sym, s->val.assign.exp);
+      // if(type->kind != recordK){ //Changed this from == to != ***********************************
+      //   //TODO: can't we just use sym and exp in any case
+      //   //then we need to adapt sym and exp to this of course
+      //   error = compareTypeNExp(t, type, s->val.assign.exp);
+      // }
+      // else{
+      //   error = compareSymNExp(t, sym, s->val.assign.exp);
+      // }
       if(error == -1){
         fprintf(stderr, "Line %d: The two sides of the assignment does not have the same type\n", s->lineno);
         return -1;
@@ -975,6 +981,8 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID){
   return sym;
 }
 
+
+//TODO: replace these two with recursiveSymbolRetrieval
 Typekind expOfType(SymbolTable *t, EXP *exp){
   if(exp->typekind == idK){
     TYPE *type = exp->type;
@@ -997,337 +1005,517 @@ Typekind typeOfType(SymbolTable *t, TYPE *type){
     return type->kind;
 }
 
-int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
-  Typekind tk1 = sym->typeVal;
-  Typekind tk2 = exp->typekind;
-  TYPE *type;
-  SYMBOL *sym2;
-  if(tk1 == idK){
-    type = sym->typePtr;
-    if(type->kind != idK){
-      fprintf(stderr, "Line %d: Symbol '%s' does not specify a valid type\n", exp->lineno, sym->name);
-      return -1;
-    }
-    sym2 = getSymbol(t, type->val.id);
-    if(sym2 == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, type->val.id);
-      return -1;
-    }
-    return compareSymNExp(t, sym2, exp);
-  }
-  if(tk2 == idK){
-    type = exp->type;
-    if(type->kind != idK){
-      fprintf(stderr, "Line %d: expression does not specify a valid type\n", exp->lineno);
-      return -1;
-    }
-    sym2 = getSymbol(t, type->val.id);
-    if(sym2 == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, type->val.id);
-      return -1;
-    }
-    return compareSymNSym(t, sym, sym2);
-  }
-  if(sym->typeVal == recordK && sym->kind == varS){
-    fprintf(stderr, "Line %d: The symbol '%s' has anonymous record type\n", exp->lineno, sym->name);
-    return -1;
-  }
-  if(exp->typekind == recordK){
-    fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
-    return -1;
-  }
-  if(tk1 == nullKK){
-    fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", exp->lineno, sym->name);
-  }
-  if(((tk1 == recordK || tk1 == arrayK) && tk2 == nullKK)){
-    return 0;
-  }
-  if(tk1 == tk2){
-    switch(tk1){
-      case recordK:
-        //not relevant
-      break;
-      case intK:
-        return 0;
-      break;
-      case boolK:
-        return 0;
-      break;
-      case arrayK:
-        return compareTypeNType(t, sym->typePtr, exp->type);
-        break;
-      default:
-      break;
-    }
-    fprintf(stderr, "Line %d: Types does not match\n", exp->lineno);
-    return -1;
-  }
-  return -1; //compiler warning
-}
-
-int compareSymNSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
-  Typekind tk1 = sym1->typeVal;
-  Typekind tk2 = sym2->typeVal;
-  SYMBOL *sym3;
-  TYPE *type;
-  if(tk1 == idK){
-    type = sym1->typePtr;
-    if(type->kind != idK){
-      fprintf(stderr, "Line %d: Symbol '%s' does not specify a valid type\n", type->lineno, sym1->name);
-      return -1;
-    }
-    sym3 = getSymbol(t, type->val.id);
-    if(sym3 == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", type->lineno, type->val.id);
-      return -1;
-    }
-    return compareSymNSym(t, sym3, sym2);
-  }
-  if(tk2 == idK){
-    type = sym2->typePtr;
-    if(type->kind != idK){
-      fprintf(stderr, "Line %d: expression does not specify a valid type\n", type->lineno);
-      return -1;
-    }
-    sym3 = getSymbol(t, type->val.id);
-    if(sym3 == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", type->lineno, type->val.id);
-      return -1;
-    }
-    return compareSymNSym(t, sym1, sym3);
-  }
-  if(sym1->typeVal == recordK && sym1->kind == varS){
-    fprintf(stderr, "Line %d: The symbol '%s' has anonymous record type\n", -1, sym1->name);
-    return -1;
-  }
-  if(sym2->typeVal == recordK && sym2->kind == varS){
-    fprintf(stderr, "Line %d: The expression has anonymous record type\n", -1);
-    return -1;
-  }
-  if(tk1 == nullKK){
-    fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", -1, sym1->name);
-  }
-  if(tk2 == nullKK){
-    fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", -1, sym2->name);
-  }
-  if(tk1==tk2){
-    switch(tk1){
-      case recordK:
-        if(sym1->content == sym2->content){
-          return 0;
-        }
-        fprintf(stderr, "Line %d: Record '%s' does not match record '%s'\n", -1, sym1->name, sym2->name);
-        return -1;
-      break;
-      case intK:
-        return 0;
-      break;
-      case boolK:
-        return 0;
-      break;
-      case arrayK:
-        return compareTypeNType(t, sym1->typePtr, sym2->typePtr);
-        break;
-      default:
-      break;
-    }
-    fprintf(stderr, "Line %d: Types does not match\n", -1);
-    return -1;
-  }
-  return -1; //compiler warning
-}
-
-
-int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp){
-  Typekind tk1 = ty->kind;
-  Typekind tk2 = exp->typekind;
-  TYPE *type;
-  SYMBOL *sym2;
-  if(tk1 == idK){
-    sym2 = getSymbol(t, ty->val.id);
-    if(sym2 == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, ty->val.id);
-      return -1;
-    }
-    return compareSymNExp(t, sym2, exp);
-  }
-  if(tk2 == idK){
-    type = exp->type;
-    if(type->kind != idK){
-      fprintf(stderr, "Line %d: expression does not specify a valid type\n", exp->lineno);
-      return -1;
-    }
-    sym2 = getSymbol(t, type->val.id);
-    if(sym2 == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, type->val.id);
-      return -1;
-    }
-    return compareTypeNSym(t, ty, sym2);
-  }
-  //TODO: need check for functions also??
-  if(ty->kind == recordK){
-    fprintf(stderr, "Line %d: The typr has anonymous record type\n", exp->lineno);
-    fprintf(stderr, "Maybe previous print is wrong\n");
-    return -1;
-  }
-  if(exp->typekind == recordK){
-    fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
-    return -1;
-  }
-  if(tk1 == nullKK){
-    fprintf(stderr, "Line %d: Something probably not allowed to be an NULL is a NULL\n", ty->lineno);
-  }
-  if(((tk1 == recordK || tk1 == arrayK) && tk2 == nullKK)){
-    return 0;
-  }
-  if(tk1 == tk2){
-    switch(tk1){
-      case recordK:
-        //not relevant
-      break;
-      case intK:
-        return 0;
-      break;
-      case boolK:
-        return 0;
-      break;
-      case arrayK:
-        return compareTypeNType(t, ty, exp->type);
-        break;
-      default:
-      break;
-    }
-    fprintf(stderr, "Line %d: Types does not match\n", exp->lineno);
-    return -1;
-  }
-  return -1; //compiler warning
-}
-
-int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym){
-  Typekind tk1 = ty->kind;
-  Typekind tk2 = sym->typeVal;
-  TYPE *type;
-  SYMBOL *sym2;
-  if(tk1 == idK){
-    sym2 = getSymbol(t, ty->val.id);
-    if(sym2 == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", ty->lineno, ty->val.id);
-      return -1;
-    }
-    return compareSymNSym(t, sym2, sym);
-  }
-  if(tk2 == idK){
-    type = sym->typePtr;
-    if(type->kind != idK){
-      fprintf(stderr, "Line %d: expression does not specify a valid type\n", ty->lineno);
-      return -1;
-    }
-    SYMBOL *sym3 = getSymbol(t, type->val.id);
-    if(sym3 == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", ty->lineno, type->val.id);
-      return -1;
-    }
-    return compareTypeNSym(t, ty, sym3);
-  }
-  //TODO: need check for functions also??
-  if(ty->kind == recordK){
-    fprintf(stderr, "Line %d: The type is an anonymous record type\n", ty->lineno);
-    return -1;
-  }
-  if(sym->typeVal == recordK && sym->kind == varS){
-    fprintf(stderr, "Line %d: The symbol '%s' has anonymous record type\n", ty->lineno, sym->name);
-    return -1;
-  }
-  if(tk2 == nullKK){
-    fprintf(stderr, "Line %d: Symbol '%s' have unallowed type nullKK\n", ty->lineno, sym->name);
-    return -1;
-  }
-  if(((tk2 == recordK || tk2 == arrayK) && tk1 == nullKK)){
-    return 0;
-  }
-  if(tk1 == tk2){
-    switch(tk1){
-      case recordK:
-        //not relevant
-      break;
-      case intK:
-        return 0;
-      break;
-      case boolK:
-        return 0;
-      break;
-      case arrayK:
-        return compareTypeNType(t, ty, sym->typePtr);
-        break;
-      default:
-      break;
-    }
-    fprintf(stderr, "Line %d: Types does not match\n", ty->lineno);
-    return -1;
-  }
-  return -1; //compiler warning
-}
 /**
-  this function is exclusively meant to check the types of Arrays
-*/
-int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2){
-  SYMBOL *sym;
-  if(t1->kind != arrayK && t2->kind != arrayK){
-    fprintf(stderr, "Line %d: Tried to compare types '%d' and '%d' which are not both of type '%d' (array)\n", t1->lineno, t1->kind, t2->kind, arrayK);
-    return -1;
+ * Used to compare the typ of a symbol (variable) and an expression
+ * This function is not called recursively
+ * Instead the function cmpTypeSymSym or cmpTypeTyTy is used
+ */
+int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
+  if(sym == NULL){
+    fprintf(stderr, "No symbol given\n");
   }
-  t1 = t1->val.arrayType;
-  t2 = t2->val.arrayType;
-  if(t1->kind == idK){
-    sym = getSymbol(t, t1->val.id);
+  if(exp == NULL){
+    fprintf(stderr, "No expression given\n");
+  }
+  if(sym->typeVal == idK){
+    //TODO: check that typePtr has idK type
+    sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id);
     if(sym == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", t1->lineno, t1->val.id);
-      return -1;
+      return -1; //assume error already printed
     }
-    return compareTypeNSym(t, t2, sym);
   }
-  if(t2->kind == idK){
-    sym = getSymbol(t, t2->val.id);
-    if(sym == NULL){
-      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", t2->lineno, t1->val.id);
-      return -1;
-    }
-    return compareTypeNSym(t, t1, sym);
-  }
-  //TODO: need check for functions also??
-  if(t1->kind == recordK){
-    fprintf(stderr, "Line %d: The type is an anonymous record type\n", t1->lineno);
-    return -1;
-  }
-  if(t2->kind == recordK){
-    fprintf(stderr, "Line %d: The type is an anonymous record type\n", t2->lineno);
-    return -1;
-  }
-  if(((t1->kind == recordK || t1->kind == arrayK) && t2->kind == nullKK) || ((t2->kind == recordK || t2->kind == arrayK) && t1->kind == nullK)){
-    return 0;
-  }
-  if(t1->kind == t2->kind){
-    switch(t1->kind){
-      case recordK:
-        //not relevant
-      break;
+  Typekind exptk, symtk;
+  exptk = exp->typekind;
+  symtk = sym->typeVal;
+  if(exptk == symtk){
+    switch(exptk){
       case intK:
-        return 0;
-      break;
       case boolK:
         return 0;
-      break;
-      case arrayK:
-        return compareTypeNType(t, t1, t2);
         break;
-      case nullKK:
-        return 0;
-      default:
-      break;
+      case arrayK:
+        return cmpTypeTyTy(t,sym->typePtr, exp->type);
+        break;
     }
   }
+  if(exptk == recordK){
+    fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
+    return -1;
+  }
+  if(exptk == idK){
+    if(exp->type->kind != idK){
+      fprintf(stderr, "Line %d: The two types %d and %d for the expression does not match\n", exp->lineno, idK, exp->type->kind);
+      return -1;
+    }
+    SYMBOL *sym2 = getSymbol(t, exp->type->val.id);
+    if(sym2 == NULL){
+      fprintf(stderr, "Line %d: The symbol %s was not found\n", exp->lineno, exp->type->val.id);
+      return -1;
+    }
+    return cmpTypeSymSym(t, sym, sym2);
+  }
+  if(((symtk == recordK) || (symtk == arrayK)) && exptk == nullKK){
+    return 0;
+  }
+  fprintf(stderr, "Line %d: The expression with type '%d' and the symbol '%s' with type '%d' does not match\n", exp->lineno, exptk, sym->name, symtk);
   return -1;
 }
+
+int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
+  if(sym1 == NULL){
+    fprintf(stderr, "Missing symbol 1\n");
+    return -1;
+  }
+  if(sym2 == NULL){
+    fprintf(stderr, "Missing symbol 2\n");
+    return -1;
+  }
+  char* name1 = sym1->name;
+  char* name2 = sym2->name;
+  if(sym1->typeVal == idK){
+    //TODO: check that typePtr has idK type
+    sym1 = recursiveSymbolRetrieval(t, sym1->typePtr->val.id);
+    if(sym1 == NULL){
+      fprintf(stderr, "Couldn't expand type for symbol %s\n", name1);
+      return -1;
+    }
+  }
+  if(sym2->typeVal == idK){
+    //TODO: check that typePtr has idK type
+    sym2 = recursiveSymbolRetrieval(t, sym2->typePtr->val.id);
+    if(sym2 == NULL){
+      fprintf(stderr, "Couldn't expand type for symbol %s\n", name2);
+      return -1;
+    }
+  }
+  Typekind tk1 = sym1->typeVal;
+  Typekind tk2 = sym2->typeVal;
+  if(tk1 == nullKK){ //this should not be able to happen
+    fprintf(stderr, "Symbol '%s' has disallowed null type\n", name1);
+    return -1;
+  }
+  if(tk2 == nullKK){ //this should not be able to happen
+    fprintf(stderr, "Symbol '%s' has disallowed null type\n", name2);
+    return -1;
+  }
+  if(tk1 == tk2){
+    switch(tk1){
+      case intK:
+      case boolK:
+        return 0;
+        break;
+      case recordK:
+        if(sym1->content != sym2->content){
+          fprintf(stderr, "The two symbols %s and %s does not have same record type\n", name1, name2);
+          return -1;
+        }
+        return 0;
+        break;
+      case arrayK:
+        return cmpTypeTyTy(t, sym1->typePtr, sym2->typePtr);
+        break;
+    }
+  }
+  fprintf(stderr, "The two types %d and %d does not match\n", tk1, tk2);
+  return -1;
+}
+
+int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
+  if(ty1 == NULL){
+    fprintf(stderr, "Missing first type\n");
+  }
+  if(ty2 == NULL){
+    fprintf(stderr, "Missing second type\n");
+  }
+  Typekind tk1 = ty1->kind;
+  Typekind tk2 = ty2->kind;
+  SYMBOL *sym1 = NULL; //important for recordK cases below
+  SYMBOL *sym2 = NULL;
+  if(tk1 == idK){
+    sym1 = recursiveSymbolRetrieval(t, ty1->val.id);
+    if(sym1 == NULL){
+      fprintf(stderr, "The symbol '%s' was not found\n", ty1->val.id);
+      return -1;
+    }
+    tk1 = sym1->typeVal;
+    if(tk1 != sym1->typePtr->kind){
+      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym1->name);
+      return -1;
+    }
+  }
+  if(tk2 == idK){
+    sym2 = recursiveSymbolRetrieval(t, ty2->val.id);
+    if(sym2 == NULL){
+      fprintf(stderr, "The symbol '%s' was not found\n", ty2->val.id);
+      return -1;
+    }
+    tk2 = sym2->typeVal;
+    if(tk2 != sym2->typePtr->kind){
+      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym2->name);
+      return -1;
+    }
+  }
+
+  if(tk1 == tk2){
+    switch(tk1){
+      case intK:
+      case boolK:
+        return 0;
+        break;
+      case arrayK:
+        return cmpTypeTyTy(t, ty1->val.arrayType, ty2->val.arrayType);
+        break;
+      case recordK:
+        if((sym1 == NULL) || (sym2 == NULL)){
+          fprintf(stderr, "Comparison with anonymous record type fond and is not allowed\n");
+          return -1;
+        }
+        if(sym1->content != sym2->content){
+          fprintf(stderr, "The two symbols '%s' and '%s' does not have same record type\n", sym1->name, sym2->name);
+          return -1;
+        }
+        return 0;
+      case nullK:
+        fprintf(stderr, "Both types of comparison is NULL\n");
+        return -1;
+        break;
+    }
+  }
+  fprintf(stderr, "The two types %d and %d does not match\n", tk1, tk2);
+  return -1;
+}
+
+// int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
+//   Typekind tk1 = sym->typeVal;
+//   Typekind tk2 = exp->typekind;
+//   TYPE *type;
+//   SYMBOL *sym2;
+//   if(tk1 == idK){
+//     type = sym->typePtr;
+//     if(type->kind != idK){
+//       fprintf(stderr, "Line %d: Symbol '%s' does not specify a valid type\n", exp->lineno, sym->name);
+//       return -1;
+//     }
+//     sym2 = getSymbol(t, type->val.id);
+//     if(sym2 == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, type->val.id);
+//       return -1;
+//     }
+//     return compareSymNExp(t, sym2, exp);
+//   }
+//   if(tk2 == idK){
+//     type = exp->type;
+//     if(type->kind != idK){
+//       fprintf(stderr, "Line %d: expression does not specify a valid type\n", exp->lineno);
+//       return -1;
+//     }
+//     sym2 = getSymbol(t, type->val.id);
+//     if(sym2 == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, type->val.id);
+//       return -1;
+//     }
+//     return compareSymNSym(t, sym, sym2);
+//   }
+//   if(sym->typeVal == recordK && sym->kind == varS){
+//     fprintf(stderr, "Line %d: The symbol '%s' has anonymous record type\n", exp->lineno, sym->name);
+//     return -1;
+//   }
+//   if(exp->typekind == recordK){
+//     fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
+//     return -1;
+//   }
+//   if(tk1 == nullKK){
+//     fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", exp->lineno, sym->name);
+//   }
+//   if(((tk1 == recordK || tk1 == arrayK) && tk2 == nullKK)){
+//     return 0;
+//   }
+//   if(tk1 == tk2){
+//     switch(tk1){
+//       case recordK:
+//         //not relevant
+//       break;
+//       case intK:
+//         return 0;
+//       break;
+//       case boolK:
+//         return 0;
+//       break;
+//       case arrayK:
+//         return compareTypeNType(t, sym->typePtr, exp->type);
+//         break;
+//       default:
+//       break;
+//     }
+//     fprintf(stderr, "Line %d: Types does not match\n", exp->lineno);
+//     return -1;
+//   }
+//   return -1; //compiler warning
+// }
+//
+// int compareSymNSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
+//   Typekind tk1 = sym1->typeVal;
+//   Typekind tk2 = sym2->typeVal;
+//   SYMBOL *sym3;
+//   TYPE *type;
+//   if(tk1 == idK){
+//     type = sym1->typePtr;
+//     if(type->kind != idK){
+//       fprintf(stderr, "Line %d: Symbol '%s' does not specify a valid type\n", type->lineno, sym1->name);
+//       return -1;
+//     }
+//     sym3 = getSymbol(t, type->val.id);
+//     if(sym3 == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", type->lineno, type->val.id);
+//       return -1;
+//     }
+//     return compareSymNSym(t, sym3, sym2);
+//   }
+//   if(tk2 == idK){
+//     type = sym2->typePtr;
+//     if(type->kind != idK){
+//       fprintf(stderr, "Line %d: expression does not specify a valid type\n", type->lineno);
+//       return -1;
+//     }
+//     sym3 = getSymbol(t, type->val.id);
+//     if(sym3 == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", type->lineno, type->val.id);
+//       return -1;
+//     }
+//     return compareSymNSym(t, sym1, sym3);
+//   }
+//   if(sym1->typeVal == recordK && sym1->kind == varS){
+//     fprintf(stderr, "Line %d: The symbol '%s' has anonymous record type\n", -1, sym1->name);
+//     return -1;
+//   }
+//   if(sym2->typeVal == recordK && sym2->kind == varS){
+//     fprintf(stderr, "Line %d: The expression has anonymous record type\n", -1);
+//     return -1;
+//   }
+//   if(tk1 == nullKK){
+//     fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", -1, sym1->name);
+//   }
+//   if(tk2 == nullKK){
+//     fprintf(stderr, "Line %d: Symbol '%s' have unallowed type null\n", -1, sym2->name);
+//   }
+//   if(tk1==tk2){
+//     switch(tk1){
+//       case recordK:
+//         if(sym1->content == sym2->content){
+//           return 0;
+//         }
+//         fprintf(stderr, "Line %d: Record '%s' does not match record '%s'\n", -1, sym1->name, sym2->name);
+//         return -1;
+//       break;
+//       case intK:
+//         return 0;
+//       break;
+//       case boolK:
+//         return 0;
+//       break;
+//       case arrayK:
+//         return compareTypeNType(t, sym1->typePtr, sym2->typePtr);
+//         break;
+//       default:
+//       break;
+//     }
+//     fprintf(stderr, "Line %d: Types does not match\n", -1);
+//     return -1;
+//   }
+//   return -1; //compiler warning
+// }
+//
+//
+// int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp){
+//   Typekind tk1 = ty->kind;
+//   Typekind tk2 = exp->typekind;
+//   TYPE *type;
+//   SYMBOL *sym2;
+//   if(tk1 == idK){
+//     sym2 = getSymbol(t, ty->val.id);
+//     if(sym2 == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, ty->val.id);
+//       return -1;
+//     }
+//     return compareSymNExp(t, sym2, exp);
+//   }
+//   if(tk2 == idK){
+//     type = exp->type;
+//     if(type->kind != idK){
+//       fprintf(stderr, "Line %d: expression does not specify a valid type\n", exp->lineno);
+//       return -1;
+//     }
+//     sym2 = getSymbol(t, type->val.id);
+//     if(sym2 == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", exp->lineno, type->val.id);
+//       return -1;
+//     }
+//     return compareTypeNSym(t, ty, sym2);
+//   }
+//   //TODO: need check for functions also??
+//   if(ty->kind == recordK){
+//     fprintf(stderr, "Line %d: The typr has anonymous record type\n", exp->lineno);
+//     fprintf(stderr, "Maybe previous print is wrong\n");
+//     return -1;
+//   }
+//   if(exp->typekind == recordK){
+//     fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
+//     return -1;
+//   }
+//   if(tk1 == nullKK){
+//     fprintf(stderr, "Line %d: Something probably not allowed to be an NULL is a NULL\n", ty->lineno);
+//   }
+//   if(((tk1 == recordK || tk1 == arrayK) && tk2 == nullKK)){
+//     return 0;
+//   }
+//   if(tk1 == tk2){
+//     switch(tk1){
+//       case recordK:
+//         //not relevant
+//       break;
+//       case intK:
+//         return 0;
+//       break;
+//       case boolK:
+//         return 0;
+//       break;
+//       case arrayK:
+//         return compareTypeNType(t, ty, exp->type);
+//         break;
+//       default:
+//       break;
+//     }
+//     fprintf(stderr, "Line %d: Types does not match\n", exp->lineno);
+//     return -1;
+//   }
+//   return -1; //compiler warning
+// }
+//
+// int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym){
+//   Typekind tk1 = ty->kind;
+//   Typekind tk2 = sym->typeVal;
+//   TYPE *type;
+//   SYMBOL *sym2;
+//   if(tk1 == idK){
+//     sym2 = getSymbol(t, ty->val.id);
+//     if(sym2 == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", ty->lineno, ty->val.id);
+//       return -1;
+//     }
+//     return compareSymNSym(t, sym2, sym);
+//   }
+//   if(tk2 == idK){
+//     type = sym->typePtr;
+//     if(type->kind != idK){
+//       fprintf(stderr, "Line %d: expression does not specify a valid type\n", ty->lineno);
+//       return -1;
+//     }
+//     SYMBOL *sym3 = getSymbol(t, type->val.id);
+//     if(sym3 == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", ty->lineno, type->val.id);
+//       return -1;
+//     }
+//     return compareTypeNSym(t, ty, sym3);
+//   }
+//   //TODO: need check for functions also??
+//   if(ty->kind == recordK){
+//     fprintf(stderr, "Line %d: The type is an anonymous record type\n", ty->lineno);
+//     return -1;
+//   }
+//   if(sym->typeVal == recordK && sym->kind == varS){
+//     fprintf(stderr, "Line %d: The symbol '%s' has anonymous record type\n", ty->lineno, sym->name);
+//     return -1;
+//   }
+//   if(tk2 == nullKK){
+//     fprintf(stderr, "Line %d: Symbol '%s' have unallowed type nullKK\n", ty->lineno, sym->name);
+//     return -1;
+//   }
+//   if(((tk2 == recordK || tk2 == arrayK) && tk1 == nullKK)){
+//     return 0;
+//   }
+//   if(tk1 == tk2){
+//     switch(tk1){
+//       case recordK:
+//         //not relevant
+//       break;
+//       case intK:
+//         return 0;
+//       break;
+//       case boolK:
+//         return 0;
+//       break;
+//       case arrayK:
+//         return compareTypeNType(t, ty, sym->typePtr);
+//         break;
+//       default:
+//       break;
+//     }
+//     fprintf(stderr, "Line %d: Types does not match\n", ty->lineno);
+//     return -1;
+//   }
+//   return -1; //compiler warning
+// }
+// /**
+//   this function is exclusively meant to check the types of Arrays
+// */
+// int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2){
+//   SYMBOL *sym;
+//   if(t1->kind != arrayK && t2->kind != arrayK){
+//     fprintf(stderr, "Line %d: Tried to compare types '%d' and '%d' which are not both of type '%d' (array)\n", t1->lineno, t1->kind, t2->kind, arrayK);
+//     return -1;
+//   }
+//   t1 = t1->val.arrayType;
+//   t2 = t2->val.arrayType;
+//   if(t1->kind == idK){
+//     sym = getSymbol(t, t1->val.id);
+//     if(sym == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", t1->lineno, t1->val.id);
+//       return -1;
+//     }
+//     return compareTypeNSym(t, t2, sym);
+//   }
+//   if(t2->kind == idK){
+//     sym = getSymbol(t, t2->val.id);
+//     if(sym == NULL){
+//       fprintf(stderr, "Line %d: The symbol '%s' was not found\n", t2->lineno, t1->val.id);
+//       return -1;
+//     }
+//     return compareTypeNSym(t, t1, sym);
+//   }
+//   //TODO: need check for functions also??
+//   if(t1->kind == recordK){
+//     fprintf(stderr, "Line %d: The type is an anonymous record type\n", t1->lineno);
+//     return -1;
+//   }
+//   if(t2->kind == recordK){
+//     fprintf(stderr, "Line %d: The type is an anonymous record type\n", t2->lineno);
+//     return -1;
+//   }
+//   if(((t1->kind == recordK || t1->kind == arrayK) && t2->kind == nullKK) || ((t2->kind == recordK || t2->kind == arrayK) && t1->kind == nullK)){
+//     return 0;
+//   }
+//   if(t1->kind == t2->kind){
+//     switch(t1->kind){
+//       case recordK:
+//         //not relevant
+//       break;
+//       case intK:
+//         return 0;
+//       break;
+//       case boolK:
+//         return 0;
+//       break;
+//       case arrayK:
+//         return compareTypeNType(t, t1, t2);
+//         break;
+//       case nullKK:
+//         return 0;
+//       default:
+//       break;
+//     }
+//   }
+//   return -1;
+// }
 
 
 

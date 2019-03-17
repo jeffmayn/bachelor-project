@@ -89,15 +89,21 @@ Typekind expOfType(SymbolTable *t, EXP *exp);
 
 Typekind typeOfType(SymbolTable *t, TYPE *type);
 
-int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp);
+// int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp);
+//
+// int compareSymNSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2);
+//
+// int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp);
+//
+// int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym);
+//
+// int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2);
 
-int compareSymNSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2);
+int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp);
 
-int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp);
+int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2);
 
-int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym);
-
-int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2);
+int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2);
 
 SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID);//YAY mads har lavet noget
 
