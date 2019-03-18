@@ -131,7 +131,7 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
     break;
     case idDeclK: //userdefined types
       //TODO: may be copied from somewhere else      ;
-      if(d->val.id.type->kind == idK){
+      if(d->val.id.type->kind == idK){//this does not need to exist when we have out of order
         SYMBOL *sym123 = getSymbol(t, d->val.id.type->val.id);
         if(sym123 == NULL){
           fprintf(stderr, "Line: %d, type %s not yet defined\n", d->lineno, d->val.id.type->val.id);
