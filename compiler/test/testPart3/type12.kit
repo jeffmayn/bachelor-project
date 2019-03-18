@@ -1,7 +1,7 @@
-type R = record of {x:K};
+type R = record of {x:int};
 type K = record of {y:R};
-type X : X;
+#type X = X;
 var u:R;
 var i:K;
-u.x = null;
-u.x = i;
+u.x = 3;
+u.x = i.y.x;
