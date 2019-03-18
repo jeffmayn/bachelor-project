@@ -45,6 +45,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
   memcpy(newSym->name, name, strlen(name)+1);
   newSym->scope = scope;
   newSym->typePtr = arrayType;
+  newSym->defScope = t;
   newSym->next = NULL;
 
   //find index via hash value

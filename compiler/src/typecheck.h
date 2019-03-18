@@ -30,6 +30,12 @@ typedef struct bodyList {
 } bodyList;
 
 
+typedef struct SymbolList {
+  SYMBOL *symbol;
+  struct SymbolList *next;
+} SymbolList;
+
+
 int typeCheck(SymbolTable *table);
 
 /**
@@ -85,6 +91,10 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId);
 
 TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym);
 
+int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList);
+
+int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
+
 Typekind expOfType(SymbolTable *t, EXP *exp);
 
 //Typekind typeOfType(SymbolTable *t, TYPE *type);
@@ -105,7 +115,7 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2);
 
 int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2);
 
-SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID);//YAY mads har lavet noget
+SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms);//YAY mads har lavet noget
 
 bodyList* initBodyList();
 

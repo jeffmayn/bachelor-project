@@ -344,11 +344,11 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
         Typekind type1 = exp->val.binOP.left->typekind;
         Typekind type2 = exp->val.binOP.right->typekind;
         if(type1 == idK){
-          SYMBOL *sym1 = recursiveSymbolRetrieval(t, exp->val.binOP.left->type->val.id);
+          SYMBOL *sym1 = recursiveSymbolRetrieval(t, exp->val.binOP.left->type->val.id, NULL);
           type1 = sym1->typePtr->kind;
         }
         if(type2 == idK){
-          SYMBOL *sym2 = recursiveSymbolRetrieval(t, exp->val.binOP.right->type->val.id);
+          SYMBOL *sym2 = recursiveSymbolRetrieval(t, exp->val.binOP.right->type->val.id, NULL);
           type2 = sym2->typePtr->kind;
         }
         if(type1 == type2 && type1 == intK){
@@ -372,11 +372,11 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
         Typekind type3 = exp->val.binOP.left->typekind;
         Typekind type4 = exp->val.binOP.right->typekind;
         if(type3 == idK){
-          SYMBOL *sym1 = recursiveSymbolRetrieval(t, exp->val.binOP.left->type->val.id);
+          SYMBOL *sym1 = recursiveSymbolRetrieval(t, exp->val.binOP.left->type->val.id, NULL);
           type3 = sym1->typePtr->kind;
         }
         if(type4 == idK){
-          SYMBOL *sym2 = recursiveSymbolRetrieval(t, exp->val.binOP.right->type->val.id);
+          SYMBOL *sym2 = recursiveSymbolRetrieval(t, exp->val.binOP.right->type->val.id, NULL);
           type4 = sym2->typePtr->kind;
         }
         if(type3 == type4 && type3 == boolK){
@@ -405,11 +405,11 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
         Typekind type5 = exp->val.binOP.left->typekind;
         Typekind type6 = exp->val.binOP.right->typekind;
         if(type5 == idK){
-          SYMBOL *sym1 = recursiveSymbolRetrieval(t, exp->val.binOP.left->type->val.id);
+          SYMBOL *sym1 = recursiveSymbolRetrieval(t, exp->val.binOP.left->type->val.id, NULL);
           type5 = sym1->typePtr->kind;
         }
         if(type6 == idK){
-          SYMBOL *sym2 = recursiveSymbolRetrieval(t, exp->val.binOP.right->type->val.id);
+          SYMBOL *sym2 = recursiveSymbolRetrieval(t, exp->val.binOP.right->type->val.id, NULL);
           type6 = sym2->typePtr->kind;
         }
         if((type5 == type6) || ((type5 == recordK || type5 == arrayK) && type6 == nullKK)){
@@ -479,7 +479,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       }
       //Check userdefined types
       if(ty == idK){
-        sym = recursiveSymbolRetrieval(t, (*type)->val.id);
+        sym = recursiveSymbolRetrieval(t, (*type)->val.id, NULL);
         if(sym == NULL){
           fprintf(stderr, "Line %d: The type of the symbol %s could not be expanded\n", term->lineno, (*type)->val.id);
           return errorK;
@@ -563,7 +563,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       }
       //check for user defined types
       if(ty == idK){
-        SYMBOL *sym = recursiveSymbolRetrieval(t, (*type)->val.id);
+        SYMBOL *sym = recursiveSymbolRetrieval(t, (*type)->val.id, NULL);
         if(sym == NULL){
           fprintf(stderr, "Line %d: The symbol '%s' was not found", v->lineno, (*type)->val.id);
           return errorK;
@@ -584,7 +584,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       //type->kind == ty??
       //check if it is a userdefined record type
       if((*type)->kind == idK){
-        *sym = recursiveSymbolRetrieval(t, (*type)->val.id);
+        *sym = recursiveSymbolRetrieval(t, (*type)->val.id, NULL);
       }
       if(*sym == NULL){
         fprintf(stderr, "Line %d: The record was not found\n", v->lineno);
@@ -741,7 +741,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
           return -1;
         }
-        sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id);
+        sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id, NULL);
         if(sym == -1){
           fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
           return -1;
@@ -770,7 +770,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
           return -1;
         }
-        sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id);
+        sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id, NULL);
         if(sym == -1){
           fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
           return -1;
@@ -908,7 +908,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
       }
       //check for user defined types
       if(type->kind == idK){
-        *sym = recursiveSymbolRetrieval(t, type->val.id);
+        *sym = recursiveSymbolRetrieval(t, type->val.id, NULL);
         if(*sym == NULL){
           fprintf(stderr, "Line %d: The symbol '%s' was not found", v->lineno, type->val.id);
           return NULL;
@@ -932,7 +932,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
       SYMBOL* newSym;
       type = checkTypeTravVar(t, v->val.vardot.var, sym);
       if(type->kind == idK){//added by andreas
-        newSym = recursiveSymbolRetrieval(t, type->val.id);
+        newSym = recursiveSymbolRetrieval(t, type->val.id, NULL);
       }
       else{
         newSym = *sym; //added by andreas
@@ -968,21 +968,43 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
   This function expands the user type until a simple type is found.
   rename:expandUserType
 */
-SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID){
+SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms){
   SYMBOL* sym = getSymbol(t, symbolID);
+  SymbolList *nextSym = knownSyms;
+  while(nextSym != NULL){
+    if(sym == nextSym->symbol){
+      fprintf(stderr, "Circular typedefintion for symbol '%s'\n", sym->name);
+      return NULL;
+    }
+  }
   if(sym == NULL){
     fprintf(stderr, "Line %d: recursiveSymbolRetrieval: symbol id: %s not in scope\n", -1, symbolID);
     return NULL;
   }
-
   if(sym->typeVal == idK) {
     if(sym->typePtr->kind == idK){
-      return recursiveSymbolRetrieval(t, sym->typePtr->val.id);
+      if(knownSyms == NULL){
+        knownSyms = NEW(SymbolList);
+        knownSyms->symbol = sym;
+        knownSyms->next = NULL;
+      }
+      else{
+        nextSym = knownSyms;
+        while(nextSym->next != NULL){
+          nextSym = nextSym->next;
+        }
+        nextSym->next = NEW(SymbolList);
+        nextSym->next->symbol = sym;
+        nextSym->next->next = NULL;
+      }
+      sym = recursiveSymbolRetrieval(sym->defScope, sym->typePtr->val.id, knownSyms);
+      //TODO: free(nextSym->next->next) eller free(knownSyms);
     } else {
       fprintf(stderr, "Line %d: COMPILEERROR: typePtr of symbol not idK\n", -1);
       return NULL;
     }
   }
+
   return sym;
 }
 
@@ -995,7 +1017,7 @@ Typekind expOfType(SymbolTable *t, EXP *exp){
       fprintf(stderr, "Line %d: Expression of type '%s' does not match its type of type '%s'\n", exp->lineno, idK, type->kind);
       return errorK;
     }
-    SYMBOL *sym = recursiveSymbolRetrieval(t, type->val.id);
+    SYMBOL *sym = recursiveSymbolRetrieval(t, type->val.id, NULL);
     if(sym == NULL){
       fprintf(stderr, "Line %d: Error happened while expanding the type of '%s'\n", exp->lineno, type->val.id);
       return -1;
@@ -1033,7 +1055,7 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
   }
   if(sym->typeVal == idK){
     //TODO: check that typePtr has idK type
-    sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id);
+    sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id, NULL);
     if(sym == NULL){
       return -1; //assume error already printed
     }
@@ -1088,7 +1110,7 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   char* name2 = sym2->name;
   if(sym1->typeVal == idK){
     //TODO: check that typePtr has idK type
-    sym1 = recursiveSymbolRetrieval(t, sym1->typePtr->val.id);
+    sym1 = recursiveSymbolRetrieval(t, sym1->typePtr->val.id, NULL);
     if(sym1 == NULL){
       fprintf(stderr, "Couldn't expand type for symbol %s\n", name1);
       return -1;
@@ -1096,7 +1118,7 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   }
   if(sym2->typeVal == idK){
     //TODO: check that typePtr has idK type
-    sym2 = recursiveSymbolRetrieval(t, sym2->typePtr->val.id);
+    sym2 = recursiveSymbolRetrieval(t, sym2->typePtr->val.id, NULL);
     if(sym2 == NULL){
       fprintf(stderr, "Couldn't expand type for symbol %s\n", name2);
       return -1;
@@ -1146,7 +1168,7 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
   SYMBOL *sym1 = NULL; //important for recordK cases below
   SYMBOL *sym2 = NULL;
   if(tk1 == idK){
-    sym1 = recursiveSymbolRetrieval(t, ty1->val.id);
+    sym1 = recursiveSymbolRetrieval(t, ty1->val.id, NULL);
     if(sym1 == NULL){
       fprintf(stderr, "The symbol '%s' was not found\n", ty1->val.id);
       return -1;
@@ -1158,7 +1180,7 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
     }
   }
   if(tk2 == idK){
-    sym2 = recursiveSymbolRetrieval(t, ty2->val.id);
+    sym2 = recursiveSymbolRetrieval(t, ty2->val.id, NULL);
     if(sym2 == NULL){
       fprintf(stderr, "The symbol '%s' was not found\n", ty2->val.id);
       return -1;
@@ -1296,9 +1318,10 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
         return 0;
         break;
       case arrayK:
+      ;
         TYPE *ty = vty->type;
         while(tk == arrayK){
-          ty = ty->type->val.arrayType;
+          ty = ty->val.arrayType;
           tk = ty->kind;
         }
         continue; //TODO: please ensure that it works
