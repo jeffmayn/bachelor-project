@@ -1,0 +1,4 @@
+type A = record of {b:B};
+type B = record of {a:A};
+var x:A, y:B;
+x.b = y.a.b;

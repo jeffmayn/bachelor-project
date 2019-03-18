@@ -5,6 +5,10 @@
 //enum typeKind {idK, intK, boolK, arrayK, recordK};
 typedef enum Symbolkind{typeS,funcS,varS} Symbolkind;
 
+//typedef enum Typekind Typekind;
+//typedef struct TYPE TYPE;
+
+
 /* SYMBOL will be extended later.
    Function calls will take more parameters later.
 

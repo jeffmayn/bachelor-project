@@ -46,7 +46,13 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
   newSym->scope = scope;
   newSym->typePtr = arrayType;
   newSym->defScope = t;
+  newSym->typePtr->scope = t;
   newSym->next = NULL;
+  TYPE *ty = newSym->typePtr;
+  while(ty->kind == arrayK){
+    ty = ty->val.arrayType;
+    ty->scope = t;
+  }
 
   //find index via hash value
   int hashIndex = Hash(name);

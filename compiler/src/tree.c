@@ -1,5 +1,6 @@
 #include "memory.h"
 #include "tree.h"
+//#include "symbol.h"
 #include <stdio.h>
 
 extern int lineno;

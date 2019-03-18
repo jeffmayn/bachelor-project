@@ -1,7 +1,11 @@
 #ifndef __tree_h
 #define __tree_h
+//#include "symbol.h"
 typedef enum {false, true} bool;
 typedef enum Typekind{idK, intK, boolK, arrayK, recordK, nullKK, errorK} Typekind;
+
+//TODO: This is a crazy hack as circular headerfile includes doesn't work
+typedef struct SymbolTable SymbolTable;
 
 typedef struct FUNCTION {
   int lineno;
@@ -32,6 +36,7 @@ typedef struct TYPE {
   int lineno;
   //enum {idK, intK, boolK, arrayK, recordK} kind;
   Typekind kind;
+  SymbolTable *scope; //defines the scope in which it is defined
   //?!?!?!?!?!
   union{
     char *id;
