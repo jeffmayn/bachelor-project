@@ -45,6 +45,7 @@ SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE
 
 
 SYMBOL *getSymbol(SymbolTable *t, char *name);
+SYMBOL *getRecordSymbol(SymbolTable *t, char* name);
 
 void dumpSymbolTable(SymbolTable *t);
 #endif

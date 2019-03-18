@@ -131,7 +131,7 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
     break;
     case idDeclK: //userdefined types
       //TODO: may be copied from somewhere else      ;
-      if(d->val.id.type->kind == idK){
+      if(d->val.id.type->kind == idK){//this does not need to exist when we have out of order
         SYMBOL *sym123 = getSymbol(t, d->val.id.type->val.id);
         if(sym123 == NULL){
           fprintf(stderr, "Line: %d, type %s not yet defined\n", d->lineno, d->val.id.type->val.id);
@@ -143,7 +143,7 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       //might be done
       if(d->val.id.type->kind == recordK){
         //put all variables of record vty->id
-        sym->content = initSymbolTable();
+        sym->content = scopeSymbolTable(t);
         //TODO: use scopeSymbolTable instead
         //However, then we might be able to access variables outside the strict
         //as if they were inside.
@@ -595,7 +595,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
         fprintf(stderr, "Line %d: the symbol '%s' is not a record\n", v->lineno, (*sym)->name);
         return errorK;
       }
-      *sym = getSymbol((*sym)->content, v->val.vardot.id);
+      *sym = getRecordSymbol((*sym)->content, v->val.vardot.id);
       if(*sym == NULL){
         fprintf(stderr, "Unfortunately '%s' was not found insides '%s'\n", v->val.vardot.id, (*sym)->name);
         return -1;
@@ -937,22 +937,23 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
       else{
         newSym = *sym; //added by andreas
       }
-      if(newSym->typeVal != recordK){
-        fprintf(stderr, "Line %d: checkTypeTravVar: returned symbol was not recordK type!\n", v->lineno);
-        return NULL;
-      }
       if(newSym == NULL){
         fprintf(stderr, "Line %d: checkTypeTravVar: something went wrong\n", v->lineno);
         fprintf(stderr, "Line %d: Could not find struct containing '%s'\n", v->lineno, v->val.vardot.id );
         return NULL;
         break;
       }
+      if(newSym->typeVal != recordK){
+        fprintf(stderr, "Line %d: checkTypeTravVar: returned symbol was not recordK type!\n", v->lineno);
+        return NULL;
+      }
       if(newSym->content == NULL){
         fprintf(stderr, "%d\n", (*sym)->typeVal);
         fprintf(stderr, "Line %d: holy shit, the struct '%s' does not have any content\n", v->lineno, (*sym)->name);
         return NULL;
       }
-      *sym = getSymbol(newSym->content, v->val.vardot.id);
+      //kig også expTypeTravVar ca linje 500 noget.
+      *sym = getRecordSymbol(newSym->content, v->val.vardot.id);
       if(*sym == NULL){
         fprintf(stderr, "Line %d: dotK: Symbol '%s' was not found\n",v->lineno, v->val.vardot.id);
         return NULL;

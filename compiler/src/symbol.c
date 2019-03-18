@@ -105,9 +105,25 @@ SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE
   }
   return s;
 }
+SYMBOL *getRecordSymbol(SymbolTable *t, char* name){
+    //find index via hash
+    int hashIndex = Hash(name);
 
+    //search in current table
+    SYMBOL **table = t->table;
+    SYMBOL *temp = table[hashIndex];
+    while(temp != NULL){
+      if(!strcmp(temp->name, name)){
+        return temp;
+      } else {
+        temp = temp->next;
+      }
+    }
+    /*we only check one symboltable*/
+    return NULL;
+}
 
-SYMBOL *getSymbol(SymbolTable *t, char *name){
+SYMBOL *getSymbol(SymbolTable *t, char *name){//TODO REFORMAT: getRecordSymbol kan integreres.
   //find index via hash
   int hashIndex = Hash(name);
 
