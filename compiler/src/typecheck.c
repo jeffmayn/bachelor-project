@@ -741,7 +741,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
           return -1;
         }
-        sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id, NULL);
+        sym = recursiveSymbolRetrieval(t, sym->name, NULL);
         if(sym == -1){
           fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
           return -1;
@@ -770,7 +770,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
           return -1;
         }
-        sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id, NULL);
+        sym = recursiveSymbolRetrieval(t, sym->name, NULL);
         if(sym == -1){
           fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
           return -1;
@@ -971,16 +971,18 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
 */
 SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms){
   SYMBOL* sym = getSymbol(t, symbolID);
-  SymbolList *nextSym = knownSyms;
-  while(nextSym != NULL){
-    if(sym == nextSym->symbol){
-      fprintf(stderr, "Circular typedefintion for symbol '%s'\n", sym->name);
-      return NULL;
-    }
-  }
   if(sym == NULL){
     fprintf(stderr, "Line %d: recursiveSymbolRetrieval: symbol id: %s not in scope\n", -1, symbolID);
     return NULL;
+  }
+  t = sym->defScope;
+  SymbolList *nextSym = knownSyms;
+  while(nextSym != NULL){
+    if(sym == nextSym->symbol){
+      fprintf(stderr, "Circular typedefinition for symbol '%s'\n", sym->name);
+      return NULL;
+    }
+    nextSym = nextSym->next;
   }
   if(sym->typeVal == idK) {
     if(sym->typePtr->kind == idK){
@@ -998,7 +1000,7 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *kno
         nextSym->next->symbol = sym;
         nextSym->next->next = NULL;
       }
-      sym = recursiveSymbolRetrieval(sym->defScope, sym->typePtr->val.id, knownSyms);
+      sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id, knownSyms);
       //TODO: free(nextSym->next->next) eller free(knownSyms);
     } else {
       fprintf(stderr, "Line %d: COMPILEERROR: typePtr of symbol not idK\n", -1);
@@ -1056,7 +1058,7 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
   }
   if(sym->typeVal == idK){
     //TODO: check that typePtr has idK type
-    sym = recursiveSymbolRetrieval(t, sym->typePtr->val.id, NULL);
+    sym = recursiveSymbolRetrieval(t, sym->name, NULL);
     if(sym == NULL){
       return -1; //assume error already printed
     }
@@ -1084,7 +1086,10 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
       fprintf(stderr, "Line %d: The two types %d and %d for the expression does not match\n", exp->lineno, idK, exp->type->kind);
       return -1;
     }
-    SYMBOL *sym2 = getSymbol(t, exp->type->val.id);
+    //SYMBOL *sym2 = getSymbol(t, exp->type->val.id);
+    //TODO: IMPORTANT: jeg har blot typen af expressions, men ikke hvor de er defineret
+    //foreksempel ved jeg at returtypen af f er EXP, men jeg ved ikke hvor den er defineret (p16.kit)
+    SYMBOL *sym2 = recursiveSymbolRetrieval(t, exp->type->val.id, NULL);
     if(sym2 == NULL){
       fprintf(stderr, "Line %d: The symbol %s was not found\n", exp->lineno, exp->type->val.id);
       return -1;
@@ -1111,7 +1116,7 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   char* name2 = sym2->name;
   if(sym1->typeVal == idK){
     //TODO: check that typePtr has idK type
-    sym1 = recursiveSymbolRetrieval(t, sym1->typePtr->val.id, NULL);
+    sym1 = recursiveSymbolRetrieval(t, sym1->name, NULL);
     if(sym1 == NULL){
       fprintf(stderr, "Couldn't expand type for symbol %s\n", name1);
       return -1;
@@ -1119,7 +1124,7 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   }
   if(sym2->typeVal == idK){
     //TODO: check that typePtr has idK type
-    sym2 = recursiveSymbolRetrieval(t, sym2->typePtr->val.id, NULL);
+    sym2 = recursiveSymbolRetrieval(t, sym2->name, NULL);
     if(sym2 == NULL){
       fprintf(stderr, "Couldn't expand type for symbol %s\n", name2);
       return -1;
