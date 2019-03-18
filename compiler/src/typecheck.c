@@ -663,6 +663,7 @@ int checkTypes(SymbolTable *t, BODY *body, char* funcId){
   Checks that all the statmenets in the given body has correct types
 */
 int  checkTypeTravBody(SymbolTable *t,  BODY *body, char* funcId){
+  //TODO checkType of decls
   return checkTypeTravStmts(t, body->sList, funcId);
 }
 
@@ -1197,6 +1198,137 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
   fprintf(stderr, "The two types %d and %d does not match\n", tk1, tk2);
   return -1;
 }
+
+
+
+
+
+
+
+
+
+int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
+  SYMBOL *sym;
+  if(decls == NULL){ //no more declarations
+    return 0;
+  }
+  DECLARATION *d = decls->decl;
+  if(d == NULL){
+    return 0;
+  }
+  switch (d->kind) {
+    case listK: //variables
+      checkTypeTravVDecls(t, d->val.list);
+    break;
+    case funcK: //function
+      ; //empty statement
+      //create new scope
+      SymbolTable *child = scopeSymbolTable(t);
+      //add function to current scope
+      sym = putSymbol(t, d->val.func->head->id, 0, funcS, d->val.func->head->type->kind, child, d->val.func->head->type); //add some shit for named types, records and arrays
+      if(sym == NULL){
+        fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, d->val.func->head->id);
+      }
+      //add parameters to that scope
+      PAR_DECL_LIST *pList = d->val.func->head->pList;
+      if(pList != NULL){
+        VAR_DECL_LIST *vList = pList->vList;
+        while(vList != NULL){
+          putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type); //can a parameter be anything different from a variable (func or type)
+          vList = vList->vList;
+        }
+      }
+      //recursively traverse on body of function
+      idTypeTravBody(child,d->val.func->body, bList);
+      //save body for statement traversal
+      saveBody(bList, d->val.func->body, child, d->val.func->head->id);
+    break;
+    case idDeclK: //userdefined types
+      //TODO: may be copied from somewhere else      ;
+      if(d->val.id.type->kind == idK){
+        SYMBOL *sym123 = getSymbol(t, d->val.id.type->val.id);
+        if(sym123 == NULL){
+          fprintf(stderr, "Line: %d, type %s not yet defined\n", d->lineno, d->val.id.type->val.id);
+          return -1;
+        }
+      }
+      sym = putSymbol(t, d->val.id.id, 0, typeS, d->val.id.type->kind, NULL, d->val.id.type);
+      //TODO: something more to add in case of struct
+      //might be done
+      if(d->val.id.type->kind == recordK){
+        //put all variables of record vty->id
+        sym->content = initSymbolTable();
+        //TODO: use scopeSymbolTable instead
+        //However, then we might be able to access variables outside the strict
+        //as if they were inside.
+        int error123 =  idTypeTravVDecls(sym->content, d->val.id.type->val.vList);
+        if(error123 == -1){
+          return -1;
+        }
+        //TODO: if some of the content fails we should rollback the record symbol
+      }
+    break;
+  }
+  //go on to next declaration
+  return idTypeTravDecls(t, decls->decl_list, bList);
+
+}
+
+/**
+  Traverses all variables defined by the same 'var' keyword
+  Saves the variables in the symboltable t
+*/
+int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
+  //TODO check for circles
+  if(vDecls == NULL){ //no variables
+    return 0;
+  }
+  VAR_TYPE *vty = vDecls->vType;
+  SYMBOL *sym = NULL;
+  Typekind tk = vty->type->kind;
+  while(true){
+    switch(tk){
+      case errorK:
+        return -1;
+        break;
+      case intK:
+      case boolK:
+        return 0;
+        break;
+      case arrayK:
+        TYPE *ty = vty->type;
+        while(tk == arrayK){
+          ty = ty->type->val.arrayType;
+          tk = ty->kind;
+        }
+        continue; //TODO: please ensure that it works
+        break;
+      case recordK:
+        return idTypeTravVDecls(sym->content, vty->type->val.vList);
+        break;
+      case idK:
+        //TODO: check if type exists and that it is not circular
+        break;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
 //   Typekind tk1 = sym->typeVal;
