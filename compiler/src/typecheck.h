@@ -87,7 +87,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym);
 
 Typekind expOfType(SymbolTable *t, EXP *exp);
 
-Typekind typeOfType(SymbolTable *t, TYPE *type);
+//Typekind typeOfType(SymbolTable *t, TYPE *type);
 
 // int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp);
 //
