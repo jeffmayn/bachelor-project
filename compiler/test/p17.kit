@@ -1,4 +1,14 @@
 type A = record of {b:B};
 type B = record of {a:A};
+type O=P;
+type P=Q;
+type Q=R;
+type R=S;
+type S=P;
+
+#type Y=int;
 var x:A, y:B;
+#var z:X;
+#var f:Y;
 x.b = y.a.b;
+#z = 3;

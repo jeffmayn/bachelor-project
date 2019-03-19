@@ -25,6 +25,7 @@ typedef struct SYMBOL {
   struct TYPE* typePtr; //only relevant for arrays
   char* typeId; //only relevant for user types. Containing the name of the type. Not yet in use
   struct SymbolTable* defScope;
+  bool visited;
   struct SYMBOL *next;
 } SYMBOL;
 

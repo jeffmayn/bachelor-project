@@ -47,6 +47,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
   newSym->typePtr = arrayType;
   newSym->defScope = t;
   newSym->typePtr->scope = t;
+  newSym->visited = false;
   newSym->next = NULL;
   TYPE *ty = newSym->typePtr;
   while(ty->kind == arrayK){

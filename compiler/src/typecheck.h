@@ -91,7 +91,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId);
 
 TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym);
 
-int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList);
+int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls);
 
 int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
 

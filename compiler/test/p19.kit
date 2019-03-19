@@ -1,0 +1,40 @@
+type A = record of {
+  a:A,
+  b:B,
+  c:array of C,
+  d:array of int,
+  e:record of {
+    a:int,
+    b:B
+  }
+};
+
+type B = record of{
+  a:A,
+  q:array of array of C,
+  e:record of {
+    x:record of {
+      x:record of {
+        x:record of {
+          x:bool
+        },
+        y:array of C
+      },
+      y:array of C
+    },
+    y:array of C
+  }
+};
+
+type C = record of{
+  c:int,
+  d:array of A
+};
+
+var h:A;
+
+h.
+b.
+q[3][4].
+c = 3;
+#h.a.a.c[4].d[4].e.b.e.x.x.x.x = true;

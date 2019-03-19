@@ -8,6 +8,8 @@
 extern BODY *theexpression;
 extern SymbolTable *childScopeForDebugging;
 
+int anonymousRecordCounter = 0;
+
 
 /**
   Main function for type checking
@@ -111,15 +113,36 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       //create new scope
       SymbolTable *child = scopeSymbolTable(t);
       //add function to current scope
+      //TODO do same anonymousRecordCounter stuff;
       sym = putSymbol(t, d->val.func->head->id, 0, funcS, d->val.func->head->type->kind, child, d->val.func->head->type); //add some shit for named types, records and arrays
       if(sym == NULL){
         fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, d->val.func->head->id);
       }
+
       //add parameters to that scope
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
         VAR_DECL_LIST *vList = pList->vList;
         while(vList != NULL){
+          VAR_TYPE *vty = vList->vType;
+          TYPE *ty = vty->type;
+          TYPE *prev = NULL;
+          while(ty->kind == arrayK){
+            prev = ty;
+            ty = ty->val.arrayType;
+          }
+          if(ty->kind == recordK){
+            char name[10] = "";
+            sprintf(name, "$%d", anonymousRecordCounter);
+            TYPE *newType = makeID(name);
+            prev->val.arrayType = newType;
+            sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
+            sym->content=scopeSymbolTable(t);
+            idTypeTravVDecls(sym->content, ty->val.vList);
+
+            anonymousRecordCounter++;
+          }
+
           putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type); //can a parameter be anything different from a variable (func or type)
           vList = vList->vList;
         }
@@ -131,13 +154,13 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
     break;
     case idDeclK: //userdefined types
       //TODO: may be copied from somewhere else      ;
-      if(d->val.id.type->kind == idK){//this does not need to exist when we have out of order
-        SYMBOL *sym123 = getSymbol(t, d->val.id.type->val.id);
-        if(sym123 == NULL){
-          fprintf(stderr, "Line: %d, type %s not yet defined\n", d->lineno, d->val.id.type->val.id);
-          return -1;
-        }
-      }
+      // if(d->val.id.type->kind == idK){//this does not need to exist when we have out of order
+      //   SYMBOL *sym123 = getSymbol(t, d->val.id.type->val.id);
+      //   if(sym123 == NULL){
+      //     fprintf(stderr, "Line: %d, type %s not yet defined\n", d->lineno, d->val.id.type->val.id);
+      //     return -1;
+      //   }
+      // }
       sym = putSymbol(t, d->val.id.id, 0, typeS, d->val.id.type->kind, NULL, d->val.id.type);
       //TODO: something more to add in case of struct
       //might be done
@@ -173,7 +196,7 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   if(vty->type->kind == recordK){
     sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
     //put all variables of record vty->id
-    sym->content=initSymbolTable();
+    sym->content=scopeSymbolTable(t);
     //TODO: use scopeSymbolTable instead
     //However, then we might be able to access variables outside the strict
     //as if they were inside.
@@ -186,6 +209,26 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   else if(vty->type->kind == arrayK){
     //redundant
     sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type); //next to last param is the type of the variable //further shit to be added for named types, records and arrays
+    if(sym == NULL){
+      return -1;
+    }
+    TYPE *ty = vty->type;
+    TYPE *prev = NULL;
+    while(ty->kind == arrayK){
+      prev = ty;
+      ty = ty->val.arrayType;
+    }
+    if(ty->kind == recordK){
+      char name[10] = "";
+      sprintf(name, "$%d", anonymousRecordCounter);
+      TYPE *newType = makeID(name);
+      prev->val.arrayType = newType;
+      sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
+      sym->content=scopeSymbolTable(t);
+      idTypeTravVDecls(sym->content, ty->val.vList);
+
+      anonymousRecordCounter++;
+    }
   }
   else{//TODO
     /*jeg gætter på at det er her id variabler bliver
@@ -663,7 +706,10 @@ int checkTypes(SymbolTable *t, BODY *body, char* funcId){
   Checks that all the statmenets in the given body has correct types
 */
 int  checkTypeTravBody(SymbolTable *t,  BODY *body, char* funcId){
-  //TODO checkType of decls
+  int error = checkTypeTravDecls(t, body->vList);
+  if(error == -1){
+    return -1;
+  }
   return checkTypeTravStmts(t, body->sList, funcId);
 }
 
@@ -975,6 +1021,12 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *kno
     fprintf(stderr, "Line %d: recursiveSymbolRetrieval: symbol id: %s not in scope\n", -1, symbolID);
     return NULL;
   }
+  if(knownSyms != NULL){ //this is to damn hacked
+    if(sym->kind != typeS){
+      fprintf(stderr, "Line %d: The id with kind %d is not a type\n", sym->typePtr->lineno, sym->kind);
+      return NULL;
+    }
+  }
   //t = sym->defScope;
   t = sym->typePtr->scope;
   SymbolList *nextSym = knownSyms;
@@ -1236,7 +1288,7 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
 
 
 
-int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
+int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
   SYMBOL *sym;
   if(decls == NULL){ //no more declarations
     return 0;
@@ -1247,62 +1299,51 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
   }
   switch (d->kind) {
     case listK: //variables
-      checkTypeTravVDecls(t, d->val.list);
+      return checkTypeTravVDecls(t, d->val.list);
     break;
     case funcK: //function
       ; //empty statement
-      //create new scope
-      SymbolTable *child = scopeSymbolTable(t);
-      //add function to current scope
-      sym = putSymbol(t, d->val.func->head->id, 0, funcS, d->val.func->head->type->kind, child, d->val.func->head->type); //add some shit for named types, records and arrays
-      if(sym == NULL){
-        fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, d->val.func->head->id);
+      if(d->val.func->head->type->kind == idK){
+        sym = recursiveSymbolRetrieval(t, d->val.func->head->type->val.id, NULL);
+        if(sym == NULL){
+          return -1; //assume error printing already done
+        }
       }
       //add parameters to that scope
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
         VAR_DECL_LIST *vList = pList->vList;
         while(vList != NULL){
-          putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type); //can a parameter be anything different from a variable (func or type)
+          sym = recursiveSymbolRetrieval(t, vList->vType->id, NULL);
+          if(sym == NULL){
+            return -1;
+          }
           vList = vList->vList;
         }
       }
-      //recursively traverse on body of function
-      idTypeTravBody(child,d->val.func->body, bList);
-      //save body for statement traversal
-      saveBody(bList, d->val.func->body, child, d->val.func->head->id);
     break;
     case idDeclK: //userdefined types
-      //TODO: may be copied from somewhere else      ;
-      if(d->val.id.type->kind == idK){
-        SYMBOL *sym123 = getSymbol(t, d->val.id.type->val.id);
-        if(sym123 == NULL){
-          fprintf(stderr, "Line: %d, type %s not yet defined\n", d->lineno, d->val.id.type->val.id);
-          return -1;
-        }
+      sym = recursiveSymbolRetrieval(t, d->val.id.id, NULL);
+      if(sym == NULL){
+        return -1;
       }
-      sym = putSymbol(t, d->val.id.id, 0, typeS, d->val.id.type->kind, NULL, d->val.id.type);
-      //TODO: something more to add in case of struct
-      //might be done
+      if(sym->visited == true){
+        sym->visited = false;
+        return 0;
+      }
+      else{
+        sym->visited = true;
+      }
       if(d->val.id.type->kind == recordK){
-        //put all variables of record vty->id
-        sym->content = initSymbolTable();
-        //TODO: use scopeSymbolTable instead
-        //However, then we might be able to access variables outside the strict
-        //as if they were inside.
-        int error123 =  idTypeTravVDecls(sym->content, d->val.id.type->val.vList);
-        if(error123 == -1){
+        int error = checkTypeTravVDecls(sym->content, d->val.id.type->val.vList);
+        sym->visited = false;
+        if(error == -1){
           return -1;
         }
-        //TODO: if some of the content fails we should rollback the record symbol
       }
-    break;
+      return checkTypeTravDecls(t, decls->decl_list);
+    }
   }
-  //go on to next declaration
-  return idTypeTravDecls(t, decls->decl_list, bList);
-
-}
-
 /**
   Traverses all variables defined by the same 'var' keyword
   Saves the variables in the symboltable t
@@ -1313,34 +1354,47 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
     return 0;
   }
   VAR_TYPE *vty = vDecls->vType;
-  SYMBOL *sym = NULL;
+  SYMBOL *sym = getSymbol(t, vty->id);
   Typekind tk = vty->type->kind;
-  while(true){
+  TYPE *ty = vty->type;
     switch(tk){
-      case errorK:
-        return -1;
-        break;
-      case intK:
-      case boolK:
-        return 0;
-        break;
       case arrayK:
       ;
-        TYPE *ty = vty->type;
         while(tk == arrayK){
           ty = ty->val.arrayType;
           tk = ty->kind;
         }
-        continue; //TODO: please ensure that it works
-        break;
-      case recordK:
-        return idTypeTravVDecls(sym->content, vty->type->val.vList);
-        break;
-      case idK:
-        //TODO: check if type exists and that it is not circular
-        break;
+        //fall into default
+      default:
+        switch(tk){
+          case errorK:
+            fprintf(stderr, "Line %d: Type error\n", vty->lineno);
+            return -1;
+            break;
+          case intK:
+          case boolK:
+            return 0;
+            break;
+
+          case recordK:
+          ; //empty statement
+            //sym = recursiveSymbolRetrieval(t, )
+            int error = checkTypeTravVDecls(sym->content, ty->val.vList);
+            if(error == -1){
+              return -1;
+            }
+            break;
+          case idK:
+            //TODO: check if type exists and that it is not circular
+            sym = recursiveSymbolRetrieval(t, ty->val.id, NULL);
+            if(sym == NULL){
+              return -1; //assuming error printed
+            }
+            break;
+      }
     }
-  }
+    //TODO: missing recursive call to vDecls->list
+    return checkTypeTravVDecls(t, vDecls->vList);
 }
 
 
