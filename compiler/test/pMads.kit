@@ -1,0 +1,12 @@
+type X = record of {
+  d : int
+};
+
+type myList = array of array of X;
+
+var newList : myList;
+
+newList
+      [123]
+          [321]
+                .d = 45;

@@ -582,7 +582,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       *type = s->typePtr;
       return s->typeVal;
       break;
-    case expK:
+    case expK://SOMETHING WIERD SOMEWHERE HERE!
       error = expTypeTravExp(t, v->val.varexp.exp);
       //checkimg index expression
       if(error == -1){
@@ -606,16 +606,16 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       }
       //check for user defined types
       if(ty == idK){
-        SYMBOL *sym = recursiveSymbolRetrieval((*type)->scope, (*type)->val.id, NULL);
-        if(sym == NULL){
+        *sym = recursiveSymbolRetrieval((*type)->scope, (*type)->val.id, NULL);
+        if(*sym == NULL){
           fprintf(stderr, "Line %d: The symbol '%s' was not found", v->lineno, (*type)->val.id);
           return errorK;
         }
-        if(sym->typeVal != arrayK || sym->typePtr->kind != arrayK){
-          fprintf(stderr, "Line %d: the symbol '%s' of type '%d' or '%d' was not found to be an array\n", v->lineno, sym->name, sym->typeVal, (*type)->kind);
+        if((*sym)->typeVal != arrayK || (*sym)->typePtr->kind != arrayK){
+          fprintf(stderr, "Line %d: the symbol '%s' of type '%d' or '%d' was not found to be an array\n", v->lineno, (*sym)->name, (*sym)->typeVal, (*type)->kind);
           return errorK;
         }
-        (*type) = sym->typePtr;
+        (*type) = (*sym)->typePtr;
       }
       //(*sym) = s;
       (*type) = (*type)->val.arrayType;
@@ -943,7 +943,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
         fprintf(stderr, "Line %d: The index expression is not an integer type\n", v->lineno);
       }
       //searching
-      TYPE *type = checkTypeTravVar(t, v->val.varexp.var, sym);
+      type = checkTypeTravVar(t, v->val.varexp.var, sym);
       if(type == NULL){
         fprintf(stderr, "Line %d: The array type does not exist\n", v->lineno);
         return NULL;
@@ -963,8 +963,9 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
           fprintf(stderr, "Line %d: the symbol '%s' of type '%d' was not found to be an array\n", v->lineno, (*sym)->name, (*sym)->typeVal);
           return NULL;
         }
+        type = (*sym)->typePtr;
       }
-      type = (*sym)->typePtr;
+      //type = (*sym)->typePtr;
       if(type->kind != arrayK){
         fprintf(stderr, "Line %d: the symbol '%s' of type '%d' was not found to be an array\n", v->lineno, (*sym)->name, type->kind);
         return errorK;
@@ -975,13 +976,15 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
       break;
     case dotK:
       ;
-      SYMBOL* newSym;
+      SYMBOL* newSym = NULL;
       type = checkTypeTravVar(t, v->val.vardot.var, sym);
       if(type->kind == idK){//added by andreas
         newSym = recursiveSymbolRetrieval(type->scope, type->val.id, NULL);
       }
-      else{
+      else if (type->kind == recordK){
+        //arrays kan aldrig indeholde anonyme records, så sym skulle pointe til det korrekte symbol.
         newSym = *sym; //added by andreas
+
       }
       if(newSym == NULL){
         fprintf(stderr, "Line %d: checkTypeTravVar: something went wrong\n", v->lineno);
