@@ -1,0 +1,3 @@
+type 0 1 0 1 0 0 0 0 0 0 0 0 0 0
+weedFuncID 0 1
+weedFuncRet 0 0 0 0 0 0 0 0 0
