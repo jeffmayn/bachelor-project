@@ -1,10 +1,13 @@
 #include "internalASM.h"
-
+#include "stack.h"
+#include <stdio.h>
+#include "memory.h"
+#include "string.h"
+#include <stdlib.h>
 
 /*******TODO*****/
 /*
-Implement stack
-implement IGgetNeighbors
+Husk at bruge maksimal grad ved spilling
 Think about how to change program (kitty) when temporary is spilled
 */
 
@@ -19,24 +22,24 @@ int IGmakeGraphNode(){
   //TODO: errorchecking
   if(graphNodes == NULL){
     graphLimit = 32; //size of integer: full bitmap
-    graphNodes = MALLOC(sizeof(GraphNode)*graphLimit);
+    graphNodes = NEW(GraphNode); //MALLOC(sizeof(GraphNode)*graphLimit);
   }
   else if(graphSize == graphLimit){
-    GraphNode *graphNodesTemp = MALLOC(sizeof(GraphNode)*graphLimit*2);
+    GraphNode *graphNodesTemp = NEW(GraphNode); //MALLOC(sizeof(GraphNode)*graphLimit*2);
     memset(graphNodesTemp, 0, sizeof(GraphNode)*graphLimit*2);
     memcpy(graphNodesTemp, graphNodes, sizeof(GraphNode)*graphLimit);
     free(graphNodes);
     graphNodes = graphNodesTemp;
     for(int i = 0; i<graphSize; i++){
       //TODO: free map
-      graphNodes[i].neigbors = bitMapUnion(graphNodes[i].neigbors, bitMapMakeBitMap(graphLimit*2));
+      graphNodes[i].neighbors = bitMapUnion(graphNodes[i].neighbors, bitMapMakeBitMap(graphLimit*2));
     }
     graphLimit = graphLimit*2;
   }
-  graphNodes[graphSize].ID = graphSize;
+  graphNodes[graphSize].id = graphSize;
   graphNodes[graphSize].reg = NA;
   graphNodes[graphSize].isMarked = 0;
-  graphNodes[graphSize].neigbors = bitMapMakeBitMap(graphLimit);
+  graphNodes[graphSize].neighbors = bitMapMakeBitMap(graphLimit);
   graphNodes[graphSize].inDegree = 0;
   graphNodes[graphSize].outDegree = 0;
   graphSize++;
@@ -55,8 +58,8 @@ int IGinsertNeighbor(int nodeID, int neighborID){
     fprintf(stderr, "IGinsertNeighbor: nodeIdD %d does not exists\n", neighborID);
     return -1;
   }
-  if(!bitMapBitIsSet(graphNodes[nodeID].neighbors, neighbor)){
-    bitMapSetBit(graphNodes[nodeID].neighbors, neighbor);
+  if(!bitMapBitIsSet(graphNodes[nodeID].neighbors, neighborID)){
+    bitMapSetBit(graphNodes[nodeID].neighbors, neighborID);
     graphNodes[nodeID].outDegree++;
     graphNodes[neighborID].inDegree++;
   }
@@ -76,8 +79,8 @@ int IGremoveNeighbor(int nodeID, int neighborID){
     fprintf(stderr, "IGinsertNeighbor: nodeIdD %d does not exists\n", neighborID);
     return -1;
   }
-  if(bitMapBitIsSet(graphNodes[nodeID].neighbors, neighbor)){
-    bitMapResetBit(graphNodes[nodeID].neighbors, neighbor);
+  if(bitMapBitIsSet(graphNodes[nodeID].neighbors, neighborID)){
+    bitMapResetBit(graphNodes[nodeID].neighbors, neighborID);
     graphNodes[nodeID].outDegree--;
     graphNodes[neighborID].inDegree--;
   }
@@ -87,8 +90,47 @@ int IGremoveNeighbor(int nodeID, int neighborID){
 /**
  * Returns the neighbors as a list of integer IDs
  * First element is the number of integers in the list excluding that lenght
+ * If the first value is -1, then an error occured
  */
-int* IGgetNeighbors(int *nodeID);
+int* IGgetNeighbors(int nodeID){
+  //TODO: do not return pointers to local variables!?!!??!?
+  if(nodeID >= graphSize){
+    fprintf(stderr, "IGinsertNeighbor: nodeID %d does not exists\n", nodeID);
+    int ret = -1;
+    return &ret;
+  }
+  BITMAP *neighbors = graphNodes[nodeID].neighbors;
+  int neighborCount = bitMap1Count(neighbors);
+  if(neighborCount == -1){
+    //error print needed?
+    return &neighborCount;
+  }
+  int neighborIDs[neighborCount];
+  neighborIDs[0] = neighborCount;
+  int j = 1;
+  for(int i=0; i < graphSize; i++){
+    int val = bitMapBitIsSet(neighbors, i);
+    switch(val){
+      case -1:
+        fprintf(stderr, "IGgetNeighbors: error when checking neighbor\n");
+        return &val;
+        break;
+      case 0:
+        //I guess we should do nothing here
+        break;
+      case 1:
+        neighborIDs[j] = i;
+        j++;
+        break;
+      default:
+        fprintf(stderr, "IGgetNeighbors: got the weird value '%d'", val);
+        val = -1;
+        return &val;
+        break;
+    }
+  }
+  return neighborIDs;
+}
 
 
 // /**
@@ -110,9 +152,9 @@ int IGlowestOutDegree(){
   if(graphSize == 0){
     return -1;
   }
-  lowestID = -2;
-  int lowestID = 0;
-  int degree = -2
+  //lowestID = -2;
+  int lowestID = -2;
+  int degree = -2;
   for(int i = 1; i<graphSize; i++){
     if(graphNodes[i].isMarked){
       continue;
@@ -125,15 +167,35 @@ int IGlowestOutDegree(){
   return lowestID;
 }
 
+int IGhighestOutDegree(){
+  if(graphSize == 0){
+    return -1;
+  }
+  //lowestID = -2;
+  int highestID = -1;
+  int degree = -1;
+  for(int i = 1; i<graphSize; i++){
+    if(graphNodes[i].isMarked){
+      continue;
+    }
+    if((degree < graphNodes[i].outDegree)){
+      highestID = i;
+      degree = graphNodes[i].outDegree;
+    }
+  }
+  return lowestID;
+}
+
 /**
  * uses the graphNodes pointer as graph and colors all nodes
  */
 int IGcolorGraph(int colorCount){
+  Stack *graphStack = stackCreate();
   //Uses coloring by simplification
-  //This is gonna be fuuuuuuuuuuun
   int lowestID = IGlowestOutDegree();
-  GraphNode *lnode = GraphNodes[lowestID];
+  GraphNode lnode = graphNodes[lowestID];
   if(lnode.outDegree >= colorCount){
+    //TODO: det skal være noden med højst grad der bliver spilled
     lnode.reg = SPILL; //potential spill
   }
   //The spilled node is also removed from the graph
@@ -142,26 +204,32 @@ int IGcolorGraph(int colorCount){
       continue;
     }
     IGremoveNeighbor(i, lowestID);
-    //TODO: Put i on a stack
+    //Put i on a stack
+    stackPush(graphStack, i);
   }
 
-  //TODO: pop k from the stack
-  int[] neighbors = IGgetNeighbors(i);
+  //pop i from the stack
+  int i = stackPop(graphStack);
+  if(i == -1){
+    fprintf(stderr, "IGcolorGraph: error popping from stack\n");
+    return -1;
+  }
+  int *neighbors = IGgetNeighbors(i);
   int colorFound = 1;
   for(registers reg = (registers)RAX; reg < (registers) R15; reg = (registers) (reg+1)){
     colorFound = 1;
-    for(j = 1; j<neighbors[0]; j++){
+    for(int j = 1; j<neighbors[0]; j++){
       if(graphNodes[neighbors[j]].reg == reg){
         colorFound = 0;
         break;
       }
     }
     if(colorFound){
-      graphNodes[k].reg = reg;
+      graphNodes[i].reg = reg;
       break;
     }
   }
   if(!colorFound){
-    graphNodes[k].reg = SPILL;
+    graphNodes[i].reg = SPILL; //actual spill
   }
 }
