@@ -1,6 +1,6 @@
 #ifndef __internalASM_h
 #define __internalASM_h
-#define UNUSED_GRAPH_ID  675849//use this when comparing if graphNodeId is unused
+#define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
 /**
  * NOTE TO SELF!
  * - create seperate .c files for each category of constructors
@@ -136,11 +136,11 @@ typedef struct {
 int IRtemporaryHash(char *str);
 TempLocMap *IRinitTempLocMap();
 TempNode *IRputTempNode(char *tempName);
+TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTable);
+int IRtraverseDeclerationList(DECL_LIST *declerations);
+
 
 //Do liveness analyse
-
-
-
 typedef struct {
   uint *bits;
   int size;
