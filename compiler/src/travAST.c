@@ -1,5 +1,6 @@
 #include "internalASM.h"
 #include "memory.h"
+#include "symbol.c"
 
 /**
  * create hash index value for the string
@@ -23,10 +24,16 @@ TempLocMap *IRinitTempLocMap(){
   return table;
 }
 
-TempNode *IRputTempNode(){
+TempNode *IRputTempNode(char *tempName){
   TempNode *newNode = NEW(TempNode);
-  newNode
+  newNode->name = Malloc(strlen(name)+1);
+  memcpy(newNode->name, name, strlen(name)+1);
+  newNode->next = NULLL;
+  newNode->graphNodeId = UNUSED_GRAPH_ID;
+  newNode->reg = NA; //Gætter på NA betyder NOT ASSIGNED;
 }
+
+
 
 
 

@@ -1,5 +1,6 @@
 #ifndef __internalASM_h
 #define __internalASM_h
+#define UNUSED_GRAPH_ID  675849//use this when comparing if graphNodeId is unused
 /**
  * NOTE TO SELF!
  * - create seperate .c files for each category of constructors
@@ -10,11 +11,12 @@
  *                          - OPTMZ (optimize)
  *                          - ASM (assembler code generation)
  */
-typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI, cmpI,
-              jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI, jmpneqI,
-              movI, labelI, pushI, popI, callI, retI} INSTRkind;
+typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
+              cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
+              jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
 typedef enum {constantP, temporaryP, heapAddrP, labelIDP} PARAMkind
-typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI, R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
+typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
+              R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 
 int regCount; //amount of multipurpose registers
 
@@ -41,6 +43,7 @@ int LabelCounterM //the next label value
 INSTR *internalINSTRList; //global list of instructions
 
 INSTR* IRappendINSTR(INTS *newINSTR);//appends instruction to the end of global list
+
 
 //****Paramter constructors*****//
 PARAM *IRmakeConstantPARAM(int conVal);
@@ -86,15 +89,6 @@ int IRmakeDeclScheme(DECLARATiION *decl);
 
 
 
-
-
-
-
-
-
-
-
-
 //##################Optimization#################//
 //Liveness analysis: find in og ud mængder
 //Data strukturer til at gemme use, def, og ud mængder?
@@ -127,6 +121,7 @@ typedef struct {
   struct TempNode *table[HashSize];
 } TempLocMap;
 
+
 //used within the TempLocMap
 typedef struct {
   char *name;
@@ -134,12 +129,13 @@ typedef struct {
   registers reg; //the register to which this temp is assigned
   //struct GraphNode *node; //to associate this temporary with a graphnode
   int graphNodeId; //id representing graph node associated to this temporary
-  struct tempNode next; //collision handling in TempLocMap
+  struct tempNode *next; //collision handling in TempLocMap
 } TempNode;
 
-
-
-
+/******AST traversal and TempNodeMap setup*******/
+int IRtemporaryHash(char *str);
+TempLocMap *IRinitTempLocMap();
+TempNode *IRputTempNode(char *tempName);
 
 //Do liveness analyse
 
