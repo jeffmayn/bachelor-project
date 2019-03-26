@@ -14,7 +14,7 @@
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
-typedef enum {constantP, temporaryP, heapAddrP, labelIDP} PARAMkind
+typedef enum {constantP, temporaryP, heapAddrP, labelIDP, regP} PARAMkind
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 
@@ -35,13 +35,14 @@ typedef struct PARAM {
     char *temporary;
     int address;
     char *label;
+    registers reg;
   } val;
 } PARAM;
 
 int TempCounter; //the next tempvalue
 int LabelCounterM //the next label value
 
-INSTR *internalINSTRList; //global list of instructions
+//INSTR *internalINSTRList; //global list of instructions
 
 INSTR* IRappendINSTR(INTS *newINSTR);//appends instruction to the end of global list
 
@@ -54,6 +55,8 @@ PARAM *IRmakeTemporaryPARAM(char *tempName);
 PARAM *IRmakeAddrPARAM(int addrVal);
 
 PARAM *IRmakeLabelPARAM(char *labelName);
+
+PARAM *IRmakeRegPARAM(registers reg);
 
 PARAM *IRappendPARAM(PARAM *tail, PARAM *next);//append next to tail
 

@@ -125,6 +125,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR){
   IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R11)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RCX)));
 
+  IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList))
 
 
 
