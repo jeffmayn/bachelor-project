@@ -97,6 +97,7 @@ INSTR* IRmakeMovINSTR(PARAM *params){
   ins->instrKind = movI;
   ins->paramList = param;
   ins->next = NULL;
+  return ins;
 }
 
 
@@ -105,6 +106,7 @@ INSTR* IRmakeAddINSTR(PARAM *params){
   ins->instrKind = addI;
   ins->paramList = param;
   ins->next = NULL;
+  return ins;
 }
 
 
@@ -126,9 +128,6 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR){
   IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RCX)));
 
   IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList))
-
-
-
 
 
   IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R11)));
