@@ -74,7 +74,7 @@ TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTab
  * and insert into TempNodeMap
  */
 int IRtraverseDeclerationList(DECL_LIST *declerations){
-  //TODO 
+  //TODO
 }
 
 
@@ -90,3 +90,75 @@ int IRtraverseDeclerationList(DECL_LIST *declerations){
  * and I like my whitespace
  *
  */
+
+
+INSTR* IRmakeMovINSTR(PARAM *params){
+  INSTR *ins = NEW(INSTR);
+  ins->instrKind = movI;
+  ins->paramList = param;
+  ins->next = NULL;
+}
+
+
+INSTR* IRmakeAddINSTR(PARAM *params){
+  INSTR* ins = NEW(INSTR);
+  ins->instrKind = addI;
+  ins->paramList = param;
+  ins->next = NULL;
+}
+
+
+
+int IRmakeFunctionCallScheme(INSTR *labelINSTR){
+  if(labelINSTR->instrKind != labelI){
+    fprintf(stderr, "IRmakeFunctionCallScheme%s\n", );
+  }
+  INSTR *ins;
+  //Caller save registers
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RCX)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RDX)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RSI)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RDI)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R8)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R9)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R10)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R11)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RCX)));
+
+
+
+
+
+
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R11)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R10)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R9)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R8)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(RDI)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(RSI)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(RDX)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(RCX)));
+
+
+
+
+
+
+
+
+
+
+  ins = IRmakePushINSTR(IRmakeRegPARAM(RAX));
+
+
+}
+
+
+
+
+
+
+
+
+
+ //comfort space

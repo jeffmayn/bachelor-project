@@ -19,9 +19,10 @@ typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 
 int regCount; //amount of multipurpose registers
+INSTR *intermediateRep;
 
 typedef struct INSTR {
-  INSTRkind opKind;
+  INSTRkind instrKind;
   struct PARAM *paramList;
   struct INSTR *next;
 } INSTR;
