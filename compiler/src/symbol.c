@@ -50,6 +50,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
   newSym->visited = false;
   newSym->next = NULL;
   TYPE *ty = newSym->typePtr;
+  newSym->temporary = NULL;
   while(ty->kind == arrayK){
     ty = ty->val.arrayType;
     ty->scope = t;

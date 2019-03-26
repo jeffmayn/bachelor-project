@@ -7,7 +7,7 @@
 
 extern BODY *theexpression;
 extern SymbolTable *childScopeForDebugging;
-
+bodyList *bodies = NULL;
 int anonymousRecordCounter = 0;
 
 
@@ -20,7 +20,7 @@ int anonymousRecordCounter = 0;
 */
 int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck(Symboltable* target){})
   int error = 0;
-  bodyList *bodies = initBodyList();
+  bodies = initBodyList();
   fprintf(stderr, "******Typecheck Phase 1: Symbol collection******\n");
   error = idTypeFinder(table, bodies);
   if(error == -1){

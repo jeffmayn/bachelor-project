@@ -27,6 +27,8 @@ typedef struct SYMBOL {
   struct SymbolTable* defScope;
   bool visited;
   struct SYMBOL *next;
+
+  struct TempNode *temporary;
 } SYMBOL;
 
 typedef struct SymbolTable {

@@ -60,7 +60,6 @@ TempNode *IRputTempNode(TempLocMap *t, char *tempName){
     }
     temp->next = newNode;
   }
-
   return newNode;
 }
 
@@ -75,7 +74,7 @@ TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTab
  * and insert into TempNodeMap
  */
 int IRtraverseDeclerationList(DECL_LIST *declerations){
-  //TODO
+  //TODO 
 }
 
 

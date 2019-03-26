@@ -20,13 +20,13 @@ typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
 
 int regCount; //amount of multipurpose registers
 
-typedef struct {
+typedef struct INSTR {
   INSTRkind opKind;
   struct PARAM *paramList;
   struct INSTR *next;
 } INSTR;
 
-typedef struct {
+typedef struct PARAM {
   PARAMkind paramKind;
   struct PARAM *next;
   union{
@@ -117,13 +117,13 @@ BITMAP **DEF;
 // } VarNode;
 
 //used to map temps to registers or adresses (locations)
-typedef struct {
+typedef struct TempLocMap {
   struct TempNode *table[HashSize];
 } TempLocMap;
 
 
 //used within the TempLocMap
-typedef struct {
+typedef struct TempNode {
   char *name;
   //int *number; //unique and in equivalence with the name
   registers reg; //the register to which this temp is assigned
@@ -141,7 +141,7 @@ int IRtraverseDeclerationList(DECL_LIST *declerations);
 
 
 //Do liveness analyse
-typedef struct {
+typedef struct BITMAP {
   uint *bits;
   int size;
 } BITMAP;
@@ -194,7 +194,7 @@ int BitMapIsEqual(BITMAP *m1, BITMAP *m2);
 //TODO: Somebody make graph representation
 //We are using adjacency list representation
 //better for graph colering
-typedef struct{
+typedef struct GraphNode {
   //enum with registers or addresses
   //char *tempName; //unique
   //char *tempNumber; //unique and in equivalence with tempName;
