@@ -19,6 +19,8 @@ typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 
 int regCount; //amount of multipurpose registers
+INSTR* intermediateHead;
+INSTR* intermediateTail; //self exlpanatory
 
 typedef struct INSTR {
   INSTRkind opKind;
@@ -40,10 +42,11 @@ typedef struct PARAM {
 int TempCounter; //the next tempvalue
 int LabelCounterM //the next label value
 
-INSTR *internalINSTRList; //global list of instructions
-
 INSTR* IRappendINSTR(INTS *newINSTR);//appends instruction to the end of global list
 
+int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
+
+int IRcreateInternalRep(BODY *mainBody, SymbolTable *table);
 
 //****Paramter constructors*****//
 PARAM *IRmakeConstantPARAM(int conVal);

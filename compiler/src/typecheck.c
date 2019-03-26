@@ -127,20 +127,22 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
           VAR_TYPE *vty = vList->vType;
           TYPE *ty = vty->type;
           TYPE *prev = NULL;
-          while(ty->kind == arrayK){
+          while(ty->kind == arrayK){//TODOCHECK
             prev = ty;
             ty = ty->val.arrayType;
           }
+          /*
+           * er det med vilje at vi navngiver alle anonyme records?
+           */
           if(ty->kind == recordK){
             char name[10] = "";
             sprintf(name, "$%d", anonymousRecordCounter);
+            anonymousRecordCounter++;
             TYPE *newType = makeID(name);
             prev->val.arrayType = newType;
             sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
             sym->content=scopeSymbolTable(t);
             idTypeTravVDecls(sym->content, ty->val.vList);
-
-            anonymousRecordCounter++;
           }
 
           putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type); //can a parameter be anything different from a variable (func or type)
@@ -221,13 +223,12 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
     if(ty->kind == recordK){
       char name[10] = "";
       sprintf(name, "$%d", anonymousRecordCounter);
+      anonymousRecordCounter++;
       TYPE *newType = makeID(name);
       prev->val.arrayType = newType;
       sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
       sym->content=scopeSymbolTable(t);
       idTypeTravVDecls(sym->content, ty->val.vList);
-
-      anonymousRecordCounter++;
     }
   }
   else{//TODO

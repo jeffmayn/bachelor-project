@@ -4,6 +4,38 @@
 #include "tree.h"
 #include "typecheck.h"
 
+
+
+int IRcreateInternalRep(BODY *mainBody, SymbolTable *table){
+  //TODO
+  return 0;
+}
+
+int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table){
+  //TODO
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * create hash index value for the string
  *
@@ -74,15 +106,8 @@ TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTab
  * and insert into TempNodeMap
  */
 int IRtraverseDeclerationList(DECL_LIST *declerations){
-  //TODO 
+  //TODO
 }
-
-
-
-
-
-
-
 
 /*
  * comfort space for mads
