@@ -7,7 +7,7 @@
 
 extern BODY *theexpression;
 extern SymbolTable *childScopeForDebugging;
-
+bodyList *bodies = NULL;
 int anonymousRecordCounter = 0;
 
 
@@ -20,7 +20,7 @@ int anonymousRecordCounter = 0;
 */
 int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck(Symboltable* target){})
   int error = 0;
-  bodyList *bodies = initBodyList();
+  bodies = initBodyList();
   fprintf(stderr, "******Typecheck Phase 1: Symbol collection******\n");
   error = idTypeFinder(table, bodies);
   if(error == -1){
@@ -127,20 +127,22 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
           VAR_TYPE *vty = vList->vType;
           TYPE *ty = vty->type;
           TYPE *prev = NULL;
-          while(ty->kind == arrayK){
+          while(ty->kind == arrayK){//TODOCHECK
             prev = ty;
             ty = ty->val.arrayType;
           }
+          /*
+           * er det med vilje at vi navngiver alle anonyme records?
+           */
           if(ty->kind == recordK){
             char name[10] = "";
             sprintf(name, "$%d", anonymousRecordCounter);
+            anonymousRecordCounter++;
             TYPE *newType = makeID(name);
             prev->val.arrayType = newType;
             sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
             sym->content=scopeSymbolTable(t);
             idTypeTravVDecls(sym->content, ty->val.vList);
-
-            anonymousRecordCounter++;
           }
 
           putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type); //can a parameter be anything different from a variable (func or type)
@@ -221,13 +223,12 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
     if(ty->kind == recordK){
       char name[10] = "";
       sprintf(name, "$%d", anonymousRecordCounter);
+      anonymousRecordCounter++;
       TYPE *newType = makeID(name);
       prev->val.arrayType = newType;
       sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
       sym->content=scopeSymbolTable(t);
       idTypeTravVDecls(sym->content, ty->val.vList);
-
-      anonymousRecordCounter++;
     }
   }
   else{//TODO
@@ -539,7 +540,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
     case expCardK: //cardinality
       //TODO
       fprintf(stderr,"expTypeTravTerm: cardinality not yet fully supported\n");
-      //check if term->val.expCard == array or int or maybe record
+      //check if term->val.expCard == array or int or maybe record or bool
       return intK;
       break;
     case numK:
@@ -1326,6 +1327,11 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
       }
     break;
     case idDeclK: //userdefined types
+      /*
+       * visited bruges til at stoppe os fra at lave uendelig loop
+       * ved brugerdefinerede typer der indeholder andre bruger definerede
+       * typer
+       */
       sym = recursiveSymbolRetrieval(t, d->val.id.id, NULL);
       if(sym == NULL){
         return -1;
