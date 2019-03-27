@@ -91,7 +91,50 @@ int IRtraverseDeclerationList(DECL_LIST *declerations){
  *
  */
 
+//****Paramter functions*****//
+PARAM *IRmakeConstantPARAM(int conVal){
+  PARAM *par = NEW(PARAM);
+  par->paramKind = constantP;
+  par->val.constant = conVal;
+  par->next = NULL;
+}
 
+PARAM *IRmakeTemporaryPARAM(char tempName){
+  PARAM *par = NEW(PARAM);
+  par->paramKind = temporaryP;
+  par->val.temporary = tempName;
+  par->next = NULL;
+}
+
+PARAM *IRmakeAddrPARAM(int addrVal){
+  PARAM *par = NEW(PARAM);
+  par->paramKind = heapAddrP;
+  par->val.address = addrVal;
+  par->next = NULL;
+}
+
+PARAM *IRmakeLabelPARAM(char labelName){
+  PARAM *par = NEW(PARAM);
+  par->paramKind = labelIDP;
+  par->val.label = labelName;
+  par->next = NULL;
+}
+
+PARAM *IRmakeRegPARAM(registers reg){
+  PARAM *par = NEW(PARAM);
+  par->paramKind = regP;
+  par->val.reg = reg;
+  par->next = NULL;
+}
+
+PARAM *IRappendPARAM(PARAM *tail, PARAM *next){
+  if(tail->next = NULL){
+    fprintf(stderr, "tail->next is NULL\n");
+  }
+  tail->next = next;
+}
+
+//****Instruction functions****//
 INSTR* IRmakeMovINSTR(PARAM *params){
   INSTR *ins = NEW(INSTR);
   ins->instrKind = movI;
@@ -109,6 +152,51 @@ INSTR* IRmakeAddINSTR(PARAM *params){
   return ins;
 }
 
+INSTR* IRmakeLabelINSTR(PARAM *params){
+  INSTR* ins = NEW(INSTR);
+  ins->instrKind = labelI;
+  ins->paramList = param;
+  ins->next = NULL;
+  return ins;
+}
+
+INSTR* IRmakePushINSTR(PARAM *params){
+  INSTR* ins = NEW(INSTR);
+  ins->instrKind = pushI;
+  ins->paramList = param;
+  ins->next = NULL;
+  return ins;
+}
+
+INSTR* IRmakePopINSTR(PARAM *params){
+  INSTR* ins = NEW(INSTR);
+  ins->instrKind = popI;
+  ins->paramList = param;
+  ins->next = NULL;
+  return ins;
+}
+
+INSTR* IRmakeCallINSTR(PARAM *params){
+  INSTR* ins = NEW(INSTR);
+  ins->instrKind = callI;
+  ins->paramList = param;
+  ins->next = NULL;
+  return ins;
+}
+
+INSTR* IRmakeRetINSTR(PARAM *params){
+  INSTR* ins = NEW(INSTR);
+  ins->instrKind = retI;
+  ins->paramList = param;
+  ins->next = NULL;
+  return ins;
+}
+
+IRappendINSTR(INSTR *newINSTR){
+  if(intermedateTail==NULL){
+    intermedateTail = newINSTR;
+  }
+}
 
 
 int IRmakeFunctionCallScheme(INSTR *labelINSTR){
