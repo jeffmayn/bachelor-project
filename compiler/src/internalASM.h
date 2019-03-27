@@ -14,22 +14,23 @@
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
-typedef enum {constantP, temporaryP, heapAddrP, labelIDP, regP} PARAMkind
+typedef enum {constantP, temporaryP, heapAddrP, labelIDP, regP} OPERANDkind
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 
 int regCount; //amount of multipurpose registers
-INSTR *intermediateRep;
+INSTR* intermediateHead;
+INSTR* intermediateTail;
 
 typedef struct INSTR {
   INSTRkind instrKind;
-  struct PARAM *paramList;
+  struct OPERAND *paramList;
   struct INSTR *next;
 } INSTR;
 
-typedef struct PARAM {
-  PARAMkind paramKind;
-  struct PARAM *next;
+typedef struct OPERAND {
+  OPERANDkind paramKind;
+  struct OPERAND *next;
   union{
     int constant;
     char *temporary;
@@ -37,54 +38,67 @@ typedef struct PARAM {
     char *label;
     registers reg;
   } val;
-} PARAM;
+} OPERAND;
 
 int TempCounter; //the next tempvalue
 int LabelCounterM //the next label value
 
 //INSTR *internalINSTRList; //global list of instructions
 
-INSTR* IRappendINSTR(INTS *newINSTR);//appends instruction to the end of global list
+INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
 
 
 //****Paramter constructors*****//
-PARAM *IRmakeConstantPARAM(int conVal);
+OPERAND *IRmakeConstantOPERAND(int conVal);
 
-PARAM *IRmakeTemporaryPARAM(char *tempName);
+OPERAND *IRmakeTemporaryOPERAND(char *tempName);
 
-PARAM *IRmakeAddrPARAM(int addrVal);
+OPERAND *IRmakeAddrOPERAND(int addrVal);
 
-PARAM *IRmakeLabelPARAM(char *labelName);
+OPERAND *IRmakeLabelOPERAND(char *labelName);
 
-PARAM *IRmakeRegPARAM(registers reg);
+OPERAND *IRmakeRegOPERAND(registers reg);
 
-PARAM *IRappendPARAM(PARAM *tail, PARAM *next);//append next to tail
+OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next);//append next to tail
 
 
 //****Instruction constructors****//
-INSTR* IRmakeMovINSTR(PARAM *params);
+INSTR* IRmakeMovINSTR(OPERAND *params);
 
-INSTR* IRmakeAddINSTR(PARAM *params);
+INSTR* IRmakeAddINSTR(OPERAND *params);
 
-INSTR *IRmakeLabelINSTR(PARAM *params);
+INSTR *IRmakeLabelINSTR(OPERAND *params);
 
-INSTR *IRmakePushINSTR(PARAM *params);
+INSTR *IRmakePushINSTR(OPERAND *params);
 
-INSTR *IRmakePopINSTR(PARAM *params);
+INSTR *IRmakePopINSTR(OPERAND *params);
 
-INSTR *IRmakeCallINSTR(PARAM *params)
+INSTR *IRmakeCallINSTR(OPERAND *params)
 
-INSTR *IRmakeRetINSTR(PARAM *params);//might not need params
+INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
 //****Abstract scheme constructors****//
 int IRmakeFunctionScheme(FUNCTION *func);
 
 int IRmakeBodyScheme(BODY *body);
 
+/**
+ * Makes a function call
+ * The first parameter is the instruction giving the label to where to jump
+ * The Second paramater is the list of parameters to this function
+ *  - This list may be arbitrarily long
+ */
+int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND paramList);
+
+int IRmakeFunctionAssiScheme()
+
 
 //Insert temporary name into symboltable for variables
 int IRtravDeclListScheme(DECL_LIST *decls);
 
+//int IRtravStmtList(STATEMENT *stmt);
+
+int IRtravStmt(STATEMENT *stmt);
 /**
  * Associate varibles to a temporary and add to map
  * Associate functions to a label

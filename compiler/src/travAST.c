@@ -79,7 +79,11 @@ int IRtraverseDeclerationList(DECL_LIST *declerations){
 
 
 
-
+int IRtravStmt(STATEMENT *stmt){
+  switch(stmt->kind){
+    case assi
+  }
+}
 
 
 
@@ -88,11 +92,11 @@ int IRtraverseDeclerationList(DECL_LIST *declerations){
  * comfort space for mads
  * just because my editor removes extra white space
  * and I like my whitespace
- *
+ * I LIKE TRAINS
  */
 
 
-INSTR* IRmakeMovINSTR(PARAM *params){
+INSTR* IRmakeMovINSTR(OPERAND *params){
   INSTR *ins = NEW(INSTR);
   ins->instrKind = movI;
   ins->paramList = param;
@@ -101,7 +105,7 @@ INSTR* IRmakeMovINSTR(PARAM *params){
 }
 
 
-INSTR* IRmakeAddINSTR(PARAM *params){
+INSTR* IRmakeAddINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->instrKind = addI;
   ins->paramList = param;
@@ -110,36 +114,52 @@ INSTR* IRmakeAddINSTR(PARAM *params){
 }
 
 
-
-int IRmakeFunctionCallScheme(INSTR *labelINSTR){
+/**
+ * Makes a function call
+ * The first parameter is the instruction giving the label to where to jump
+ * The Second paramater is the list of parameters to this function
+ *  - This list may be arbitrarily long
+ */
+int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND paramList){
   if(labelINSTR->instrKind != labelI){
     fprintf(stderr, "IRmakeFunctionCallScheme%s\n", );
   }
-  INSTR *ins;
+  INSTR *ins; //Is this thingy used - Maybe I should jus delete things instead of making weird comments - but naaah
   //Caller save registers
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RCX)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RDX)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RSI)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RDI)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R8)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R9)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R10)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(R11)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegPARAM(RCX)));
-
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RCX)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RDX)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RSI)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RDI)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R8)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R9)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R10)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R11)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RCX)));
+  int ParamCount = 1; //static link already inkluded
+  while(paramList != NULL){
+    IRappendINSTR(IRmakePushINSTR(paramList);
+    paramList = paramList->next;
+    paramCount += 1;
+  }
+  IRappendINSTR(IRmakePushINSTR(IRmakeConstantOPERAND(0))); //Static link field
+  //do the actual call
   IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList))
 
-
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R11)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R10)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R9)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(R8)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(RDI)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(RSI)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(RDX)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegPARAM(RCX)));
+  //remove static link and parameters
+  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount),IRmakeRegOPERAND(RSP))));
 
 
+  //caller save registers
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R11)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R10)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R9)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R8)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RDI)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RSI)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RDX)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RCX)));
+
+  return 0;
 
 
 
@@ -148,7 +168,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR){
 
 
 
-  ins = IRmakePushINSTR(IRmakeRegPARAM(RAX));
+  //ins = IRmakePushINSTR(IRmakeRegOPERAND(RAX)); //dafuq s this??
 
 
 }
