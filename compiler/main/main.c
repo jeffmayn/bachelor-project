@@ -3,13 +3,14 @@
 #include "typecheck.h"
 #include "weeder.h"
 #include <stdio.h>
+#include "internalASM.h"
 
 int lineno = 0;
 int charpos = 0;
 int SYNTAX_ERROR = 0;
 
 void* yyparse();
-
+extern bodyList bodies; //borrow from typecheck.c
 BODY *theexpression;
 SymbolTable *childScopeForDebugging;
 
@@ -60,26 +61,15 @@ int main() {
   if(error == -1){
     return -1;
   }
+
+  fprintf(stderr, "\n%s\n", "####### STARTING INTERNAL REPRESENTATION ######");
+  //TempLocMap tempMap = TempLocMap* IRsetupTemporaries(bodies, table);
+  // if(tempMap == NULL){
+  //   return -1;
+  // }
+
+
   fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
   pBODY(theexpression);
   return 0;
-  // printf("table: %p\n", (void* )t);
-  // printf("printing symbol\n");
-  // printSymbol(t, "x");
-  // printSymbol(t, "y");
-  // printSymbol(t, "z");
-  // printSymbol(t, "a");
-  // printSymbol(t, "f");
-  // printSymbol(t, "v");
-  // SymbolTable *t2 = findFunctionScope(t,"f");
-  // SymbolTable *t10 = findFunctionScope(t2,"f");
-  // SymbolTable *t3 = findFunctionScope(t,"g");
-  // printSymbol(t2, "v");
-  // printSymbol(t2, "x");
-  // printSymbol(t2, "g");
-  // printSymbol(t2, "x");
-  // printSymbol(t2, "u");
-  // printSymbol(t2, "w");
-  // printSymbol(t3, "u");
-  // printSymbol(t3, "w");
 }

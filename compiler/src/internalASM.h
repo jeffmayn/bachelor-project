@@ -41,7 +41,7 @@ typedef struct PARAM {
 
 typedef struct CODEGENUTIL {
   char *label;
-  
+
 } CODEGENUTIL
 
 int TempCounter; //the next tempvalue

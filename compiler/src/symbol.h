@@ -22,11 +22,13 @@ typedef struct SYMBOL {
   int value;
   struct SymbolTable* scope; //only relevant for functions
   struct SymbolTable* content; //only relevant for records
-  struct TYPE* typePtr; //only relevant for arrays
+  struct TYPE* typePtr;
   char* typeId; //only relevant for user types. Containing the name of the type. Not yet in use
   struct SymbolTable* defScope;
   bool visited;
   struct SYMBOL *next;
+
+  struct TempNode *temporary;
 } SYMBOL;
 
 typedef struct SymbolTable {
