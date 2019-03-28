@@ -101,6 +101,8 @@ INSTR *IRmakeCallINSTR(OPERAND *params)
 
 INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
+INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
+
 //****Abstract scheme constructors****//
 int IRmakeFunctionScheme(FUNCTION *func);
 
