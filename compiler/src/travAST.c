@@ -81,10 +81,15 @@ int IRtraverseDeclerationList(DECL_LIST *declerations){
 
 int IRtravStmt(STATEMENT *stmt){
   switch(stmt->kind){
-    case assi
+    case assi:
+
+      break;
+    default:
+      break;
   }
 }
 
+IR
 
 
 
