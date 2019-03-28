@@ -9,7 +9,7 @@ do
     if ! [[ "$ret" =~ ^[0-9]+$ ]]
     then
       count=0
-      echo Found file-name \"$ret\"
+      #echo Found file-name \"$ret\"
       filename=$ret
     else
       ((count=count+1))
