@@ -82,14 +82,16 @@ int IRtraverseDeclerationList(DECL_LIST *declerations){
 int IRtravStmt(STATEMENT *stmt){
   switch(stmt->kind){
     case assi:
-
+        stmt->val.
       break;
     default:
       break;
   }
 }
 
-IR
+OPERAND IRtravVariabel(STATEMENT *stmt){
+
+}
 
 
 
@@ -142,7 +144,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND paramList){
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RCX)));
   int ParamCount = 1; //static link already inkluded
   while(paramList != NULL){
-    IRappendINSTR(IRmakePushINSTR(paramList);
+    IRappendINSTR(IRmakePushINSTR(paramList));
     paramList = paramList->next;
     paramCount += 1;
   }

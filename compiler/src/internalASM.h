@@ -1,6 +1,12 @@
 #ifndef __internalASM_h
 #define __internalASM_h
+
+#include "tree.h"
+#include "bitmap.h"
+
+#define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
+
 /**
  * NOTE TO SELF!
  * - create seperate .c files for each category of constructors
@@ -41,12 +47,11 @@ typedef struct OPERAND {
 } OPERAND;
 
 int TempCounter; //the next tempvalue
-int LabelCounterM //the next label value
+int LabelCounterM; //the next label value
 
 //INSTR *internalINSTRList; //global list of instructions
 
 INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
-
 
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
@@ -74,6 +79,7 @@ INSTR *IRmakePushINSTR(OPERAND *params);
 INSTR *IRmakePopINSTR(OPERAND *params);
 
 INSTR *IRmakeCallINSTR(OPERAND *params)
+
 
 INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
@@ -103,7 +109,7 @@ int IRtravStmt(STATEMENT *stmt);
  * Associate varibles to a temporary and add to map
  * Associate functions to a label
 */
-int IRmakeDeclScheme(DECLARATiION *decl);
+int IRmakeDeclScheme(DECLARATION *decl);
 
 
 
@@ -135,8 +141,9 @@ BITMAP **DEF;
 // } VarNode;
 
 //used to map temps to registers or adresses (locations)
-typedef struct TempLocMap {
-  struct TempNode *table[HashSize];
+
+typedef struct TempLocMap{
+  struct TempNode *table[HASHSIZE2];
 } TempLocMap;
 
 
@@ -249,7 +256,7 @@ int IGremoveNeighbor(int nodeID, int neighborID);
  * Returns the neighbors as a list of integer IDs
  * First element is the number of integers in the list excluding that lenght
  */
-int* IGgetNeighbors(int *nodeID);
+int* IGgetNeighbors(int nodeID);
 
 
 // /**
@@ -265,6 +272,8 @@ int* IGgetNeighbors(int *nodeID);
 int IGisNeighbor(int nodeID, int neighborID);
 
 int IGlowestOutDegree();
+
+int IGhighestOutDegree();
 
 /**
  * uses the graphNodes pointer as graph and colors all nodes
