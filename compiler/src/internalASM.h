@@ -20,9 +20,10 @@
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
-typedef enum {constantP, temporaryP, heapAddrP, labelIDP, regP} OPERANDkind
+typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO} OPERANDkind
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
+typedef enum {addrT, regT} TEMPORARYkind;
 
 int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
@@ -35,23 +36,40 @@ typedef struct INSTR {
 } INSTR;
 
 typedef struct OPERAND {
-  OPERANDkind paramKind;
+  OPERANDkind operandKind;
   struct OPERAND *next;
   union{
     int constant;
-    char *temporary;
     int address;
     char *label;
+    TEMPORARY *temp;
     registers reg;
   } val;
 } OPERAND;
 
+typedef struct TEMPORARY {
+  char* tempName;
+  union {
+    int address;
+    registers reg;
+  } placement;
+} TEMPORARY;
+
+typedef struct CODEGENUTIL {
+  union {
+    struct {INSTR *funcLabel; int temporaryStart; int temporaryEnd} funcInfo ;
+    OPERAND *operand;
+  } val
+} CODEGENUTIL
+
 int TempCounter; //the next tempvalue
-int LabelCounterM; //the next label value
+int LabelCounterM //the next label value
 
-//INSTR *internalINSTRList; //global list of instructions
+INSTR* IRappendINSTR(INTS *newINSTR);//appends instruction to the end of global list
 
-INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
+int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
+
+int IRcreateInternalRep(BODY *mainBody, SymbolTable *table);
 
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);

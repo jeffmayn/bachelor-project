@@ -63,10 +63,10 @@ int main() {
   }
 
   fprintf(stderr, "\n%s\n", "####### STARTING INTERNAL REPRESENTATION ######");
-  TempLocMap tempMap = TempLocMap* IRsetupTemporaries(bodies, table);
-  if(tempMap == NULL){
-    return -1;
-  }
+  //TempLocMap tempMap = TempLocMap* IRsetupTemporaries(bodies, table);
+  // if(tempMap == NULL){
+  //   return -1;
+  // }
 
 
   fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
