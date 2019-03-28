@@ -6,13 +6,16 @@
 
 
 
-int IRcreateInternalRep(BODY *mainBody, SymbolTable *table){
+int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
   //TODO
   return 0;
 }
 
-int IRtravStmtList(STATEMENT_LIST *statements, SymbolTable *table){
-  //TODO
+int IRtravStmtList( SymbolTable *table, STATEMENT_LIST *statements){
+  IRtravStmt(table, statements->statement);
+  if(statements->statementList != NULL){
+    return IRtravStmtList(table, statements->statementList);
+  }
   return 0;
 }
 
@@ -21,6 +24,7 @@ int IRtravTerm(TERM *term){
     case varK:
       break;
     case idTermK:
+      //TODO call create function call Scheme
       break;
     case expTermK:
       break;
