@@ -183,7 +183,7 @@ int IGhighestOutDegree(){
       degree = graphNodes[i].outDegree;
     }
   }
-  return lowestID;
+  return highestID;
 }
 
 /**

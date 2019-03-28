@@ -16,9 +16,12 @@ int IRtravStmtList(STATEMENT_LIST *statements, SymbolTable *table){
   return 0;
 }
 
-int IRtravTerm(TERM *term){
-  switch(term-kind){
+OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
+  OPERAND *op;
+  switch(term->kind){
     case varK:
+      op = IRtravVar(t, term->val.var);
+      return op;
       break;
     case idTermK:
       break;
@@ -29,6 +32,8 @@ int IRtravTerm(TERM *term){
     case expCardK:
       break;
     case numK:
+      op = IRmakeConstantOPERAND(term->val.num);
+      return op;
       break;
     case trueK:
       break;
@@ -44,7 +49,73 @@ int IRtravTerm(TERM *term){
 
 
 
+int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
+  OPERAND *op1;
+  OPERAND *op2;
+  switch(stmt->kind){
+    case assiK:
+      op1 = IRtravVar(t, stmt->val.assign.var);
+      op2 = IRTravExp(t, stmt->val.assign.exp);
+      //move expression into variabel -> source->destination
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op1)));
+      break;
+    default:
+      break;
+  }
+}
 
+OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
+  SYMBOL *sym;
+  OPERAND *op;
+  switch (var->kind) {
+  case idVarK:
+    sym = getSymbol(t, var->val.id);
+    //todo check if operand already exists: if not make one
+
+    if(sym->operand == NULL){
+      //todo: create and save operand
+      sym->operand = IRmakeTemporaryOPERAND(IRcreateNextTempID());
+    }
+    op = sym->operand;
+    return op;
+    //TODO: check if the type is a (userdefined) record or array type
+    //i dont know if this works
+    //recursiveSymbolRetrieval(sym->defScope, sym->val.id, NULL);
+    break;
+  case expK:
+    printf("not yet implemented 12\n");
+    break;
+  case dotK:
+    printf("not yet implemented 232\n");
+    break;
+
+}
+
+OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
+  OPERAND *op1, *op2;
+  switch(exp->kind){
+    case termK:
+      IRtravTerm(t, exp->val.term);
+      break;
+    case minusK:
+    //TODO: jeff: some of these other cases
+    case plusK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op1, op2)));
+    case divK:
+    case timesK:
+    case andK:
+    case orK:
+    case leK:
+    case eqK:
+    case geK:
+    case greatK:
+    case lessK:
+    case neK:
+      break;
+  }
+}
 
 
 
@@ -86,8 +157,8 @@ TempLocMap *IRinitTempLocMap(){
  */
 TempNode *IRputTempNode(TempLocMap *t, char *tempName){
   TempNode *newNode = NEW(TempNode);
-  newNode->name = Malloc(strlen(name)+1);
-  memcpy(newNode->name, name, strlen(name)+1);
+  newNode->name = Malloc(strlen(tempName)+1);
+  memcpy(newNode->name, tempName, strlen(tempName)+1);
   newNode->next = NULLL;
   newNode->graphNodeId = UNUSED_GRAPH_ID;
   newNode->reg = NA; //NA = not assigned
@@ -134,19 +205,7 @@ int IRtraverseDeclerationList(DECL_LIST *declerations){
 
 
 
-int IRtravStmt(STATEMENT *stmt){
-  switch(stmt->kind){
-    case assi:
-        stmt->val.
-      break;
-    default:
-      break;
-  }
-}
 
-OPERAND IRtravVariabel(STATEMENT *stmt){
-
-}
 
 
 
@@ -158,42 +217,42 @@ OPERAND IRtravVariabel(STATEMENT *stmt){
  */
 
 //****Paramter functions*****//
-PARAM *IRmakeConstantPARAM(int conVal){
-  PARAM *par = NEW(PARAM);
-  par->paramKind = constantP;
+OPERAND *IRmakeConstantOPERAND(int conVal){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = constantO;
   par->val.constant = conVal;
   par->next = NULL;
 }
 
-PARAM *IRmakeTemporaryPARAM(char tempName){
-  PARAM *par = NEW(PARAM);
-  par->paramKind = temporaryP;
+OPERAND *IRmakeTemporaryOPERAND(char tempName){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = temporaryO;
   par->val.temporary = tempName;
   par->next = NULL;
 }
 
-PARAM *IRmakeAddrPARAM(int addrVal){
-  PARAM *par = NEW(PARAM);
-  par->paramKind = heapAddrP;
+OPERAND *IRmakeAddrOPERAND(int addrVal){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = heapAddrO;
   par->val.address = addrVal;
   par->next = NULL;
 }
 
-PARAM *IRmakeLabelPARAM(char labelName){
-  PARAM *par = NEW(PARAM);
-  par->paramKind = labelIDP;
+OPERAND *IRmakeLabelOPERAND(char labelName){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = labelIDO;
   par->val.label = labelName;
   par->next = NULL;
 }
 
-PARAM *IRmakeRegPARAM(registers reg){
-  PARAM *par = NEW(PARAM);
-  par->paramKind = regP;
+OPERAND *IRmakeRegOPERAND(registers reg){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = regO;
   par->val.reg = reg;
   par->next = NULL;
 }
 
-PARAM *IRappendPARAM(PARAM *tail, PARAM *next){
+OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next){
   if(tail->next = NULL){
     fprintf(stderr, "tail->next is NULL\n");
   }
@@ -203,7 +262,7 @@ PARAM *IRappendPARAM(PARAM *tail, PARAM *next){
 INSTR* IRmakeMovINSTR(OPERAND *params){
   INSTR *ins = NEW(INSTR);
   ins->instrKind = movI;
-  ins->paramList = param;
+  ins->paramList = params;
   ins->next = NULL;
   return ins;
 }
@@ -212,54 +271,54 @@ INSTR* IRmakeMovINSTR(OPERAND *params){
 INSTR* IRmakeAddINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->instrKind = addI;
-  ins->paramList = param;
+  ins->paramList = params;
   ins->next = NULL;
   return ins;
 }
 
-INSTR* IRmakeLabelINSTR(PARAM *params){
+INSTR* IRmakeLabelINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->instrKind = labelI;
-  ins->paramList = param;
+  ins->paramList = params;
   ins->next = NULL;
   return ins;
 }
 
-INSTR* IRmakePushINSTR(PARAM *params){
+INSTR* IRmakePushINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->instrKind = pushI;
-  ins->paramList = param;
+  ins->paramList = params;
   ins->next = NULL;
   return ins;
 }
 
-INSTR* IRmakePopINSTR(PARAM *params){
+INSTR* IRmakePopINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->instrKind = popI;
-  ins->paramList = param;
+  ins->paramList = params;
   ins->next = NULL;
   return ins;
 }
 
-INSTR* IRmakeCallINSTR(PARAM *params){
+INSTR* IRmakeCallINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->instrKind = callI;
-  ins->paramList = param;
+  ins->paramList = params;
   ins->next = NULL;
   return ins;
 }
 
-INSTR* IRmakeRetINSTR(PARAM *params){
+INSTR* IRmakeRetINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->instrKind = retI;
-  ins->paramList = param;
+  ins->paramList = params;
   ins->next = NULL;
   return ins;
 }
 
-IRappendINSTR(INSTR *newINSTR){
-  if(intermedateTail==NULL){
-    intermedateTail = newINSTR;
+INSTR* IRappendINSTR(INSTR *newINSTR){
+  if(intermedoiateTail==NULL){
+    intermediateTail = newINSTR;
   }
 }
 
