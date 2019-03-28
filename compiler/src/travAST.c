@@ -11,12 +11,35 @@ int IRcreateInternalRep(BODY *mainBody, SymbolTable *table){
   return 0;
 }
 
-int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table){
+int IRtravStmtList(STATEMENT_LIST *statements, SymbolTable *table){
   //TODO
   return 0;
 }
 
-
+int IRtravTerm(TERM *term){
+  switch(term-kind){
+    case varK:
+      break;
+    case idTermK:
+      break;
+    case expTermK:
+      break;
+    case notTermK:
+      break;
+    case expCardK:
+      break;
+    case numK:
+      break;
+    case trueK:
+      break;
+    case falseK:
+      break;
+    case nullK:
+      break;
+    default:
+      fprintf(stderr, "IRtravTerm ERROR, term has no kind\n");
+  }
+}
 
 
 

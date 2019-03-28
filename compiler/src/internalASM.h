@@ -14,9 +14,10 @@
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
-typedef enum {constantP, temporaryP, heapAddrP, labelIDP} PARAMkind
+typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO} OPERANDkind
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
+typedef enum {addrT, regT} TEMPORARYkind;
 
 int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
@@ -24,24 +25,34 @@ INSTR* intermediateTail; //self exlpanatory
 
 typedef struct INSTR {
   INSTRkind opKind;
-  struct PARAM *paramList;
+  struct OPERAND *paramList;
   struct INSTR *next;
 } INSTR;
 
-typedef struct PARAM {
-  PARAMkind paramKind;
-  struct PARAM *next;
+typedef struct OPERAND {
+  OPERANDkind operandKind;
+  struct OPERAND *next;
   union{
     int constant;
-    char *temporary;
     int address;
     char *label;
+    TEMPORARY *temp;
   } val;
-} PARAM;
+} OPERAND;
+
+typedef struct TEMPORARY {
+  char* tempName;
+  union {
+    int address;
+    registers reg
+  } placement;
+} TEMPORARY;
 
 typedef struct CODEGENUTIL {
-  char *label;
-
+  union {
+    struct {INSTR *funcLabel; int temporaryStart; int temporaryEnd} funcInfo ;
+    OPERAND *operand;
+  } val
 } CODEGENUTIL
 
 int TempCounter; //the next tempvalue
@@ -54,31 +65,31 @@ int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
 int IRcreateInternalRep(BODY *mainBody, SymbolTable *table);
 
 //****Paramter constructors*****//
-PARAM *IRmakeConstantPARAM(int conVal);
+OPERAND *IRmakeConstantOPERAND(int conVal);
 
-PARAM *IRmakeTemporaryPARAM(char *tempName);
+OPERAND *IRmakeTemporaryOPERAND(char *tempName);
 
-PARAM *IRmakeAddrPARAM(int addrVal);
+OPERAND *IRmakeAddrOPERAND(int addrVal);
 
-PARAM *IRmakeLabelPARAM(char *labelName);
+OPERAND *IRmakeLabelOPERAND(char *labelName);
 
-PARAM *IRappendPARAM(PARAM *tail, PARAM *next);//append next to tail
+OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next);//append next to tail
 
 
 //****Instruction constructors****//
-INSTR* IRmakeMovINSTR(PARAM *params);
+INSTR* IRmakeMovINSTR(OPERAND *params);
 
-INSTR* IRmakeAddINSTR(PARAM *params);
+INSTR* IRmakeAddINSTR(OPERAND *params);
 
-INSTR *IRmakeLabelINSTR(PARAM *params);
+INSTR *IRmakeLabelINSTR(OPERAND *params);
 
-INSTR *IRmakePushINSTR(PARAM *params);
+INSTR *IRmakePushINSTR(OPERAND *params);
 
-INSTR *IRmakePopINSTR(PARAM *params);
+INSTR *IRmakePopINSTR(OPERAND *params);
 
-INSTR *IRmakeCallINSTR(PARAM *params)
+INSTR *IRmakeCallINSTR(OPERAND *params)
 
-INSTR *IRmakeRetINSTR(PARAM *params);//might not need params
+INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
 //****Abstract scheme constructors****//
 int IRmakeFunctionScheme(FUNCTION *func);
