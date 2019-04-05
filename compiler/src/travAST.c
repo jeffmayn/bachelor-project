@@ -3,6 +3,7 @@
 #include "symbol.h"
 #include "tree.h"
 #include "typecheck.h"
+#include <string.h>
 
 
 
@@ -55,7 +56,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
   switch(stmt->kind){
     case assiK:
       op1 = IRtravVar(t, stmt->val.assign.var);
-      op2 = IRTravExp(t, stmt->val.assign.exp);
+      op2 = IRtravExp(t, stmt->val.assign.exp);
       //move expression into variabel -> source->destination
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op1)));
       break;
@@ -74,7 +75,7 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
 
     if(sym->operand == NULL){
       //todo: create and save operand
-      sym->operand = IRmakeTemporaryOPERAND(IRcreateNextTempID());
+      sym->operand = IRmakeTemporaryOPERAND(IRcreateNextTemp());
     }
     op = sym->operand;
     return op;
@@ -89,6 +90,7 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
     printf("not yet implemented 232\n");
     break;
 
+  }
 }
 
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
@@ -159,12 +161,12 @@ TempNode *IRputTempNode(TempLocMap *t, char *tempName){
   TempNode *newNode = NEW(TempNode);
   newNode->name = Malloc(strlen(tempName)+1);
   memcpy(newNode->name, tempName, strlen(tempName)+1);
-  newNode->next = NULLL;
+  newNode->next = NULL;
   newNode->graphNodeId = UNUSED_GRAPH_ID;
   newNode->reg = NA; //NA = not assigned
 
   //find index via hash value
-  int hashIndex = IRtemporaryHash(name);
+  int hashIndex = IRtemporaryHash(tempName);
 
   //insert into table
   TempLocMap **table = t->table;
@@ -173,9 +175,9 @@ TempNode *IRputTempNode(TempLocMap *t, char *tempName){
   } else {
     TempNode *temp = table[hashIndex];
     while(temp != NULL){
-      if(!strcmp(name,temp->name)){
+      if(!strcmp(tempName,temp->name)){
         //name is already in this table
-        fprintf(stderr, "IRputTempNode: Node already in table\n", name);
+        fprintf(stderr, "IRputTempNode: Node already in table\n", tempName);
         free(newNode->name);
         free(newNode);
         return NULL;
@@ -204,7 +206,9 @@ int IRtraverseDeclerationList(DECL_LIST *declerations){
 }
 
 
-
+TEMPORARY* IRcreateNextTemp(){
+  return NULL;
+}
 
 
 
@@ -224,10 +228,10 @@ OPERAND *IRmakeConstantOPERAND(int conVal){
   par->next = NULL;
 }
 
-OPERAND *IRmakeTemporaryOPERAND(char tempName){
+OPERAND *IRmakeTemporaryOPERAND(TEMPORARY *temp){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = temporaryO;
-  par->val.temporary = tempName;
+  par->val.temp = temp;
   par->next = NULL;
 }
 
@@ -238,7 +242,7 @@ OPERAND *IRmakeAddrOPERAND(int addrVal){
   par->next = NULL;
 }
 
-OPERAND *IRmakeLabelOPERAND(char labelName){
+OPERAND *IRmakeLabelOPERAND(char *labelName){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = labelIDO;
   par->val.label = labelName;
@@ -247,7 +251,7 @@ OPERAND *IRmakeLabelOPERAND(char labelName){
 
 OPERAND *IRmakeRegOPERAND(registers reg){
   OPERAND *par = NEW(OPERAND);
-  par->operandKind = regO;
+  par->operandKind = registerO;
   par->val.reg = reg;
   par->next = NULL;
 }
@@ -317,7 +321,7 @@ INSTR* IRmakeRetINSTR(OPERAND *params){
 }
 
 INSTR* IRappendINSTR(INSTR *newINSTR){
-  if(intermedoiateTail==NULL){
+  if(intermediateTail==NULL){
     intermediateTail = newINSTR;
   }
 }
@@ -328,9 +332,9 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND paramList){
+int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
   if(labelINSTR->instrKind != labelI){
-    fprintf(stderr, "IRmakeFunctionCallScheme%s\n", );
+    fprintf(stderr, "IRmakeFunctionCallScheme%s\n");
   }
   INSTR *ins; //Is this thingy used - Maybe I should jus delete things instead of making weird comments - but naaah
   //Caller save registers
@@ -342,16 +346,15 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND paramList){
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R9)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R10)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R11)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RCX)));
   int ParamCount = 1; //static link already inkluded
   while(paramList != NULL){
     IRappendINSTR(IRmakePushINSTR(paramList));
     paramList = paramList->next;
-    paramCount += 1;
+    ParamCount += 1;
   }
   IRappendINSTR(IRmakePushINSTR(IRmakeConstantOPERAND(0))); //Static link field
   //do the actual call
-  IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList))
+  IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
 
   //remove static link and parameters
   IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount),IRmakeRegOPERAND(RSP))));

@@ -2,7 +2,9 @@
 #define __internalASM_h
 
 #include "tree.h"
-#include "bitmap.h"
+//#include "bitmap.h"
+#include "stdlib.h"
+#include "stdio.h"
 //#include "typecheck.h" //this gives a cycle internalASM->typecheck->symbol->internalASM
 
 #define HASHSIZE2 517
@@ -70,7 +72,7 @@ int TempCounter; //the next tempvalue
 int LabelCounter; //the next label value
 
 //should return the next tempID;
-char* IRcreateNextTempID();
+TEMPORARY* IRcreateNextTemp();
 
 INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
 
@@ -89,7 +91,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
 
-OPERAND *IRmakeTemporaryOPERAND(char *tempName);
+OPERAND *IRmakeTemporaryOPERAND(TEMPORARY *temp);
 
 OPERAND *IRmakeAddrOPERAND(int addrVal);
 
@@ -129,7 +131,7 @@ int IRmakeBodyScheme(BODY *body);
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND paramList);
+int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList);
 
 int IRmakeFunctionAssiScheme();
 
@@ -158,10 +160,10 @@ int IRmakeDeclScheme(DECLARATION *decl);
 //temporary og indeholder også dets register eller addresse på stakken
 
 
-BITMAP **IN;
-BITMAP **OUT;
-BITMAP **USE;
-BITMAP **DEF;
+// BITMAP **IN;
+// BITMAP **OUT;
+// BITMAP **USE;
+// BITMAP **DEF;
 
 //Umiddelbart ikke nødvendigt
 // //used to map variables to temps
@@ -199,7 +201,7 @@ typedef struct TempLocMap {
 /******AST traversal and TempNodeMap setup*******/
 int IRtemporaryHash(char *str);
 TempLocMap *IRinitTempLocMap();
-TempNode *IRputTempNode(char *tempName);
+TempNode *IRputTempNode(TempLocMap *t, char *tempName);
 TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTable);
 int IRtraverseDeclerationList(DECL_LIST *declerations);
 
@@ -267,7 +269,7 @@ typedef struct GraphNode {
   //char *tempNumber; //unique and in equivalence with tempName;
   int id; //used as an internal identifier
   registers reg;
-  BITMAP *neighbors;
+  //BITMAP *neighbors; this one should stay here
   int isMarked;
   int inDegree;
   int outDegree;
