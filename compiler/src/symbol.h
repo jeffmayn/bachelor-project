@@ -1,6 +1,7 @@
 #ifndef __symbol_h
 #define __symbol_h
 #include "tree.h"
+#include "internalASM.h"
 #define HashSize 317
 //enum typeKind {idK, intK, boolK, arrayK, recordK};
 typedef enum Symbolkind{typeS,funcS,varS} Symbolkind;
@@ -29,6 +30,7 @@ typedef struct SYMBOL {
   struct SYMBOL *next;
 
   struct TempNode *temporary;
+  OPERAND *operand;
 } SYMBOL;
 
 typedef struct SymbolTable {

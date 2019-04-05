@@ -1,6 +1,6 @@
 #ifndef __bitmap_h
 #define __bitmap_h
-typedef struct {
+typedef struct BITMAP {
   unsigned int *bits;
   int size;
 } BITMAP;

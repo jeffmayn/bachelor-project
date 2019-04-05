@@ -2,7 +2,10 @@
 #define __internalASM_h
 
 #include "tree.h"
-#include "bitmap.h"
+//#include "bitmap.h"
+#include "stdlib.h"
+#include "stdio.h"
+//#include "typecheck.h" //this gives a cycle internalASM->typecheck->symbol->internalASM
 
 #define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
@@ -20,20 +23,20 @@
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
-typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO} OPERANDkind
+typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO} OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 typedef enum {addrT, regT} TEMPORARYkind;
 
-int regCount; //amount of multipurpose registers
-INSTR* intermediateHead;
-INSTR* intermediateTail;
+typedef struct bodyListElm bodyListElm;
 
-typedef struct INSTR {
-  INSTRkind instrKind;
-  struct OPERAND *paramList;
-  struct INSTR *next;
-} INSTR;
+typedef struct TEMPORARY {
+  char* tempName;
+  union {
+    int address;
+    registers reg;
+  } placement;
+} TEMPORARY;
 
 typedef struct OPERAND {
   OPERANDkind operandKind;
@@ -47,34 +50,48 @@ typedef struct OPERAND {
   } val;
 } OPERAND;
 
-typedef struct TEMPORARY {
-  char* tempName;
-  union {
-    int address;
-    registers reg;
-  } placement;
-} TEMPORARY;
+typedef struct INSTR {
+  INSTRkind instrKind;
+  struct OPERAND *paramList;
+  struct INSTR *next;
+} INSTR;
+
 
 typedef struct CODEGENUTIL {
   union {
-    struct {INSTR *funcLabel; int temporaryStart; int temporaryEnd} funcInfo ;
+    struct {INSTR *funcLabel; int temporaryStart; int temporaryEnd;} funcInfo ;
     OPERAND *operand;
-  } val
-} CODEGENUTIL
+  } val;
+} CODEGENUTIL;
+
+int regCount; //amount of multipurpose registers
+INSTR* intermediateHead;
+INSTR* intermediateTail;
 
 int TempCounter; //the next tempvalue
-int LabelCounterM //the next label value
+int LabelCounter; //the next label value
 
-INSTR* IRappendINSTR(INTS *newINSTR);//appends instruction to the end of global list
+//should return the next tempID;
+TEMPORARY* IRcreateNextTemp();
+
+INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
 
 int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
 
 int IRcreateInternalRep(BODY *mainBody, SymbolTable *table);
 
+OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
+
+int IRtravStmt(SymbolTable *t, STATEMENT *stmt);
+
+OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
+
+OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
+
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
 
-OPERAND *IRmakeTemporaryOPERAND(char *tempName);
+OPERAND *IRmakeTemporaryOPERAND(TEMPORARY *temp);
 
 OPERAND *IRmakeAddrOPERAND(int addrVal);
 
@@ -96,7 +113,7 @@ INSTR *IRmakePushINSTR(OPERAND *params);
 
 INSTR *IRmakePopINSTR(OPERAND *params);
 
-INSTR *IRmakeCallINSTR(OPERAND *params)
+INSTR *IRmakeCallINSTR(OPERAND *params);
 
 
 INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
@@ -114,9 +131,9 @@ int IRmakeBodyScheme(BODY *body);
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND paramList);
+int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList);
 
-int IRmakeFunctionAssiScheme()
+int IRmakeFunctionAssiScheme();
 
 
 //Insert temporary name into symboltable for variables
@@ -124,7 +141,7 @@ int IRtravDeclListScheme(DECL_LIST *decls);
 
 //int IRtravStmtList(STATEMENT *stmt);
 
-int IRtravStmt(STATEMENT *stmt);
+//int IRtravStmt(STATEMENT *stmt);
 /**
  * Associate varibles to a temporary and add to map
  * Associate functions to a label
@@ -143,10 +160,10 @@ int IRmakeDeclScheme(DECLARATION *decl);
 //temporary og indeholder også dets register eller addresse på stakken
 
 
-BITMAP **IN;
-BITMAP **OUT;
-BITMAP **USE;
-BITMAP **DEF;
+// BITMAP **IN;
+// BITMAP **OUT;
+// BITMAP **USE;
+// BITMAP **DEF;
 
 //Umiddelbart ikke nødvendigt
 // //used to map variables to temps
@@ -160,12 +177,6 @@ BITMAP **DEF;
 //   varNode *next;
 // } VarNode;
 
-//used to map temps to registers or adresses (locations)
-
-typedef struct TempLocMap{
-  struct TempNode *table[HASHSIZE2];
-} TempLocMap;
-
 
 //used within the TempLocMap
 typedef struct TempNode {
@@ -174,63 +185,76 @@ typedef struct TempNode {
   registers reg; //the register to which this temp is assigned
   //struct GraphNode *node; //to associate this temporary with a graphnode
   int graphNodeId; //id representing graph node associated to this temporary
-  struct tempNode *next; //collision handling in TempLocMap
+  struct TempNode *next; //collision handling in TempLocMap
 } TempNode;
+
+
+//used to map temps to registers or adresses (locations)
+
+typedef struct TempLocMap {
+  struct TempNode *table[HASHSIZE2];
+} TempLocMap;
+
+
+
 
 /******AST traversal and TempNodeMap setup*******/
 int IRtemporaryHash(char *str);
 TempLocMap *IRinitTempLocMap();
-TempNode *IRputTempNode(char *tempName);
+TempNode *IRputTempNode(TempLocMap *t, char *tempName);
 TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTable);
 int IRtraverseDeclerationList(DECL_LIST *declerations);
 
-
+//*****ALL of the below is in bitmap.h****/
+//Where should it be ??
 //Do liveness analyse
-typedef struct BITMAP {
-  uint *bits;
-  int size;
-} BITMAP;
+// typedef struct BITMAP {
+//   uint *bits;
+//   int size;
+// } BITMAP;
+//
+//
 
-/**
- * Creates a bitmap with size number of bits
- * All bits are reset from start (set to 0)
- */
-BITMAP bitMapMakeBitMap(int size);
-
-/**
- * Sets the index'th bit of map
- * Returns: -1 if bit is out of bounds
-*/
-int bitMapSetBit(BITMAP *map, int index);
-
-/**
- * resets the index'th bit of map
- * Returns: -1 if bit is out of bounds
-*/
-int bitMapResetBit(BITMAP *map, int index);
-//use UINT_MAX from limits.h to do the AND correctly
-//alternatively use ~ to negate the string 00001000 to 11110111
-
-/**
- * returns 1 if the index'th bit is set and 0 otherwise
- * returns -1 at index out of bounds
- */
-int bitMapBitIsSet(BITMAP *map, int index);
-
-BITMAP* bitMapUnion(BITMAP *src, BITMAP *dest);
-
-/**
- * Calculates first minus second and returns a new map
- */
-BITMAP* bitMapDiff(BITMAP *first, BITMAP *second);
-
-int BitMapfree(BITMAP *map);
-
-/**
- * returns 1 if the maps are the same
- * returns 0 of the maps are not the same
-*/
-int BitMapIsEqual(BITMAP *m1, BITMAP *m2);
+// /**
+//  * Creates a bitmap with size number of bits
+//  * All bits are reset from start (set to 0)
+//  */
+// BITMAP bitMapMakeBitMap(int size);
+//
+// /**
+//  * Sets the index'th bit of map
+//  * Returns: -1 if bit is out of bounds
+// */
+// int bitMapSetBit(BITMAP *map, int index);
+//
+// /**
+//  * resets the index'th bit of map
+//  * Returns: -1 if bit is out of bounds
+// */
+// int bitMapResetBit(BITMAP *map, int index);
+// //use UINT_MAX from limits.h to do the AND correctly
+// //alternatively use ~ to negate the string 00001000 to 11110111
+//
+// /**
+//  * returns 1 if the index'th bit is set and 0 otherwise
+//  * returns -1 at index out of bounds
+//  */
+// int bitMapBitIsSet(BITMAP *map, int index);
+//
+// BITMAP* bitMapUnion(BITMAP *src, BITMAP *dest);
+//
+// /**
+//  * Calculates first minus second and returns a new map
+//  */
+// BITMAP* bitMapDiff(BITMAP *first, BITMAP *second);
+//
+// int BitMapfree(BITMAP *map);
+//
+// /**
+//  * returns 1 if the maps are the same
+//  * returns 0 of the maps are not the same
+// */
+// int BitMapIsEqual(BITMAP *m1, BITMAP *m2);
 
 
 //####Interferens graph####//
@@ -245,7 +269,7 @@ typedef struct GraphNode {
   //char *tempNumber; //unique and in equivalence with tempName;
   int id; //used as an internal identifier
   registers reg;
-  BITMAP *neighbors;
+  //BITMAP *neighbors; this one should stay here
   int isMarked;
   int inDegree;
   int outDegree;
