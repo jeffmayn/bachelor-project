@@ -29,6 +29,7 @@ typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
 typedef enum {addrT, regT} TEMPORARYkind;
 
 typedef struct bodyListElm bodyListElm;
+typedef struct bodyList bodyList;
 
 typedef struct TEMPORARY {
   char* tempName;
@@ -78,7 +79,7 @@ INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global
 
 int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
 
-int IRcreateInternalRep(BODY *mainBody, SymbolTable *table);
+int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody);
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
 

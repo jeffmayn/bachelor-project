@@ -36,6 +36,7 @@ typedef struct SYMBOL {
 typedef struct SymbolTable {
     SYMBOL *table[HashSize]; //**table
     SYMBOL *param; //List of parameters in order of first to last
+    //local count
     struct SymbolTable *next;
 } SymbolTable;
 

@@ -152,7 +152,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 20 "src/parser.y" /* yacc.c:1909  */
+#line 20 "src/scanParse/parser.y" /* yacc.c:1909  */
 
   struct FUNCTION* ufunc;
   struct HEAD* uhead;

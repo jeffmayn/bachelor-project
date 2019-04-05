@@ -527,8 +527,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "src/flex.l"
-#line 2 "src/flex.l"
+#line 1 "src/scanParse/flex.l"
+#line 2 "src/scanParse/flex.l"
 #include <stdio.h>
 #include "y.tab.h"
 #include <string.h>
@@ -761,7 +761,7 @@ YY_DECL
 		}
 
 	{
-#line 17 "src/flex.l"
+#line 17 "src/scanParse/flex.l"
 
 #line 767 "lex.yy.c"
 
@@ -822,309 +822,309 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 18 "src/flex.l"
+#line 18 "src/scanParse/flex.l"
 { NCP; return tPLUS;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 19 "src/flex.l"
+#line 19 "src/scanParse/flex.l"
 { NCP; return tMINUS;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 20 "src/flex.l"
+#line 20 "src/scanParse/flex.l"
 { NCP; return tTIMES;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 21 "src/flex.l"
+#line 21 "src/scanParse/flex.l"
 { NCP; return tDIV;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 22 "src/flex.l"
+#line 22 "src/scanParse/flex.l"
 { NCP; return tEQ;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 23 "src/flex.l"
+#line 23 "src/scanParse/flex.l"
 { NCP; return tNE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 24 "src/flex.l"
+#line 24 "src/scanParse/flex.l"
 { NCP; return tLE;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 25 "src/flex.l"
+#line 25 "src/scanParse/flex.l"
 { NCP; return tGE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 26 "src/flex.l"
+#line 26 "src/scanParse/flex.l"
 { NCP; return tLESS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 27 "src/flex.l"
+#line 27 "src/scanParse/flex.l"
 { NCP; return tGREAT;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 28 "src/flex.l"
+#line 28 "src/scanParse/flex.l"
 { NCP; return tAND;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 29 "src/flex.l"
+#line 29 "src/scanParse/flex.l"
 { NCP; return tOR;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 31 "src/flex.l"
+#line 31 "src/scanParse/flex.l"
 { NCP; return tASSI;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 33 "src/flex.l"
+#line 33 "src/scanParse/flex.l"
 { NCP; return tLPAR;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 34 "src/flex.l"
+#line 34 "src/scanParse/flex.l"
 { NCP; return tRPAR;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 35 "src/flex.l"
+#line 35 "src/scanParse/flex.l"
 { NCP; return tLSQ;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 36 "src/flex.l"
+#line 36 "src/scanParse/flex.l"
 { NCP; return tRSQ;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 37 "src/flex.l"
+#line 37 "src/scanParse/flex.l"
 { NCP; return tLCURL;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 38 "src/flex.l"
+#line 38 "src/scanParse/flex.l"
 { NCP; return tRCURL;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 39 "src/flex.l"
+#line 39 "src/scanParse/flex.l"
 { NCP; return tBAR;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 41 "src/flex.l"
+#line 41 "src/scanParse/flex.l"
 { NCP; return tNEG;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 43 "src/flex.l"
+#line 43 "src/scanParse/flex.l"
 { NCP; return tSEMI;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 44 "src/flex.l"
+#line 44 "src/scanParse/flex.l"
 { NCP; return tCOL;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 45 "src/flex.l"
+#line 45 "src/scanParse/flex.l"
 { NCP; return tCOM;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 46 "src/flex.l"
+#line 46 "src/scanParse/flex.l"
 { NCP; return tDOT;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 48 "src/flex.l"
+#line 48 "src/scanParse/flex.l"
 { NCP; return tTRUE;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 49 "src/flex.l"
+#line 49 "src/scanParse/flex.l"
 { NCP; return tFALSE;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 50 "src/flex.l"
+#line 50 "src/scanParse/flex.l"
 { NCP; return tNULL;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 52 "src/flex.l"
+#line 52 "src/scanParse/flex.l"
 { NCP; return tINTTYPE;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 53 "src/flex.l"
+#line 53 "src/scanParse/flex.l"
 { NCP; return tBOOLTYPE;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 54 "src/flex.l"
+#line 54 "src/scanParse/flex.l"
 { NCP; return tARRAYTYPE;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 55 "src/flex.l"
+#line 55 "src/scanParse/flex.l"
 { NCP; return tRECORDTYPE;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 57 "src/flex.l"
+#line 57 "src/scanParse/flex.l"
 { NCP; return tOF;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 59 "src/flex.l"
+#line 59 "src/scanParse/flex.l"
 { NCP; return tFUNC;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 60 "src/flex.l"
+#line 60 "src/scanParse/flex.l"
 { NCP; return tTYPE;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 61 "src/flex.l"
+#line 61 "src/scanParse/flex.l"
 { NCP; return tEND;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 62 "src/flex.l"
+#line 62 "src/scanParse/flex.l"
 { NCP; return tVAR;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 63 "src/flex.l"
+#line 63 "src/scanParse/flex.l"
 { NCP; return tRETURN;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 64 "src/flex.l"
+#line 64 "src/scanParse/flex.l"
 { NCP; return tWRITE;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 65 "src/flex.l"
+#line 65 "src/scanParse/flex.l"
 { NCP; return tALLOC;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 66 "src/flex.l"
+#line 66 "src/scanParse/flex.l"
 { NCP; return tLEN;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 67 "src/flex.l"
+#line 67 "src/scanParse/flex.l"
 { NCP; return tIF;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 68 "src/flex.l"
+#line 68 "src/scanParse/flex.l"
 { NCP; return tELSE;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 69 "src/flex.l"
+#line 69 "src/scanParse/flex.l"
 { NCP; return tTHEN;}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 70 "src/flex.l"
+#line 70 "src/scanParse/flex.l"
 { NCP; return tWHILE;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 71 "src/flex.l"
+#line 71 "src/scanParse/flex.l"
 { NCP; return tDO;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 73 "src/flex.l"
+#line 73 "src/scanParse/flex.l"
 { yylval.uint = atoi(yytext);
                                   NCP; return tINT;}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 75 "src/flex.l"
+#line 75 "src/scanParse/flex.l"
 { yylval.uid = (char *) Malloc(strlen(yytext)+1);
                                   sprintf(yylval.uid, "%s", yytext);
                                   NCP; return tID;}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 79 "src/flex.l"
+#line 79 "src/scanParse/flex.l"
 { NCP; /*ignore*/}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 80 "src/flex.l"
+#line 80 "src/scanParse/flex.l"
 { NCP; nestedcomments++; BEGIN COMMENT;}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 81 "src/flex.l"
+#line 81 "src/scanParse/flex.l"
 { NCP; BEGIN ONELINECOMMENT;}
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-#line 82 "src/flex.l"
+#line 82 "src/scanParse/flex.l"
 { charpos = 0; lineno++;}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 83 "src/flex.l"
+#line 83 "src/scanParse/flex.l"
 { NCP; /*TODO Errors*/}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 85 "src/flex.l"
+#line 85 "src/scanParse/flex.l"
 { NCP; nestedcomments++;}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 86 "src/flex.l"
+#line 86 "src/scanParse/flex.l"
 { NCP; nestedcomments--;
                   if(nestedcomments==0){BEGIN INITIAL;}}
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-#line 88 "src/flex.l"
+#line 88 "src/scanParse/flex.l"
 { charpos = 0; lineno++;}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 89 "src/flex.l"
+#line 89 "src/scanParse/flex.l"
 { NCP; /*ignore*/}
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
-#line 91 "src/flex.l"
+#line 91 "src/scanParse/flex.l"
 { charpos = 0; lineno++; BEGIN INITIAL;}
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 92 "src/flex.l"
+#line 92 "src/scanParse/flex.l"
 { NCP; /*ignore*/}
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 93 "src/flex.l"
+#line 93 "src/scanParse/flex.l"
 ECHO;
 	YY_BREAK
 #line 1131 "lex.yy.c"
@@ -2134,6 +2134,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 93 "src/flex.l"
+#line 93 "src/scanParse/flex.l"
 
 

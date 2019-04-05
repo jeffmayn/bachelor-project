@@ -32,12 +32,11 @@ $(BUILD_DIR)/%.c.o: %.c
 		$(GCC) $(INC_FLAGS_MAIN) $(CFLAGS) -c $< -o $@
 
 parser:
-	bison -y -d -v src/parser.y
-	flex src/flex.l
-	mv y.output src
-	mv y.tab.c src
-	mv y.tab.h src
-	mv lex.yy.c src
+	bison -y -d src/scanParse/parser.y
+	flex src/scanParse/flex.l
+	mv y.tab.c src/scanParse
+	mv y.tab.h src/scanParse
+	mv lex.yy.c src/scanParse
 
 .PHONY: clean
 
@@ -45,10 +44,9 @@ clean:
 	rm -r build/*
 
 cleanParser:
-	rm src/y.output
-	rm src/y.tab.c
-	rm src/y.tab.h
-	rm src/lex.yy.c
+	rm src/scanParse/y.tab.c
+	rm src/scanParse/y.tab.h
+	rm src/scanParse/lex.yy.c
 
 -include $(DEPS_MAIN)
 
