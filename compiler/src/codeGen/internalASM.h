@@ -86,6 +86,12 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody);
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
 
+int IRtravBody(SymbolTable *table, BODY *body);
+
+int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
+
+int IRtravDecl(SymbolTable *table, DECLARATION *decl);
+
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt);
 
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);

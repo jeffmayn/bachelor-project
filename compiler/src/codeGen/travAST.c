@@ -19,6 +19,7 @@ int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
   int error = 0;
   resetbodyListIndex(mainBody);
   bodyListElm *bElm = getBody(mainBody);
+  //TODO something to treat the first body specially.
   while(bElm != NULL){
     error = IRTravBody(bElm->scope, bElm->body);
     if(error = -1){
@@ -33,10 +34,12 @@ int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
  */
 int IRtravBody(SymbolTable *table, BODY *body){
   int error = 0;
+  //TODO set counter for locale variabler start
   error = IRtravDeclList(table, body->vList);
   if(error = -1){
     return -1;
   }
+  //TODO set counter for locale variabler slut
   return IRtravStmtList(table, body->sList);
 }
 
@@ -413,7 +416,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
 
 
 
-
+//###################### EVERYTHING BEYOND THIS POINT IS TRASH (maybe) ########
 
 /**
  * create hash index value for the string
