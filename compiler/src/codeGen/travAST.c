@@ -119,7 +119,9 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
     case funcK:
       break;
     case listK:
-    //count number of variables
+      ;//count number of variables
+      
+      tempCounter++;
       break;
   }
   return 0;
