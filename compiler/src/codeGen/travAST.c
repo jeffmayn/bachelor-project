@@ -6,7 +6,6 @@
 #include <string.h>
 
 
-
 int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
   //TODO
   return 0;
@@ -104,37 +103,56 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRtravTerm(t, exp->val.term);
       break;
     case minusK:
-    //TODO: jeff: some of these other cases
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(op1, op2)));
     case plusK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op1, op2)));
     case divK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeDivINSTR(IRappendOPERAND(op1, op2)));
     case timesK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeTimINSTR(IRappendOPERAND(op1, op2)));
     case andK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeAndINSTR(IRappendOPERAND(op1, op2)));
     case orK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeOrINSTR(IRappendOPERAND(op1, op2)));
     case leK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeLeINSTR(IRappendOPERAND(op1, op2)));
     case eqK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeEqINSTR(IRappendOPERAND(op1, op2)));
     case geK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeGeINSTR(IRappendOPERAND(op1, op2)));
     case greatK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeGreINSTR(IRappendOPERAND(op1, op2)));
     case lessK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeLesINSTR(IRappendOPERAND(op1, op2)));
     case neK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeNeINSTR(IRappendOPERAND(op1, op2)));
       break;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * create hash index value for the string
@@ -222,6 +240,7 @@ TEMPORARY* IRcreateNextTemp(){
  * just because my editor removes extra white space
  * and I like my whitespace
  * I LIKE TRAINS
+ * I like them taco's!
  */
 
 //****Paramter functions*****//
@@ -267,24 +286,113 @@ OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next){
   tail->next = next;
 }
 
-INSTR* IRmakeMovINSTR(OPERAND *params){
-  INSTR *ins = NEW(INSTR);
-  ins->instrKind = movI;
+
+
+INSTRE IRmakeINSTR(OPERAND *params){
+  INSTR* ins = NEW(INSTR);
+  //ins->instrKind = addI;
   ins->paramList = params;
   ins->next = NULL;
   return ins;
+}
+
+INSTR* IRmakeMovINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = movI
 }
 
 
 INSTR* IRmakeAddINSTR(OPERAND *params){
-  INSTR* ins = NEW(INSTR);
-  ins->instrKind = addI;
-  ins->paramList = params;
-  ins->next = NULL;
-  return ins;
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = addI
+}
+
+INSTR* IRmakeSubINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = subI
+}
+
+INSTR* IRmakeDivINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = divI
+}
+
+INSTR* IRmakeTimINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = mulI
+}
+
+INSTR* IRmakeAndINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = andI
+}
+
+INSTR* IRmakeOrINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = orI
+}
+
+INSTR* IRmakeLeINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = jmpleI
+}
+
+INSTR* IRmakeEqINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = jmpeqI
+}
+
+INSTR* IRmakeGeINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = jmpgeI
+}
+
+INSTR* IRmakeGreINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = jmpgreatI
+}
+
+INSTR* IRmakeLesINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = jmplessI
+}
+
+INSTR* IRmakeNeINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = jmpneqI
 }
 
 INSTR* IRmakeLabelINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = labelI
+}
+
+INSTR* IRmakePushINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = pushI
+}
+
+INSTR* IRmakePopINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = popI
+}
+
+INSTR* IRmakeCallINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = callI
+}
+
+INSTR* IRmakeRetINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params)
+  instr->instrKIND = retI
+}
+
+INSTR* IRappendINSTR(INSTR *newINSTR){
+  if(intermediateTail==NULL){
+    intermediateTail = newINSTR;
+  }
+
+/*INSTR* IRmakeLabelINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->instrKind = labelI;
   ins->paramList = params;
@@ -328,6 +436,8 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
   if(intermediateTail==NULL){
     intermediateTail = newINSTR;
   }
+
+  */
 }
 
 /**
