@@ -7,15 +7,35 @@
 
 
 
-int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
-  //TODO
+int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
+  //TODO call all the stuff and shit and things.
+  /* for each body first traverse declerations to count local
+   * variables and shit, then traverse statements creating the
+   * instructions and so on.
+   */
   return 0;
 }
 
+/**
+ * only traverse the statements immediately available
+ * do not dive into functions etc.
+ */
 int IRtravStmtList( SymbolTable *table, STATEMENT_LIST *statements){
   IRtravStmt(table, statements->statement);
   if(statements->statementList != NULL){
     return IRtravStmtList(table, statements->statementList);
+  }
+  return 0;
+}
+
+/**
+ * only traverse the declerations immediately available
+ * do not dive into functions etc.
+ */
+int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations){
+  IRtravDecl(table, declerations->decl);
+  if(declerations->decl_list != NULL){
+    return IRtravDeclList(table, declerations->decl_list);
   }
   return 0;
 }
@@ -51,9 +71,26 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   }
 }
 
+/**
+ * do not enter declerations for functions,
+ * as these are already in the bodylist!
+ */
+int IRtravDecl(SymbolTable *table, DECLERATION *decl){
 
+  switch(decl->kind){
+    case idDeclK:
+      break;
+    case funcK:
+      break:
+    case listK:
+      break:
+  }
+  return 0;
+}
 
-
+/*
+ * traversing the statement
+ */
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
   OPERAND *op1;
   OPERAND *op2;
