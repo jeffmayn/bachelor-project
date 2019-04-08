@@ -79,10 +79,14 @@ int IRtravDecl(SymbolTable *table, DECLERATION *decl){
 
   switch(decl->kind){
     case idDeclK:
+      ;// typedecleration, we don't need to do anything
       break;
     case funcK:
+      ;// umiddelbart ikke nødvendigt at gøre noget.
       break:
     case listK:
+      ;//we need to count the elements of this list somehow.
+      //giv nye variabler temporaries.
       break:
   }
   return 0;

@@ -61,7 +61,8 @@ typedef struct INSTR {
 typedef struct CODEGENUTIL {
   union {
     struct {INSTR *funcLabel; int temporaryStart; int temporaryEnd;} funcInfo ;
-    OPERAND *operand;
+    struct OPERAND *operand;
+    struct TEMPORARY * temporary;
   } val;
 } CODEGENUTIL;
 
@@ -77,16 +78,14 @@ TEMPORARY* IRcreateNextTemp();
 
 INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
 
-int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
-
+/*###### Create the internal representation #######*/
 int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody);
-
-OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
-
+int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
+int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
+int IRtravDecl(table, declerations->decl);
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt);
-
+OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
-
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 
 //****Paramter constructors*****//
@@ -102,7 +101,7 @@ OPERAND *IRmakeRegOPERAND(registers reg);
 
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next);//append next to tail
 
-
+TEMPORARY *IRmakeTemporary(char* name);//might be better if it's just a number
 //****Instruction constructors****//
 INSTR* IRmakeMovINSTR(OPERAND *params);
 
