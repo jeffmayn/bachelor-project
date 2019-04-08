@@ -21,7 +21,7 @@ int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
   bodyListElm *bElm = getBody(mainBody);
   //TODO something to treat the first body specially.
   while(bElm != NULL){
-    error = IRTravBody(bElm->scope, bElm->body);
+    error = IRtravBody(bElm->scope, bElm->body);
     if(error = -1){
       return -1;
     }
