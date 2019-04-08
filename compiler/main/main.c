@@ -11,7 +11,7 @@ int charpos = 0;
 int SYNTAX_ERROR = 0;
 
 void* yyparse();
-extern bodyList bodies; //borrow from typecheck.c
+extern bodyList *bodies; //borrow from typecheck.c
 BODY *theexpression;
 SymbolTable *childScopeForDebugging;
 
@@ -68,6 +68,7 @@ int main() {
   // if(tempMap == NULL){
   //   return -1;
   // }
+  IRcreateInternalRep(table, bodies);
 
 
   fprintf(stderr, "\n%s\n", "####### STARTING PRINTING INTERNAL REPRESENTATION ######");

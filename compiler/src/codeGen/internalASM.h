@@ -92,7 +92,9 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
 
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 
-int IRtravActList(SymbolTable *t, ACT_LIST *actlist);
+OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist);
+
+OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps);
 
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);

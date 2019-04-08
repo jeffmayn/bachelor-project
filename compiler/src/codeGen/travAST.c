@@ -20,7 +20,7 @@ int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
   resetbodyListIndex(mainBody);
   bodyListElm *bElm = getBody(mainBody);
   while(bElm != NULL){
-    error = IRTravBody(bElm->scope, bElm->body);
+    error = IRtravBody(bElm->scope, bElm->body);
     if(error = -1){
       return -1;
     }
@@ -66,6 +66,7 @@ int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations){
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   OPERAND *op;
+  int error = 0;
   switch(term->kind){
     case varK:
       op = IRtravVar(t, term->val.var);
@@ -73,8 +74,6 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       break;
     case idTermK:
     ;
-      //TODO call create function call Scheme
-
       //slå id i symbol-table
       SYMBOL *sym = getSymbol(t, term->val.idact.id);
       //find function-body-scope ???
@@ -84,12 +83,22 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       if(cgu->val.funcInfo.funcLabel == NULL){
         //create and save funcLabel
       }
+      INSTR *label = cgu->val.funcInfo.funcLabel;
       //slå symboler i actionlist op i symboltable
-      //TODO
       //for ting der ikke er symboler: lav temporaries og operander
       //link operander sammen (evt. i omvendt rækkefølge)
+      op = IRtravActList(t, term->val.idact.list);
       //kald IRmakeFunctionCallScheme
-      //hvad gør vi med parametre
+      error = IRmakeFunctionCallScheme(label, op);
+      if(error = -1){
+        return NULL;
+      }
+      return NULL;
+      //what to return? the result of function call? Where? %rax?
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX),op)));
+      //todo check return of append
+      return op;
       break;
     case expTermK:
       break;
@@ -112,11 +121,27 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   }
 }
 
-//do som shit here
-int IRtravActList(SymbolTable *t, ACT_LIST *actlist){
+
+OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist){
   if(actlist == NULL){
-    //TODOD
+    return NULL;
   }
+  return IRtravExpList(t, actlist->expList);
+}
+
+OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
+  int error = 0;
+  if(exps != NULL){
+    OPERAND* op = IRtravExp(t, exps->exp);
+    if(op == NULL){
+      fprintf(stderr, "OPERAND IS NULL\n");
+      return NULL;
+    }
+    return IRtravExpList(t, exps->expList);
+    IRappendOPERAND(op, IRtravExpList(t, exps->expList));
+    return op;
+  }
+  return NULL;
 }
 
 
