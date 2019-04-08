@@ -20,6 +20,14 @@ int IRtravStmtList( SymbolTable *table, STATEMENT_LIST *statements){
   return 0;
 }
 
+int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations){
+  IRtravDecl(table, declerations->decl);
+  if(declerations->decl_list != NULL){
+    return IRtravDeclList(table, declerations->decl_list);
+  }
+  return 0;
+}
+
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   OPERAND *op;
   switch(term->kind){
