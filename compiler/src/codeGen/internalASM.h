@@ -46,10 +46,11 @@ typedef struct OPERAND {
   struct OPERAND *next;
   union{
     int constant;
-    int address;
+    int address; //offset??
     char *label;
     TEMPORARY *temp;
     registers reg;
+    int offset; //used by paramO og localO
   } val;
 } OPERAND;
 

@@ -13,7 +13,31 @@ int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
    * variables and shit, then traverse statements creating the
    * instructions and so on.
    */
+  if(mainBody == NULL){
+    return 0; //i guess no bodies gives rise to no errors
+  }
+  int error = 0;
+  resetbodyListIndex(mainBody);
+  bodyListElm *bElm = getBody(mainBody);
+  while(bElm != NULL){
+    error = IRTravBody(bElm->scope, bElm->body);
+    if(error = -1){
+      return -1;
+    }
+  }
   return 0;
+}
+
+/**
+ * Traverse the body of a function
+ */
+int IRtravBody(SymbolTable *table, BODY *body){
+  int error = 0;
+  error = IRtravDeclList(table, body->vList);
+  if(error = -1){
+    return -1;
+  }
+  return IRtravStmtList(table, body->sList);
 }
 
 /**
@@ -49,6 +73,15 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       break;
     case idTermK:
       //TODO call create function call Scheme
+      //slå op id i symbol-table
+      //find function-body-scope
+      //find CODEGENUTIL
+      //tjek om label finds -> brug eller lav label
+      //slå symboler i actionlist op i symboltable
+      //for ting der ikke er symboler: lav temporaries og operander
+      //link operander sammen (evt. i omvendt rækkefølge)
+      //kald IRmakeFunctionCallScheme
+      //hvad gør vi med parametre
       break;
     case expTermK:
       break;
@@ -75,15 +108,16 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
  * do not enter declerations for functions,
  * as these are already in the bodylist!
  */
-int IRtravDecl(SymbolTable *table, DECLERATION *decl){
+int IRtravDecl(SymbolTable *table, DECLARATION *decl){
 
   switch(decl->kind){
     case idDeclK:
       break;
     case funcK:
-      break:
+      break;
     case listK:
-      break:
+    //count number of variables
+      break;
   }
   return 0;
 }
@@ -324,7 +358,8 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R10)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R11)));
   int ParamCount = 1; //static link already inkluded
-  while(paramList != NULL){
+  while(paramList != NULL){//maybe change to recursive form?
+    //this migh be the wrong order
     IRappendINSTR(IRmakePushINSTR(paramList));
     paramList = paramList->next;
     ParamCount += 1;
