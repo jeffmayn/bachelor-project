@@ -31,6 +31,7 @@ typedef struct SYMBOL {
 
   struct TempNode *temporary;
   OPERAND *operand;
+  CODEGENUTIL *cgu;
 } SYMBOL;
 
 typedef struct SymbolTable {

@@ -92,6 +92,8 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
 
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 
+int IRtravActList(SymbolTable *t, ACT_LIST *actlist);
+
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
 
