@@ -4,6 +4,7 @@
 #include "weeder.h"
 #include <stdio.h>
 #include "internalASM.h"
+#include "IRprint.h"
 
 int lineno = 0;
 int charpos = 0;
@@ -67,6 +68,10 @@ int main() {
   // if(tempMap == NULL){
   //   return -1;
   // }
+
+
+  fprintf(stderr, "\n%s\n", "####### STARTING PRINTING INTERNAL REPRESENTATION ######");
+  printINSTRnode(intermediateHead);
 
 
   fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");

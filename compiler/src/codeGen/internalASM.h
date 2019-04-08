@@ -32,7 +32,9 @@ typedef struct bodyListElm bodyListElm;
 typedef struct bodyList bodyList;
 
 typedef struct TEMPORARY {
-  char* tempName;
+  char* tempName; //is this usefull?
+  int tempVal;
+  TEMPORARYkind temporarykind;
   union {
     int address;
     registers reg;
@@ -69,8 +71,8 @@ int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
 INSTR* intermediateTail;
 
-int TempCounter; //the next tempvalue
-int LabelCounter; //the next label value
+int tempCounter; //the next tempvalue
+int labelCounter; //the next label value
 
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();
