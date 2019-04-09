@@ -1,18 +1,24 @@
 #include "internalASM.h"
 #include "IRprint.h"
 
+const char* instrNames[] = {"add", "sub", "mul", "div", "and", "or",
+              "xor", "lshift", "rshift", "cmp", "jump", "jmpless",
+              "jmpgreat", "jmple", "jmpge", "jmpeq", "jmpneq", "mov",
+              "label", "push", "pop", "call", "ret"};
 
 void printINSTRnode(INSTR *instr){
   if(instr != NULL){
-    fprintf(stderr, "Instruktion %d\n", instr->instrKind);
+    fprintf(stderr, "Instruction: %s\n", instrNames[instr->instrKind]);
     printOPERANDs(instr->paramList);
-    fprintf(stderr, "  |\n");
-    fprintf(stderr, "  |\n");
-    fprintf(stderr, "\\ | /\n");
-    fprintf(stderr, " \\ /\n");
+    fprintf(stderr, "\t  |\n");
+    fprintf(stderr, "\t  |\n");
+    fprintf(stderr, "\t\\ | /\n");
+    fprintf(stderr, "\t \\ /\n");
     printINSTRnode(instr->next);
   }
-  fprintf(stderr, "***NULL***\n");
+  else {
+    fprintf(stderr, "***NULL***\n");
+  }
 }
 
 void printOPERANDs(OPERAND *op){
@@ -23,22 +29,22 @@ void printOPERANDs(OPERAND *op){
 }
 
 void printOPERANDnode(OPERAND *op){
-  fprintf(stderr, "\tOperand %d\n", op->operandKind);
+  fprintf(stderr, "\tOperand %d: ", op->operandKind);
   switch(op->operandKind){
     case constantO:
-      fprintf(stderr, "\t\t constant: %d\n", op->val.constant);
+      fprintf(stderr, "constant: %d\n", op->val.constant);
       break;
     case temporaryO:
       printTEMPORARYnode(op->val.temp);
       break;
     case heapAddrO:
-      fprintf(stderr, "\t\t address: %d\n", op->val.address);
+      fprintf(stderr, "address: %d\n", op->val.address);
       break;
     case labelIDO:
-      fprintf(stderr, "\t\t label: %s\n", op->val.label);
+      fprintf(stderr, "label: %s\n", op->val.label);
       break;
     case registerO:
-      fprintf(stderr, "\t\t reguster: %d\n", op->val.reg);
+      fprintf(stderr, "register: %d\n", op->val.reg);
       break;
   }
 
@@ -47,10 +53,10 @@ void printOPERANDnode(OPERAND *op){
 void printTEMPORARYnode(TEMPORARY *temp){
   switch (temp->temporarykind) {
     case addrT:
-      fprintf(stderr, "\t\tTemporary %s with address %d\n", temp->tempName, temp->placement.address);
+      fprintf(stderr, "Temporary %s with address %d\n", temp->tempName, temp->placement.address);
       break;
-    case regT:
-      fprintf(stderr, "\t\tTemporary %s register %d\n", temp->tempName, temp->placement.reg);
+    case regT:                                                         //use regNames[temp->placement.reg]
+      fprintf(stderr, "Temporary %s in register %d\n", temp->tempName, temp->placement.reg);
       break;
   }
 }

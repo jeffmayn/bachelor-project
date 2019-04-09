@@ -31,6 +31,10 @@ typedef enum {addrT, regT} TEMPORARYkind;
 typedef struct bodyListElm bodyListElm;
 typedef struct bodyList bodyList;
 
+
+extern const char *instrNames[];
+extern const char *regNames[];
+
 typedef struct TEMPORARY {
   char* tempName; //is this usefull?
   int tempVal;

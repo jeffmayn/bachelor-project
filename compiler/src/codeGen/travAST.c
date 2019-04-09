@@ -12,12 +12,13 @@
  */
 TEMPORARY* IRcreateNextTemp(){
   TEMPORARY* tmp = NEW(TEMPORARY);
-  char str[10];
+  char *str = Malloc(sizeof(char)*10);
   sprintf(str, "t%d\0", tempCounter);
   tmp->tempName = str;
   tmp->tempVal = tempCounter;
   tempCounter++;
   tmp->temporarykind = regT; //should this be undefined by now?
+  return tmp;
 }
 
 //****AST TRAVERSE functions*****//
@@ -400,7 +401,12 @@ INSTR* IRmakeRetINSTR(OPERAND *params){
 }
 
 INSTR* IRappendINSTR(INSTR *newINSTR){
-  if(intermediateTail==NULL){
+  if(intermediateTail == NULL){
+    intermediateHead = newINSTR;
+    intermediateTail = newINSTR;
+  }
+  else{
+    intermediateTail->next = newINSTR;
     intermediateTail = newINSTR;
   }
   return newINSTR;
