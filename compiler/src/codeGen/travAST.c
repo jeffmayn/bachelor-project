@@ -41,8 +41,13 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
   int error = 0;
   resetbodyListIndex(mainBody);
   bodyListElm *bElm = getBody(mainBody);
+  //TODO something to treat the first body specially.
   while(bElm != NULL){
-    error = IRtravBody(bElm->scope, bElm->body);
+    error = IRinitParams(bElm->scope, bElm);
+    if(error == -1){
+      return -1;
+    }
+    error = IRtravBody(bElm->scope, bElm);
     if(error == -1){
       return -1;
     }
@@ -51,16 +56,83 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
   return 0;
 }
 
+int IRinitParams(SymbolTable *table, bodyListElm *element){
+
+  int error = 0;
+  int paramCount = 0;
+  SYMBOL *sym = element->scope->param;
+  SYMBOL *func = getSymbol(table, element->funcId);
+  if(func->cgu == NULL){
+    func->cgu = IRmakeNewCGU();
+    char* labelName = Malloc(strlen(element->funcId)+6);
+    sprintf(labelName, "%s%d", labelName, labelCounter);
+    labelCounter++;
+    func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
+  }
+  while(sym != NULL){
+    if(sym->cgu == NULL){
+      sym->cgu = IRmakeNewCGU();
+      sym->cgu->val.operand = IRmakeParamOPERAND(paramCount);
+      paramCount++;
+    }
+  }
+
+  return 0;
+}
+
 /**
  * Traverse the body of a function
  */
-int IRtravBody(SymbolTable *table, BODY *body){
+int IRtravBody(SymbolTable *table, bodyListElm *body){
   int error = 0;
-  error = IRtravDeclList(table, body->vList);
+  //TODO create the INSTRlabel, to signify the beginning of the body.
+  //TODO set counter for locale variabler start
+  SYMBOL *sym = getSymbol(body->scope, body->funcId);
+  sym->cgu->val.funcInfo.temporaryStart = tempCounter;
+  error = IRtravDeclList(table, body->body->vList);
   if(error == -1){
     return -1;
   }
-  return IRtravStmtList(table, body->sList);
+  sym->cgu->val.funcInfo.temporaryEnd = tempCounter;
+  //TODO set counter for locale variabler slut
+  //TODO calleé saves,
+  IRappendINSTR(sym->cgu->val.funcInfo.funcLabel);
+  error = IRmakeCalleeProlog();
+  if(error == -1){
+    return -1;
+  }
+  error = IRtravStmtList(table, body->body->sList);
+  if(error == -1){
+    return -1;
+  }
+  char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
+  sprintf(labelName, "%s%d", labelName, "end");
+  labelCounter++;
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
+  error = IRmakeCalleeEpilog();
+}
+
+int IRmakeCalleeProlog(){
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBP)));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RSP), IRmakeRegOPERAND(RBP))));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R12)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R13)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R14)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R15)));
+  return 0;
+}
+
+int IRmakeCalleeEpilog(){
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R15)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R14)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R13)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R12)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RBX)));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBP), IRmakeRegOPERAND(RSP))));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RBP)));
+  IRappendINSTR(IRmakeRetINSTR(NULL));
+  return 0;
 }
 
 
@@ -69,6 +141,12 @@ int IRtravBody(SymbolTable *table, BODY *body){
  * do not dive into functions etc.
  * Count the number of variables.
  */
+CODEGENUTIL *IRmakeNewCGU(){
+  CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
+  memset(newCGU, 0, sizeof(CODEGENUTIL));
+  return newCGU;
+}
+
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declarations){
   int error = 0;
   error = IRtravDecl(table, declarations->decl);
@@ -92,15 +170,51 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
   switch(decl->kind){
     case idDeclK:
       break;
-    case funcK:
+    case funcK://assign numbers to parameters.
       break;
     case listK:
-    //TODO: count number of variables
+      ;//count number of variables
+      return IRtravVarDeclList(table, decl->val.list, 0);
       break;
   }
   return 0;
 }
 
+
+/**
+ * traverse variable decleration list, the integer parameter
+ * is set to 0 if this is a regular decleration or 1 if this
+ * is called from a parameter decleration list.
+ */
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList){
+  int error = 0;
+  if(calledFromParDeclList){
+    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
+    calledFromParDeclList++;
+  } else {
+    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
+  }
+  if((error == 0) && (varDeclList->vList != NULL)){
+    error = IRtravVarDeclList(table, varDeclList->vList, calledFromParDeclList);
+  }
+  return error;
+}
+
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam){
+
+  SYMBOL *sym = getSymbol(table, varType->id);
+  if(sym->cgu == NULL && !isParam){
+    sym->cgu = IRmakeNewCGU();
+    sym->cgu->val.operand = IRmakeLocalOPERAND(tempCounter);
+  } else if (sym->cgu == NULL && isParam) {
+    sym->cgu = IRmakeNewCGU();
+    sym->cgu->val.operand = IRmakeParamOPERAND(isParam-1);
+  } else {
+    sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand attatched, might be an error not sure");
+    //return -1;//dunno if we need this.
+  }
+  return 0;
+}
 
 /**
  * only traverse the statements immediately available
@@ -326,6 +440,22 @@ OPERAND *IRmakeLabelOPERAND(char *labelName){
   return par;
 }
 
+OPERAND *IRmakeLocalOPERAND(int number){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = localO;
+  par->val.tempIDnr = number;
+  par->next = NULL;
+  return par;
+}
+
+OPERAND *IRmakeParamOPERAND(int number){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = paramO;
+  par->val.tempIDnr = number;
+  par->next = NULL;
+  return par;
+}
+
 OPERAND *IRmakeRegOPERAND(registers reg){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = registerO;
@@ -465,100 +595,4 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * create hash index value for the string
- *
- * - note: something fishy with the .h files, created my own stuff.
- */
-int IRtemporaryHash(char *str){
-  unsigned int sum = 0;
-  for (unsigned int i = 0; i < strlen(str); i++){
-    char c = str[i];
-    sum += c;
-    if(i < strlen(str)-1){
-      sum <<= 1;
-    }
-  } return sum % HashSize;
-}
-
-TempLocMap *IRinitTempLocMap(){
-  TempLocMap* table = NEW(TempLocMap);
-  memset(table->table, 0, sizeof(table->table));
-  return table;
-}
-
-/**
- * create new TempNode and put into table
- */
-TempNode *IRputTempNode(TempLocMap *t, char *tempName){
-  TempNode *newNode = NEW(TempNode);
-  newNode->name = Malloc(strlen(tempName)+1);
-  memcpy(newNode->name, tempName, strlen(tempName)+1);
-  newNode->next = NULL;
-  newNode->graphNodeId = UNUSED_GRAPH_ID;
-  newNode->reg = NA; //NA = not assigned
-
-  //find index via hash value
-  int hashIndex = IRtemporaryHash(tempName);
-
-  //insert into table
-  TempLocMap **table = t->table;
-  if(table[hashIndex] == NULL){
-    table[hashIndex] = newNode;
-  } else {
-    TempNode *temp = table[hashIndex];
-    while(temp != NULL){
-      if(!strcmp(tempName,temp->name)){
-        //name is already in this table
-        fprintf(stderr, "IRputTempNode: Node already in table\n", tempName);
-        free(newNode->name);
-        free(newNode);
-        return NULL;
-      }
-      if(temp->next != NULL){//as long as there is a next, check the next one.
-        temp = temp->next;
-      }
-    }
-    temp->next = newNode;
-  }
-  return newNode;
-}
-
-TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTable){
-  //TODO setup map
-  //TODO call traverse of declarations
-  //TODO possibly traverse statements
-}
-
-/**
- * traverse decleration list to find variables
- * and insert into TempNodeMap
- */
-int IRtraverseDeclerationList(DECL_LIST *declerations){
-  //TODO
-}
+//comfort space

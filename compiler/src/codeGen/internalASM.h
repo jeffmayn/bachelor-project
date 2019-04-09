@@ -23,7 +23,8 @@
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
-typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO} OPERANDkind;
+typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO,
+              paramO, localO} OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 typedef enum {addrT, regT} TEMPORARYkind;
@@ -54,7 +55,7 @@ typedef struct OPERAND {
     char *label;
     TEMPORARY *temp;
     registers reg;
-    int offset; //used by paramO og localO
+    int tempIDnr; //used by paramO og localO
   } val;
 } OPERAND;
 
@@ -81,16 +82,25 @@ int labelCounter; //the next label value
 
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();
+CODEGENUTIL *IRmakeNewCGU();
 
 int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody);
 
-int IRtravBody(SymbolTable *table, BODY *body);
+int IRtravBody(SymbolTable *table, bodyListElm *body);
+int IRmakeCalleeProlog();
+int IRmakeCalleeEpilog();
 
-int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
+int IRinitParams(SymbolTable *table, bodyListElm *element);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
 
 int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
+
+int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
+
+int IRtravDecl(SymbolTable *table, DECLARATION *decl);
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList);
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam);
 
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt);
 
@@ -108,6 +118,10 @@ OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps);
 OPERAND *IRmakeConstantOPERAND(int conVal);
 
 OPERAND *IRmakeTemporaryOPERAND(TEMPORARY *temp);
+
+OPERAND *IRmakeLocalOPERAND(int number);
+
+OPERAND *IRmakeParamOPERAND(int number);
 
 OPERAND *IRmakeAddrOPERAND(int addrVal);
 
