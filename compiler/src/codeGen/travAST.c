@@ -69,22 +69,39 @@ int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations){
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   OPERAND *op;
+  int error = 0;
   switch(term->kind){
     case varK:
       op = IRtravVar(t, term->val.var);
       return op;
       break;
     case idTermK:
-      //TODO call create function call Scheme
-      //slå op id i symbol-table
-      //find function-body-scope
+    ;
+      //slå id i symbol-table
+      SYMBOL *sym = getSymbol(t, term->val.idact.id);
+      //find function-body-scope ???
       //find CODEGENUTIL
-      //tjek om label finds -> brug eller lav label
+      CODEGENUTIL *cgu = sym->cgu;
+      //tjek om label findes -> brug eller lav label
+      if(cgu->val.funcInfo.funcLabel == NULL){
+        //create and save funcLabel
+      }
+      INSTR *label = cgu->val.funcInfo.funcLabel;
       //slå symboler i actionlist op i symboltable
       //for ting der ikke er symboler: lav temporaries og operander
       //link operander sammen (evt. i omvendt rækkefølge)
+      op = IRtravActList(t, term->val.idact.list);
       //kald IRmakeFunctionCallScheme
-      //hvad gør vi med parametre
+      error = IRmakeFunctionCallScheme(label, op);
+      if(error = -1){
+        return NULL;
+      }
+      return NULL;
+      //what to return? the result of function call? Where? %rax?
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX),op)));
+      //todo check return of append
+      return op;
       break;
     case expTermK:
       break;
@@ -106,6 +123,30 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       fprintf(stderr, "IRtravTerm ERROR, term has no kind\n");
   }
 }
+
+
+OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist){
+  if(actlist == NULL){
+    return NULL;
+  }
+  return IRtravExpList(t, actlist->expList);
+}
+
+OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
+  int error = 0;
+  if(exps != NULL){
+    OPERAND* op = IRtravExp(t, exps->exp);
+    if(op == NULL){
+      fprintf(stderr, "OPERAND IS NULL\n");
+      return NULL;
+    }
+    return IRtravExpList(t, exps->expList);
+    IRappendOPERAND(op, IRtravExpList(t, exps->expList));
+    return op;
+  }
+  return NULL;
+}
+
 
 /**
  * do not enter declerations for functions,
@@ -153,11 +194,11 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
     sym = getSymbol(t, var->val.id);
     //todo check if operand already exists: if not make one
 
-    if(sym->operand == NULL){
+    if(sym->cgu->val.operand == NULL){
       //todo: create and save operand
-      sym->operand = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      sym->cgu->val.operand = IRmakeTemporaryOPERAND(IRcreateNextTemp());
     }
-    op = sym->operand;
+    op = sym->cgu->val.operand;
     return op;
     //TODO: check if the type is a (userdefined) record or array type
     //i dont know if this works
