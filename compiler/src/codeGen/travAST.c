@@ -6,8 +6,27 @@
 #include <string.h>
 
 
+/**
+ * Creating next temporary in order
+ * It gets an unique ID and associated integer value
+ */
+TEMPORARY* IRcreateNextTemp(){
+  TEMPORARY* tmp = NEW(TEMPORARY);
+  char str[10];
+  sprintf(str, "t%d\0", tempCounter);
+  tmp->tempName = str;
+  tmp->tempVal = tempCounter;
+  tempCounter++;
+  tmp->temporarykind = regT; //should this be undefined by now?
+}
 
-int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
+//****AST TRAVERSE functions*****//
+/**
+ * Traverse all the bodies of the bodyList created in the typeChecker
+ * In this way we go through alle bodies, that is functions, in a bread-first
+ * starting with the main-body.
+ */
+int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
   //TODO call all the stuff and shit and things.
   /* for each body first traverse declerations to count local
    * variables and shit, then traverse statements creating the
@@ -16,27 +35,30 @@ int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
   if(mainBody == NULL){
     return 0; //i guess no bodies gives rise to no errors
   }
+  tempCounter = 1;
+  labelCounter = 1;
   int error = 0;
   resetbodyListIndex(mainBody);
   bodyListElm *bElm = getBody(mainBody);
   //TODO something to treat the first body specially.
   while(bElm != NULL){
     error = IRtravBody(bElm->scope, bElm->body);
-    if(error = -1){
+    if(error == -1){
       return -1;
     }
+    bElm = getBody(mainBody);
   }
   return 0;
 }
 
 int IRinitParams(SymbolTable *table, bodyListElm *element){
 
-  int error 0;
-  SYMBOL sym = element->scope->param;
-  SYMBOL func = getSymbol(table, element->funcId);
+  int error = 0;
+  SYMBOL *sym = element->scope->param;
+  SYMBOL *func = getSymbol(table, element->funcId);
   if(func->cgu == NULL){
     func->cgu = IRmakeNewCGU();
-    func->cgu->val.funcInfo->funcLabel =
+    func->cgu->val.funcInfo.funcLabel = NULL;
   }
 
 
@@ -52,55 +74,234 @@ int IRtravBody(SymbolTable *table, BODY *body){
   //TODO create the INSTRlabel, to signify the beginning of the body.
   //TODO set counter for locale variabler start
   error = IRtravDeclList(table, body->vList);
-  if(error = -1){
+  if(error == -1){
     return -1;
   }
   //TODO set counter for locale variabler slut
   return IRtravStmtList(table, body->sList);
 }
 
+
+/**
+ * only traverse the declerations immediately available
+ * do not dive into functions etc.
+ * Count the number of variables.
+ */
+CODEGENUTIL *IRmakeNewCGU(){
+  CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
+  memset(newCGU, 0, sizeof(CODEGENUTIL));
+  return newCGU;
+}
+
+int IRtravDeclList(SymbolTable *table, DECL_LIST *declarations){
+  int error = 0;
+  error = IRtravDecl(table, declarations->decl);
+  if(error  == -1){
+    return -1;
+  }
+  if(declarations->decl_list != NULL){
+    return IRtravDeclList(table, declarations->decl_list);
+  }
+  return 0;
+}
+
+/**
+ * do not enter declerations for functions,
+ * as these are already in the bodylist!
+ */
+int IRtravDecl(SymbolTable *table, DECLARATION *decl){
+  if(decl == NULL){
+    return 0;
+  }
+  switch(decl->kind){
+    case idDeclK:
+      break;
+    case funcK://assign numbers to parameters.
+      break;
+    case listK:
+      ;//count number of variables
+      return IRtravVarDeclList(table, decl->val.list, 0);
+      break;
+  }
+  return 0;
+}
+
+
+/**
+ * traverse variable decleration list, the integer parameter
+ * is set to 0 if this is a regular decleration or 1 if this
+ * is called from a parameter decleration list.
+ */
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList){
+  int error = 0;
+  if(calledFromParDeclList){
+    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
+    calledFromParDeclList++;
+  } else {
+    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
+  }
+  if((error == 0) && (varDeclList->vList != NULL)){
+    error = IRtravVarDeclList(table, varDeclList->vList, calledFromParDeclList);
+  }
+  return error;
+}
+
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam){
+
+  SYMBOL *sym = getSymbol(table, varType->id);
+  if(sym->cgu == NULL && !isParam){
+    sym->cgu = IRmakeNewCGU();
+    sym->cgu->val.operand = IRmakeLocalOPERAND(tempCounter);
+  } else if (sym->cgu == NULL && isParam) {
+    sym->cgu = IRmakeNewCGU();
+    sym->cgu->val.operand = IRmakeParamOPERAND(isParam-1);
+  } else {
+    sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand attatched, might be an error not sure");
+    //return -1;//dunno if we need this.
+  }
+  return 0;
+}
+
 /**
  * only traverse the statements immediately available
  * do not dive into functions etc.
+ * Generate code for all statements.
  */
 int IRtravStmtList( SymbolTable *table, STATEMENT_LIST *statements){
-  IRtravStmt(table, statements->statement);
+  int error = 0;
+  error = IRtravStmt(table, statements->statement);
+  if(error == -1){
+    return -1;
+  }
   if(statements->statementList != NULL){
     return IRtravStmtList(table, statements->statementList);
   }
   return 0;
 }
 
-/**
- * only traverse the declerations immediately available
- * do not dive into functions etc.
+/*
+ * traversing the statement
  */
-int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations){
-  IRtravDecl(table, declerations->decl);
-  if(declerations->decl_list != NULL){
-    return IRtravDeclList(table, declerations->decl_list);
+int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
+  OPERAND *op1;
+  OPERAND *op2;
+  switch(stmt->kind){
+    case assiK:
+      op1 = IRtravVar(t, stmt->val.assign.var);
+      op2 = IRtravExp(t, stmt->val.assign.exp);
+      //move expression into variabel -> source->destination
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op1)));
+      return 0;
+      break;
+    default:
+      break;
   }
-  return 0;
 }
 
+/**
+ * Traversing variabel
+ */
+OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
+  SYMBOL *sym;
+  OPERAND *op;
+  switch (var->kind) {
+  case idVarK:
+    sym = getSymbol(t, var->val.id);
+    //check if operand already exists: if not make one
+    if(sym->cgu->val.operand == NULL){
+      //todo: create and save operand
+      sym->cgu->val.operand = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+    }
+    op = sym->cgu->val.operand;
+    return op;
+    //TODO: check if the type is a (userdefined) record or array type
+    //i dont know if this works
+    //recursiveSymbolRetrieval(sym->defScope, sym->val.id, NULL);
+    break;
+  case expK:
+    printf("not yet implemented 12\n");
+    break;
+  case dotK:
+    printf("not yet implemented 232\n");
+    break;
+
+  }
+}
+
+/**
+ * Traverse expression
+ */
+OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
+  OPERAND *op1, *op2, *op3;
+  switch(exp->kind){
+    case termK:
+      return IRtravTerm(t, exp->val.term);
+      break;
+    case minusK:
+    //TODO: jeff: some of these other cases
+    case plusK:
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.left);
+      op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op2, op3)));
+      return op3;
+    case divK:
+    case timesK:
+    case andK:
+    case orK:
+    case leK:
+    case eqK:
+    case geK:
+    case greatK:
+    case lessK:
+    case neK:
+      break;
+  }
+}
+
+/**
+ * Traversing term
+ */
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   OPERAND *op;
+  int error = 0;
   switch(term->kind){
     case varK:
       op = IRtravVar(t, term->val.var);
       return op;
       break;
-    case idTermK:
-      //TODO call create function call Scheme
-      //slå op id i symbol-table
-      //find function-body-scope
+    case idTermK: //function call
+    ;
+      //slå id i symbol-table
+      SYMBOL *sym = getSymbol(t, term->val.idact.id);
+      //find function-body-scope ???
       //find CODEGENUTIL
-      //tjek om label finds -> brug eller lav label
+      CODEGENUTIL *cgu = sym->cgu;
+      //tjek om label findes -> brug eller lav label
+      if(cgu->val.funcInfo.funcLabel == NULL){
+        //create and save funcLabel
+        char* labelName = Malloc(strlen(term->val.idact.id)+6);
+        sprintf(labelName, "%s%d", labelName, labelCounter);
+        labelCounter++;
+        cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
+      }
+      INSTR *label = cgu->val.funcInfo.funcLabel;
       //slå symboler i actionlist op i symboltable
       //for ting der ikke er symboler: lav temporaries og operander
       //link operander sammen (evt. i omvendt rækkefølge)
+      op = IRtravActList(t, term->val.idact.list);
       //kald IRmakeFunctionCallScheme
-      //hvad gør vi med parametre
+      error = IRmakeFunctionCallScheme(label, op);
+      if(error = -1){
+        return NULL;
+      }
+      return NULL;
+      //what to return? the result of function call? Where? %rax?
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX),op)));
+      //todo check return of append
+      return op;
       break;
     case expTermK:
       break;
@@ -123,176 +324,36 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   }
 }
 
-CODEGENUTIL *IRmakeNewCGU(){
-  CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
-  memset(newCGU, 0, sizeof(CODEGENUTIL));
-  return newCGU;
-}
-
 /**
- * do not enter declerations for functions,
- * as these are already in the bodylist!
+ * Traversing actionlist
  */
-int IRtravDecl(SymbolTable *table, DECLARATION *decl){
-
-  switch(decl->kind){
-    case idDeclK:
-      break;
-    case funcK://assign numbers to parameters.
-      break;
-    case listK:
-      ;//count number of variables
-      return IRtravVarDeclList(table, decl->val.list);
-      break;
+OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist){
+  if(actlist == NULL){
+    return NULL;
   }
-  return 0;
+  return IRtravExpList(t, actlist->expList);
 }
 
 /**
- * traverse variable decleration list, the integer parameter
- * is set to 0 if this is a regular decleration or 1 if this
- * is called from a parameter decleration list.
+ * Traversing expression list
  */
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList){
+OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
   int error = 0;
-  if(calledFromParDeclList){
-    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
-    calledFromParDeclList++;
-  } else {
-    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
-  }
-  if((error == 0) && (varDeclList->vLst != NULL)){
-    error = IRtravVarDeclList(table, varDeclList->vList);
-  }
-  return error;
-}
-
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam){
-
-  SYMBOL sym = getSymbol(table, varType->id);
-  if(sym->cgu == NULL && !isParam){
-    sym->cgu = IRmakeNewCGU();
-    sym->cgu.val->operand = IRmakeLocalOPERAND(tempCounter);
-  } else if (sym->cgu == NULL && isParam) {
-    sym->cgu = IRmakeNewCGU();
-    sym->cgu.val->operand = IRmakeParamOPERAND(isParam-1);
-  } else {
-    sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand attatched, might be an error not sure");
-    //return -1;//dunno if we need this.
-  }
-  return 0;
-}
-
-/*
- * traversing the statement
- */
-int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
-  OPERAND *op1;
-  OPERAND *op2;
-  switch(stmt->kind){
-    case assiK:
-      op1 = IRtravVar(t, stmt->val.assign.var);
-      op2 = IRtravExp(t, stmt->val.assign.exp);
-      //move expression into variabel -> source->destination
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op1)));
-      break;
-    default:
-      break;
-  }
-}
-
-OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
-  SYMBOL *sym;
-  OPERAND *op;
-  switch (var->kind) {
-  case idVarK:
-    sym = getSymbol(t, var->val.id);
-    //todo check if operand already exists: if not make one
-
-    if(sym->operand == NULL){
-      //todo: create and save operand
-      sym->operand = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+  if(exps != NULL){
+    OPERAND* op = IRtravExp(t, exps->exp);
+    if(op == NULL){
+      fprintf(stderr, "OPERAND IS NULL\n");
+      return NULL;
     }
-    op = sym->operand;
+    return IRtravExpList(t, exps->expList);
+    IRappendOPERAND(op, IRtravExpList(t, exps->expList));
     return op;
-    //TODO: check if the type is a (userdefined) record or array type
-    //i dont know if this works
-    //recursiveSymbolRetrieval(sym->defScope, sym->val.id, NULL);
-    break;
-  case expK:
-    printf("not yet implemented 12\n");
-    break;
-  case dotK:
-    printf("not yet implemented 232\n");
-    break;
-
   }
-}
-
-OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
-  OPERAND *op1, *op2;
-  switch(exp->kind){
-    case termK:
-      IRtravTerm(t, exp->val.term);
-      break;
-    case minusK:
-    //TODO: jeff: some of these other cases
-    case plusK:
-      op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op1, op2)));
-    case divK:
-    case timesK:
-    case andK:
-    case orK:
-    case leK:
-    case eqK:
-    case geK:
-    case greatK:
-    case lessK:
-    case neK:
-      break;
-  }
+  return NULL;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-TEMPORARY* IRcreateNextTemp(){
-  TEMPORARY* tmp = NEW(TEMPORARY);
-  char str[10];
-  sprintf(str, "t%d", tempCounter);
-  tmp->tempName = str;
-  tmp->tempVal = tempCounter;
-  tempCounter++;
-  tmp->temporarykind = regT; //should this be undefined by now?
-}
-
-
-
-/*
- * comfort space for mads
- * just because my editor removes extra white space
- * and I like my whitespace
- * I LIKE TRAINS
- */
-
-//****Paramter functions*****//
+//****OPERAND constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = constantO;
@@ -322,6 +383,7 @@ OPERAND *IRmakeLabelOPERAND(char *labelName){
   par->operandKind = labelIDO;
   par->val.label = labelName;
   par->next = NULL;
+  return par;
 }
 
 OPERAND *IRmakeLocalOPERAND(int number){
@@ -353,8 +415,11 @@ OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next){
     fprintf(stderr, "tail->next is NULL\n");
   }
   tail->next = next;
+  return tail;
 }
 
+
+//****INSTRuction constructors*****//
 INSTR* IRmakeMovINSTR(OPERAND *params){
   INSTR *ins = NEW(INSTR);
   ins->instrKind = movI;
@@ -362,7 +427,6 @@ INSTR* IRmakeMovINSTR(OPERAND *params){
   ins->next = NULL;
   return ins;
 }
-
 
 INSTR* IRmakeAddINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
@@ -416,6 +480,7 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
   if(intermediateTail==NULL){
     intermediateTail = newINSTR;
   }
+  return newINSTR;
 }
 
 /**

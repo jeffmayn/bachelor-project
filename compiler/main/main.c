@@ -63,19 +63,26 @@ int main() {
     return -1;
   }
 
+  fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
+  pBODY(theexpression);
+
+
+
   fprintf(stderr, "\n%s\n", "####### STARTING INTERNAL REPRESENTATION ######");
   //TempLocMap tempMap = TempLocMap* IRsetupTemporaries(bodies, table);
   // if(tempMap == NULL){
   //   return -1;
   // }
-  IRcreateInternalRep(table, bodies);
-
+  error = 0;
+  error = IRcreateInternalRep(table, bodies);
+  if(error -1){
+    fprintf(stderr, "Internal representation error\n");
+  }
 
   fprintf(stderr, "\n%s\n", "####### STARTING PRINTING INTERNAL REPRESENTATION ######");
   printINSTRnode(intermediateHead);
 
 
-  fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
-  pBODY(theexpression);
+
   return 0;
 }

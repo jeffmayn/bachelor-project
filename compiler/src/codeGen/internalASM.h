@@ -78,15 +78,17 @@ int labelCounter; //the next label value
 
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();
-
-INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
-
-int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
+CODEGENUTIL *IRmakeNewCGU();
 
 int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody);
+
+int IRtravBody(SymbolTable *table, BODY *body);
+
 int IRinitParams(SymbolTable *table, bodyListElm *element);
 
-OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
+int IRtravDecl(SymbolTable *table, DECLARATION *decl);
+
+int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
 
 int IRtravBody(SymbolTable *table, BODY *body);
 
@@ -101,6 +103,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt);
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
 
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
+
+OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
 
 OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist);
 
@@ -141,6 +145,7 @@ INSTR *IRmakeCallINSTR(OPERAND *params);
 INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
 INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
+//INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
 
 //****Abstract scheme constructors****//
 int IRmakeFunctionScheme(FUNCTION *func);
