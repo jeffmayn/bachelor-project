@@ -9,6 +9,7 @@
 
 #define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
+extern const char* regNames[];
 
 /**
  * NOTE TO SELF!
@@ -137,6 +138,28 @@ INSTR* IRmakeMovINSTR(OPERAND *params);
 
 INSTR* IRmakeAddINSTR(OPERAND *params);
 
+INSTR* IRmakeSubINSTR(OPERAND *params);
+
+INSTR* IRmakeDivINSTR(OPERAND *params);
+
+INSTR* IRmakeTimINSTR(OPERAND *params);
+
+INSTR* IRmakeAndINSTR(OPERAND *params);
+
+INSTR* IRmakeOrINSTR(OPERAND *params);
+
+INSTR* IRmakeLeINSTR(OPERAND *params);
+
+INSTR* IRmakeEqINSTR(OPERAND *params);
+
+INSTR* IRmakeGeINSTR(OPERAND *params);
+
+INSTR* IRmakeGreINSTR(OPERAND *params);
+
+INSTR* IRmakeLesINSTR(OPERAND *params);
+
+INSTR* IRmakeNeINSTR(OPERAND *params);
+
 INSTR *IRmakeLabelINSTR(OPERAND *params);
 
 INSTR *IRmakePushINSTR(OPERAND *params);
@@ -144,7 +167,6 @@ INSTR *IRmakePushINSTR(OPERAND *params);
 INSTR *IRmakePopINSTR(OPERAND *params);
 
 INSTR *IRmakeCallINSTR(OPERAND *params);
-
 
 INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
@@ -360,7 +382,11 @@ int IGcolorGraph();
 
 int ASMinternalNodeToString();
 
+int IRtravPARAM(OPERAND *op);
 
+int IRtravINSTR(INSTR *in);
+
+int regMapping(registers reg);
 
 
 
