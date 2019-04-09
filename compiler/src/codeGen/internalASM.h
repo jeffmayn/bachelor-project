@@ -82,15 +82,15 @@ CODEGENUTIL *IRmakeNewCGU();
 
 int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody);
 
-int IRtravBody(SymbolTable *table, BODY *body);
+int IRtravBody(SymbolTable *table, bodyListElm *body);
+int IRmakeCalleeProlog();
+int IRmakeCalleeEpilog();
 
 int IRinitParams(SymbolTable *table, bodyListElm *element);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
 
 int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
-
-int IRtravBody(SymbolTable *table, BODY *body);
 
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
 

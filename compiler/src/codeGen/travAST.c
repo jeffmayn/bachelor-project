@@ -42,7 +42,11 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
   bodyListElm *bElm = getBody(mainBody);
   //TODO something to treat the first body specially.
   while(bElm != NULL){
-    error = IRtravBody(bElm->scope, bElm->body);
+    error = IRinitParams(bElm->scope, bElm);
+    if(error == -1){
+      return -1;
+    }
+    error = IRtravBody(bElm->scope, bElm);
     if(error == -1){
       return -1;
     }
@@ -54,14 +58,23 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
 int IRinitParams(SymbolTable *table, bodyListElm *element){
 
   int error = 0;
+  int paramCount = 0;
   SYMBOL *sym = element->scope->param;
   SYMBOL *func = getSymbol(table, element->funcId);
   if(func->cgu == NULL){
     func->cgu = IRmakeNewCGU();
-    func->cgu->val.funcInfo.funcLabel = NULL;
+    char* labelName = Malloc(strlen(element->funcId)+6);
+    sprintf(labelName, "%s%d", labelName, labelCounter);
+    labelCounter++;
+    func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
   }
-
-
+  while(sym != NULL){
+    if(sym->cgu == NULL){
+      sym->cgu = IRmakeNewCGU();
+      sym->cgu->val.operand = IRmakeParamOPERAND(paramCount);
+      paramCount++;
+    }
+  }
 
   return 0;
 }
@@ -69,16 +82,56 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
 /**
  * Traverse the body of a function
  */
-int IRtravBody(SymbolTable *table, BODY *body){
+int IRtravBody(SymbolTable *table, bodyListElm *body){
   int error = 0;
   //TODO create the INSTRlabel, to signify the beginning of the body.
   //TODO set counter for locale variabler start
-  error = IRtravDeclList(table, body->vList);
+  SYMBOL *sym = getSymbol(body->scope, body->funcId);
+  sym->cgu->val.funcInfo.temporaryStart = tempCounter;
+  error = IRtravDeclList(table, body->body->vList);
   if(error == -1){
     return -1;
   }
+  sym->cgu->val.funcInfo.temporaryEnd = tempCounter;
   //TODO set counter for locale variabler slut
-  return IRtravStmtList(table, body->sList);
+  //TODO calleé saves,
+  IRappendINSTR(sym->cgu->val.funcInfo.funcLabel);
+  error = IRmakeCalleeProlog();
+  if(error == -1){
+    return -1;
+  }
+  error = IRtravStmtList(table, body->body->sList);
+  if(error == -1){
+    return -1;
+  }
+  char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
+  sprintf(labelName, "%s%d", labelName, "end");
+  labelCounter++;
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
+  error = IRmakeCalleeEpilog();
+}
+
+int IRmakeCalleeProlog(){
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBP)));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RSP), IRmakeRegOPERAND(RBP))));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R12)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R13)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R14)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R15)));
+  return 0;
+}
+
+int IRmakeCalleeEpilog(){
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R15)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R14)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R13)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R12)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RBX)));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBP), IRmakeRegOPERAND(RSP))));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RBP)));
+  IRappendINSTR(IRmakeRetINSTR(NULL));
+  return 0;
 }
 
 
