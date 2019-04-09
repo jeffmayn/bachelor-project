@@ -44,7 +44,7 @@ void printOPERANDnode(OPERAND *op){
       fprintf(stderr, "label: %s\n", op->val.label);
       break;
     case registerO:
-      fprintf(stderr, "register: %d\n", op->val.reg);
+      fprintf(stderr, "register: %s\n", regNames[op->val.reg]);
       break;
   }
 
@@ -56,7 +56,7 @@ void printTEMPORARYnode(TEMPORARY *temp){
       fprintf(stderr, "Temporary %s with address %d\n", temp->tempName, temp->placement.address);
       break;
     case regT:                                                         //use regNames[temp->placement.reg]
-      fprintf(stderr, "Temporary %s in register %d\n", temp->tempName, temp->placement.reg);
+      fprintf(stderr, "Temporary %s in register %s\n", temp->tempName, regNames[temp->placement.reg]);
       break;
   }
 }

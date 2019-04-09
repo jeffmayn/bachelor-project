@@ -61,11 +61,18 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
   int error = 0;
   int paramCount = 0;
   SYMBOL *sym = element->scope->param;
+  if(element->funcId == NULL){
+    //naming main scope
+    char* mainName = Malloc(sizeof(char)*6);
+    sprintf(mainName, "%s", "$main");
+    putSymbol(table, mainName, 0, funcK, intK, table, NEW(TYPE));
+    element->funcId = mainName;
+  }
   SYMBOL *func = getSymbol(table, element->funcId);
   if(func->cgu == NULL){
     func->cgu = IRmakeNewCGU();
     char* labelName = Malloc(strlen(element->funcId)+6);
-    sprintf(labelName, "%s%d", labelName, labelCounter);
+    sprintf(labelName, "%s%d", element->funcId, labelCounter);
     labelCounter++;
     func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
   }
@@ -106,7 +113,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
     return -1;
   }
   char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
-  sprintf(labelName, "%s%d", labelName, "end");
+  sprintf(labelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
   labelCounter++;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
   error = IRmakeCalleeEpilog();
