@@ -55,6 +55,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
     ty = ty->val.arrayType;
     ty->scope = t;
   }
+  newSym->cgu = NEW(CODEGENUTIL);
 
   //find index via hash value
   int hashIndex = Hash(name);
