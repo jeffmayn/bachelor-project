@@ -1,9 +1,5 @@
 #include "internalASM.h"
 
-int blah(){
-  IRtravINSTR(intermediateHead)
-}
-
 int IRtravPARAM(OPERAND *op){
   switch(op->operandKind){
     case constantO:
@@ -13,14 +9,14 @@ int IRtravPARAM(OPERAND *op){
       // TODO
       printf("%d ", op->val.temp);
       break;
-    case heapAddr0:
+    case heapAddrO:
       printf("%x ", op->val.address);
       break;
-    case labelID0:
+    case labelIDO:
       printf("%d ", op->val.label);
       break;
-    case register0:
-      regMapping(op->val.reg)
+    case registerO:
+      regMapping(op->val.reg);
       break;
   }
 }
@@ -29,101 +25,101 @@ int IRtravINSTR(INSTR *in){
   switch(in->instrKind){
     case addI:
       printf("add ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case subI
+    case subI:
       printf("sub ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case mulI
+    case mulI:
       printf("imul ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case divI
+    case divI:
       printf("divq ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case andI
+    case andI:
       printf("and ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case orI
+    case orI:
       printf("or ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case xorI
+    case xorI:
       printf("xor ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case lshiftI
+    case lshiftI:
       printf("shl ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case rshiftI
+    case rshiftI:
       printf("shr ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
     case cmpI:
       printf("cmp ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case jumpI
+    case jumpI:
       printf("jmp ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case jmplessI
+    case jmplessI:
       printf("jl ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case jmpgreatI
+    case jmpgreatI:
       printf("jg ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case jmpleI
+    case jmpleI:
       printf("jl ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case jmpgeI
+    case jmpgeI:
       printf("jge ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case jmpeqI
+    case jmpeqI:
       printf("je ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case jmpneqI
+    case jmpneqI:
       printf("jne ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case movI
+    case movI:
       printf("mov ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case labelI
+    case labelI:
       printf("label ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case pushI
+    case pushI:
       printf("push ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case popI
+    case popI:
       printf("pop ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case callI
+    case callI:
       printf("call ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
-    case retI
+    case retI:
       printf("ret ");
-      IRtravPARAM(in->paramList)
+      IRtravPARAM(in->paramList);
       break;
   }
 }
 
-char* regMapping(OPERAND *op){
-  switch (op->val.reg) {
+int regMapping(registers reg){
+  switch (reg) {
     case 0:
       printf("error: na");
       break;

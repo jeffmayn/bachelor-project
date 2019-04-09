@@ -288,7 +288,7 @@ OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next){
 
 
 
-INSTRE IRmakeINSTR(OPERAND *params){
+INSTR* IRmakeINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   //ins->instrKind = addI;
   ins->paramList = params;
@@ -297,94 +297,94 @@ INSTRE IRmakeINSTR(OPERAND *params){
 }
 
 INSTR* IRmakeMovINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = movI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = movI;
 }
 
 
 INSTR* IRmakeAddINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = addI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = addI;
 }
 
 INSTR* IRmakeSubINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = subI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = subI;
 }
 
 INSTR* IRmakeDivINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = divI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = divI;
 }
 
 INSTR* IRmakeTimINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = mulI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = mulI;
 }
 
 INSTR* IRmakeAndINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = andI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = andI;
 }
 
 INSTR* IRmakeOrINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = orI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = orI;
 }
 
 INSTR* IRmakeLeINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = jmpleI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmpleI;
 }
 
 INSTR* IRmakeEqINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = jmpeqI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmpeqI;
 }
 
 INSTR* IRmakeGeINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = jmpgeI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmpgeI;
 }
 
 INSTR* IRmakeGreINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = jmpgreatI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmpgreatI;
 }
 
 INSTR* IRmakeLesINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = jmplessI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmplessI;
 }
 
 INSTR* IRmakeNeINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = jmpneqI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmpneqI;
 }
 
 INSTR* IRmakeLabelINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = labelI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = labelI;
 }
 
 INSTR* IRmakePushINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = pushI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = pushI;
 }
 
 INSTR* IRmakePopINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = popI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = popI;
 }
 
 INSTR* IRmakeCallINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = callI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = callI;
 }
 
 INSTR* IRmakeRetINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params)
-  instr->instrKIND = retI
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = retI;
 }
 
 INSTR* IRappendINSTR(INSTR *newINSTR){
