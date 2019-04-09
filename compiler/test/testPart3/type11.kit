@@ -1,3 +1,7 @@
+(* korrekt kitty-program, her testes for, at der kan
+   at en erklæret record kan indeholde sig selv.
+   Programmet skal returnere 0 *)
+
 type R = record of {x:R};
 var u:R;
 u.x = null;
