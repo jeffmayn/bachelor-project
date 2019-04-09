@@ -1,5 +1,10 @@
 #include "internalASM.h"
 
+const char* regNames[] = {"error: na", "%%RAX ", "%%RCX ", "%%RDX ",\
+                          "%%RBX ", "%%RSP ", "%%RBP ", "%%RSI ",\
+                           "%%RDI ", "%%R8 ", "%%R9 ", "%%R10 ", "%%R11 ",\
+                            "%%R12 ", "%%R13 ", "%%R14 ", "%%R15 ", "error: spill"};
+
 int IRtravPARAM(OPERAND *op){
   switch(op->operandKind){
     case constantO:
@@ -119,6 +124,11 @@ int IRtravINSTR(INSTR *in){
 }
 
 int regMapping(registers reg){
+
+
+  printf("%s", regNames[reg]);
+
+/*
   switch (reg) {
     case 0:
       printf("error: na");
@@ -175,4 +185,5 @@ int regMapping(registers reg){
       printf("error: spill");
       break;
   }
+  */
 }

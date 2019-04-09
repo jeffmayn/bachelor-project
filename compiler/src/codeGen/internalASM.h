@@ -9,6 +9,7 @@
 
 #define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
+extern const char* regNames[];
 
 /**
  * NOTE TO SELF!
