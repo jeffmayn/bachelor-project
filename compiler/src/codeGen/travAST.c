@@ -29,11 +29,27 @@ int IRcreateInternalRep( SymbolTable *table, bodyList *mainBody){
   return 0;
 }
 
+int IRinitParams(SymbolTable *table, bodyListElm *element){
+
+  int error 0;
+  SYMBOL sym = element->scope->param;
+  SYMBOL func = getSymbol(table, element->funcId);
+  if(func->cgu == NULL){
+    func->cgu = IRmakeNewCGU();
+    func->cgu->val.funcInfo->funcLabel =
+  }
+
+
+
+  return 0;
+}
+
 /**
  * Traverse the body of a function
  */
 int IRtravBody(SymbolTable *table, BODY *body){
   int error = 0;
+  //TODO create the INSTRlabel, to signify the beginning of the body.
   //TODO set counter for locale variabler start
   error = IRtravDeclList(table, body->vList);
   if(error = -1){
@@ -162,10 +178,9 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam){
     sym->cgu.val->operand = IRmakeParamOPERAND(isParam-1);
   } else {
     sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand attatched, might be an error not sure");
-    error = -1;
+    //return -1;//dunno if we need this.
   }
-
-  return error;
+  return 0;
 }
 
 /*

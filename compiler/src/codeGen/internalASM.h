@@ -84,6 +84,7 @@ INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global
 int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
 
 int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody);
+int IRinitParams(SymbolTable *table, bodyListElm *element);
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
 
