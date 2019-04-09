@@ -29,8 +29,6 @@ typedef struct SYMBOL {
   bool visited;
   struct SYMBOL *next;
 
-  struct TempNode *temporary;
-  OPERAND *operand;
   CODEGENUTIL *cgu;
 } SYMBOL;
 

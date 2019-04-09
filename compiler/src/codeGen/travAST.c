@@ -69,39 +69,22 @@ int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations){
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   OPERAND *op;
-  int error = 0;
   switch(term->kind){
     case varK:
       op = IRtravVar(t, term->val.var);
       return op;
       break;
     case idTermK:
-    ;
-      //slå id i symbol-table
-      SYMBOL *sym = getSymbol(t, term->val.idact.id);
-      //find function-body-scope ???
+      //TODO call create function call Scheme
+      //slå op id i symbol-table
+      //find function-body-scope
       //find CODEGENUTIL
-      CODEGENUTIL *cgu = sym->cgu;
-      //tjek om label findes -> brug eller lav label
-      if(cgu->val.funcInfo.funcLabel == NULL){
-        //create and save funcLabel
-      }
-      INSTR *label = cgu->val.funcInfo.funcLabel;
+      //tjek om label finds -> brug eller lav label
       //slå symboler i actionlist op i symboltable
       //for ting der ikke er symboler: lav temporaries og operander
       //link operander sammen (evt. i omvendt rækkefølge)
-      op = IRtravActList(t, term->val.idact.list);
       //kald IRmakeFunctionCallScheme
-      error = IRmakeFunctionCallScheme(label, op);
-      if(error = -1){
-        return NULL;
-      }
-      return NULL;
-      //what to return? the result of function call? Where? %rax?
-      op = IRmakeTemporaryOPERAND(IRcreateNextTemp());
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX),op)));
-      //todo check return of append
-      return op;
+      //hvad gør vi med parametre
       break;
     case expTermK:
       break;
@@ -124,29 +107,11 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   }
 }
 
-
-OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist){
-  if(actlist == NULL){
-    return NULL;
-  }
-  return IRtravExpList(t, actlist->expList);
+CODEGENUTIL *IRmakeNewCGU(){
+  CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
+  memset(newCGU, 0, sizeof(CODEGENUTIL));
+  return newCGU;
 }
-
-OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
-  int error = 0;
-  if(exps != NULL){
-    OPERAND* op = IRtravExp(t, exps->exp);
-    if(op == NULL){
-      fprintf(stderr, "OPERAND IS NULL\n");
-      return NULL;
-    }
-    return IRtravExpList(t, exps->expList);
-    IRappendOPERAND(op, IRtravExpList(t, exps->expList));
-    return op;
-  }
-  return NULL;
-}
-
 
 /**
  * do not enter declerations for functions,
@@ -157,15 +122,50 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
   switch(decl->kind){
     case idDeclK:
       break;
-    case funcK:
+    case funcK://assign numbers to parameters.
       break;
     case listK:
       ;//count number of variables
-      
-      tempCounter++;
+      return IRtravVarDeclList(table, decl->val.list);
       break;
   }
   return 0;
+}
+
+/**
+ * traverse variable decleration list, the integer parameter
+ * is set to 0 if this is a regular decleration or 1 if this
+ * is called from a parameter decleration list.
+ */
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList){
+  int error = 0;
+  if(calledFromParDeclList){
+    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
+    calledFromParDeclList++;
+  } else {
+    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
+  }
+  if((error == 0) && (varDeclList->vLst != NULL)){
+    error = IRtravVarDeclList(table, varDeclList->vList);
+  }
+  return error;
+}
+
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam){
+
+  SYMBOL sym = getSymbol(table, varType->id);
+  if(sym->cgu == NULL && !isParam){
+    sym->cgu = IRmakeNewCGU();
+    sym->cgu.val->operand = IRmakeLocalOPERAND(tempCounter);
+  } else if (sym->cgu == NULL && isParam) {
+    sym->cgu = IRmakeNewCGU();
+    sym->cgu.val->operand = IRmakeParamOPERAND(isParam-1);
+  } else {
+    sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand attatched, might be an error not sure");
+    error = -1;
+  }
+
+  return error;
 }
 
 /*
@@ -194,11 +194,11 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
     sym = getSymbol(t, var->val.id);
     //todo check if operand already exists: if not make one
 
-    if(sym->cgu->val.operand == NULL){
+    if(sym->operand == NULL){
       //todo: create and save operand
-      sym->cgu->val.operand = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      sym->operand = IRmakeTemporaryOPERAND(IRcreateNextTemp());
     }
-    op = sym->cgu->val.operand;
+    op = sym->operand;
     return op;
     //TODO: check if the type is a (userdefined) record or array type
     //i dont know if this works
@@ -283,6 +283,7 @@ OPERAND *IRmakeConstantOPERAND(int conVal){
   par->operandKind = constantO;
   par->val.constant = conVal;
   par->next = NULL;
+  return par;
 }
 
 OPERAND *IRmakeTemporaryOPERAND(TEMPORARY *temp){
@@ -290,6 +291,7 @@ OPERAND *IRmakeTemporaryOPERAND(TEMPORARY *temp){
   par->operandKind = temporaryO;
   par->val.temp = temp;
   par->next = NULL;
+  return par;
 }
 
 OPERAND *IRmakeAddrOPERAND(int addrVal){
@@ -297,6 +299,7 @@ OPERAND *IRmakeAddrOPERAND(int addrVal){
   par->operandKind = heapAddrO;
   par->val.address = addrVal;
   par->next = NULL;
+  return par;
 }
 
 OPERAND *IRmakeLabelOPERAND(char *labelName){
@@ -306,11 +309,28 @@ OPERAND *IRmakeLabelOPERAND(char *labelName){
   par->next = NULL;
 }
 
+OPERAND *IRmakeLocalOPERAND(int number){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = localO;
+  par->val.tempIDnr = number;
+  par->next = NULL;
+  return par;
+}
+
+OPERAND *IRmakeParamOPERAND(int number){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = paramO;
+  par->val.tempIDnr = number;
+  par->next = NULL;
+  return par;
+}
+
 OPERAND *IRmakeRegOPERAND(registers reg){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = registerO;
   par->val.reg = reg;
   par->next = NULL;
+  return par;
 }
 
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next){
@@ -436,100 +456,4 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//###################### EVERYTHING BEYOND THIS POINT IS TRASH (maybe) ########
-
-/**
- * create hash index value for the string
- *
- * - note: something fishy with the .h files, created my own stuff.
- */
-int IRtemporaryHash(char *str){
-  unsigned int sum = 0;
-  for (unsigned int i = 0; i < strlen(str); i++){
-    char c = str[i];
-    sum += c;
-    if(i < strlen(str)-1){
-      sum <<= 1;
-    }
-  } return sum % HashSize;
-}
-
-TempLocMap *IRinitTempLocMap(){
-  TempLocMap* table = NEW(TempLocMap);
-  memset(table->table, 0, sizeof(table->table));
-  return table;
-}
-
-/**
- * create new TempNode and put into table
- */
-TempNode *IRputTempNode(TempLocMap *t, char *tempName){
-  TempNode *newNode = NEW(TempNode);
-  newNode->name = Malloc(strlen(tempName)+1);
-  memcpy(newNode->name, tempName, strlen(tempName)+1);
-  newNode->next = NULL;
-  newNode->graphNodeId = UNUSED_GRAPH_ID;
-  newNode->reg = NA; //NA = not assigned
-
-  //find index via hash value
-  int hashIndex = IRtemporaryHash(tempName);
-
-  //insert into table
-  TempLocMap **table = t->table;
-  if(table[hashIndex] == NULL){
-    table[hashIndex] = newNode;
-  } else {
-    TempNode *temp = table[hashIndex];
-    while(temp != NULL){
-      if(!strcmp(tempName,temp->name)){
-        //name is already in this table
-        fprintf(stderr, "IRputTempNode: Node already in table\n", tempName);
-        free(newNode->name);
-        free(newNode);
-        return NULL;
-      }
-      if(temp->next != NULL){//as long as there is a next, check the next one.
-        temp = temp->next;
-      }
-    }
-    temp->next = newNode;
-  }
-  return newNode;
-}
-
-TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTable){
-  //TODO setup map
-  //TODO call traverse of declarations
-  //TODO possibly traverse statements
-}
-
-/**
- * traverse decleration list to find variables
- * and insert into TempNodeMap
- */
-int IRtraverseDeclerationList(DECL_LIST *declerations){
-  //TODO
-}
+//comfort space
