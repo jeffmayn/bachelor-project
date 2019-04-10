@@ -46,6 +46,11 @@ void printOPERANDnode(OPERAND *op){
     case registerO:
       fprintf(stderr, "register: %s\n", regNames[op->val.reg]);
       break;
+    case localO:
+      //something print the address of loval variable??
+      break;
+    case paramO:
+      break;
   }
 
 }
@@ -53,10 +58,10 @@ void printOPERANDnode(OPERAND *op){
 void printTEMPORARYnode(TEMPORARY *temp){
   switch (temp->temporarykind) {
     case addrT:
-      fprintf(stderr, "Temporary %s with address %d\n", temp->tempName, temp->placement.address);
+      fprintf(stderr, "Temporary %s with address %d\n", temp->tempNr, temp->placement.address);
       break;
     case regT:                                                         //use regNames[temp->placement.reg]
-      fprintf(stderr, "Temporary %s in register %s\n", temp->tempName, regNames[temp->placement.reg]);
+      fprintf(stderr, "Temporary %s in register %s\n", temp->tempNr, regNames[temp->placement.reg]);
       break;
   }
 }

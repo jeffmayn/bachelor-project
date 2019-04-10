@@ -66,7 +66,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
     fprintf(stderr, "Expression type checking completed successfully\n");
   }
   //TODO: destroy body list
-  return table;
+  return 0;
 }
 
 
@@ -498,7 +498,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       }
       ACT_LIST *act = term->val.idact.list;
       if(act != NULL){ //i dont think this will ever be NULL. Safecheck
-        int error = expTypeTravExps(sym->scope, act->expList, sym->scope->param);
+        int error = expTypeTravExps(sym->scope, act->expList, sym->scope->ParamHead);
         if(error){
           return errorK; //error message should be printed in expTypeTravExps
         }
@@ -657,10 +657,11 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
   Checks if all the arguments given at a function call match the parameter
   list of that function. Also the amount of arguments are verified.
 */
-int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
+int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, ParamSymbol* pSym){
+
   if(eList == NULL){
     //No arguments
-    if(param == NULL){
+    if(pSym == NULL){
       //no more parameters and arguments
       return 0; //everything is good
     }
@@ -672,7 +673,7 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
   }
   else{
     //still more arguments given
-    if(param == NULL){
+    if(pSym == NULL){
       //but no more parameters found
       fprintf(stderr, "Line %d: The function was given more arguments than needed\n", eList->lineno);
       return -1;
@@ -684,11 +685,12 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param){
         fprintf(stderr, "Line %d: expTypeTravExps: type error in argument\n", eList->lineno);
         return -1; //error in argument
       }
+      SYMBOL *param = pSym->data;
       if(eList->exp->typekind != param->typeVal){
         fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, eList->exp->typekind, param->typeVal );
         return -1;
       }
-      return expTypeTravExps(t, eList->expList, param->next);
+      return expTypeTravExps(t, eList->expList, pSym->next);
     }
   }
 }

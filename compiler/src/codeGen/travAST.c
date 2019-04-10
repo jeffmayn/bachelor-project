@@ -12,10 +12,10 @@
  */
 TEMPORARY* IRcreateNextTemp(){
   TEMPORARY* tmp = NEW(TEMPORARY);
-  char *str = Malloc(sizeof(char)*10);
-  sprintf(str, "t%d\0", tempCounter);
-  tmp->tempName = str;
-  tmp->tempVal = tempCounter;
+  // char *str = Malloc(sizeof(char)*10);
+  // sprintf(str, "t%d\0", tempCounter);
+  // tmp->tempName = str;
+  tmp->tempNr = tempCounter;
   tempCounter++;
   tmp->temporarykind = regT; //should this be undefined by now?
   return tmp;
@@ -60,7 +60,8 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
 
   int error = 0;
   int paramCount = 0;
-  SYMBOL *sym = element->scope->param;
+  ParamSymbol * pSym = element->scope->ParamHead;
+  SYMBOL *sym = pSym->data;
   if(element->funcId == NULL){
     //naming main scope
     char* mainName = Malloc(sizeof(char)*6);
@@ -76,12 +77,14 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
     labelCounter++;
     func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
   }
-  while(sym != NULL){
+  while(pSym != NULL){
     if(sym->cgu == NULL){
       sym->cgu = IRmakeNewCGU();
       sym->cgu->val.operand = IRmakeParamOPERAND(paramCount);
       paramCount++;
     }
+    pSym = pSym->next;
+    sym = pSym->data;
   }
 
   return 0;
@@ -415,6 +418,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
     default:
       fprintf(stderr, "IRtravTerm ERROR, term has no kind\n");
   }
+  return NULL;
 }
 
 /**
@@ -523,92 +527,110 @@ INSTR* IRmakeINSTR(OPERAND *params){
 INSTR* IRmakeMovINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = movI;
+  return instr;
 }
 
 
 INSTR* IRmakeAddINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = addI;
+  return instr;
 }
 
 INSTR* IRmakeSubINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = subI;
+  return instr;
 }
 
 INSTR* IRmakeDivINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = divI;
+  return instr;
 }
 
 INSTR* IRmakeTimINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = mulI;
+  return instr;
 }
 
 INSTR* IRmakeAndINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = andI;
+  return instr;
 }
 
 INSTR* IRmakeOrINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = orI;
+  return instr;
 }
 
 INSTR* IRmakeLeINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpleI;
+  return instr;
 }
 
 INSTR* IRmakeEqINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpeqI;
+  return instr;
 }
 
 INSTR* IRmakeGeINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpgeI;
+  return instr;
 }
 
 INSTR* IRmakeGreINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpgreatI;
+  return instr;
 }
 
 INSTR* IRmakeLesINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmplessI;
+  return instr;
 }
 
 INSTR* IRmakeNeINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpneqI;
+  return instr;
 }
 
 INSTR* IRmakeLabelINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = labelI;
+  return instr;
 }
 
 INSTR* IRmakePushINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = pushI;
+  return instr;
 }
 
 INSTR* IRmakePopINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = popI;
+  return instr;
 }
 
 INSTR* IRmakeCallINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = callI;
+  return instr;
 }
 
 INSTR* IRmakeRetINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = retI;
+  return instr;
 }
 
 INSTR* IRappendINSTR(INSTR *newINSTR){
