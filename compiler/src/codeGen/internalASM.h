@@ -28,7 +28,7 @@ typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO,
               } OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
-typedef enum {NAr, paramT, localT, regT} TEMPORARYkind;
+typedef enum {notPlacedT, paramT, localT, regT} TEMPORARYkind;
 
 typedef struct bodyListElm bodyListElm;
 typedef struct bodyList bodyList;
@@ -39,14 +39,14 @@ extern const char *regNames[];
 
 typedef struct TEMPORARY {
   //char* tempName; //is this usefull?
-  int tempNr; //WASTEOFSPACE //the number given to the temp by the tempcount
+  //int tempNr; //WASTEOFSPACE //the number given to the temp by the tempcount
   TEMPORARYkind temporarykind;
+  int tempId;
   union {
     //heap vs. stack
     //int address;
     int offset; //used by paramT og localT
     registers reg;
-    int tempPlace;
   } placement;
 } TEMPORARY;
 
@@ -72,7 +72,7 @@ typedef struct INSTR {
 typedef struct CODEGENUTIL {
   union {
     struct {INSTR *funcLabel; int localStart; int temporaryStart; int temporaryEnd;} funcInfo ;
-    TEMPORARY temporaray;
+    TEMPORARY *temp;
   } val;
 } CODEGENUTIL;
 
@@ -82,6 +82,7 @@ INSTR* intermediateTail;
 
 int tempCounter; //the next tempvalue
 int labelCounter; //the next label value
+int localCounter;
 
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();

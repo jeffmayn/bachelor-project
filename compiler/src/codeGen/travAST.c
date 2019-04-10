@@ -10,39 +10,46 @@
  * Creating next temporary in order
  * It gets an unique ID and associated integer value
  */
+TEMPORARY* IRcreateNextTemp(){
+  TEMPORARY* tmp = NEW(TEMPORARY);
+  tmp->temporarykind = notPlacedT;
+  tmp->tempId = tempCounter;
+  tempCounter++;
+  return tmp;
+  //maybe they should be added to a collection containing all
+  //non-placed temporaries
+}
+
+
+/**
+ * Creates new local-variabel temp
+ * The offset is the distance above the basepointer
+ */
 TEMPORARY* IRcreateNextLocalTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
   // char *str = Malloc(sizeof(char)*10);
   // sprintf(str, "t%d\0", tempCounter);
   // tmp->tempName = str;
-  //tmp->tempNr = tempCounter;
+  tmp->temporarykind = localT;
+  tmp->tempId = tempCounter;
+  tempCounter++; //only if we want to do liveness analysis on locals
   tmp->placement.offset = offset;
-  //tempCounter++;
-  tmp->temporarykind = localT; //should this be undefined by now?
   return tmp;
 }
 
 
-TEMPORARY* IRcreateNextTemp(){
-  TEMPORARY* tmp = NEW(TEMPORARY);
-  //tmp->tempNr = tempCounter;
-  tmp->placement.tempPlace = tempCounter;
-  tempCounter++;
-  tmp->temporarykind = NAr; //should this be undefined by now?
-  return tmp;
-}
-
-
+/**
+ * Creates new param-variabel temp
+ * The offset is the distance below the basepointer
+ */
 TEMPORARY* IRcreateParamTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
-  //tmp->tempNr = tempCounter;
-  //tempCounter++;
-  tmp->temporarykind = paramT; //should this be undefined by now?
+  tmp->temporarykind = paramT;
+  tmp->tempId = tempCounter;
+  tempCounter++; //only if we want to do liveness analysis on params
   tmp->placement.offset = offset;
   return tmp;
 }
-
-
 
 //****AST TRAVERSE functions*****//
 /**
@@ -83,8 +90,8 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
 
   int error = 0;
   int paramCount = 0;
-  ParamSymbol * pSym = element->scope->ParamHead;
-  SYMBOL *sym = pSym->data;
+  ParamSymbol *pSym = element->scope->ParamHead;
+  //SYMBOL *sym = pSym->data;
   if(element->funcId == NULL){
     //naming main scope
     char* mainName = Malloc(sizeof(char)*6);
@@ -93,23 +100,23 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
     element->funcId = mainName;
   }
   SYMBOL *func = getSymbol(table, element->funcId);
-  if(func->cgu == NULL){
+  if(func->cgu == NULL){ //er det her godt nok til at tjekke om der er en label instrution?
     func->cgu = IRmakeNewCGU();
     char* labelName = Malloc(strlen(element->funcId)+6);
     sprintf(labelName, "%s%d", element->funcId, labelCounter);
     labelCounter++;
     func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
   }
+  SYMBOL *sym;
   while(pSym != NULL){
+    sym = pSym->data;
     if(sym->cgu == NULL){
       sym->cgu = IRmakeNewCGU();
-      sym->cgu->val.operand = IRmakeParamOPERAND(paramCount);
+      sym->cgu->val.temp = IRcreateParamTemp(paramCount);
       paramCount++;
     }
     pSym = pSym->next;
-    sym = pSym->data;
   }
-
   return 0;
 }
 
@@ -122,6 +129,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   //TODO set counter for locale variabler start
   SYMBOL *sym = getSymbol(body->scope, body->funcId);
   sym->cgu->val.funcInfo.localStart = tempCounter;
+  localCounter = 0;
   error = IRtravDeclList(table, body->body->vList);
   if(error == -1){
     return -1;
@@ -129,7 +137,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   sym->cgu->val.funcInfo.temporaryStart = tempCounter;
   //TODO set counter for locale variabler slut
   //TODO calleé saves,
-  IRappendINSTR(sym->cgu->val.funcInfo.funcLabel);
+  IRappendINSTR(sym->cgu->val.funcInfo.funcLabel); //does the label exist?
   error = IRmakeCalleeProlog();
   if(error == -1){
     return -1;
@@ -224,6 +232,7 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
 int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList){
   int error = 0;
   if(calledFromParDeclList){
+    //er der brug for begge kald?
     error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
     calledFromParDeclList++;
   } else {
@@ -240,10 +249,13 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam){
   SYMBOL *sym = getSymbol(table, varType->id);
   if(sym->cgu == NULL && !isParam){
     sym->cgu = IRmakeNewCGU();
-    sym->cgu->val.operand = IRmakeLocalOPERAND(tempCounter);
+    sym->cgu->val.temp = IRcreateNextLocalTemp(localCounter);
+    localCounter++; //maybe this should be dine inside localTemp creator
   } else if (sym->cgu == NULL && isParam) {
     sym->cgu = IRmakeNewCGU();
-    sym->cgu->val.operand = IRmakeParamOPERAND(isParam-1);
+    //what is going on???
+    //sym->cgu->val.operand = IRmakeParamOPERAND(isParam-1);
+    sym->cgu->val.temp = IRcreateParamTemp(isParam-1);
   } else {
     sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand attatched, might be an error not sure");
     //return -1;//dunno if we need this.
@@ -283,6 +295,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
       return 0;
       break;
     default:
+      fprintf(stderr, "IRtravStmt: UnsupportedOperationException\n");
+      return -1;
       break;
   }
 }
@@ -297,11 +311,15 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
   case idVarK:
     sym = getSymbol(t, var->val.id);
     //check if operand already exists: if not make one
-    if(sym->cgu->val.operand == NULL){
+    if(sym->cgu == NULL){
       //todo: create and save operand
-      sym->cgu->val.operand = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      sym->cgu = IRmakeNewCGU();
+      fprintf(stderr, "IRtravVar: How do I know if %s is a parameter or local\n", sym->name);
+      //sym->cgu->val.temp = IRcreateNext????();
+      return NULL;
     }
-    op = sym->cgu->val.operand;
+    //op = sym->cgu->val.operand;
+    op = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
     return op;
     //TODO: check if the type is a (userdefined) record or array type
     //i dont know if this works
@@ -492,13 +510,14 @@ OPERAND *IRmakeTemporaryOPERAND(TEMPORARY *temp){
   return par;
 }
 
-OPERAND *IRmakeAddrOPERAND(int addrVal){
-  OPERAND *par = NEW(OPERAND);
-  par->operandKind = heapAddrO;
-  par->val.address = addrVal;
-  par->next = NULL;
-  return par;
-}
+//is this still relevant??
+// OPERAND *IRmakeAddrOPERAND(int addrVal){
+//   OPERAND *par = NEW(OPERAND);
+//   par->operandKind = heapAddrO;
+//   par->val.address = addrVal;
+//   par->next = NULL;
+//   return par;
+// }
 
 OPERAND *IRmakeLabelOPERAND(char *labelName){
   OPERAND *par = NEW(OPERAND);
