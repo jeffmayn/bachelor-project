@@ -8,12 +8,12 @@ const char* instrNames[] = {"add", "sub", "mul", "div", "and", "or",
 
 void printINSTRnode(INSTR *instr){
   if(instr != NULL){
-    fprintf(stderr, "Instruction: %s\n", instrNames[instr->instrKind]);
+    fprintf(stderr, "Instr: %s\n", instrNames[instr->instrKind]);
     printOPERANDs(instr->paramList);
-    fprintf(stderr, "\t  |\n");
-    fprintf(stderr, "\t  |\n");
-    fprintf(stderr, "\t\\ | /\n");
-    fprintf(stderr, "\t \\ /\n");
+    //fprintf(stderr, "\t ||\n");
+    //fprintf(stderr, "_______________________________________\n");
+    fprintf(stderr, "--------------------------------------------\n");
+    //fprintf(stderr, "\t \\/\n");
     printINSTRnode(instr->next);
   }
   else {
@@ -46,25 +46,28 @@ void printOPERANDnode(OPERAND *op){
     case registerO:
       fprintf(stderr, "register: %s\n", regNames[op->val.reg]);
       break;
+    case addrLabelO:
+      fprintf(stderr, "addrLabel: %s\n", op->val.label);
+      break;
   }
 
 }
 
 void printTEMPORARYnode(TEMPORARY *temp){
-  fprintf(stderr, "TEMPORARY %d ", temp->tempId);
+  fprintf(stderr, "TEMPORARY %d: ", temp->tempId);
   switch (temp->temporarykind) {
     case notPlacedT:
       fprintf(stderr, "not placed yet\n");
       break;
     case localT:
       //something print the address of local variable??
-      fprintf(stderr, "with local offset %d\n", temp->placement.offset);
+      fprintf(stderr, "local offset %d\n", temp->placement.offset);
       break;
     case paramT:
-      fprintf(stderr, "with param offset %d\n", temp->placement.offset);
+      fprintf(stderr, "param offset %d\n", temp->placement.offset);
       break;
     case regT:
-      fprintf(stderr, "Temporary %s in register %s\n", temp->tempId, regNames[temp->placement.reg]);
+      fprintf(stderr, "in register %s\n", regNames[temp->placement.reg]);
       break;
   }
 }

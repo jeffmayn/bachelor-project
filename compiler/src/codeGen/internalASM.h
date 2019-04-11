@@ -24,7 +24,7 @@ extern const char* regNames[];
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
-typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO,
+typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO
               } OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
@@ -132,6 +132,8 @@ OPERAND *IRmakeAddrOPERAND(int addrVal);
 OPERAND *IRmakeLabelOPERAND(char *labelName);
 
 OPERAND *IRmakeRegOPERAND(registers reg);
+
+OPERAND *IRmakeAddrLabelOPERAND(char *addrlabel);
 
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next);//append next to tail
 
@@ -382,6 +384,8 @@ int IGcolorGraph();
 
 
 //######################assembler generation############//
+
+int IRtravInternalRep(INSTR *instr);
 
 int ASMinternalNodeToString();
 

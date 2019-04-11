@@ -73,7 +73,7 @@ int main() {
   // if(tempMap == NULL){
   //   return -1;
   // }
-  
+
   error = 0;
   error = IRcreateInternalRep(table, bodies);
   if(error == -1){
@@ -82,6 +82,14 @@ int main() {
 
   fprintf(stderr, "\n%s\n", "####### STARTING PRINTING INTERNAL REPRESENTATION ######");
   printINSTRnode(intermediateHead);
+
+
+
+  fprintf(stderr, "\n%s\n", "####### STARTING FINAL OUTPUT GENERATION ######");
+  //printf("WHEREDOES THIS GO\n");
+  //IRtravINSTR(intermediateHead);
+  IRtravInternalRep(intermediateHead);
+
 
 
 

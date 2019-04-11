@@ -227,7 +227,7 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
 /**
  * traverse variable decleration list, the integer parameter
  * is set to 0 if this is a regular decleration or 1 if this
- * is called from a parameter decleration list.
+ * is called from a parameter declaration list.
  */
 int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList){
   int error = 0;
@@ -286,12 +286,33 @@ int IRtravStmtList( SymbolTable *table, STATEMENT_LIST *statements){
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
   OPERAND *op1;
   OPERAND *op2;
+  OPERAND *op3;
+  OPERAND *op4;
   switch(stmt->kind){
+    case writeK:
+      op1 = IRtravExp(t, stmt->val.write);
+      //check for NULL??                                                              //!!local string!!
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND("format"),IRmakeRegOPERAND(RDI))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,IRmakeRegOPERAND(RSI))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0),IRmakeRegOPERAND(RSI))));
+      IRappendINSTR(IRmakeCallINSTR(IRmakeLabelOPERAND("printf")));
+      // movq $form,%rdi		# Passing string address (1. argument)
+      // movq %rax,%rsi		# Passing %rax (2. argument)
+      // movq $0, %rax           # No floating point registers used
+      // call printf		# Automatically pushes return address
+      return 0;
+      break;
     case assiK:
       op1 = IRtravVar(t, stmt->val.assign.var);
       op2 = IRtravExp(t, stmt->val.assign.exp);
       //move expression into variabel -> source->destination
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op1)));
+      op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op3)));
+      op4 = NEW(OPERAND);
+      memcpy(op4, op3, sizeof(OPERAND));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op4, op1)));
+
+      //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op1)));
       return 0;
       break;
     default:
@@ -306,7 +327,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
  */
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
   SYMBOL *sym;
-  OPERAND *op;
+  OPERAND *op1, *op2;
   switch (var->kind) {
   case idVarK:
     sym = getSymbol(t, var->val.id);
@@ -319,8 +340,10 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
       return NULL;
     }
     //op = sym->cgu->val.operand;
-    op = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
-    return op;
+    op1 = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
+    //op2 = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+    //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,op2)));
+    return op1;
     //TODO: check if the type is a (userdefined) record or array type
     //i dont know if this works
     //recursiveSymbolRetrieval(sym->defScope, sym->val.id, NULL);
@@ -547,6 +570,14 @@ OPERAND *IRmakeRegOPERAND(registers reg){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = registerO;
   par->val.reg = reg;
+  par->next = NULL;
+  return par;
+}
+
+OPERAND *IRmakeAddrLabelOPERAND(char *addrlabel){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = addrLabelO;
+  par->val.label = addrlabel;
   par->next = NULL;
   return par;
 }
