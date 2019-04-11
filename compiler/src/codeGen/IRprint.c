@@ -46,6 +46,12 @@ void printOPERANDnode(OPERAND *op){
     case registerO:
       fprintf(stderr, "register: %s\n", regNames[op->val.reg]);
       break;
+    case localO:
+      fprintf(stderr, "localO ??\n");
+      break;
+    case paramO:
+      fprintf(stderr, "paramO ??\n");
+      break;
   }
 
 }

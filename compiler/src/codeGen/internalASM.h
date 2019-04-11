@@ -382,11 +382,11 @@ int IGcolorGraph();
 
 int ASMinternalNodeToString();
 
-int IRtravPARAM(OPERAND *op);
+void IRtravPARAM(OPERAND *op);
 
-int IRtravINSTR(INSTR *in);
+void IRtravINSTR(INSTR *in);
 
-int regMapping(registers reg);
+void regMapping(registers reg);
 
 
 

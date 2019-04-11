@@ -5,28 +5,34 @@ const char* regNames[] = {"error: na", "%%RAX ", "%%RCX ", "%%RDX ",\
                            "%%RDI ", "%%R8 ", "%%R9 ", "%%R10 ", "%%R11 ",\
                             "%%R12 ", "%%R13 ", "%%R14 ", "%%R15 ", "error: spill"};
 
-int IRtravPARAM(OPERAND *op){
+void IRtravPARAM(OPERAND *op){
   switch(op->operandKind){
     case constantO:
       printf("$%d ", op->val.constant);
       break;
     case temporaryO:
       // TODO
-      printf("%d ", op->val.temp);
+      //printf("%s ", op->val.temp);
       break;
     case heapAddrO:
       printf("%x ", op->val.address);
       break;
     case labelIDO:
-      printf("%d ", op->val.label);
+      printf("%s ", op->val.label);
       break;
     case registerO:
       regMapping(op->val.reg);
       break;
+    case localO:
+      printf("localO ??\n");
+      break;
+    case paramO:
+      printf("paramO ??\n");
+      break;
   }
 }
 
-int IRtravINSTR(INSTR *in){
+void IRtravINSTR(INSTR *in){
   switch(in->instrKind){
     case addI:
       printf("add ");
@@ -123,7 +129,7 @@ int IRtravINSTR(INSTR *in){
   }
 }
 
-int regMapping(registers reg){
+void regMapping(registers reg){
 
 
   printf("%s", regNames[reg]);
