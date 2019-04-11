@@ -3,8 +3,8 @@
 
 #include "tree.h"
 //#include "bitmap.h"
-#include "stdlib.h"
-#include "stdio.h"
+#include <stdlib.h>
+#include <stdio.h>
 //#include "typecheck.h" //this gives a cycle internalASM->typecheck->symbol->internalASM
 
 #define HASHSIZE2 517
@@ -23,12 +23,12 @@ extern const char* regNames[];
  */
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
-              jmpneqI, movI, labelI, pushI, popI, callI, retI} INSTRkind;
-typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO
-              } OPERANDkind;
+              jmpneqI, movI, labelI, pushI, popI, callI, retI, textI} INSTRkind;
+typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO,
+              textO} OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
-typedef enum {notPlacedT, paramT, localT, regT} TEMPORARYkind;
+typedef enum {actualTempT, paramT, localT, regT} TEMPORARYkind;
 
 typedef struct bodyListElm bodyListElm;
 typedef struct bodyList bodyList;
@@ -103,8 +103,8 @@ int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList);
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam);
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList); //, int calledFromParDeclList removed
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType); //, int isParam removed
 
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt);
 
@@ -134,6 +134,8 @@ OPERAND *IRmakeLabelOPERAND(char *labelName);
 OPERAND *IRmakeRegOPERAND(registers reg);
 
 OPERAND *IRmakeAddrLabelOPERAND(char *addrlabel);
+
+OPERAND *IRmakeTextOPERAND(char *text);
 
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next);//append next to tail
 
@@ -175,9 +177,14 @@ INSTR *IRmakeCallINSTR(OPERAND *params);
 
 INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
+INSTR *IRmakeJumpINSTR(OPERAND *params);
+
+
+INSTR* IRmakeTextINSTR(OPERAND *params);
+
 INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
 //INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
-
+int IRinserINSTRhere(INSTR *prev, INSTR* new);
 //****Abstract scheme constructors****//
 int IRmakeFunctionScheme(FUNCTION *func);
 

@@ -10,11 +10,12 @@
  * Creating next temporary in order
  * It gets an unique ID and associated integer value
  */
-TEMPORARY* IRcreateNextTemp(){
+TEMPORARY* IRcreateNextTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
-  tmp->temporarykind = notPlacedT;
+  tmp->temporarykind = actualTempT;
   tmp->tempId = tempCounter;
   tempCounter++;
+  tmp->placement.offset = offset;
   return tmp;
   //maybe they should be added to a collection containing all
   //non-placed temporaries
@@ -63,6 +64,10 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
    * variables and shit, then traverse statements creating the
    * instructions and so on.
    */
+
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND("format")));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".string	\"%d\\n\"")));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".text")));
   if(mainBody == NULL){
     return 0; //i guess no bodies gives rise to no errors
   }
@@ -91,19 +96,33 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
   int error = 0;
   int paramCount = 0;
   ParamSymbol *pSym = element->scope->ParamHead;
+  char* mainName;
+  SYMBOL *func;
+  char* labelName;
   //SYMBOL *sym = pSym->data;
   if(element->funcId == NULL){
     //naming main scope
-    char* mainName = Malloc(sizeof(char)*6);
+    mainName = Malloc(sizeof(char)*6);
     sprintf(mainName, "%s", "$main");
     putSymbol(table, mainName, 0, funcK, intK, table, NEW(TYPE));
-    element->funcId = mainName;
+    //element->funcId = mainName;
+    char* glblmain = Malloc(sizeof(char)*20);
+    sprintf(glblmain, ".globl main");
+    IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(glblmain)));
+    func = getSymbol(table, "$main");
+  } else {
+    func = getSymbol(table, element->funcId);
   }
-  SYMBOL *func = getSymbol(table, element->funcId);
   if(func->cgu == NULL){ //er det her godt nok til at tjekke om der er en label instrution?
     func->cgu = IRmakeNewCGU();
-    char* labelName = Malloc(strlen(element->funcId)+6);
-    sprintf(labelName, "%s%d", element->funcId, labelCounter);
+    if(element->funcId == NULL){
+      labelName = Malloc(sizeof(char)*10);
+      element->funcId = mainName;
+      sprintf(labelName, "main");
+    } else {
+      labelName = Malloc(strlen(element->funcId)+6);
+      sprintf(labelName, "%s%d", element->funcId, labelCounter);
+    }
     labelCounter++;
     func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
   }
@@ -142,17 +161,27 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   if(error == -1){
     return -1;
   }
+  INSTR * instrTempTail = intermediateTail;
   error = IRtravStmtList(table, body->body->sList);
   sym->cgu->val.funcInfo.temporaryEnd = tempCounter; //first number after our last temp
   if(error == -1){
     return -1;
   }
+  /*caution you enter the land of long lines of code for no reason at all!*/
+  int nrTemps = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
+  IRinserINSTRhere(instrTempTail, IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTemps), IRmakeRegOPERAND(RSP))));
 
   char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
   sprintf(labelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
   labelCounter++;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
   error = IRmakeCalleeEpilog();
+}
+
+int IRinserINSTRhere(INSTR *prev, INSTR* new){
+  new->next = prev->next;
+  prev->next = new;
+  return 0;
 }
 
 int IRmakeCalleeProlog(){
@@ -217,7 +246,7 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
       break;
     case listK:
       ;//count number of variables
-      return IRtravVarDeclList(table, decl->val.list, 0);
+      return IRtravVarDeclList(table, decl->val.list);
       break;
   }
   return 0;
@@ -225,40 +254,35 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
 
 
 /**
- * traverse variable decleration list, the integer parameter
- * is set to 0 if this is a regular decleration or 1 if this
- * is called from a parameter declaration list.
+ * traverse variable decleration list
  */
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int calledFromParDeclList){
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList){
   int error = 0;
-  if(calledFromParDeclList){
-    //er der brug for begge kald?
-    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
-    calledFromParDeclList++;
-  } else {
-    error = IRtravVarType(table, varDeclList->vType, calledFromParDeclList);
-  }
+  error = IRtravVarType(table, varDeclList->vType);
+
   if((error == 0) && (varDeclList->vList != NULL)){
-    error = IRtravVarDeclList(table, varDeclList->vList, calledFromParDeclList);
+    error = IRtravVarDeclList(table, varDeclList->vList);
   }
   return error;
 }
 
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int isParam){
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType){
 
   SYMBOL *sym = getSymbol(table, varType->id);
-  if(sym->cgu == NULL && !isParam){
+  if(sym == NULL){
+    sprintf(stderr, "IRtravVarType: no symbol returned\n");
+    return -1;
+  }
+  if(sym->cgu == NULL){
     sym->cgu = IRmakeNewCGU();
     sym->cgu->val.temp = IRcreateNextLocalTemp(localCounter);
     localCounter++; //maybe this should be dine inside localTemp creator
-  } else if (sym->cgu == NULL && isParam) {
-    sym->cgu = IRmakeNewCGU();
-    //what is going on???
-    //sym->cgu->val.operand = IRmakeParamOPERAND(isParam-1);
-    sym->cgu->val.temp = IRcreateParamTemp(isParam-1);
+
   } else {
-    sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand attatched, might be an error not sure");
-    //return -1;//dunno if we need this.
+
+    sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand \
+                                  attatched, might be an error not sure");
+    return -1;//dunno if we need this.
   }
   return 0;
 }
@@ -289,12 +313,21 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
   OPERAND *op3;
   OPERAND *op4;
   switch(stmt->kind){
+    case returnK:
+      //TODO ODOT
+      //how the hell do we know which function we are in?? label??
+      op1 = IRtravExp(t, stmt->val.return_);
+      op2 = IRmakeRegOPERAND(RAX);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op2)));
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND("whatShouldBeWrittenHere")));
+      fprintf(stderr, "IRtravStmt: UnsupportedStatementException: return\n");
+      break;
     case writeK:
       op1 = IRtravExp(t, stmt->val.write);
       //check for NULL??                                                              //!!local string!!
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND("format"),IRmakeRegOPERAND(RDI))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,IRmakeRegOPERAND(RSI))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0),IRmakeRegOPERAND(RSI))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0),IRmakeRegOPERAND(RAX))));
       IRappendINSTR(IRmakeCallINSTR(IRmakeLabelOPERAND("printf")));
       // movq $form,%rdi		# Passing string address (1. argument)
       // movq %rax,%rsi		# Passing %rax (2. argument)
@@ -306,7 +339,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
       op1 = IRtravVar(t, stmt->val.assign.var);
       op2 = IRtravExp(t, stmt->val.assign.exp);
       //move expression into variabel -> source->destination
-      op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      op3 = IRmakeRegOPERAND(RAX);
+      localCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op3)));
       op4 = NEW(OPERAND);
       memcpy(op4, op3, sizeof(OPERAND));
@@ -316,7 +350,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
       return 0;
       break;
     default:
-      fprintf(stderr, "IRtravStmt: UnsupportedOperationException\n");
+      fprintf(stderr, "IRtravStmt: UnsupportedStatementException: %d\n", stmt->kind);
       return -1;
       break;
   }
@@ -374,7 +408,8 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
     case plusK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
-      op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
+      localCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op2, op3)));
       return op3;
@@ -460,7 +495,8 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       }
       return NULL;
       //what to return? the result of function call? Where? %rax?
-      op = IRmakeTemporaryOPERAND(IRcreateNextTemp());
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
+      localCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX),op)));
       //todo check return of append
       return op;
@@ -578,6 +614,14 @@ OPERAND *IRmakeAddrLabelOPERAND(char *addrlabel){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = addrLabelO;
   par->val.label = addrlabel;
+  par->next = NULL;
+  return par;
+}
+
+OPERAND *IRmakeTextOPERAND(char *text){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = textO;
+  par->val.label = text;
   par->next = NULL;
   return par;
 }
@@ -705,6 +749,18 @@ INSTR* IRmakeCallINSTR(OPERAND *params){
 INSTR* IRmakeRetINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = retI;
+  return instr;
+}
+
+INSTR *IRmakeJumpINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jumpI;
+  return instr;
+}
+
+INSTR* IRmakeTextINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = textI;
   return instr;
 }
 

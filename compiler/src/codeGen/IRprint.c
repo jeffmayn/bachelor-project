@@ -49,6 +49,9 @@ void printOPERANDnode(OPERAND *op){
     case addrLabelO:
       fprintf(stderr, "addrLabel: %s\n", op->val.label);
       break;
+    case textO:
+      fprintf(stderr, "%s\n", op->val.label);
+      break;
   }
 
 }
@@ -56,8 +59,8 @@ void printOPERANDnode(OPERAND *op){
 void printTEMPORARYnode(TEMPORARY *temp){
   fprintf(stderr, "TEMPORARY %d: ", temp->tempId);
   switch (temp->temporarykind) {
-    case notPlacedT:
-      fprintf(stderr, "not placed yet\n");
+    case actualTempT:
+      fprintf(stderr, "temp offset %d\n", temp->placement.offset);
       break;
     case localT:
       //something print the address of local variable??

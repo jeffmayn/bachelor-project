@@ -1,9 +1,9 @@
 #include "internalASM.h"
 
-const char* regNames[] = {"error: na", "%RAX ", "%RCX ", "%RDX ",\
-                          "%RBX ", "%RSP ", "%RBP ", "%RSI ",\
-                           "%RDI ", "%R8 ", "%R9 ", "%R10 ", "%R11 ",\
-                            "%R12 ", "%R13 ", "%R14 ", "%R15 ", "error: spill"};
+const char* regNames[] = {"error: na", "%rax ", "%rcx ", "%rdx ",\
+                          "%rbx ", "%rsp ", "%rbp ", "%rsi ",\
+                           "%rdi ", "%r8 ", "%r9 ", "%r10 ", "%r11 ",\
+                            "%r12 ", "%r13 ", "%r14 ", "%r15 ", "error: spill"};
 
 int IRtravInternalRep(INSTR *instr){
   int error = 0;
@@ -28,6 +28,9 @@ int IRtravOPERANDlist(OPERAND *op){
       return -1;
     }
     op = op->next;
+    if(op != NULL){
+      printf(", ");
+    }
   }
   return 0;
 }
@@ -38,7 +41,7 @@ int IRtravPARAM(OPERAND *op){
   }
   switch(op->operandKind){
     case constantO:
-      printf("$%d ", op->val.constant);
+      printf("$%d", op->val.constant);
       break;
     case temporaryO:
       // TODO
@@ -56,33 +59,60 @@ int IRtravPARAM(OPERAND *op){
       regMapping(op->val.reg);
       break;
     case addrLabelO:
-      printf("$%s ", op->val.label);
+      printf("$%s", op->val.label);
+      break;
+    case textO:
+      printf("%s", op->val.label);
       break;
   }
 }
 
 int travTemporary(TEMPORARY *temp){
   switch(temp->temporarykind){
-    case notPlacedT:
-      printf("notPlaceYet ");
+    case actualTempT:
+      //printf("notPlaceYet ");
+      //printf("mov -%d, %%rdx\n", temp->placement.offset);
+      printf("(%%rbp,%%rdx,8)");
       break;
     case paramT:
-      printf("(%%rbp,%d,8) ", temp->placement.offset);
+      //printf("mov %d, %%rdx\n", temp->placement.offset);
+      printf("(%%rbp,%%rdx,8)");
       break;
     case localT:
-      printf("(%%rbp,%d,-8) ", temp->placement.offset);
+      //printf("mov -%d, %%rdx\n", temp->placement.offset);
+      printf("(%%rbp,%%rdx,8)");
       break;
     case regT:
-      printf("%s ", regNames[temp->placement.reg]);
+      printf("%s", regNames[temp->placement.reg]);
       break;
   }
   return 0;
 }
 
+/**
+ * Flytter offset over i %rdx, hvis hukommelse skal tilgås
+ * Det her er måske lidt hacket
+ */
+int checkOffsetOperand(INSTR *in){
+  OPERAND *op = in->paramList;
+  while(op != NULL){
+    if(op->operandKind == temporaryO){
+      if(op->val.temp->temporarykind == paramT){
+        printf("mov $%d, %%rdx\n", (op->val.temp->placement.offset+2)); //return og static link
+      }
+      else if(op->val.temp->temporarykind == localT || op->val.temp->temporarykind == actualTempT){
+        printf("mov $-%d, %%rdx\n", (op->val.temp->placement.offset+8)); //callee save
+      }
+    }
+    op = op->next;
+  }
+  return 0;
+}
 
 
 int IRtravINSTR(INSTR *in){
   int error = 0;
+  checkOffsetOperand(in);
   switch(in->instrKind){
     case addI:
       printf("add ");
@@ -177,6 +207,8 @@ int IRtravINSTR(INSTR *in){
       printf("ret ");
       error = IRtravOPERANDlist(in->paramList);
       break;
+    case textI:
+      error = IRtravOPERANDlist(in->paramList);
   }
   printf("\n");
   return error;

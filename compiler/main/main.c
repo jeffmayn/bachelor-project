@@ -78,6 +78,7 @@ int main() {
   error = IRcreateInternalRep(table, bodies);
   if(error == -1){
     fprintf(stderr, "Internal representation error\n");
+    return -1;
   }
 
   fprintf(stderr, "\n%s\n", "####### STARTING PRINTING INTERNAL REPRESENTATION ######");
