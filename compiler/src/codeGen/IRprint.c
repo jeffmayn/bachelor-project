@@ -37,9 +37,9 @@ void printOPERANDnode(OPERAND *op){
     case temporaryO:
       printTEMPORARYnode(op->val.temp);
       break;
-    case heapAddrO:
-      fprintf(stderr, "address: %d\n", op->val.address);
-      break;
+    // case heapAddrO:
+    //   fprintf(stderr, "address: %d\n", op->val.address);
+    //   break;
     case labelIDO:
       fprintf(stderr, "label: %s\n", op->val.label);
       break;
@@ -57,12 +57,20 @@ void printOPERANDnode(OPERAND *op){
 }
 
 void printTEMPORARYnode(TEMPORARY *temp){
+  fprintf(stderr, "TEMPORARY %d ", temp->tempId);
   switch (temp->temporarykind) {
-    case addrT:
-      fprintf(stderr, "Temporary %s with address %d\n", temp->tempName, temp->placement.address);
+    case notPlacedT:
+      fprintf(stderr, "not placed yet\n");
       break;
-    case regT:                                                         //use regNames[temp->placement.reg]
-      fprintf(stderr, "Temporary %s in register %s\n", temp->tempName, regNames[temp->placement.reg]);
+    case localT:
+      //something print the address of local variable??
+      fprintf(stderr, "with local offset %d\n", temp->placement.offset);
+      break;
+    case paramT:
+      fprintf(stderr, "with param offset %d\n", temp->placement.offset);
+      break;
+    case regT:
+      fprintf(stderr, "Temporary %s in register %s\n", temp->tempId, regNames[temp->placement.reg]);
       break;
   }
 }

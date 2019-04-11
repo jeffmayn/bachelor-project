@@ -76,7 +76,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type);
 
 //TYPE* expTypeTravType(SymbolTable *t, VARIABLE *v, SYMBOL *sym);
 
-int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, SYMBOL* param);
+int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, ParamSymbol* pSym);
 
 /**
  * Checks if expression types match variable and context types

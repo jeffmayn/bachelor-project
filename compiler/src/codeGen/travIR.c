@@ -15,7 +15,8 @@ void IRtravPARAM(OPERAND *op){
       //printf("%s ", op->val.temp);
       break;
     case heapAddrO:
-      printf("%x ", op->val.address);
+      fprintf(stderr, "ITtravPARAM: WHAT is a heapAddrO\n");
+      //printf("%x ", op->val.address);
       break;
     case labelIDO:
       printf("%s ", op->val.label);

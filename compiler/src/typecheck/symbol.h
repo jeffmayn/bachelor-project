@@ -32,9 +32,15 @@ typedef struct SYMBOL {
   CODEGENUTIL *cgu;
 } SYMBOL;
 
+typedef struct ParamSymbol {
+  struct SYMBOL *data;
+  struct ParamSymbol *next;
+} ParamSymbol;
+
 typedef struct SymbolTable {
     SYMBOL *table[HashSize]; //**table
-    SYMBOL *param; //List of parameters in order of first to last
+    ParamSymbol *ParamHead; //List of parameters in order of first to last
+    ParamSymbol *ParamTail;
     //local count
     struct SymbolTable *next;
 } SymbolTable;
@@ -51,7 +57,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
  * Add a parameter to the scop given by SymbolTable
 */
 SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType);
-
+ParamSymbol *createParamSymbol(SYMBOL *sym);
 
 SYMBOL *getSymbol(SymbolTable *t, char *name);
 SYMBOL *getRecordSymbol(SymbolTable *t, char* name);

@@ -19,6 +19,8 @@ SymbolTable *initSymbolTable(){
   SymbolTable* table = Malloc(sizeof(SymbolTable));
   memset(table->table, 0, sizeof(table->table));
   table->next = NULL;
+  table->ParamHead = NULL;
+  table->ParamTail = NULL;
   return table;
 }
 
@@ -26,6 +28,13 @@ SymbolTable *scopeSymbolTable(SymbolTable *t){
   SymbolTable* newt = initSymbolTable();
   newt->next = t;
   return newt;
+}
+
+ParamSymbol *createParamSymbol(SYMBOL *sym){
+  ParamSymbol *newParSym = NEW(ParamSymbol);
+  newParSym->data = sym;
+  newParSym->next = NULL;
+  return newParSym;
 }
 
 /**
@@ -98,21 +107,21 @@ SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);
     return NULL;
   }
-  if(t->param == NULL){
-    t->param = s;
+  ParamSymbol *pSym = createParamSymbol(s);
+  if(t->ParamHead == NULL){
+    t->ParamHead = pSym;
+    t->ParamTail = pSym;
   }
-  else{
-    SYMBOL *param = t->param;
-    while(param->next != NULL){
-      param = param->next;
-    }
-    param->next = s;
+  else {
+    t->ParamTail->next = pSym;
+    t->ParamTail = pSym;
   }
-  if(getSymbol(t, name) == NULL){
-    fprintf(stderr, "param %s not found after putting it\n", name);
-  }
+  // if(getSymbol(t, name) == NULL){
+  //   fprintf(stderr, "param %s not found after putting it\n", name);
+  // }
   return s;
 }
+
 SYMBOL *getRecordSymbol(SymbolTable *t, char* name){
     //find index via hash
     int hashIndex = Hash(name);
