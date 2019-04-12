@@ -2,7 +2,10 @@
 #define __tree_h
 //#include "symbol.h"
 typedef enum {false, true} bool;
-typedef enum Typekind{idK, intK, boolK, arrayK, recordK, nullKK, errorK} Typekind;
+typedef enum Typekind {idK, intK, boolK, arrayK, recordK, nullKK, errorK} Typekind;
+typedef enum DeclKind {idDeclK, funcK, listK} DeclKind;
+typedef enum StmtKind {returnK, writeK, allocateK, allocateLengthK, assiK, ifK, thenK,\
+      whileK, listStmtK} StmtKind;
 
 //TODO: This is a crazy hack as circular headerfile includes doesn't work
 typedef struct SymbolTable SymbolTable;
@@ -70,7 +73,7 @@ typedef struct DECL_LIST {
 
 typedef struct DECLARATION {
   int lineno;
-  enum {idDeclK, funcK, listK} kind;
+  DeclKind kind;
   union {
     struct {char *id; TYPE *type;} id;
     struct FUNCTION *func;
@@ -86,8 +89,7 @@ typedef struct STATEMENT_LIST {
 
 typedef struct STATEMENT {
   int lineno;
-  enum {returnK, writeK, allocateK, allocateLengthK, assiK, ifK, thenK,\
-        whileK, listStmtK} kind;
+  StmtKind kind;
   union {
     struct EXP *return_;
     struct EXP *write;

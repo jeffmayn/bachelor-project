@@ -95,7 +95,7 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls);
 
 int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
 
-Typekind expOfType(SymbolTable *t, EXP *exp);
+Typekind expOfType(EXP *exp);
 
 //Typekind typeOfType(SymbolTable *t, TYPE *type);
 
