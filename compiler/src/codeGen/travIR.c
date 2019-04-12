@@ -5,7 +5,10 @@ const char* regNames[] = {"error: na", "%rax ", "%rcx ", "%rdx ",\
                            "%rdi ", "%r8 ", "%r9 ", "%r10 ", "%r11 ",\
                             "%r12 ", "%r13 ", "%r14 ", "%r15 ", "error: spill"};
 
-const char* regNames[] = {"addq ", "subq ", "imulq ", "divq ", "andq ", "orq ", "xorq ", "shlq ", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", };
+const char* insNames[] = {"addq ", "subq ", "imulq ", "divq ", "andq ", "orq ",\
+                          "xorq ", "shlq ", "shrq ", "cmp ", "jmp ", "jl ",\
+                          "jg ", "jl ", "jge ", "je ", "jne ", "movq ",\
+                          "push ", "pop ", "ret "};
 
 int IRtravInternalRep(INSTR *instr){
   int error = 0;
@@ -112,110 +115,19 @@ int checkOffsetOperand(INSTR *in){
 
 
 int IRtravINSTR(INSTR *in){
-  int error = 0;
   checkOffsetOperand(in);
-  switch(in->instrKind){
-    case addI:
-      printf("addq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case subI:
-      printf("subq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case mulI:
-      printf("imul ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case divI:
-      printf("divq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case andI:
-      printf("and ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case orI:
-      printf("or ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case xorI:
-      printf("xor ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case lshiftI:
-      printf("shl ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case rshiftI:
-      printf("shr ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case cmpI:
-      printf("cmp ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jumpI:
-      printf("jmp ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmplessI:
-      printf("jl ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpgreatI:
-      printf("jg ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpleI:
-      printf("jl ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpgeI:
-      printf("jge ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpeqI:
-      printf("je ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpneqI:
-      printf("jne ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case movI:
-      printf("movq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case labelI:
-      //printf("label ");
-      error = IRtravOPERANDlist(in->paramList);
-      printf(":");
-      break;
-    case pushI:
-      printf("push ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case popI:
-      printf("pop ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case callI:
-      printf("call ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case retI:
-      printf("ret ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case textI:
-      error = IRtravOPERANDlist(in->paramList);
+  elPrinto(in);
+}
+
+int elPrinto(INSTR *in){
+  int error = 0;
+  if (in->instrKind != "textI"){
+  printf("%s", insNames[in->instrKind]);
   }
+  error = IRtravOPERANDlist(in->paramList);
   printf("\n");
   return error;
 }
-
-
 
 int regMapping(registers reg){
   printf("%s", regNames[reg]);
