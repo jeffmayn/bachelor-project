@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #include "tree.h"
 #include "typecheck.h"
 #include "symbol.h"
@@ -204,7 +205,7 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
     //as if they were inside.
     idTypeTravVDecls(sym->content, vty->type->val.vList);
   }
-  else if(vty->type->kind == nullK){
+  else if(vty->type->kind == nullKK){
     fprintf(stderr, "Line %d: The type of symbol '%s' cannot be null\n", vty->lineno, vty->id);
     return -1;
   }
@@ -290,7 +291,7 @@ int expTypeTravStmt(SymbolTable *t, STATEMENT *s){
   int i;
   SYMBOL *sym;
   TYPE *type;
-  Typekind tk;
+  //Typekind tk;
   switch(s->kind){
     case returnK:
       return expTypeTravExp(t, s->val.return_);
@@ -403,7 +404,7 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
         exp->typekind = errorK;
         return -1;
       }
-      fprintf(stderr, "Line %d: error happened in binary expression%s\n", exp->lineno);
+      fprintf(stderr, "Line %d: error happened in binary expression\n", exp->lineno);
       exp->typekind = errorK;
       return -1;
     case andK:
@@ -431,7 +432,7 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
         exp->typekind = errorK;
         return -1;
       }
-      fprintf(stderr, "Line %d: error happened in binary expression%s\n", exp->lineno);
+      fprintf(stderr, "Line %d: error happened in binary expression\n", exp->lineno);
       exp->typekind = errorK;
       return -1;
     case leK: //TODO er det ok at left og right bare er ens og vi så returnere en bool
@@ -464,7 +465,7 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
         exp->typekind = errorK;
         return -1;
       }
-        fprintf(stderr, "Line %d: error happened in binary expression%s\n", exp->lineno);
+        fprintf(stderr, "Line %d: error happened in binary expression\n", exp->lineno);
       exp->typekind = errorK;
       return -1;
 
@@ -492,7 +493,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
         fprintf(stderr,"Line %d: idtermK: Symbol '%s' where not found\n", term->lineno, term->val.idact.id);
         return errorK;
       }
-      if(sym->kind != funcK){
+      if(sym->kind != funcS){
         fprintf(stderr, "Line %d: The symbol '%s' is not a function\n",  term->lineno, term->val.idact.id);
         return errorK;
       }
@@ -565,7 +566,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
 */
 Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
   SYMBOL *s;
-  Typekind ty;
+  //Typekind ty;
   int error;
   switch(v->kind){
     case idVarK:
@@ -590,7 +591,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
         fprintf(stderr, "Line %d: Hopefully the error was already printed\n", v->lineno);
         return errorK;
       }
-      Typekind ty = expOfType(t, v->val.varexp.exp);
+      Typekind ty = expOfType(v->val.varexp.exp);
       if(ty != intK){
         fprintf(stderr, "Line %d: the index-expression have type %d, and does not cohere with type %d, expected here\n", v->lineno, ty, intK);
         return errorK;
@@ -747,7 +748,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       //check if type matches return type
       SymbolTable *parentScope = t->next; //this function is defined in parent scope
       if(parentScope == NULL){ //outeermost scope
-        if(expOfType(t, s->val.return_) != intK){ //return type us int
+        if(expOfType(s->val.return_) != intK){ //return type us int
           fprintf(stderr, "Line %d: Return type of main scope should be an integer\n", s->lineno);
           return -1;
         }
@@ -769,7 +770,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       }
       break;
     case writeK:
-      tk = expOfType(t, s->val.write);
+      tk = expOfType(s->val.write);
       if(tk != intK && tk != boolK){
         fprintf(stderr, "Line %d: type of expression to be written is not int or bool\n", s->lineno);
         return -1;
@@ -791,7 +792,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           return -1;
         }
         sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
-        if(sym == -1){
+        if(sym == NULL){
           fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
           return -1;
         }
@@ -801,8 +802,8 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocate->val.id);
         return -1;
       }
-      if(sym->kind == funcK){
-        fprintf(stderr,"Line %d: Cannot allocate a function\n");
+      if(sym->kind == funcS){
+        fprintf(stderr,"Line %d: Cannot allocate a function\n", s->lineno);
         return -1;
       }
       return 0;
@@ -820,7 +821,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           return -1;
         }
         sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
-        if(sym == -1){
+        if(sym == NULL){
           fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
           return -1;
         }
@@ -830,11 +831,11 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocatelength.var->val.id);
         return -1;
       }
-      if(s->kind == funcK){
-        fprintf(stderr,"Line %d: Cannot allocate a function\n");
+      if(sym->kind != varS){
+        fprintf(stderr,"Line %d: can only allocate variables\n", s->lineno);
         return -1;
       }
-      tk = expOfType(t, s->val.allocatelength.exp);
+      tk = expOfType(s->val.allocatelength.exp);
       if(tk != intK){
         fprintf(stderr,"Line %d: Amount to be allocated is not a number\n", s->lineno);
         return -1;
@@ -871,7 +872,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       break;
     case ifK:
       //check if the expression is bool
-      tk = expOfType(t, s->val.ifthenelse.cond);
+      tk = expOfType(s->val.ifthenelse.cond);
       //typekind = s->val.ifthenelse.cond->type;
       if(tk != boolK){
         fprintf(stderr,"Line %d: Type of condition in if-statmemt should be boolean\n", s->lineno);
@@ -884,7 +885,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       break;
     case thenK:
       //check if the expression is bool
-      tk = expOfType(t, s->val.ifthenelse.cond);
+      tk = expOfType(s->val.ifthenelse.cond);
       //typekind = s->val.ifthenelse.cond->type;
       if(tk != boolK){
         fprintf(stderr,"Line %d: Type of condition in if-statmemt should be boolean\n", s->lineno);
@@ -902,7 +903,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       break;
     case whileK:
       //check if the expression is bool
-      tk = expOfType(t, s->val.ifthenelse.cond);
+      tk = expOfType(s->val.ifthenelse.cond);
       if(tk != boolK){
         fprintf(stderr,"Line %d: Type of condition in if-statmemt should be boolean\n", s->lineno);
         return -1;
@@ -928,7 +929,8 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
 
 TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
   SYMBOL *sym2;
-  Typekind typekind;
+  // unused:
+  //Typekind typekind;
   TYPE *type;
   switch (v->kind) {
     case idVarK:
@@ -942,7 +944,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
       break;
     case expK:
       //checking index expression
-      if(expOfType(t, v->val.varexp.exp) != intK){
+      if(expOfType(v->val.varexp.exp) != intK){
         fprintf(stderr, "Line %d: The index expression is not an integer type\n", v->lineno);
       }
       //searching
@@ -971,11 +973,10 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
       //type = (*sym)->typePtr;
       if(type->kind != arrayK){
         fprintf(stderr, "Line %d: the symbol '%s' of type '%d' was not found to be an array\n", v->lineno, (*sym)->name, type->kind);
-        return errorK;
+        return NULL;
       }
       //symbol should be updated
       return type->val.arrayType;
-      //********We are in deep shit trouble right now*******//
       break;
     case dotK:
       ;
@@ -1072,11 +1073,11 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *kno
 
 
 //TODO: replace these two with recursiveSymbolRetrieval
-Typekind expOfType(SymbolTable *t, EXP *exp){
+Typekind expOfType(EXP *exp){
   if(exp->typekind == idK){
     TYPE *type = exp->type;
     if(type->kind != idK){
-      fprintf(stderr, "Line %d: Expression of type '%s' does not match its type of type '%s'\n", exp->lineno, idK, type->kind);
+      fprintf(stderr, "Line %d: Expression of type '%d' does not match its type of type '%d'\n", exp->lineno, idK, type->kind);
       return errorK;
     }
     SYMBOL *sym = recursiveSymbolRetrieval(type->scope, type->val.id, NULL);
@@ -1127,6 +1128,27 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
   symtk = sym->typeVal;
   if(exptk == symtk){
     switch(exptk){
+      case errorK:
+        //TODO
+        fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+        return -1;
+        fprintf(stderr, "errorK\n");
+        break;
+      case recordK:
+        //TODO
+        fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+        return -1;
+        break;
+      case idK:
+        //TODO
+        fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+        return -1;
+        break;
+      case nullKK:
+        //TODO
+        fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+        return -1;
+        break;
       case intK:
       case boolK:
         return 0;
@@ -1201,6 +1223,18 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   }
   if(tk1 == tk2){
     switch(tk1){
+      case nullKK:
+        //TODO
+        fprintf(stderr, "nullKK\n");
+        break;
+      case errorK:
+        //TODO
+        fprintf(stderr, "errorK\n");
+        break;
+      case idK:
+        //TODO
+        fprintf(stderr, "idK\n");
+        break;
       case intK:
       case boolK:
         return 0;
@@ -1259,6 +1293,14 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
 
   if(tk1 == tk2){
     switch(tk1){
+      case errorK:
+        // TODO:
+        fprintf(stderr, "errorK\n");
+        break;
+      case idK:
+        // TODO:
+        fprintf(stderr, "idK\n");
+        break;
       case intK:
       case boolK:
         return 0;
@@ -1276,7 +1318,7 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
           return -1;
         }
         return 0;
-      case nullK:
+      case nullKK:
         fprintf(stderr, "Both types of comparison is NULL\n");
         return -1;
         break;
@@ -1308,7 +1350,6 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
       return checkTypeTravVDecls(t, d->val.list);
     break;
     case funcK: //function
-      ; //empty statement
       if(d->val.func->head->type->kind == idK){
         sym = recursiveSymbolRetrieval(t, d->val.func->head->type->val.id, NULL);
         if(sym == NULL){
@@ -1327,6 +1368,7 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
           vList = vList->vList;
         }
       }
+      return 0;
     break;
     case idDeclK: //userdefined types
       /*
@@ -1354,6 +1396,8 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
       }
       return checkTypeTravDecls(t, decls->decl_list);
     }
+    fprintf(stderr, "didnt go into any case\n");
+    return -1;
   }
 /**
   Traverses all variables defined by the same 'var' keyword
@@ -1378,6 +1422,16 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
         //fall into default
       default:
         switch(tk){
+          case arrayK:
+            //TODO
+            fprintf(stderr, "Line %d: Type %d error \n", vty->lineno, tk);
+            return -1;
+            break;
+          case nullKK:
+            //TODO
+            fprintf(stderr, "Line %d: Type %d error \n", vty->lineno, tk);
+            return -1;
+            break;
           case errorK:
             fprintf(stderr, "Line %d: Type error\n", vty->lineno);
             return -1;

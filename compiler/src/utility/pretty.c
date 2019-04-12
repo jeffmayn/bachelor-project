@@ -71,6 +71,12 @@ void pTYPE(TYPE *t){
         fprintf(stderr,"}>");
         INDENT--;
         break;
+    case errorK:
+        fprintf(stderr, "errorK ???\n");
+        break;
+    case nullKK:
+        fprintf(stderr, "nullKK ???\n");
+        break;
   }
 }
 

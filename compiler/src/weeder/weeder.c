@@ -5,8 +5,11 @@
 
 extern BODY *theexpression;
 
+int retVal = -2;
+int retVal2 = -2;
+
 int weederBody(BODY *body){//TODO return -1 on error.
-  int retVal = -2;
+  //int retVal = -2;
   body = theexpression;
   retVal = traverseBody(body);
 //  printf("main return: %d\n", retVal);
@@ -14,27 +17,32 @@ int weederBody(BODY *body){//TODO return -1 on error.
 }
 
 int traverseBody(BODY *body){
-  int retVal = -2;
+  //int retVal = -2;
   retVal = traverseDECL(body->vList);
   return retVal;
 }
 
 int traverseDECL(DECL_LIST *decl){
-  int retVal = -2;
+  //int retVal = -2;
   if(decl != NULL){                    // kind 1 = function
     if (decl->decl != NULL && decl->decl->kind == 1){
-      retVal = weederFunction(decl->decl->val.func);
+      return retVal = weederFunction(decl->decl->val.func);
       if(retVal == -1){
         return -1;
       }
     }
     return traverseDECL(decl->decl_list);
   }
+  if (retVal == -1){
+    return -1;
+  } else {
+    return 0;
+  }
 }
 
 int weederFunction(FUNCTION *f){
-  int retVal = -2;
-  int retVal2 = -2;
+//  int retVal = -2;
+//  int retVal2 = -2;
   if ((strcmp (f->head->id, f->tail->id))==0 ){
     retVal = 0;
   } else {
@@ -43,6 +51,12 @@ int weederFunction(FUNCTION *f){
   }
   retVal = traverseBody(f->body);
   retVal2 = travCheckForReturn(f->body);
+
+  if(retVal == -1 || retVal2 == -1){
+    return -1;
+  } else {
+    return 0;
+  }
 }
 
 // NEW STUFF
@@ -107,5 +121,10 @@ int expTravStmt(STATEMENT *s){
     default:
       return -1;
       break;
+  }
+  if (retVal == -1){
+    return -1;
+  } else {
+    return 0;
   }
 }
