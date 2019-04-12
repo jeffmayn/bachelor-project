@@ -55,6 +55,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
   while(bElm != NULL){
     error = checkTypes(bElm->scope, bElm->body, bElm->funcId);
     if(error == -1){
+      fprintf(stderr, "Something went totally wring in %s, but we just skip to the next thing and prentend everything is fine\n", bElm->funcId);
       break;
     }
     bElm = getBody(bodies);
@@ -145,7 +146,7 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
             sym->content=scopeSymbolTable(t);
             idTypeTravVDecls(sym->content, ty->val.vList);
           }
-
+          fprintf(stderr, "\t\t\t\t%s\n", vList->vType->id);
           putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type); //can a parameter be anything different from a variable (func or type)
           vList = vList->vList;
         }
@@ -1356,11 +1357,11 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
           return -1; //assume error printing already done
         }
       }
-      //add parameters to that scope
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
         VAR_DECL_LIST *vList = pList->vList;
         while(vList != NULL){
+          //probably wrong scope
           sym = recursiveSymbolRetrieval(t, vList->vType->id, NULL);
           if(sym == NULL){
             return -1;

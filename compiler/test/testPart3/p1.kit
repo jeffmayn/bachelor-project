@@ -28,6 +28,10 @@ var r : record of {
   b : bool
 };
 
+func f(thisNameIsDefinitelyUnique:int):int
+  return thisNameIsDefinitelyUnique;
+end f
+
 func add(l:List, n:ListNode) : int
   if(list.head == null)
   then{
@@ -94,4 +98,6 @@ then dummyNode = removeLast(list);
 x = add(list, nodes[i]);
 x = noArgs();
 #x = noArgs(x);
+
+x = f(3);
 return 0;

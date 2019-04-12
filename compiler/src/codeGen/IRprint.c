@@ -4,7 +4,7 @@
 const char* instrNames[] = {"add", "sub", "mul", "div", "and", "or",
               "xor", "lshift", "rshift", "cmp", "jump", "jmpless",
               "jmpgreat", "jmple", "jmpge", "jmpeq", "jmpneq", "mov",
-              "label", "push", "pop", "call", "ret"};
+              "label", "push", "pop", "call", "ret", "text"};
 
 void printINSTRnode(INSTR *instr){
   if(instr != NULL){

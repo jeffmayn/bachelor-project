@@ -396,11 +396,11 @@ int IRtravInternalRep(INSTR *instr);
 
 int ASMinternalNodeToString();
 
-void IRtravPARAM(OPERAND *op);
+int IRtravPARAM(OPERAND *op);
 
-void IRtravINSTR(INSTR *in);
+int IRtravINSTR(INSTR *in);
 
-void regMapping(registers reg);
+int regMapping(registers reg);
 
 
 

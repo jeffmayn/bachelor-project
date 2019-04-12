@@ -1,15 +1,15 @@
 #from compiler folder
 #./build/compiler < test/testPart4/p41.kit
 
-#func f():int
-#  return 0;
-#end f
+func f():int
+  return 39+2;
+end f
 
-var x:int;
-#var y:int;
+#var x:int;
+var y:int;
 #x = 3;
-x = 42+4;
+#x = 42+4;
 #y = x;
-write x;
-#y=f();
-#write y;
+#write x;
+y=f();
+write y;
