@@ -12,23 +12,16 @@ void IRtravPARAM(OPERAND *op){
       break;
     case temporaryO:
       // TODO
-      //printf("%s ", op->val.temp);
+      printf("%d ", op->val.temp);
       break;
     case heapAddrO:
-      fprintf(stderr, "ITtravPARAM: WHAT is a heapAddrO\n");
       //printf("%x ", op->val.address);
       break;
     case labelIDO:
-      printf("%s ", op->val.label);
+      printf("%d ", op->val.label);
       break;
     case registerO:
       regMapping(op->val.reg);
-      break;
-    case localO:
-      printf("localO ??\n");
-      break;
-    case paramO:
-      printf("paramO ??\n");
       break;
   }
 }

@@ -46,12 +46,6 @@ void printOPERANDnode(OPERAND *op){
     case registerO:
       fprintf(stderr, "register: %s\n", regNames[op->val.reg]);
       break;
-    case localO:
-      fprintf(stderr, "localO ??\n");
-      break;
-    case paramO:
-      fprintf(stderr, "paramO ??\n");
-      break;
   }
 
 }
@@ -70,7 +64,7 @@ void printTEMPORARYnode(TEMPORARY *temp){
       fprintf(stderr, "with param offset %d\n", temp->placement.offset);
       break;
     case regT:
-      fprintf(stderr, "Temporary %s in register %s\n", temp->tempId, regNames[temp->placement.reg]);
+      fprintf(stderr, "Temporary %d in register %s\n", temp->tempId, regNames[temp->placement.reg]);
       break;
   }
 }

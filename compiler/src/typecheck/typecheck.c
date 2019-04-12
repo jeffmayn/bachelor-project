@@ -1,3 +1,4 @@
+//#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #include "tree.h"
 #include "typecheck.h"
 #include "symbol.h"
@@ -1127,6 +1128,10 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
   symtk = sym->typeVal;
   if(exptk == symtk){
     switch(exptk){
+      case nullKK:
+        //TODO
+        fprintf(stderr, "nullKK\n");
+        break;
       case intK:
       case boolK:
         return 0;
@@ -1201,6 +1206,10 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   }
   if(tk1 == tk2){
     switch(tk1){
+      case nullKK:
+        //TODO
+        fprintf(stderr, "nullKK\n");
+        break;
       case intK:
       case boolK:
         return 0;
@@ -1259,6 +1268,10 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
 
   if(tk1 == tk2){
     switch(tk1){
+      case nullKK:
+        // TODO:
+        fprintf(stderr, "nullKK\n");
+        break;
       case intK:
       case boolK:
         return 0;
@@ -1378,6 +1391,10 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
         //fall into default
       default:
         switch(tk){
+          case nullKK:
+            //TODO
+            fprintf(stderr, "nullKK");
+            break;
           case errorK:
             fprintf(stderr, "Line %d: Type error\n", vty->lineno);
             return -1;
