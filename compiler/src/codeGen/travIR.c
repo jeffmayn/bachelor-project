@@ -115,11 +115,11 @@ int IRtravINSTR(INSTR *in){
   checkOffsetOperand(in);
   switch(in->instrKind){
     case addI:
-      printf("add ");
+      printf("addq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case subI:
-      printf("sub ");
+      printf("subq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case mulI:
@@ -183,7 +183,7 @@ int IRtravINSTR(INSTR *in){
       error = IRtravOPERANDlist(in->paramList);
       break;
     case movI:
-      printf("mov ");
+      printf("movq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case labelI:

@@ -98,7 +98,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
 
-int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table);
+int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table, char* funcEndLabel);
 
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
 
@@ -106,7 +106,7 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl);
 int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList); //, int calledFromParDeclList removed
 int IRtravVarType(SymbolTable *table, VAR_TYPE *varType); //, int isParam removed
 
-int IRtravStmt(SymbolTable *t, STATEMENT *stmt);
+int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel);
 
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
 

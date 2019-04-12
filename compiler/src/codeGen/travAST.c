@@ -99,7 +99,6 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
   char* mainName;
   SYMBOL *func;
   char* labelName;
-  //SYMBOL *sym = pSym->data;
   if(element->funcId == NULL){
     //naming main scope
     mainName = Malloc(sizeof(char)*6);
@@ -162,7 +161,10 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
     return -1;
   }
   INSTR * instrTempTail = intermediateTail;
-  error = IRtravStmtList(table, body->body->sList);
+  char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
+  sprintf(labelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
+  labelCounter++;
+  error = IRtravStmtList(table, body->body->sList, labelName);
   sym->cgu->val.funcInfo.temporaryEnd = tempCounter; //first number after our last temp
   if(error == -1){
     return -1;
@@ -170,10 +172,6 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   /*caution you enter the land of long lines of code for no reason at all!*/
   int nrTemps = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
   IRinserINSTRhere(instrTempTail, IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTemps), IRmakeRegOPERAND(RSP))));
-
-  char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
-  sprintf(labelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
-  labelCounter++;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
   error = IRmakeCalleeEpilog();
 }
@@ -292,14 +290,14 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType){
  * do not dive into functions etc.
  * Generate code for all statements.
  */
-int IRtravStmtList( SymbolTable *table, STATEMENT_LIST *statements){
+int IRtravStmtList( SymbolTable *table, STATEMENT_LIST *statements, char* funcEndLabel){
   int error = 0;
-  error = IRtravStmt(table, statements->statement);
+  error = IRtravStmt(table, statements->statement, funcEndLabel);
   if(error == -1){
     return -1;
   }
   if(statements->statementList != NULL){
-    return IRtravStmtList(table, statements->statementList);
+    return IRtravStmtList(table, statements->statementList, funcEndLabel);
   }
   return 0;
 }
@@ -307,7 +305,7 @@ int IRtravStmtList( SymbolTable *table, STATEMENT_LIST *statements){
 /*
  * traversing the statement
  */
-int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
+int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
   OPERAND *op1;
   OPERAND *op2;
   OPERAND *op3;
@@ -319,7 +317,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
       op1 = IRtravExp(t, stmt->val.return_);
       op2 = IRmakeRegOPERAND(RAX);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op2)));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND("whatShouldBeWrittenHere")));
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(funcEndLabel)));
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: return\n");
       break;
     case writeK:
@@ -339,7 +337,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt){
       op1 = IRtravVar(t, stmt->val.assign.var);
       op2 = IRtravExp(t, stmt->val.assign.exp);
       //move expression into variabel -> source->destination
-      op3 = IRmakeRegOPERAND(RAX);
+      op3 = IRmakeRegOPERAND(RBX);
       localCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op3)));
       op4 = NEW(OPERAND);
@@ -396,23 +394,26 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
  * Traverse expression
  */
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
-  OPERAND *op1, *op2, *op3;
+  OPERAND *op1, *op2, *op3, *op4;
   switch(exp->kind){
     case termK:
       return IRtravTerm(t, exp->val.term);
       break;
     case minusK:
       op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(op1, op2)));
     case plusK:
       op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.right);
       op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
       localCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op2, op3)));
-      return op3;
+      op4 = NEW(OPERAND);
+      memcpy(op4, op3, sizeof(OPERAND));
+      op4->next = NULL;
+      return op4;
     case divK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -461,7 +462,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
  * Traversing term
  */
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
-  OPERAND *op;
+  OPERAND *op, *op2;
   int error = 0;
   switch(term->kind){
     case varK:
@@ -474,31 +475,37 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       SYMBOL *sym = getSymbol(t, term->val.idact.id);
       //find function-body-scope ???
       //find CODEGENUTIL
-      CODEGENUTIL *cgu = sym->cgu;
       //tjek om label findes -> brug eller lav label
-      if(cgu->val.funcInfo.funcLabel == NULL){
+      //if(cgu->val.funcInfo.funcLabel == NULL){
+      if(sym->cgu == NULL){
         //create and save funcLabel
+        sym->cgu = IRmakeNewCGU();
         char* labelName = Malloc(strlen(term->val.idact.id)+6);
-        sprintf(labelName, "%s%d", labelName, labelCounter);
+        sprintf(labelName, "%s%d", term->val.idact.id, labelCounter);
         labelCounter++;
-        cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
+        sym->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
       }
+      CODEGENUTIL *cgu = sym->cgu;
       INSTR *label = cgu->val.funcInfo.funcLabel;
       //slå symboler i actionlist op i symboltable
       //for ting der ikke er symboler: lav temporaries og operander
       //link operander sammen (evt. i omvendt rækkefølge)
-      op = IRtravActList(t, term->val.idact.list);
+      op = IRtravActList(t, term->val.idact.list); //param list
       //kald IRmakeFunctionCallScheme
       error = IRmakeFunctionCallScheme(label, op);
-      if(error = -1){
+      if(error == -1){
         return NULL;
       }
-      return NULL;
+      //return NULL;
       //what to return? the result of function call? Where? %rax?
-      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
-      localCounter++;
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX),op)));
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempCounter));
+      //localCounter++;
+      op2 = NEW(OPERAND);
+      op2->next = NULL;
+      memcpy(op2, op, sizeof(OPERAND));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX),op2)));
       //todo check return of append
+      //return op;
       return op;
       break;
     case expTermK:
@@ -627,8 +634,9 @@ OPERAND *IRmakeTextOPERAND(char *text){
 }
 
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next){
-  if(tail->next = NULL){
-    fprintf(stderr, "tail->next is NULL\n");
+  if(tail == NULL){
+    fprintf(stderr, "IRappendOPERAND: tail is NULL\n");
+    return next; //maybe??????
   }
   tail->next = next;
   return tail;
