@@ -99,10 +99,10 @@ int checkOffsetOperand(INSTR *in){
   while(op != NULL){
     if(op->operandKind == temporaryO){
       if(op->val.temp->temporarykind == paramT){
-        printf("mov $%d, %%rdx\n", (op->val.temp->placement.offset+2)); //return og static link
+        printf("mov $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
       }
       else if(op->val.temp->temporarykind == localT || op->val.temp->temporarykind == actualTempT){
-        printf("mov $-%d, %%rdx\n", (op->val.temp->placement.offset+8)); //callee save
+        printf("mov $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
       }
     }
     op = op->next;
@@ -189,6 +189,7 @@ int IRtravINSTR(INSTR *in){
       break;
     case labelI:
       //printf("label ");
+      printf("\n\n\n");
       error = IRtravOPERANDlist(in->paramList);
       printf(":");
       break;

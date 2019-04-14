@@ -55,7 +55,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
   while(bElm != NULL){
     error = checkTypes(bElm->scope, bElm->body, bElm->funcId);
     if(error == -1){
-      fprintf(stderr, "Something went totally wring in %s, but we just skip to the next thing and prentend everything is fine\n", bElm->funcId);
+      fprintf(stderr, "Something went totally wring in %s, but we just skip to the next thing and prentend everything is fine. No we don't\n", bElm->funcId);
       break;
     }
     bElm = getBody(bodies);
@@ -500,7 +500,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       }
       ACT_LIST *act = term->val.idact.list;
       if(act != NULL){ //i dont think this will ever be NULL. Safecheck
-        int error = expTypeTravExps(sym->scope, act->expList, sym->scope->ParamHead);
+        int error = expTypeTravExps(t, act->expList, sym->scope->ParamHead); //todo:problem with scope. was sym->scope
         if(error){
           return errorK; //error message should be printed in expTypeTravExps
         }
@@ -1348,7 +1348,10 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
   }
   switch (d->kind) {
     case listK: //variables
-      return checkTypeTravVDecls(t, d->val.list);
+      //return checkTypeTravVDecls(t, d->val.list);
+      if(checkTypeTravVDecls(t, d->val.list) == -1){
+        return -1;
+      }
     break;
     case funcK: //function
       if(d->val.func->head->type->kind == idK){
@@ -1359,17 +1362,27 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
       }
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
+        sym = getSymbol(t, d->val.func->head->id);
+        if(sym == NULL){
+          fprintf(stderr, "Line %d: The function %s was not found in current scope\n", d->val.func->head->lineno, d->val.func->head->id);
+          return -1;
+        }
+        SymbolTable *childScope = sym->scope;
+        if(childScope == NULL){
+          fprintf(stderr, "Line %d: The function %s does not seem to define a scope\n", d->val.func->head->lineno, d->val.func->head->id);
+          return -1;
+        }
         VAR_DECL_LIST *vList = pList->vList;
         while(vList != NULL){
           //probably wrong scope
-          sym = recursiveSymbolRetrieval(t, vList->vType->id, NULL);
+          sym = recursiveSymbolRetrieval(childScope, vList->vType->id, NULL);
           if(sym == NULL){
             return -1;
           }
           vList = vList->vList;
         }
       }
-      return 0;
+      //return 0;
     break;
     case idDeclK: //userdefined types
       /*
@@ -1395,10 +1408,11 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
           return -1;
         }
       }
-      return checkTypeTravDecls(t, decls->decl_list);
+      //return checkTypeTravDecls(t, decls->decl_list);
     }
-    fprintf(stderr, "didnt go into any case\n");
-    return -1;
+    return checkTypeTravDecls(t, decls->decl_list);
+    //fprintf(stderr, "didnt go into any case\n");
+    //return -1;
   }
 /**
   Traverses all variables defined by the same 'var' keyword

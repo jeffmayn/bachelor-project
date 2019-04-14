@@ -402,11 +402,20 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
     case minusK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
-      IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(op1, op2)));
+      //op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
+      op3 = IRmakeRegOPERAND(RBX); //TODO: should ensure to use a temporary also
+      localCounter++;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(op2, op3)));
+      op4 = NEW(OPERAND);
+      memcpy(op4, op3, sizeof(OPERAND));
+      op4->next = NULL;
+      return op4;
     case plusK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
-      op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
+      //op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
+      op3 = IRmakeRegOPERAND(RBX); //TODO: look 12 lines above
       localCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op2, op3)));
@@ -498,7 +507,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       }
       //return NULL;
       //what to return? the result of function call? Where? %rax?
-      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempCounter));
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempCounter - cgu->val.funcInfo.localStart)); //todo: wrong offset
       //localCounter++;
       op2 = NEW(OPERAND);
       op2->next = NULL;
@@ -537,7 +546,7 @@ OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist){
   if(actlist == NULL){
     return NULL;
   }
-  return IRtravExpList(t, actlist->expList);
+  return IRtravExpListReverse(t, actlist->expList);
 }
 
 /**
@@ -551,8 +560,25 @@ OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
       fprintf(stderr, "OPERAND IS NULL\n");
       return NULL;
     }
-    return IRtravExpList(t, exps->expList);
+    //return IRtravExpList(t, exps->expList);
+    //opposite order may be achieved by switching arguments: not that simple
     IRappendOPERAND(op, IRtravExpList(t, exps->expList));
+    return op;
+  }
+  return NULL;
+}
+
+OPERAND* IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
+  int error = 0;
+  if(exps != NULL){
+    //OPERAND* op = IRtravExp(t, exps->exp);
+    OPERAND* op = IRtravExpListReverse(t, exps->expList);
+    if(op == NULL){
+      return IRtravExp(t, exps->exp);
+    }
+    //return IRtravExpList(t, exps->expList);
+    //opposite order may be achieved by switching arguments: not that simple
+    IRappendOPERAND(op, IRtravExp(t, exps->exp));
     return op;
   }
   return NULL;
@@ -807,8 +833,10 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
   int ParamCount = 1; //static link already inkluded
   while(paramList != NULL){//maybe change to recursive form?
     //this migh be the wrong order
+    OPERAND *tempOp = paramList->next;
+    paramList->next = NULL; //a little hack
     IRappendINSTR(IRmakePushINSTR(paramList));
-    paramList = paramList->next;
+    paramList = tempOp;
     ParamCount += 1;
   }
   IRappendINSTR(IRmakePushINSTR(IRmakeConstantOPERAND(0))); //Static link field

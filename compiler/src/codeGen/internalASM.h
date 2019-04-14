@@ -118,6 +118,8 @@ OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist);
 
 OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps);
 
+OPERAND* IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps);
+
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
 

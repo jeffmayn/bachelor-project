@@ -1,15 +1,24 @@
 #from compiler folder
 #./build/compiler < test/testPart4/p41.kit
 
-func f():int
-  return 39+2;
+func fib(n:int):int
+  #return fib(n+1)+fib(n+2);
+  #n=n+1;
+  return f(n,n+1)+f(n+2,n+3);
+end fib
+
+func f(a:int, b:int):int
+  return a-b;
 end f
 
 #var x:int;
 var y:int;
 #x = 3;
 #x = 42+4;
+#x = x + x;
 #y = x;
 #write x;
-y=f();
+#y=f(3,4);
+#write y;
+y=fib(4);
 write y;
