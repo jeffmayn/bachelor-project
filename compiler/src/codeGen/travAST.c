@@ -13,8 +13,8 @@
 TEMPORARY* IRcreateNextTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
   tmp->temporarykind = actualTempT;
-  tmp->tempId = tempCounter;
-  tempCounter++;
+  tmp->tempId = tempLocalCounter;
+  tempLocalCounter++;
   tmp->placement.offset = offset;
   return tmp;
   //maybe they should be added to a collection containing all
@@ -32,8 +32,8 @@ TEMPORARY* IRcreateNextLocalTemp(int offset){
   // sprintf(str, "t%d\0", tempCounter);
   // tmp->tempName = str;
   tmp->temporarykind = localT;
-  tmp->tempId = tempCounter;
-  tempCounter++; //only if we want to do liveness analysis on locals
+  tmp->tempId = tempLocalCounter;
+  tempLocalCounter++; //only if we want to do liveness analysis on locals
   tmp->placement.offset = offset;
   return tmp;
 }
@@ -46,8 +46,8 @@ TEMPORARY* IRcreateNextLocalTemp(int offset){
 TEMPORARY* IRcreateParamTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
   tmp->temporarykind = paramT;
-  tmp->tempId = tempCounter;
-  tempCounter++; //only if we want to do liveness analysis on params
+  tmp->tempId = -1;
+  //tempCounter++; //only if we want to do liveness analysis on params
   tmp->placement.offset = offset;
   return tmp;
 }
@@ -71,7 +71,7 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
   if(mainBody == NULL){
     return 0; //i guess no bodies gives rise to no errors
   }
-  tempCounter = 1;
+  tempLocalCounter = 1;
   labelCounter = 1;
   int error = 0;
   resetbodyListIndex(mainBody);
@@ -145,14 +145,14 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   int error = 0;
   //TODO create the INSTRlabel, to signify the beginning of the body.
   //TODO set counter for locale variabler start
-  SYMBOL *sym = getSymbol(body->scope, body->funcId);
-  sym->cgu->val.funcInfo.localStart = tempCounter;
+  SYMBOL *sym = getSymbol(body->scope, body->funcId); //todo, i think it should be table not body->scope
+  sym->cgu->val.funcInfo.localStart = tempLocalCounter;
   localCounter = 0;
   error = IRtravDeclList(table, body->body->vList);
   if(error == -1){
     return -1;
   }
-  sym->cgu->val.funcInfo.temporaryStart = tempCounter;
+  sym->cgu->val.funcInfo.temporaryStart = tempLocalCounter;
   //TODO set counter for locale variabler slut
   //TODO calleé saves,
   IRappendINSTR(sym->cgu->val.funcInfo.funcLabel); //does the label exist?
@@ -164,14 +164,18 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
   sprintf(labelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
   labelCounter++;
+  currentLocalStart = sym->cgu->val.funcInfo.localStart;
+  currentTemporaryStart = sym->cgu->val.funcInfo.temporaryStart;
   error = IRtravStmtList(table, body->body->sList, labelName);
-  sym->cgu->val.funcInfo.temporaryEnd = tempCounter; //first number after our last temp
+  sym->cgu->val.funcInfo.temporaryEnd = tempLocalCounter; //first number after our last temp
+
+  currentTemporaryEnd = sym->cgu->val.funcInfo.temporaryEnd;
   if(error == -1){
     return -1;
   }
   /*caution you enter the land of long lines of code for no reason at all!*/
-  int nrTemps = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
-  IRinserINSTRhere(instrTempTail, IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTemps), IRmakeRegOPERAND(RSP))));
+  int nrTempsAndLocals = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
+  IRinserINSTRhere(instrTempTail, IRmakeSubINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals), IRmakeRegOPERAND(RSP))));
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
   error = IRmakeCalleeEpilog();
 }
@@ -318,7 +322,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       op2 = IRmakeRegOPERAND(RAX);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op2)));
       IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(funcEndLabel)));
-      fprintf(stderr, "IRtravStmt: UnsupportedStatementException: return\n");
+      //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: return\n");
       break;
     case writeK:
       op1 = IRtravExp(t, stmt->val.write);
@@ -376,6 +380,7 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
     //op2 = IRmakeTemporaryOPERAND(IRcreateNextTemp());
     //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,op2)));
     return op1;
+INSTR* intermediateTail;
     //TODO: check if the type is a (userdefined) record or array type
     //i dont know if this works
     //recursiveSymbolRetrieval(sym->defScope, sym->val.id, NULL);
@@ -394,35 +399,54 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
  * Traverse expression
  */
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
-  OPERAND *op1, *op2, *op3, *op4;
+  OPERAND *op1, *op2, *op3, *op4, *op5, *op6;
   switch(exp->kind){
     case termK:
       return IRtravTerm(t, exp->val.term);
       break;
     case minusK:
+      // op1 = IRtravExp(t, exp->val.binOP.left);
+      // op2 = IRtravExp(t, exp->val.binOP.right);
+      // //op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
+      // op3 = IRmakeRegOPERAND(RBX); //TODO: should ensure to use a temporary also
+      // localCounter++;
+      // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      // IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(op2, op3)));
+      // op4 = NEW(OPERAND);
+      // memcpy(op4, op3, sizeof(OPERAND));
+      // op4->next = NULL;
+      // return op4;
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
-      //op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
-      op3 = IRmakeRegOPERAND(RBX); //TODO: should ensure to use a temporary also
-      localCounter++;
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter-currentLocalStart)); //result temporary
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(op2, op3)));
-      op4 = NEW(OPERAND);
-      memcpy(op4, op3, sizeof(OPERAND));
-      op4->next = NULL;
-      return op4;
+      op5 = NEW(OPERAND);
+      memcpy(op5, op3, sizeof(OPERAND));
+      op5->next = NULL;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op5, op4)));
+      op6 = NEW(OPERAND);
+      memcpy(op6, op4, sizeof(OPERAND));
+      op6->next = NULL;
+      return op6;
+      //operand 4 and 6 are the same, but with different next pointers
     case plusK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
-      //op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
-      op3 = IRmakeRegOPERAND(RBX); //TODO: look 12 lines above
-      localCounter++;
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter-currentLocalStart)); //result temporary
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op2, op3)));
-      op4 = NEW(OPERAND);
-      memcpy(op4, op3, sizeof(OPERAND));
-      op4->next = NULL;
-      return op4;
+      op5 = NEW(OPERAND);
+      memcpy(op5, op3, sizeof(OPERAND));
+      op5->next = NULL;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op5, op4)));
+      op6 = NEW(OPERAND);
+      memcpy(op6, op4, sizeof(OPERAND));
+      op6->next = NULL;
+      return op6;
+      //operand 4 and 6 are the same, but with different next pointers
     case divK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -507,7 +531,8 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       }
       //return NULL;
       //what to return? the result of function call? Where? %rax?
-      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempCounter - cgu->val.funcInfo.localStart)); //todo: wrong offset
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter - currentLocalStart)); //todo: wrong offset
+      //op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter - cgu->val.funcInfo.localStart)); //todo: wrong offset
       //localCounter++;
       op2 = NEW(OPERAND);
       op2->next = NULL;

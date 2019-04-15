@@ -80,9 +80,13 @@ int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
 INSTR* intermediateTail;
 
-int tempCounter; //the next tempvalue
+int tempLocalCounter; //the next tempvalue
 int labelCounter; //the next label value
 int localCounter;
+
+int currentLocalStart;
+int currentTemporaryStart;
+int currentTemporaryEnd;
 
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();
