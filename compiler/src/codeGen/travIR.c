@@ -30,7 +30,7 @@ int IRtravOPERANDlist(OPERAND *op){
       return -1;
     }
     op = op->next;
-    if(op != NULL){
+    if(op != NULL && op->operandKind != commentO){
       printf(", ");
     }
   }
@@ -65,6 +65,8 @@ int IRtravPARAM(OPERAND *op){
     case textO:
       printf("%s", op->val.label);
       break;
+    case commentO:
+      printf("#%s", op->val.label);
   }
 }
 
@@ -211,6 +213,10 @@ int IRtravINSTR(INSTR *in){
       break;
     case textI:
       error = IRtravOPERANDlist(in->paramList);
+      break;
+    case commentI:
+      error = IRtravOPERANDlist(in->paramList);
+      break;
   }
   printf("\n");
   return error;

@@ -21,18 +21,18 @@ void printSymbol(SymbolTable *t, char *id){
     fprintf(stderr,"Successfully found '%s' of kind %d and type %d with value %d\n", s->name, s->kind, s->typeVal, s->value);
   }
   else{
-    fprintf(stderr,"unfortunately '%s' were not found in current scope\n", id);
+    fprintf(stderr,"ERROR: unfortunately '%s' were not found in current scope\n", id);
   }
 }
 
 SymbolTable* findFunctionScope(SymbolTable *t, char *fId){
   SYMBOL *s = getSymbol(t,fId);
   if(s == NULL){
-    fprintf(stderr, "%s where not found in current scope\n", fId);
+    fprintf(stderr, "ERROR: %s where not found in current scope\n", fId);
     return NULL;
   }
   if(s->kind != funcK){
-    fprintf(stderr,"'%s' is not a function\n", s->name);
+    fprintf(stderr,"ERROR: '%s' is not a function\n", s->name);
     return NULL;
   }
   return s->scope;
@@ -41,21 +41,22 @@ SymbolTable* findFunctionScope(SymbolTable *t, char *fId){
 int main() {
   int error = 0;
   lineno = 1;
-  fprintf(stderr, "\n%s\n", "######## STARTING PARSING ########");
+  fprintf(stderr, "%s\n", "######## STARTING PARSING ########");
   yyparse();
   if(SYNTAX_ERROR){
-    fprintf(stderr, "\n%s\n", "compilation ended in error\n");
+    fprintf(stderr, "%s\n", "compilation ended in error\n");
     return -1;
   }
 
 
-  fprintf(stderr, "\n%s\n", "######## STARTING 1ST WEEDER ########");
+  fprintf(stderr, "%s\n", "######## STARTING 1ST WEEDER ########");
   error = 0;
   error = weederBody(theexpression);
   if(error == -1){
+    fprintf(stderr, "%s\n", "ERROR: compilation ended in error\n");
     return -1;
   }
-  fprintf(stderr, "\n%s\n", "######## STARTING TYPECHECK ########");
+  fprintf(stderr, "%s\n", "######## STARTING TYPECHECK ########");
   SymbolTable *table = initSymbolTable();
   error = 0;
   error = typeCheck(table);
@@ -63,12 +64,12 @@ int main() {
     return -1;
   }
 
-  fprintf(stderr, "\n%s\n", "######## STARTING PRINTING BODY ########");
-  pBODY(theexpression);
+  fprintf(stderr, "%s\n", "######## STARTING PRINTING BODY ########");
+  //pBODY(theexpression);
 
 
 
-  fprintf(stderr, "\n%s\n", "####### STARTING INTERNAL REPRESENTATION ######");
+  fprintf(stderr, "%s\n", "######## STARTING INTERNAL REPRESENTATION ########");
   //TempLocMap tempMap = TempLocMap* IRsetupTemporaries(bodies, table);
   // if(tempMap == NULL){
   //   return -1;
@@ -77,15 +78,15 @@ int main() {
   error = 0;
   error = IRcreateInternalRep(table, bodies);
   if(error == -1){
-    fprintf(stderr, "Internal representation error\n");
+    fprintf(stderr, "ERROR: Internal representation error\n");
     return -1;
   }
 
-  fprintf(stderr, "\n%s\n", "####### STARTING PRINTING INTERNAL REPRESENTATION ######");
-  printINSTRnode(intermediateHead);
+  fprintf(stderr, "%s\n", "######## STARTING PRINTING INTERNAL REPRESENTATION ########");
+  //printINSTRnode(intermediateHead);
 
 
-  fprintf(stderr, "\n%s\n", "####### STARTING FINAL OUTPUT GENERATION ######");
+  fprintf(stderr, "%s\n", "######## STARTING FINAL OUTPUT GENERATION ########");
   //printf("WHEREDOES THIS GO\n");
   //IRtravINSTR(intermediateHead);
   IRtravInternalRep(intermediateHead);

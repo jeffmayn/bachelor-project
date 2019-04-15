@@ -28,7 +28,8 @@ push %r11
 push $4
 push $0
 call fib3
-addq $16, %rsp 
+#remove static link and parameters
+addq $16, %rsp #remove static link and parameters
 pop %r11 
 pop %r10 
 pop %r9 
@@ -82,7 +83,8 @@ push %r11
 push $20
 push $0
 call realFib5
-addq $16, %rsp 
+#remove static link and parameters
+addq $16, %rsp #remove static link and parameters
 pop %r11 
 pop %r10 
 pop %r9 
@@ -184,7 +186,8 @@ mov $-8, %rdx
 push (%rbp,%rdx,8)
 push $0
 call realFib5
-addq $16, %rsp 
+#remove static link and parameters
+addq $16, %rsp #remove static link and parameters
 pop %r11 
 pop %r10 
 pop %r9 
@@ -212,7 +215,8 @@ mov $-10, %rdx
 push (%rbp,%rdx,8)
 push $0
 call realFib5
-addq $16, %rsp 
+#remove static link and parameters
+addq $16, %rsp #remove static link and parameters
 pop %r11 
 pop %r10 
 pop %r9 
@@ -276,7 +280,8 @@ mov $3, %rdx
 push (%rbp,%rdx,8)
 push $0
 call f10
-addq $24, %rsp 
+#remove static link and parameters
+addq $24, %rsp #remove static link and parameters
 pop %r11 
 pop %r10 
 pop %r9 
@@ -311,7 +316,8 @@ mov $-10, %rdx
 push (%rbp,%rdx,8)
 push $0
 call f10
-addq $24, %rsp 
+#remove static link and parameters
+addq $24, %rsp #remove static link and parameters
 pop %r11 
 pop %r10 
 pop %r9 

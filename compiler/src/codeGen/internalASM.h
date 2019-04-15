@@ -23,9 +23,9 @@ extern const char* regNames[];
  */
 typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
-              jmpneqI, movI, labelI, pushI, popI, callI, retI, textI} INSTRkind;
+              jmpneqI, movI, labelI, pushI, popI, callI, retI, textI, commentI} INSTRkind;
 typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO,
-              textO} OPERANDkind;
+              textO, commentO} OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 typedef enum {actualTempT, paramT, localT, regT} TEMPORARYkind;
@@ -143,6 +143,8 @@ OPERAND *IRmakeAddrLabelOPERAND(char *addrlabel);
 
 OPERAND *IRmakeTextOPERAND(char *text);
 
+OPERAND *IRmakeTextOPERAND(char *text);
+
 OPERAND *IRmakeTrueOPERAND();
 
 OPERAND *IRmakeFalseOPERAND();
@@ -197,6 +199,8 @@ INSTR *IRmakeCmpINSTR(OPERAND *params);
 
 
 INSTR* IRmakeTextINSTR(OPERAND *params);
+
+INSTR* IRmakeCommentINSTR(OPERAND *params);
 
 INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
 //INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list

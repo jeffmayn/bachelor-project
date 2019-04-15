@@ -22,16 +22,16 @@ int anonymousRecordCounter = 0;
 int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck(Symboltable* target){})
   int error = 0;
   bodies = initBodyList();
-  fprintf(stderr, "******Typecheck Phase 1: Symbol collection******\n");
+  fprintf(stderr, "******** Symbol collection ********\n");
   error = idTypeFinder(table, bodies);
   if(error == -1){
     fprintf(stderr, "Error: Symbol collection did not complete\n");
     return -1;
   }
   else{
-    fprintf(stderr, "Symbol collection completed successfully\n");
+    //fprintf(stderr, "Symbol collection completed successfully\n");
   }
-  fprintf(stderr, "******Typecheck Phase 2: Expression type collection******\n");
+  fprintf(stderr, "******** Expression type collection ********\n");
   error = 0;
   bodyListElm *bElm = getBody(bodies);
   while(bElm != NULL){
@@ -46,26 +46,26 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
     return -1;
   }
   else{
-    fprintf(stderr, "Expression type collection completed successfully\n");
+    //fprintf(stderr, "Expression type collection completed successfully\n");
   }
-  fprintf(stderr, "******Typecheck Phase 3: Typechecking******\n");
+  fprintf(stderr, "******** Typechecking ********\n");
   error = 0;
   resetbodyListIndex(bodies);
   bElm = getBody(bodies);
   while(bElm != NULL){
     error = checkTypes(bElm->scope, bElm->body, bElm->funcId);
     if(error == -1){
-      fprintf(stderr, "Something went totally wring in %s, but we just skip to the next thing and prentend everything is fine. No we don't\n", bElm->funcId);
+      fprintf(stderr, "ERROR: Something went totally wring in %s, but we just skip to the next thing and prentend everything is fine. No we don't\n", bElm->funcId);
       break;
     }
     bElm = getBody(bodies);
   }
   if(error == -1){
-    fprintf(stderr, "Error: Expression type checking did not complete\n");
+    fprintf(stderr, "ERROR: Expression type checking did not complete\n");
     return -1;
   }
   else{
-    fprintf(stderr, "Expression type checking completed successfully\n");
+    //fprintf(stderr, "Expression type checking completed successfully\n");
   }
   //TODO: destroy body list
   return 0;
@@ -146,7 +146,6 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
             sym->content=scopeSymbolTable(t);
             idTypeTravVDecls(sym->content, ty->val.vList);
           }
-          fprintf(stderr, "\t\t\t\t%s\n", vList->vType->id);
           putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type); //can a parameter be anything different from a variable (func or type)
           vList = vList->vList;
         }

@@ -107,7 +107,6 @@ SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);
     return NULL;
   }
-  fprintf(stderr, "\t\t\t\t\t%s\n", s->name);
 
   ParamSymbol *pSym = createParamSymbol(s);
   if(t->ParamHead == NULL){

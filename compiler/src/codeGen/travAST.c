@@ -731,6 +731,14 @@ OPERAND *IRmakeTextOPERAND(char *text){
   return par;
 }
 
+OPERAND *IRmakecommentOPERAND(char *text){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = commentO;
+  par->val.label = text;
+  par->next = NULL;
+  return par;
+}
+
 OPERAND *IRmakeTrueOPERAND(){
   return IRmakeConstantOPERAND(1);
 }
@@ -890,6 +898,12 @@ INSTR* IRmakeTextINSTR(OPERAND *params){
   return instr;
 }
 
+INSTR* IRmakeCommentINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = commentI;
+  return instr;
+}
+
 INSTR* IRappendINSTR(INSTR *newINSTR){
   if(intermediateTail == NULL){
    intermediateHead = newINSTR;
@@ -936,7 +950,8 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
   IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
 
   //remove static link and parameters
-  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount*8),IRmakeRegOPERAND(RSP))));
+  IRappendINSTR(IRmakeCommentINSTR(IRmakecommentOPERAND("remove static link and parameters")));
+  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount*8),IRappendOPERAND(IRmakeRegOPERAND(RSP),IRmakecommentOPERAND("remove static link and parameters")))));
 
 
   //caller save registers
