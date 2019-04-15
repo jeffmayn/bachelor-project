@@ -175,8 +175,9 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   }
   /*caution you enter the land of long lines of code for no reason at all!*/
   int nrTempsAndLocals = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
-  IRinserINSTRhere(instrTempTail, IRmakeSubINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals), IRmakeRegOPERAND(RSP))));
+  IRinserINSTRhere(instrTempTail, IRmakeSubINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP))));
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
+  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP)))); //newly added
   error = IRmakeCalleeEpilog();
 }
 
@@ -314,6 +315,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
   OPERAND *op2;
   OPERAND *op3;
   OPERAND *op4;
+  char *elseLabel;
+  char *endifLabel;
   switch(stmt->kind){
     case returnK:
       //TODO ODOT
@@ -351,6 +354,36 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op1)));
       return 0;
       break;
+    case ifK:
+      endifLabel = Malloc(10);
+      sprintf(endifLabel, "endif%d", labelCounter);
+      labelCounter++;
+      op1 = IRtravExp(t,stmt->val.ifthenelse.cond);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,IRmakeRegOPERAND(RBX)))); //a bit stupid but necessary for if(true)
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(endifLabel)));
+      IRtravStmt(t, stmt->val.ifthenelse.thenbody, funcEndLabel);
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endifLabel)));
+      //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: if-statement\n");
+      break;
+    case thenK:
+      elseLabel = Malloc(10);
+      sprintf(elseLabel, "else%d", labelCounter);
+      endifLabel = Malloc(10);
+      sprintf(endifLabel, "endif%d", labelCounter);
+      labelCounter++;
+      op1 = IRtravExp(t,stmt->val.ifthenelse.cond);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,IRmakeRegOPERAND(RBX)))); //a bit stupid but necessary for if(true)
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(elseLabel)));
+      IRtravStmt(t, stmt->val.ifthenelse.thenbody, funcEndLabel);
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(endifLabel)));
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(elseLabel)));
+      IRtravStmt(t, stmt->val.ifthenelse.elsebody, funcEndLabel);
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endifLabel)));
+      //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: if-statement\n");
+      break;
+
     default:
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: %d\n", stmt->kind);
       return -1;
@@ -405,17 +438,6 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       return IRtravTerm(t, exp->val.term);
       break;
     case minusK:
-      // op1 = IRtravExp(t, exp->val.binOP.left);
-      // op2 = IRtravExp(t, exp->val.binOP.right);
-      // //op3 = IRmakeTemporaryOPERAND(IRcreateNextTemp(localCounter));
-      // op3 = IRmakeRegOPERAND(RBX); //TODO: should ensure to use a temporary also
-      // localCounter++;
-      // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
-      // IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(op2, op3)));
-      // op4 = NEW(OPERAND);
-      // memcpy(op4, op3, sizeof(OPERAND));
-      // op4->next = NULL;
-      // return op4;
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
       op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
@@ -469,8 +491,22 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeLeINSTR(IRappendOPERAND(op1, op2)));
     case eqK:
       op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeEqINSTR(IRappendOPERAND(op1, op2)));
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter-currentLocalStart)); //result temporary
+      char *eqLabel = Malloc(10);
+      sprintf(eqLabel, "eq%d", labelCounter);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
+      IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
+      op5 = NEW(OPERAND);
+      memcpy(op5, op4, sizeof(OPERAND));
+      op5->next = NULL;
+      return op5;
+      //operand 4 and 5 are the same, but with different next pointers
     case geK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -543,23 +579,34 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       return op;
       break;
     case expTermK:
+      return IRtravExp(t, term->val.exp);
+      //fprintf(stderr, "IRtravTerm: UnsupportedTermException: expTermK\n");
       break;
     case notTermK:
+      fprintf(stderr, "IRtravTerm: UnsupportedTermException: notTermK\n");
       break;
     case expCardK:
+      fprintf(stderr, "IRtravTerm: UnsupportedTermException: expCardK\n");
       break;
     case numK:
       op = IRmakeConstantOPERAND(term->val.num);
       return op;
       break;
     case trueK:
+      //true is represented by a 1
+      op = IRmakeTrueOPERAND();
+      return op;
       break;
     case falseK:
+      //false is represented by a 0;
+      op = IRmakeFalseOPERAND();
+      return op;
       break;
     case nullK:
+      fprintf(stderr, "IRtravTerm: UnsupportedTermException: nullK\n");
       break;
     default:
-      fprintf(stderr, "IRtravTerm ERROR, term has no kind\n");
+      fprintf(stderr, "IRtravTerm ERROR, term has no valid kind\n");
   }
   return NULL;
 }
@@ -684,6 +731,14 @@ OPERAND *IRmakeTextOPERAND(char *text){
   return par;
 }
 
+OPERAND *IRmakeTrueOPERAND(){
+  return IRmakeConstantOPERAND(1);
+}
+
+OPERAND *IRmakeFalseOPERAND(){
+  return IRmakeConstantOPERAND(0);
+}
+
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next){
   if(tail == NULL){
     fprintf(stderr, "IRappendOPERAND: tail is NULL\n");
@@ -751,7 +806,7 @@ INSTR* IRmakeLeINSTR(OPERAND *params){
   return instr;
 }
 
-INSTR* IRmakeEqINSTR(OPERAND *params){
+INSTR* IRmakeJeINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpeqI;
   return instr;
@@ -817,6 +872,18 @@ INSTR *IRmakeJumpINSTR(OPERAND *params){
   return instr;
 }
 
+INSTR *IRmakeJneINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmpneqI;
+  return instr;
+}
+
+INSTR *IRmakeCmpINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = cmpI;
+  return instr;
+}
+
 INSTR* IRmakeTextINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = textI;
@@ -869,7 +936,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
   IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
 
   //remove static link and parameters
-  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount),IRmakeRegOPERAND(RSP))));
+  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount*8),IRmakeRegOPERAND(RSP))));
 
 
   //caller save registers

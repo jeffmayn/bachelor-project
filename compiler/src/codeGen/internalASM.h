@@ -143,6 +143,10 @@ OPERAND *IRmakeAddrLabelOPERAND(char *addrlabel);
 
 OPERAND *IRmakeTextOPERAND(char *text);
 
+OPERAND *IRmakeTrueOPERAND();
+
+OPERAND *IRmakeFalseOPERAND();
+
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next);//append next to tail
 
 
@@ -163,8 +167,6 @@ INSTR* IRmakeOrINSTR(OPERAND *params);
 
 INSTR* IRmakeLeINSTR(OPERAND *params);
 
-INSTR* IRmakeEqINSTR(OPERAND *params);
-
 INSTR* IRmakeGeINSTR(OPERAND *params);
 
 INSTR* IRmakeGreINSTR(OPERAND *params);
@@ -184,6 +186,14 @@ INSTR *IRmakeCallINSTR(OPERAND *params);
 INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
 INSTR *IRmakeJumpINSTR(OPERAND *params);
+
+INSTR *IRmakeJeINSTR(OPERAND *params);
+
+INSTR *IRmakeJneINSTR(OPERAND *params);
+
+INSTR *IRmakeCmpINSTR(OPERAND *params);
+
+
 
 
 INSTR* IRmakeTextINSTR(OPERAND *params);
