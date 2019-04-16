@@ -1,0 +1,26 @@
+# Code generation for static link, referencing variables in outer scope
+var a : int, temp : int;
+
+func b() : int
+  var a : int;
+  a = 3;
+  write a;
+  write temp;
+  temp = 0;
+  return a + 10;
+end b
+
+func c() : int
+  write a;
+  return 5;  
+end c
+
+a = 7;
+temp = 9;
+write a;
+temp = c();
+write temp;
+a = b();
+write a;
+write temp;
+

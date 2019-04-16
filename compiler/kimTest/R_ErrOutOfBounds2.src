@@ -1,0 +1,25 @@
+# Runtime checks, lower bound for array, should fail if checked
+func echo(i : int) : int
+  return i;
+end echo
+
+type intArray = array of int;
+
+var myArray : intArray;
+var dummy : int;
+
+allocate myArray of length 3;
+
+myArray[0] = 5;
+myArray[1] = 6;
+myArray[2] = 7;
+
+dummy = echo(0);
+write myArray[dummy];
+dummy = echo(1);
+write myArray[dummy];
+dummy = echo(2);
+write myArray[dummy];
+dummy = echo(0-1);
+write myArray[dummy];
+

@@ -1,0 +1,3 @@
+# Scanner, invalid tokens should not be allowed
+@
+write 42;
