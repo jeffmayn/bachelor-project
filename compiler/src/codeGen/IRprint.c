@@ -52,6 +52,8 @@ void printOPERANDnode(OPERAND *op){
     case textO:
       fprintf(stderr, "%s\n", op->val.label);
       break;
+    case derefO:
+      fprintf(stderr, "dereference register: %s\n", regNames[op->val.reg]);
   }
 
 }

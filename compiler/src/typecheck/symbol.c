@@ -184,7 +184,7 @@ SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){//TODO REFORMAT: g
     int intTemp = *nrJumps;
     intTemp = intTemp + 1;
     *nrJumps = intTemp;
-    return getSymbol(t->next, name, nrJumps);
+    return IRgetSymbol(t->next, name, nrJumps);
   } else {
     return NULL;
   }

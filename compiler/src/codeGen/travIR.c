@@ -67,6 +67,12 @@ int IRtravPARAM(OPERAND *op){
       break;
     case commentO:
       printf("#%s", op->val.label);
+      break;
+    case derefO://we only dereference registers for now.
+      printf("(");
+      regMapping(op->val.reg);
+      printf(")");
+      break;
   }
 }
 

@@ -541,7 +541,8 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
     case idTermK: //function call
     ;
       //slå id i symbol-table
-      SYMBOL *sym = getSymbol(t, term->val.idact.id);
+      int *nrJumps = Calloc(sizeof(int));//new function in compiler/src/utility/memory.c
+      SYMBOL *sym = IRgetSymbol(t, term->val.idact.id, nrJumps);
       //find function-body-scope ???
       //find CODEGENUTIL
       //tjek om label findes -> brug eller lav label
@@ -560,6 +561,12 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       //for ting der ikke er symboler: lav temporaries og operander
       //link operander sammen (evt. i omvendt rækkefølge)
       op = IRtravActList(t, term->val.idact.list); //param list
+
+      //TODO - Generate code to put static link in rdx;
+      error = IRsetCalleeStaticLink(*nrJumps);
+      if(error == -1){
+        return NULL;
+      }
       //kald IRmakeFunctionCallScheme
       error = IRmakeFunctionCallScheme(label, op);
       if(error == -1){
@@ -710,6 +717,14 @@ OPERAND *IRmakeLabelOPERAND(char *labelName){
 OPERAND *IRmakeRegOPERAND(registers reg){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = registerO;
+  par->val.reg = reg;
+  par->next = NULL;
+  return par;
+}
+
+OPERAND *IRmakeDeRefOPERAND(registers reg){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = derefO;
   par->val.reg = reg;
   par->next = NULL;
   return par;
@@ -945,13 +960,17 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
     paramList = tempOp;
     ParamCount += 1;
   }
-  //IRappendINSTR(IRmakePushINSTR(IRmakeConstantOPERAND(0))); //Static link field
+  //convention we put static link in RBX beforehand :) whoopsie
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX))); //Static link field
   //do the actual call
   IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
 
   //remove static link and parameters
   IRappendINSTR(IRmakeCommentINSTR(IRmakecommentOPERAND("remove static link and parameters")));
-  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount*8),IRappendOPERAND(IRmakeRegOPERAND(RSP),IRmakecommentOPERAND("remove static link and parameters")))));
+  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+    IRmakeConstantOPERAND(ParamCount*8),
+    IRappendOPERAND(IRmakeRegOPERAND(RSP),
+    IRmakecommentOPERAND("remove static link and parameters")))));
 
 
   //caller save registers
@@ -971,9 +990,59 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
 
 }
 
-int IRsetCalleeStaticLink(){
-  int* nrJumps = Calloc(sizeof(int));//new function in compiler/src/utility/memory.c
+/**
+ * creates code to find the static link
+ * of the function we are about to call
+ * put it in rbx !!!(this may change later)!!!
+ *                        CHANGE IT TO return an operand blahblah
+ */
+int IRsetCalleeStaticLink(int nrJumps){
+  TEMPORARY *t1;
 
+  if(nrJumps == 0){//we are accessing a function in our own scope
+    t1 = IRcreateNextTemp(tempLocalCounter-currentLocalStart);
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeRegOPERAND(RBP),
+      IRmakeRegOPERAND(RBX))));
+  } else {
+    t1 = IRcreateNextTemp(tempLocalCounter-currentLocalStart);
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeRegOPERAND(RBP),
+      IRmakeTemporaryOPERAND(t1))));
+
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+      IRmakeConstantOPERAND(16),
+      IRmakeTemporaryOPERAND(t1))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeTemporaryOPERAND(t1),
+      IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeDeRefOPERAND(RBX),
+      IRmakeTemporaryOPERAND(t1))));
+
+    while((nrJumps-1) > 0){
+      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+        IRmakeConstantOPERAND(16),
+        IRmakeTemporaryOPERAND(t1))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeTemporaryOPERAND(t1),
+        IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeDeRefOPERAND(RBX),
+        IRmakeTemporaryOPERAND(t1))));
+
+      nrJumps = nrJumps-1;
+    }
+
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeTemporaryOPERAND(t1),
+      IRmakeRegOPERAND(RBX))));
+  }
+  return 0;
 }
+
+
+
+
 
 //comfort space
