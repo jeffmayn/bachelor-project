@@ -88,6 +88,10 @@ int currentLocalStart;
 int currentTemporaryStart;
 int currentTemporaryEnd;
 
+char* beginHeapLabel;
+char* freeHeapLabel;
+//TEMPORARY *freeHeapAddr;
+
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();
 CODEGENUTIL *IRmakeNewCGU();

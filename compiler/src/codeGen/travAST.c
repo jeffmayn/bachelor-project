@@ -64,9 +64,20 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
    * variables and shit, then traverse statements creating the
    * instructions and so on.
    */
-
+  beginHeapLabel = Malloc(5);
+  sprintf(beginHeapLabel, "heap%d", labelCounter);
+  labelCounter++;
+  freeHeapLabel = Malloc(10);
+  sprintf(freeHeapLabel, "freeHeap%d", labelCounter);
+  labelCounter++;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND("format")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".string	\"%d\\n\"")));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".data")));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".align 8")));
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(beginHeapLabel)));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 16384")));
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(freeHeapLabel)));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".text")));
   if(mainBody == NULL){
     return 0; //i guess no bodies gives rise to no errors
@@ -96,7 +107,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
   int error = 0;
   int paramCount = 0;
   ParamSymbol *pSym = element->scope->ParamHead;
-  char* mainName;
+  char* mainName = NULL;
   SYMBOL *func;
   char* labelName;
   if(element->funcId == NULL){
@@ -124,6 +135,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
     }
     labelCounter++;
     func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
+
   }
   SYMBOL *sym;
   while(pSym != NULL){
@@ -156,6 +168,10 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   //TODO set counter for locale variabler slut
   //TODO calleé saves,
   IRappendINSTR(sym->cgu->val.funcInfo.funcLabel); //does the label exist?
+  if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
+    //Special stuff for beginning of main function
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(freeHeapLabel))));
+  }
   error = IRmakeCalleeProlog();
   if(error == -1){
     return -1;
@@ -339,6 +355,10 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       // movq $0, %rax           # No floating point registers used
       // call printf		# Automatically pushes return address
       return 0;
+      break;
+    case allocateK:
+      //TODO: how much space to allocate????????????????????????????
+      fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel allocation\n");
       break;
     case assiK:
       op1 = IRtravVar(t, stmt->val.assign.var);
