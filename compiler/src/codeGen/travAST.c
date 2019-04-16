@@ -945,7 +945,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
     paramList = tempOp;
     ParamCount += 1;
   }
-  IRappendINSTR(IRmakePushINSTR(IRmakeConstantOPERAND(0))); //Static link field
+  //IRappendINSTR(IRmakePushINSTR(IRmakeConstantOPERAND(0))); //Static link field
   //do the actual call
   IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
 
@@ -971,5 +971,9 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
 
 }
 
+int IRsetCalleeStaticLink(){
+  int* nrJumps = Calloc(sizeof(int));//new function in compiler/src/utility/memory.c
+
+}
 
 //comfort space

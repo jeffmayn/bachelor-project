@@ -217,7 +217,7 @@ int IRmakeBodyScheme(BODY *body);
  *  - This list may be arbitrarily long
  */
 int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList);
-
+int IRsetCalleeStaticLink();
 int IRmakeFunctionAssiScheme();
 
 
