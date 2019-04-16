@@ -1,9 +1,9 @@
 #include "internalASM.h"
 
-const char* regNames[] = {"error: na", "%rax ", "%rcx ", "%rdx ",\
-                          "%rbx ", "%rsp ", "%rbp ", "%rsi ",\
-                           "%rdi ", "%r8 ", "%r9 ", "%r10 ", "%r11 ",\
-                            "%r12 ", "%r13 ", "%r14 ", "%r15 ", "error: spill"};
+const char* regNames[] = {"error: na", "%rax", "%rcx", "%rdx",\
+                          "%rbx", "%rsp", "%rbp", "%rsi",\
+                           "%rdi", "%r8", "%r9", "%r10", "%r11",\
+                            "%r12", "%r13", "%r14", "%r15", "error: spill"};
 
 
 
@@ -47,11 +47,11 @@ int IRtravPARAM(OPERAND *op){
       break;
     case temporaryO:
       // TODO
-      //printf("t%d ", op->val.temp->tempId);
+      //printf("t%d", op->val.temp->tempId);
       travTemporary(op->val.temp);
       break;
     case heapAddrO:
-      //printf("%x ", op->val.address);
+      //printf("%x", op->val.address);
       break;
     case labelIDO:
       printf("%s", op->val.label);
@@ -66,7 +66,7 @@ int IRtravPARAM(OPERAND *op){
       printf("%s", op->val.label);
       break;
     case commentO:
-      printf("#%s", op->val.label);
+      printf(" #%s", op->val.label);
   }
 }
 
@@ -101,10 +101,10 @@ int checkOffsetOperand(INSTR *in){
   while(op != NULL){
     if(op->operandKind == temporaryO){
       if(op->val.temp->temporarykind == paramT){
-        printf("mov $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
+        printf("\tmov $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
       }
       else if(op->val.temp->temporarykind == localT || op->val.temp->temporarykind == actualTempT){
-        printf("mov $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
+        printf("\tmov $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
       }
     }
     op = op->next;
@@ -118,15 +118,15 @@ int IRtravINSTR(INSTR *in){
   checkOffsetOperand(in);
   switch(in->instrKind){
     case addI:
-      printf("addq ");
+      printf("\taddq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case subI:
-      printf("subq ");
+      printf("\tsubq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case mulI:
-      printf("imul ");
+      printf("\t\timul ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case divI:
@@ -134,82 +134,82 @@ int IRtravINSTR(INSTR *in){
       error = IRtravOPERANDlist(in->paramList);
       break;
     case andI:
-      printf("and ");
+      printf("\tand ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case orI:
-      printf("or ");
+      printf("\tor ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case xorI:
-      printf("xor ");
+      printf("\txor ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case lshiftI:
-      printf("shl ");
+      printf("\tshl ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case rshiftI:
-      printf("shr ");
+      printf("\tshr ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case cmpI:
-      printf("cmp ");
+      printf("\tcmp ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jumpI:
-      printf("jmp ");
+      printf("\tjmp ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jmplessI:
-      printf("jl ");
+      printf("\tjl ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jmpgreatI:
-      printf("jg ");
+      printf("\tjg ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jmpleI:
-      printf("jl ");
+      printf("\tjl ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jmpgeI:
-      printf("jge ");
+      printf("\tjge ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jmpeqI:
-      printf("je ");
+      printf("\tje ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jmpneqI:
-      printf("jne ");
+      printf("\tjne ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case movI:
-      printf("movq ");
+      printf("\tmovq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case labelI:
       //printf("label ");
-      printf("\n\n\n");
       error = IRtravOPERANDlist(in->paramList);
       printf(":");
       break;
     case pushI:
-      printf("push ");
+      printf("\tpush ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case popI:
-      printf("pop ");
+      printf("\tpop ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case callI:
-      printf("call ");
+      printf("\tcall ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case retI:
-      printf("ret ");
+      printf("\tret ");
       error = IRtravOPERANDlist(in->paramList);
+      printf("\n\n\n");
       break;
     case textI:
       error = IRtravOPERANDlist(in->paramList);

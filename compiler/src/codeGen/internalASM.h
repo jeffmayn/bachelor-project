@@ -9,6 +9,7 @@
 
 #define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
+#define HEAPSIZE 16384
 extern const char* regNames[];
 
 /**
@@ -73,6 +74,7 @@ typedef struct CODEGENUTIL {
   union {
     struct {INSTR *funcLabel; int localStart; int temporaryStart; int temporaryEnd;} funcInfo ;
     TEMPORARY *temp;
+    int size //only relevant for records
   } val;
 } CODEGENUTIL;
 
@@ -88,8 +90,9 @@ int currentLocalStart;
 int currentTemporaryStart;
 int currentTemporaryEnd;
 
-char* beginHeapLabel;
-char* freeHeapLabel;
+char* beginHeapLabel; //points to the beginning of the heap
+char* freeHeapLabel; //contains the next free heap space
+char* endHeapLabel; //contains the heapEndAddress
 //TEMPORARY *freeHeapAddr;
 
 //should return the next tempID;
@@ -147,7 +150,7 @@ OPERAND *IRmakeAddrLabelOPERAND(char *addrlabel);
 
 OPERAND *IRmakeTextOPERAND(char *text);
 
-OPERAND *IRmakeTextOPERAND(char *text);
+OPERAND *IRmakeCommentOPERAND(char *text);
 
 OPERAND *IRmakeTrueOPERAND();
 
@@ -196,6 +199,8 @@ INSTR *IRmakeJumpINSTR(OPERAND *params);
 INSTR *IRmakeJeINSTR(OPERAND *params);
 
 INSTR *IRmakeJneINSTR(OPERAND *params);
+
+INSTR *IRmakeJlessINSTR(OPERAND *params);
 
 INSTR *IRmakeCmpINSTR(OPERAND *params);
 

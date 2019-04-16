@@ -70,6 +70,9 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
   freeHeapLabel = Malloc(10);
   sprintf(freeHeapLabel, "freeHeap%d", labelCounter);
   labelCounter++;
+  endHeapLabel = Malloc(10);
+  sprintf(endHeapLabel, "endHeap%d", labelCounter);
+  labelCounter++;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND("format")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".string	\"%d\\n\"")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".data")));
@@ -77,6 +80,8 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(beginHeapLabel)));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 16384")));
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(freeHeapLabel)));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endHeapLabel)));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".text")));
   if(mainBody == NULL){
@@ -357,7 +362,19 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       return 0;
       break;
     case allocateK:
-      //TODO: how much space to allocate????????????????????????????
+      op1 = IRtravVar(t, stmt->val.allocate);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
+      int size = 1; //TODO: how much space to allocate??????????????????
+      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size),IRmakeLabelOPERAND(freeHeapLabel))));
+      //out of memory check
+      char *eqLabel = Malloc(10);
+      sprintf(eqLabel, "eq%d", labelCounter);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
+      IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel allocation\n");
       break;
     case assiK:
@@ -538,7 +555,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
     case lessK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeLesINSTR(IRappendOPERAND(op1, op2)));
+      IRappendINSTR(IRmakeJlessINSTR(IRappendOPERAND(op1, op2)));
     case neK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -751,7 +768,7 @@ OPERAND *IRmakeTextOPERAND(char *text){
   return par;
 }
 
-OPERAND *IRmakecommentOPERAND(char *text){
+OPERAND *IRmakeCommentOPERAND(char *text){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = commentO;
   par->val.label = text;
@@ -852,7 +869,7 @@ INSTR* IRmakeGreINSTR(OPERAND *params){
   return instr;
 }
 
-INSTR* IRmakeLesINSTR(OPERAND *params){
+INSTR* IRmakeJlessINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmplessI;
   return instr;
@@ -970,8 +987,8 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
   IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
 
   //remove static link and parameters
-  IRappendINSTR(IRmakeCommentINSTR(IRmakecommentOPERAND("remove static link and parameters")));
-  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount*8),IRappendOPERAND(IRmakeRegOPERAND(RSP),IRmakecommentOPERAND("remove static link and parameters")))));
+  IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("remove static link and parameters")));
+  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(ParamCount*8),IRappendOPERAND(IRmakeRegOPERAND(RSP),IRmakeCommentOPERAND("remove static link and parameters")))));
 
 
   //caller save registers
