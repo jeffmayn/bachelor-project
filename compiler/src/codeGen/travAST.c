@@ -270,7 +270,11 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
       break;
     case listK:
       ;//count number of variables
-      return IRtravVarDeclList(table, decl->val.list);
+      int varCount = IRtravVarDeclList(table, decl->val.list, tempLocalCounter-currentLocalStart);
+      if(varCount >= 0){
+        return 0;
+      }
+      return -1;
       break;
   }
   return 0;
@@ -279,36 +283,61 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
 
 /**
  * traverse variable decleration list
+ * Third parameter is the next offset to be used (in current scope)
+ * Returns the number of variables indexed
  */
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList){
-  int error = 0;
-  error = IRtravVarType(table, varDeclList->vType);
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int offset){
+  offset = IRtravVarType(table, varDeclList->vType, offset);
 
-  if((error == 0) && (varDeclList->vList != NULL)){
-    error = IRtravVarDeclList(table, varDeclList->vList);
+  if((offset != -1) && (varDeclList->vList != NULL)){
+    offset = IRtravVarDeclList(table, varDeclList->vList, offset);
   }
-  return error;
+  return offset;
 }
 
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType){
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
 
   SYMBOL *sym = getSymbol(table, varType->id);
   if(sym == NULL){
-    sprintf(stderr, "IRtravVarType: no symbol returned\n");
+    sprintf(stderr, "IRtravVarType: no symbol found for %s\n", varType->id);
     return -1;
   }
   if(sym->cgu == NULL){
     sym->cgu = IRmakeNewCGU();
-    sym->cgu->val.temp = IRcreateNextLocalTemp(localCounter);
+    //TODO: temporaries should only be made for localStart
+    //TODO: need to ensure that no temps are made for variables in records
+    //TODO: the latter only needs an offset.
+    sym->cgu->val.temp = IRcreateNextLocalTemp(offset); //offset instread of local counter
     localCounter++; //maybe this should be dine inside localTemp creator
-
+    offset++;
   } else {
-
+    //after including user defined types, i think it is legal to go here some times
     sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand \
                                   attatched, might be an error not sure");
     return -1;//dunno if we need this.
+    //TODO: I guess we should just return offset here?
   }
-  return 0;
+  SYMBO *sym2 = sym;
+  while(1){ //carefull
+    if(sym2->kind = idK){
+      //go to buttom of user types
+      sym2 = recursiveSymbolRetrieval(table, varType->id, NULL);
+    }
+    TYPE *ty = sym2->typePtr;
+    if(sym2->kind == recordK){
+      int varCount; //the number of variables in record
+      varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
+      sym->cgu->size = varCount;
+      break;
+    }
+    else if(ty->kind == arrayK){
+      ty = ty->val.arrayType;
+    }
+    else{
+      break;
+    }
+  }
+  return offset;
 }
 
 /**
@@ -369,7 +398,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size),IRmakeLabelOPERAND(freeHeapLabel))));
       //out of memory check
       char *eqLabel = Malloc(10);
-      sprintf(eqLabel, "eq%d", labelCounter);
+      sprintf(eqLabel, "allocSucc%d", labelCounter);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
       IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next

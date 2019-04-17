@@ -114,8 +114,8 @@ int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table, char* fu
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList); //, int calledFromParDeclList removed
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType); //, int isParam removed
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int offset); //, int calledFromParDeclList removed
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset); //, int isParam removed
 
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel);
 
