@@ -5,6 +5,7 @@
 //#include "bitmap.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "symbol.h"
 //#include "typecheck.h" //this gives a cycle internalASM->typecheck->symbol->internalASM
 
 #define HASHSIZE2 517
@@ -26,7 +27,7 @@ typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI, textI, commentI} INSTRkind;
 typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO,
-              textO, commentO} OPERANDkind;
+              textO, commentO, tempDeRefO} OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 typedef enum {actualTempT, paramT, localT, regT} TEMPORARYkind;
@@ -71,10 +72,10 @@ typedef struct INSTR {
 
 
 typedef struct CODEGENUTIL {
+  int size; //only relevant for records
   union {
     struct {INSTR *funcLabel; int localStart; int temporaryStart; int temporaryEnd;} funcInfo ;
     TEMPORARY *temp;
-    int size //only relevant for records
   } val;
 } CODEGENUTIL;
 
@@ -82,9 +83,10 @@ int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
 INSTR* intermediateTail;
 
-int tempLocalCounter; //the next tempvalue
+int tempLocalCounter; //the next temp and local offset in current scope
 int labelCounter; //the next label value
-int localCounter;
+//int localCounter;
+int tempIdVal; //used to give each temp a unique ID
 
 int currentLocalStart;
 int currentTemporaryStart;
@@ -121,6 +123,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel);
 
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
 
+int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, OPERAND **op);
+
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
@@ -152,6 +156,8 @@ OPERAND *IRmakeTextOPERAND(char *text);
 
 OPERAND *IRmakeCommentOPERAND(char *text);
 
+OPERAND *IRmakeTempDeRefOPERAND(TEMPORARY *temp);
+
 OPERAND *IRmakeTrueOPERAND();
 
 OPERAND *IRmakeFalseOPERAND();
@@ -168,7 +174,7 @@ INSTR* IRmakeSubINSTR(OPERAND *params);
 
 INSTR* IRmakeDivINSTR(OPERAND *params);
 
-INSTR* IRmakeTimINSTR(OPERAND *params);
+INSTR* IRmakeMulINSTR(OPERAND *params);
 
 INSTR* IRmakeAndINSTR(OPERAND *params);
 

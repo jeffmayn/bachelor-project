@@ -67,6 +67,9 @@ int IRtravPARAM(OPERAND *op){
       break;
     case commentO:
       printf(" #%s", op->val.label);
+    case tempDeRefO:
+      printf("(%%rcx)");
+      //travTemporary(op->val.temp);
   }
 }
 
@@ -99,13 +102,18 @@ int travTemporary(TEMPORARY *temp){
 int checkOffsetOperand(INSTR *in){
   OPERAND *op = in->paramList;
   while(op != NULL){
-    if(op->operandKind == temporaryO){
+    if(op->operandKind == temporaryO || op->operandKind == tempDeRefO){
       if(op->val.temp->temporarykind == paramT){
         printf("\tmov $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
       }
       else if(op->val.temp->temporarykind == localT || op->val.temp->temporarykind == actualTempT){
         printf("\tmov $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
       }
+    }
+    if(op->operandKind == tempDeRefO){
+      printf("\tmov (%%rbp,%%rdx,8), %%rcx\n");
+      //TODO: %rdi is probably a bad choice
+      //TODO: compile to a.s
     }
     op = op->next;
   }
@@ -126,11 +134,11 @@ int IRtravINSTR(INSTR *in){
       error = IRtravOPERANDlist(in->paramList);
       break;
     case mulI:
-      printf("\t\timul ");
+      printf("\timul ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case divI:
-      printf("divq ");
+      printf("\tdivq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case andI:

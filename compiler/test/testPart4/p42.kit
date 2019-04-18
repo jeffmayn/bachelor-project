@@ -1,6 +1,17 @@
-#var x:record of {x:int};
+var y:record of {z:int, b:bool};
 var x:int;
+var i: array of int;
 #allocate x;
 x=3;
-allocate x;
+#allocate x;
 write x;
+
+allocate y;
+y.z = 2+2;
+write y.z;
+y.b = false;
+write y.b;
+allocate i of length 10;
+i[2] = 17;
+#i=i;
+write i[2];

@@ -1,11 +1,11 @@
 #ifndef __symbol_h
 #define __symbol_h
 #include "tree.h"
-#include "internalASM.h"
+//#include "internalASM.h"
 #define HashSize 317
 //enum typeKind {idK, intK, boolK, arrayK, recordK};
 typedef enum Symbolkind{typeS,funcS,varS} Symbolkind;
-
+typedef struct CODEGENUTIL CODEGENUTIL;
 //typedef enum Typekind Typekind;
 //typedef struct TYPE TYPE;
 
