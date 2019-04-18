@@ -531,7 +531,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
  * Traversing term
  */
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
-  OPERAND *op, *op2;
+  OPERAND *op, *op2, *staticLinkOP;
   int error = 0;
   switch(term->kind){
     case varK:
@@ -563,12 +563,12 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       op = IRtravActList(t, term->val.idact.list); //param list
 
       //TODO - Generate code to put static link in rdx;
-      error = IRsetCalleeStaticLink(*nrJumps);
-      if(error == -1){
+      staticLinkOP = IRsetCalleeStaticLink(*nrJumps);
+      if(staticLinkOP == NULL){
         return NULL;
       }
       //kald IRmakeFunctionCallScheme
-      error = IRmakeFunctionCallScheme(label, op);
+      error = IRmakeFunctionCallScheme(label, op, staticLinkOP);
       if(error == -1){
         return NULL;
       }
@@ -937,7 +937,7 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
+int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND* staticLinkOP){
   if(labelINSTR->instrKind != labelI){
     fprintf(stderr, "IRmakeFunctionCallScheme%s\n");
   }
@@ -961,7 +961,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
     ParamCount += 1;
   }
   //convention we put static link in RBX beforehand :) whoopsie
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX))); //Static link field
+  IRappendINSTR(IRmakePushINSTR(staticLinkOP)); //Static link field
   //do the actual call
   IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
 
@@ -996,8 +996,9 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList){
  * put it in rbx !!!(this may change later)!!!
  *                        CHANGE IT TO return an operand blahblah
  */
-int IRsetCalleeStaticLink(int nrJumps){
+OPERAND *IRsetCalleeStaticLink(int nrJumps){
   TEMPORARY *t1;
+  OPERAND *o1;
 
   if(nrJumps == 0){//we are accessing a function in our own scope
     t1 = IRcreateNextTemp(tempLocalCounter-currentLocalStart);
@@ -1033,12 +1034,23 @@ int IRsetCalleeStaticLink(int nrJumps){
 
       nrJumps = nrJumps-1;
     }
-
+    o1 = IRmakeRegOPERAND(RBX);
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeTemporaryOPERAND(t1),
-      IRmakeRegOPERAND(RBX))));
+      IRmakeTemporaryOPERAND(t1), o1)));
   }
-  return 0;
+  return o1;
+}
+
+/**
+ * take name of variable and return the operand
+ * with the position of the variable
+ */
+OPERAND *IRstaticFindVar(char *variableName){
+  SYMBOL *sym;
+  OPERAND *o1;
+  int *nrJumps;
+
+  return o1;
 }
 
 

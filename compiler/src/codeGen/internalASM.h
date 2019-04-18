@@ -218,9 +218,10 @@ int IRmakeBodyScheme(BODY *body);
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList);
-int IRsetCalleeStaticLink();
+int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND *staticLinkOP);
+OPERAND *IRsetCalleeStaticLink(int nrJumps);
 int IRmakeFunctionAssiScheme();
+OPERAND *IRstaticFindVar(char *variableName);
 
 
 //Insert temporary name into symboltable for variables
