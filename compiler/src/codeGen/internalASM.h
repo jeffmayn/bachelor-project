@@ -123,7 +123,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel);
 
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
 
-int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, OPERAND **op);
+int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, OPERAND **op);
 
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 

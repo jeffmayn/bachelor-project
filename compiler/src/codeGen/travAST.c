@@ -326,12 +326,12 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
   SYMBOL *sym2 = sym;
   TYPE *ty = sym2->typePtr;
   while(1){ //carefull
-    if(sym2->typeVal == idK){
+    if(ty->kind == idK){
       //go to buttom of user types
-      sym2 = recursiveSymbolRetrieval(table, varType->id, NULL);
+      sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
       ty = sym2->typePtr;
     }
-    if(sym2->typeVal == recordK){
+    if(ty->kind == recordK){
       if(sym2->cgu == NULL){
         sym2->cgu = IRmakeNewCGU();
         sym2->cgu->val.temp = NULL;
@@ -383,6 +383,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
   OPERAND *op3;
   OPERAND *op4;
   SYMBOL *sym;
+  TYPE *ty;
   char *elseLabel;
   char *endifLabel;
   char *eqLabel;
@@ -415,7 +416,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       return 0;
       break;
     case allocateK:
-      error = IRtravVarRecursive(t, stmt->val.allocate, &sym, &op1);
+      error = IRtravVarRecursive(t, stmt->val.allocate, &sym, &ty, &op1);
       if(error == -1){
         fprintf(stderr, "IRtravStmt: didn't successfully find operand of variable\n");
         return -1;
@@ -438,7 +439,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel allocation\n");
       break;
     case allocateLengthK:
-      error = IRtravVarRecursive(t, stmt->val.allocatelength.var, &sym, &op1);
+      error = IRtravVarRecursive(t, stmt->val.allocatelength.var, &sym, &ty, &op1);
       if(error == -1){
         fprintf(stderr, "IRtravStmt: didn't successfully find operand of variable\n");
         return -1;
@@ -449,7 +450,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
       op1 = IRtravExp(t,stmt->val.allocatelength.exp);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size),IRmakeRegOPERAND(RBX))));
+      //IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size),IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeLabelOPERAND(freeHeapLabel))));
       //out of memory check
       eqLabel = Malloc(10);
@@ -520,9 +521,10 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
  */
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
   SYMBOL *sym;
+  TYPE *ty;
   OPERAND *op;
   int error = 0;
-  error = IRtravVarRecursive(t, var, &sym, &op);
+  error = IRtravVarRecursive(t, var, &sym, &ty, &op);
   if(error == -1){
     fprintf(stderr, "DO we go here alot\n");
     return NULL;
@@ -530,7 +532,7 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
   return op;
 }
 
-int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, OPERAND **op){
+int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, OPERAND **op){
   //SYMBOL *sym;
   OPERAND *op1, *op2;
   TEMPORARY *t1;
@@ -538,26 +540,22 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, OPERAND **op
   switch (var->kind) {
   case idVarK:
     *sym = getSymbol(t, var->val.id);
-    //check if operand already exists: if not make one
     if((*sym)->cgu == NULL){
-      //todo: create and save operand
-      (*sym)->cgu = IRmakeNewCGU();
       fprintf(stderr, "IRtravVar: How do I know if %s is a parameter or local\n", (*sym)->name);
-      //sym->cgu->val.temp = IRcreateNext????();
       return -1;
     }
-    //op = sym->cgu->val.operand;
+    if((*sym)->typeVal == idK){
+      *sym = recursiveSymbolRetrieval((*sym)->defScope, (*sym)->typePtr->val.id, NULL);
+    }
+    *ty = (*sym)->typePtr;
     *op = IRmakeTemporaryOPERAND((*sym)->cgu->val.temp);
-    //op2 = IRmakeTemporaryOPERAND(IRcreateNextTemp());
-    //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,op2)));
-    //return op1;
     return 0; //op and sym is alread set and everything is fine
     //TODO: check if the type is a (userdefined) record or array type
     //i dont know if this works
     //recursiveSymbolRetrieval(sym->defScope, sym->val.id, NULL);
     break;
   case expK:
-    error = IRtravVarRecursive(t, var->val.varexp.var, sym, op);
+    error = IRtravVarRecursive(t, var->val.varexp.var, sym, ty, op);
     if(error == -1){
       return -1;
     }
@@ -568,20 +566,27 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, OPERAND **op
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
     *op = IRmakeTempDeRefOPERAND(t1);
+    //TODO:update symbol??
+    //*ty = (*sym)->typePtr->val.arrayType;
+    if((*sym)->typeVal == idK){
+      *sym = recursiveSymbolRetrieval((*sym)->defScope, (*sym)->typePtr->val.id, NULL);
+      *ty = (*sym)->typePtr;
+    }
+    *ty = (*ty)->val.arrayType;
     fprintf(stderr, "IRtravVar: UnsupportedArrayVarException\n");
     return 0;
-    break;
   case dotK:
-    error = IRtravVarRecursive(t, var->val.vardot.var, sym, op);
+    error = IRtravVarRecursive(t, var->val.vardot.var, sym, ty, op);
     if(error == -1){
       return -1;
     }
-    //values to be returned
+    if((*ty)->kind == idK){
+      *sym = recursiveSymbolRetrieval((*sym)->defScope, (*ty)->val.id, NULL);
+      *ty = (*sym)->typePtr;
+    }
     *sym = getSymbol((*sym)->content, var->val.vardot.id); //recursiveSymbolRetrieval??
     t1 = IRcreateNextTemp(tempLocalCounter);
     tempLocalCounter++;
-    //*op = IRmakeTemporaryOPERAND(t1);
-    //code generation for dereferencing
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
     int offset = (*sym)->cgu->val.temp->placement.offset;
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(offset),IRmakeRegOPERAND(RBX))));
@@ -589,8 +594,6 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, OPERAND **op
     *op = IRmakeTempDeRefOPERAND(t1);
     fprintf(stderr, "IRtravVar: UnsupportedRecordVarException\n");
     return 0;
-    break;
-
   }
 }
 
