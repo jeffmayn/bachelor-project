@@ -83,7 +83,7 @@ int main() {
   }
 
   fprintf(stderr, "%s\n", "######## STARTING PRINTING INTERNAL REPRESENTATION ########");
-  printINSTRnode(intermediateHead);
+  //printINSTRnode(intermediateHead);
 
 
   fprintf(stderr, "%s\n", "######## STARTING FINAL OUTPUT GENERATION ########");
