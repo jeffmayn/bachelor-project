@@ -1,0 +1,21 @@
+#korrekt
+#kardinalit
+var x:int, y:int;
+var z:array of int;
+var a:record of {i:int, b:bool};
+type T = record of {h:array of int};
+var v:T;
+x = 3;
+y = 0-4;
+x = |x|;
+y = |y|;
+write x;
+write y;
+allocate z of length 10;
+write |y|;
+allocate a;
+write |a|;
+allocate v;
+write |v|;
+allocate v.h of length 8;
+write |v.h|;

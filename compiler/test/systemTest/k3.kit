@@ -1,0 +1,34 @@
+#korrekt
+#sammenlignings- og boolske operatorer
+
+var i:int, b:bool;
+
+b = 3>4;
+write b;
+i = 8;
+b = i == i;
+write b;
+b = b && true;
+write b;
+b = false && b;
+write b;
+b = b || true;
+write b;
+b = false || b;
+write b;
+b = b == b;
+write b;
+b = i <= 3 || i == 3;
+write b;
+b = i <= 3 || i == i;
+i = 0;
+b = i >= 3 || i == 3;
+write b;
+b = i < 3 || i == 3;
+write b;
+b = i != 3 && i == 3;
+write b;
+b = i != 3 && i == 3 || i == 0;
+write b;
+b = (i != 3 && i != 3) || i == 0;
+write b;

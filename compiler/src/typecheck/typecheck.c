@@ -485,6 +485,14 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
         fprintf(stderr, "Line %d: Hopefully error is already printed\n", term->lineno);
         return errorK; //Hopefully error is already printed;
       }
+      if(ty == idK){
+        sym = recursiveSymbolRetrieval((*type)->scope, (*type)->val.id, NULL);
+        if(sym == NULL){
+          fprintf(stderr, "Line %d: The type of the symbol %s could not be expanded\n", term->lineno, (*type)->val.id);
+          return errorK;
+        }
+        *type = sym->typePtr;
+      }
       return (*type)->kind; //=ty?
       break;
     case idTermK: //function call
@@ -640,9 +648,10 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
         fprintf(stderr, "Line %d: the symbol '%s' is not a record\n", v->lineno, (*sym)->name);
         return errorK;
       }
+      SYMBOL *s = *sym;
       *sym = getRecordSymbol((*sym)->content, v->val.vardot.id);
       if(*sym == NULL){
-        fprintf(stderr, "Unfortunately '%s' was not found insides '%s'\n", v->val.vardot.id, (*sym)->name);
+        fprintf(stderr, "Unfortunately '%s' was not found insides '%s'\n", v->val.vardot.id, s->name);
         return -1;
       }
       //sym should be updated already
@@ -738,7 +747,7 @@ int checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId){
  * Checks types of a given statement
  */
 int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
-  SYMBOL *sym = NULL;
+  SYMBOL *sym; //weird behavior if = NULL;
   TYPE *type;
   int error;
   Typekind tk;
@@ -786,51 +795,55 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         fprintf(stderr, "Line %d: Hopefully error is already printed\n", s->lineno);
         return -1;
       }
+      //I dont think the below is necessary
       if(sym->typeVal == idK){
         if(sym->typePtr->kind != idK){
           fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
           return -1;
         }
-        sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
-        if(sym == NULL){
-          fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
-          return -1;
-        }
+        // sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
+        // if(sym == NULL){
+        //   fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
+        //   return -1;
+        // }
       }
       //sym = getSymbol(t, s->val.allocate->val.id);
-      if(sym == NULL){
-        fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocate->val.id);
-        return -1;
-      }
-      if(sym->kind == funcS){
-        fprintf(stderr,"Line %d: Cannot allocate a function\n", s->lineno);
+      // if(sym == NULL){
+      //   fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocate->val.id);
+      //   return -1;
+      // }
+      if(sym->kind != varS){
+        fprintf(stderr,"Line %d: can only allocate variables\n", s->lineno);
         return -1;
       }
       return 0;
       break;
     case allocateLengthK:
       //check user type
+      sym = NULL;
       type = checkTypeTravVar(t, s->val.allocatelength.var, &sym);
       if(sym == NULL){
         fprintf(stderr, "Line %d: Hopefully error is already printed\n", s->lineno);
         return -1;
       }
+      //i dont think the below is necessay
       if(sym->typeVal == idK){
         if(sym->typePtr->kind != idK){
           fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
           return -1;
         }
-        sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
-        if(sym == NULL){
-          fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
-          return -1;
-        }
+        // SYMBOL *s123 = sym;
+        // sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
+        // if(sym == NULL){
+        //   fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, s123->name);
+        //   return -1;
+        // }
       }
       //sym = getSymbol(t, s->val.allocatelength.var->val.id);
-      if(s == NULL){
-        fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocatelength.var->val.id);
-        return -1;
-      }
+      // if(s == NULL){
+      //   fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocatelength.var->val.id);
+      //   return -1;
+      // }
       if(sym->kind != varS){
         fprintf(stderr,"Line %d: can only allocate variables\n", s->lineno);
         return -1;

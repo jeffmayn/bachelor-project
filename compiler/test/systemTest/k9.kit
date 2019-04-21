@@ -1,0 +1,25 @@
+#korrekt
+#Funktioner der returnerer brugerdefinerede typer
+type TAL = array of int;
+var tal:TAL;
+type blah = record of {nums:TAL};
+var talISkal:blah;
+
+func heltalsFabrik(len:int):array of int
+  var ar:TAL;
+  allocate ar of length len;
+  return ar;
+end heltalsFabrik
+
+func f():blah
+  var x:blah;
+  allocate x;
+  x.nums = heltalsFabrik(11);
+  x.nums[3] = 7;
+  return x;
+end f
+
+tal = heltalsFabrik(10);
+
+talISkal = f();
+write talISkal.nums[3];

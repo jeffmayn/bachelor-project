@@ -97,6 +97,8 @@ char* freeHeapLabel; //contains the next free heap space
 char* endHeapLabel; //contains the heapEndAddress
 //TEMPORARY *freeHeapAddr;
 
+TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
+
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();
 CODEGENUTIL *IRmakeNewCGU();
@@ -111,7 +113,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
 
-int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table, char* funcEndLabel);
+int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, char* funcEndLabel);
 
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
 

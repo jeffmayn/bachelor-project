@@ -1,0 +1,17 @@
+type T = record of {z:int, b:bool};
+var combi:record of {Ts:array of T, t:T};
+#var x:T;
+
+
+#allocate x;
+#x.z = 3;
+#x.b=true;
+#write x.z;
+#write x.b;
+
+
+allocate combi;
+allocate combi.Ts of length 300;
+allocate combi.Ts[7];
+combi.Ts[7].z=87;
+write combi.Ts[7].z;
