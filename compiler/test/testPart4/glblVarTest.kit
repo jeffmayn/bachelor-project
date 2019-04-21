@@ -1,0 +1,16 @@
+var globalInt : int, globalBool : bool;
+
+func addToGlobal () : int
+  var localInt : int, temp : int;
+
+  localInt = 10;
+  temp = globalInt;
+  globalInt = temp + localInt;
+
+end addToGlobal
+
+write globalInt;
+
+addToGlobal();
+
+write globalInt;

@@ -1050,6 +1050,8 @@ OPERAND *IRstaticFindVar(char *variableName){
   OPERAND *o1;
   int *nrJumps;
 
+  
+
   return o1;
 }
 
