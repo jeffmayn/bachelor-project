@@ -118,6 +118,12 @@ int expTravStmt(STATEMENT *s){
       }
       return -1;
       break;
+    case listStmtK:
+      return expTravStmts(s->val.list);
+      fprintf(stderr, "INTERNAL WEEDER ERROR: listStmtK not checked for return\n");
+
+      return -1;
+      break;
     default:
       return -1;
       break;

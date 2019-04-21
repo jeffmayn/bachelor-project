@@ -855,7 +855,10 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         fprintf(stderr, "Line %d: Unfortunately no symbol where found\n", s->lineno);
         return -1;
       }
-      error = cmpTypeSymExp(t, sym, s->val.assign.exp);
+      //TODO ODOT: What if the variable is a array
+      //We then need to compare the type and the expression
+      error = cmpTypeTyExp(t, type, s->val.assign.exp);
+      //error = cmpTypeSymExp(t, sym, s->val.assign.exp); //190419 replaced by the above line
       // if(type->kind != recordK){ //Changed this from == to != ***********************************
       //   //TODO: can't we just use sym and exp in any case
       //   //then we need to adapt sym and exp to this of course
@@ -1104,85 +1107,169 @@ Typekind expOfType(EXP *exp){
 //     return type->kind;
 // }
 
-/**
- * Used to compare the typ of a symbol (variable) and an expression
- * This function is not called recursively
- * Instead the function cmpTypeSymSym or cmpTypeTyTy is used
- */
+
 int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
-  if(sym == NULL){
-    fprintf(stderr, "No symbol given\n");
-  }
   if(exp == NULL){
     fprintf(stderr, "No expression given\n");
+    return -1;
   }
-  if(sym->typeVal == idK){
+  if(sym == NULL){
+    fprintf(stderr, "No symbol given\n");
+    return -1;
+  }
+  if(sym->typeVal == idK){ //check necessary??
     //TODO: check that typePtr has idK type
     sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
     if(sym == NULL){
       return -1; //assume error already printed
     }
   }
-  Typekind exptk, symtk;
-  exptk = exp->typekind;
-  symtk = sym->typeVal;
-  if(exptk == symtk){
-    switch(exptk){
+  int error = cmpTypekind(sym->typeVal, exp->typekind);
+  if(error == 0){ return 0; }
+  if(exp->typekind == arrayK || exp->typekind == recordK || exp->typekind == idK){
+    return cmpTypeSymTy(t, sym, exp->type);
+  }
+  fprintf(stderr, "Line %d: The type %d of the expression does not match the type %d of the symbol %s\n", exp->lineno, exp->typekind, sym->typeVal, sym->name);
+  return -1;
+}
+
+int cmpTypeTyExp(SymbolTable *t, TYPE *ty, EXP *exp){
+  if(exp == NULL){
+    fprintf(stderr, "No expression given\n");
+    return -1;
+  }
+  if(ty->kind == idK){ //check necessary??
+    //TODO: check that typePtr has idK type
+    SYMBOL *sym = recursiveSymbolRetrieval(ty->scope, ty->val.id, NULL);
+    if(sym == NULL){
+      return -1; //assume error already printed
+    }
+    return cmpTypeSymExp(t, sym, exp);
+  }
+  int error = cmpTypekind(ty->kind, exp->typekind);
+  if(error == 0){ return 0; }
+
+  if(exp->typekind == arrayK || exp->typekind == recordK || exp->typekind == idK){
+    return cmpTypeTyTy(t, ty, exp->type);
+  }
+  fprintf(stderr, "Line %d: The type %d of the expression does not match the type %d\n", exp->lineno, exp->typekind, ty->kind);
+  return -1;
+}
+
+int cmpTypekind(Typekind tk1, Typekind tk2){
+  if(tk1 == tk2){
+    switch(tk1){
       case errorK:
-        //TODO
-        fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
-        return -1;
-        fprintf(stderr, "errorK\n");
-        break;
       case recordK:
-        //TODO
-        fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
-        return -1;
-        break;
       case idK:
-        //TODO
-        fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
-        return -1;
-        break;
       case nullKK:
-        //TODO
-        fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+      case arrayK:
+        fprintf(stderr, "Equal types %d not valid\n",  tk1);
         return -1;
-        break;
       case intK:
       case boolK:
         return 0;
-        break;
-      case arrayK:
-        return cmpTypeTyTy(t,sym->typePtr, exp->type);
-        break;
     }
   }
-  if(exptk == recordK){
-    fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
+  if(((tk1 == recordK) || (tk1 == arrayK)) && tk2 == nullKK){
+    return 0;
+  }
+  if(((tk2 == recordK) || (tk2 == arrayK)) && tk1 == nullKK){
+    return 0;
+  }
+  return -1;
+}
+
+int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
+  if(ty1 == NULL){
+    fprintf(stderr, "Missing first type\n");
     return -1;
   }
-  if(exptk == idK){
-    if(exp->type->kind != idK){
-      fprintf(stderr, "Line %d: The two types %d and %d for the expression does not match\n", exp->lineno, idK, exp->type->kind);
+  if(ty2 == NULL){
+    fprintf(stderr, "Missing second type\n");
+    return -1;
+  }
+  Typekind tk1 = ty1->kind;
+  Typekind tk2 = ty2->kind;
+  SYMBOL *sym1 = NULL; //important for recordK cases below
+  SYMBOL *sym2 = NULL;
+  if(tk1 == idK){
+    sym1 = recursiveSymbolRetrieval(ty1->scope, ty1->val.id, NULL);
+    if(sym1 == NULL){
+      fprintf(stderr, "The symbol '%s' was not found\n", ty1->val.id);
       return -1;
     }
-    //SYMBOL *sym2 = getSymbol(t, exp->type->val.id);
-    //TODO: IMPORTANT: jeg har blot typen af expressions, men ikke hvor de er defineret
-    //foreksempel ved jeg at returtypen af f er EXP, men jeg ved ikke hvor den er defineret (p16.kit)
-    SYMBOL *sym2 = recursiveSymbolRetrieval(exp->type->scope, exp->type->val.id, NULL);
+    return cmpTypeSymTy(t, sym1, ty2);
+    //below to be done inside SymTy
+    tk1 = sym1->typeVal;
+    if(tk1 != sym1->typePtr->kind){
+      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym1->name);
+      return -1;
+    }
+  }
+  if(tk2 == idK){
+    sym2 = recursiveSymbolRetrieval(ty2->scope, ty2->val.id, NULL);
     if(sym2 == NULL){
-      fprintf(stderr, "Line %d: The symbol %s was not found\n", exp->lineno, exp->type->val.id);
+      fprintf(stderr, "The symbol '%s' was not found\n", ty2->val.id);
+      return -1;
+    }
+    tk2 = sym2->typeVal;
+    if(tk2 != sym2->typePtr->kind){
+      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym2->name);
+      return -1;
+    }
+    return cmpTypeSymTy(t, sym2, ty1);
+  }
+  if(tk1 == tk2 && tk1 == arrayK){
+    return cmpTypeTyTy(t,ty1->val.arrayType, ty2->val.arrayType);
+  }
+  return cmpTypekind(tk1,tk2);
+}
+
+
+int cmpTypeSymTy(SymbolTable *t, SYMBOL *sym, TYPE *ty){
+  if(sym == NULL){
+    fprintf(stderr, "Missing symbol\n");
+    return -1;
+  }
+  if(ty == NULL){
+    fprintf(stderr, "Missing type\n");
+    return -1;
+  }
+  Typekind tk1 = sym->typeVal;
+  Typekind tk2 = ty->kind;
+  SYMBOL *sym2 = NULL;
+  if(tk1 == idK){
+    sym = recursiveSymbolRetrieval(sym->defScope, sym->name, NULL);
+    if(sym == NULL){
+      fprintf(stderr, "The symbol '%s' was not found\n", sym->name);
+      return -1;
+    }
+    tk1 = sym->typeVal;
+    if(tk1 != sym->typePtr->kind){
+      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym->name);
+      return -1;
+    }
+  }
+  if(tk2 == idK){
+    sym2 = recursiveSymbolRetrieval(ty->scope, ty->val.id, NULL);
+    if(sym2 == NULL){
+      fprintf(stderr, "The symbol '%s' was not found\n", ty->val.id);
+      return -1;
+    }
+    tk2 = sym2->typeVal;
+    if(tk2 != sym2->typePtr->kind){
+      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym2->name);
       return -1;
     }
     return cmpTypeSymSym(t, sym, sym2);
   }
-  if(((symtk == recordK) || (symtk == arrayK)) && exptk == nullKK){
-    return 0;
+  if(tk1 == tk2 && tk1 == arrayK){
+    return cmpTypeTyTy(t,sym->typePtr, ty);
   }
-  fprintf(stderr, "Line %d: The expression with type '%d' and the symbol '%s' with type '%d' does not match\n", exp->lineno, exptk, sym->name, symtk);
-  return -1;
+  return cmpTypekind(tk1,tk2);
 }
+
 
 int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   if(sym1 == NULL){
@@ -1221,114 +1308,250 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
     fprintf(stderr, "Symbol '%s' has disallowed null type\n", name2);
     return -1;
   }
-  if(tk1 == tk2){
-    switch(tk1){
-      case nullKK:
-        //TODO
-        fprintf(stderr, "nullKK\n");
-        break;
-      case errorK:
-        //TODO
-        fprintf(stderr, "errorK\n");
-        break;
-      case idK:
-        //TODO
-        fprintf(stderr, "idK\n");
-        break;
-      case intK:
-      case boolK:
-        return 0;
-        break;
-      case recordK:
-        if(sym1->content != sym2->content){
-          fprintf(stderr, "The two symbols %s and %s does not have same record type\n", name1, name2);
-          return -1;
-        }
-        return 0;
-        break;
-      case arrayK:
-        return cmpTypeTyTy(t, sym1->typePtr, sym2->typePtr);
-        break;
-    }
-  }
-  fprintf(stderr, "The two types %d and %d does not match\n", tk1, tk2);
-  return -1;
-}
-
-int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
-  if(ty1 == NULL){
-    fprintf(stderr, "Missing first type\n");
-  }
-  if(ty2 == NULL){
-    fprintf(stderr, "Missing second type\n");
-  }
-  Typekind tk1 = ty1->kind;
-  Typekind tk2 = ty2->kind;
-  SYMBOL *sym1 = NULL; //important for recordK cases below
-  SYMBOL *sym2 = NULL;
-  if(tk1 == idK){
-    sym1 = recursiveSymbolRetrieval(ty1->scope, ty1->val.id, NULL);
-    if(sym1 == NULL){
-      fprintf(stderr, "The symbol '%s' was not found\n", ty1->val.id);
+  if(tk1 == tk2 && tk1 == recordK){
+    if(sym1->content != sym2->content){
+      fprintf(stderr, "The two symbols %s and %s does not have same record type\n", name1, name2);
       return -1;
     }
-    tk1 = sym1->typeVal;
-    if(tk1 != sym1->typePtr->kind){
-      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym1->name);
-      return -1;
-    }
+    return 0;
   }
-  if(tk2 == idK){
-    sym2 = recursiveSymbolRetrieval(ty2->scope, ty2->val.id, NULL);
-    if(sym2 == NULL){
-      fprintf(stderr, "The symbol '%s' was not found\n", ty2->val.id);
-      return -1;
-    }
-    tk2 = sym2->typeVal;
-    if(tk2 != sym2->typePtr->kind){
-      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym2->name);
-      return -1;
-    }
+  if(tk1 == tk2 && tk1 == arrayK){
+    return cmpTypeTyTy(t,sym1->typePtr, sym2->typePtr);
   }
-
-  if(tk1 == tk2){
-    switch(tk1){
-      case errorK:
-        // TODO:
-        fprintf(stderr, "errorK\n");
-        break;
-      case idK:
-        // TODO:
-        fprintf(stderr, "idK\n");
-        break;
-      case intK:
-      case boolK:
-        return 0;
-        break;
-      case arrayK:
-        return cmpTypeTyTy(t, ty1->val.arrayType, ty2->val.arrayType);
-        break;
-      case recordK:
-        if((sym1 == NULL) || (sym2 == NULL)){
-          fprintf(stderr, "Comparison with anonymous record type fond and is not allowed\n");
-          return -1;
-        }
-        if(sym1->content != sym2->content){
-          fprintf(stderr, "The two symbols '%s' and '%s' does not have same record type\n", sym1->name, sym2->name);
-          return -1;
-        }
-        return 0;
-      case nullKK:
-        fprintf(stderr, "Both types of comparison is NULL\n");
-        return -1;
-        break;
-    }
-  }
-  fprintf(stderr, "The two types %d and %d does not match\n", tk1, tk2);
-  return -1;
+  return cmpTypekind(tk1, tk2);
 }
 
 
+
+// /**
+//  * Used to compare the type of a symbol (variable) and an expression
+//  * This function is not called recursively
+//  * Instead the function cmpTypeSymSym or cmpTypeTyTy is used
+//  */
+//  //***************************GAMMEL****************************//
+// int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
+//   if(sym == NULL){
+//     fprintf(stderr, "No symbol given\n");
+//   }
+//   if(exp == NULL){
+//     fprintf(stderr, "No expression given\n");
+//   }
+//   if(sym->typeVal == idK){
+//     //TODO: check that typePtr has idK type
+//     sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
+//     if(sym == NULL){
+//       return -1; //assume error already printed
+//     }
+//   }
+//   Typekind exptk, symtk;
+//   exptk = exp->typekind;
+//   symtk = sym->typeVal;
+//   if(exptk == symtk){
+//     switch(exptk){
+//       case errorK:
+//         //TODO
+//         fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+//         return -1;
+//         break;
+//       case recordK:
+//         //TODO
+//         fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+//         return -1;
+//         break;
+//       case idK:
+//         //TODO
+//         fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+//         return -1;
+//         break;
+//       case nullKK:
+//         //TODO
+//         fprintf(stderr, "Line %d: Expr: %d\n", exp->lineno, exptk);
+//         return -1;
+//         break;
+//       case intK:
+//       case boolK:
+//         return 0;
+//         break;
+//       case arrayK:
+//         return cmpTypeTyTy(t,sym->typePtr, exp->type);
+//         break;
+//     }
+//   }
+//   if(exptk == recordK){
+//     fprintf(stderr, "Line %d: The expression has anonymous record type\n", exp->lineno);
+//     return -1;
+//   }
+//   if(exptk == idK){
+//     if(exp->type->kind != idK){
+//       fprintf(stderr, "Line %d: The two types %d and %d for the expression does not match\n", exp->lineno, idK, exp->type->kind);
+//       return -1;
+//     }
+//     //SYMBOL *sym2 = getSymbol(t, exp->type->val.id);
+//     //TODO: IMPORTANT: jeg har blot typen af expressions, men ikke hvor de er defineret
+//     //foreksempel ved jeg at returtypen af f er EXP, men jeg ved ikke hvor den er defineret (p16.kit)
+//     SYMBOL *sym2 = recursiveSymbolRetrieval(exp->type->scope, exp->type->val.id, NULL);
+//     if(sym2 == NULL){
+//       fprintf(stderr, "Line %d: The symbol %s was not found\n", exp->lineno, exp->type->val.id);
+//       return -1;
+//     }
+//     return cmpTypeSymSym(t, sym, sym2);
+//   }
+//   if(((symtk == recordK) || (symtk == arrayK)) && exptk == nullKK){
+//     return 0;
+//   }
+//   fprintf(stderr, "Line %d: The expression with type '%d' and the symbol '%s' with type '%d' does not match\n", exp->lineno, exptk, sym->name, symtk);
+//   return -1;
+// }
+//
+// //***********************************GAMMEL_END***************************//
+// //***********************************GAMMEL***************************//
+// int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
+//   if(sym1 == NULL){
+//     fprintf(stderr, "Missing symbol 1\n");
+//     return -1;
+//   }
+//   if(sym2 == NULL){
+//     fprintf(stderr, "Missing symbol 2\n");
+//     return -1;
+//   }
+//   char* name1 = sym1->name;
+//   char* name2 = sym2->name;
+//   if(sym1->typeVal == idK){
+//     //TODO: check that typePtr has idK type
+//     sym1 = recursiveSymbolRetrieval(sym1->typePtr->scope, sym1->name, NULL);
+//     if(sym1 == NULL){
+//       fprintf(stderr, "Couldn't expand type for symbol %s\n", name1);
+//       return -1;
+//     }
+//   }
+//   if(sym2->typeVal == idK){
+//     //TODO: check that typePtr has idK type
+//     sym2 = recursiveSymbolRetrieval(sym2->typePtr->scope, sym2->name, NULL);
+//     if(sym2 == NULL){
+//       fprintf(stderr, "Couldn't expand type for symbol %s\n", name2);
+//       return -1;
+//     }
+//   }
+//   Typekind tk1 = sym1->typeVal;
+//   Typekind tk2 = sym2->typeVal;
+//   if(tk1 == nullKK){ //this should not be able to happen
+//     fprintf(stderr, "Symbol '%s' has disallowed null type\n", name1);
+//     return -1;
+//   }
+//   if(tk2 == nullKK){ //this should not be able to happen
+//     fprintf(stderr, "Symbol '%s' has disallowed null type\n", name2);
+//     return -1;
+//   }
+//   if(tk1 == tk2){
+//     switch(tk1){
+//       case nullKK:
+//         //TODO
+//         fprintf(stderr, "nullKK\n");
+//         break;
+//       case errorK:
+//         //TODO
+//         fprintf(stderr, "errorK\n");
+//         break;
+//       case idK:
+//         //TODO
+//         fprintf(stderr, "idK\n");
+//         break;
+//       case intK:
+//       case boolK:
+//         return 0;
+//         break;
+//       case recordK:
+//         if(sym1->content != sym2->content){
+//           fprintf(stderr, "The two symbols %s and %s does not have same record type\n", name1, name2);
+//           return -1;
+//         }
+//         return 0;
+//         break;
+//       case arrayK:
+//         return cmpTypeTyTy(t, sym1->typePtr, sym2->typePtr);
+//         break;
+//     }
+//   }
+//   fprintf(stderr, "The two types %d and %d does not match\n", tk1, tk2);
+//   return -1;
+// }
+// //***********************************GAMMEL_END***************************//
+//
+// //**********************************GAMMEL**********************//
+// int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
+//   if(ty1 == NULL){
+//     fprintf(stderr, "Missing first type\n");
+//   }
+//   if(ty2 == NULL){
+//     fprintf(stderr, "Missing second type\n");
+//   }
+//   Typekind tk1 = ty1->kind;
+//   Typekind tk2 = ty2->kind;
+//   SYMBOL *sym1 = NULL; //important for recordK cases below
+//   SYMBOL *sym2 = NULL;
+//   if(tk1 == idK){
+//     sym1 = recursiveSymbolRetrieval(ty1->scope, ty1->val.id, NULL);
+//     if(sym1 == NULL){
+//       fprintf(stderr, "The symbol '%s' was not found\n", ty1->val.id);
+//       return -1;
+//     }
+//     tk1 = sym1->typeVal;
+//     if(tk1 != sym1->typePtr->kind){
+//       fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym1->name);
+//       return -1;
+//     }
+//   }
+//   if(tk2 == idK){
+//     sym2 = recursiveSymbolRetrieval(ty2->scope, ty2->val.id, NULL);
+//     if(sym2 == NULL){
+//       fprintf(stderr, "The symbol '%s' was not found\n", ty2->val.id);
+//       return -1;
+//     }
+//     tk2 = sym2->typeVal;
+//     if(tk2 != sym2->typePtr->kind){
+//       fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym2->name);
+//       return -1;
+//     }
+//   }
+//
+//   if(tk1 == tk2){
+//     switch(tk1){
+//       case errorK:
+//         // TODO:
+//         fprintf(stderr, "errorK\n");
+//         break;
+//       case idK:
+//         // TODO:
+//         fprintf(stderr, "idK\n");
+//         break;
+//       case intK:
+//       case boolK:
+//         return 0;
+//         break;
+//       case arrayK:
+//         return cmpTypeTyTy(t, ty1->val.arrayType, ty2->val.arrayType);
+//         break;
+//       case recordK:
+//         if((sym1 == NULL) || (sym2 == NULL)){
+//           fprintf(stderr, "Comparison with anonymous record type fond and is not allowed\n");
+//           return -1;
+//         }
+//         if(sym1->content != sym2->content){
+//           fprintf(stderr, "The two symbols '%s' and '%s' does not have same record type\n", sym1->name, sym2->name);
+//           return -1;
+//         }
+//         return 0;
+//       case nullKK:
+//         fprintf(stderr, "Both types of comparison is NULL\n");
+//         return -1;
+//         break;
+//     }
+//   }
+//   fprintf(stderr, "The two types %d and %d does not match\n", tk1, tk2);
+//   return -1;
+// }
+//
+// //******************************GAMMEL_END*************************//
 
 
 

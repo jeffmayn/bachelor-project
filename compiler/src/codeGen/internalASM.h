@@ -5,10 +5,12 @@
 //#include "bitmap.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "symbol.h"
 //#include "typecheck.h" //this gives a cycle internalASM->typecheck->symbol->internalASM
 
 #define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
+#define HEAPSIZE 16384
 extern const char* regNames[];
 
 /**
@@ -25,7 +27,7 @@ typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI, textI, commentI} INSTRkind;
 typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO,
-              textO, commentO, derefO} OPERANDkind;
+              textO, commentO, tempDeRefO, derefO} OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 typedef enum {actualTempT, paramT, localT, regT} TEMPORARYkind;
@@ -71,6 +73,7 @@ typedef struct INSTR {
 
 
 typedef struct CODEGENUTIL {
+  int size; //only relevant for records
   union {
     struct {INSTR *funcLabel; int localStart; int temporaryStart; int temporaryEnd;} funcInfo ;
     TEMPORARY *temp;
@@ -81,13 +84,19 @@ int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
 INSTR* intermediateTail;
 
-int tempLocalCounter; //the next tempvalue
+int tempLocalCounter; //the next temp and local offset in current scope
 int labelCounter; //the next label value
-int localCounter;
+//int localCounter;
+int tempIdVal; //used to give each temp a unique ID
 
 int currentLocalStart;
 int currentTemporaryStart;
 int currentTemporaryEnd;
+
+char* beginHeapLabel; //points to the beginning of the heap
+char* freeHeapLabel; //contains the next free heap space
+char* endHeapLabel; //contains the heapEndAddress
+//TEMPORARY *freeHeapAddr;
 
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();
@@ -108,12 +117,14 @@ int IRtravStatementList(STATEMENT_LIST *statements, SymbolTable *table, char* fu
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList); //, int calledFromParDeclList removed
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType); //, int isParam removed
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int offset); //, int calledFromParDeclList removed
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset); //, int isParam removed
 
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel);
 
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
+
+int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, OPERAND **op);
 
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 
@@ -144,7 +155,9 @@ OPERAND *IRmakeAddrLabelOPERAND(char *addrlabel);
 
 OPERAND *IRmakeTextOPERAND(char *text);
 
-OPERAND *IRmakeTextOPERAND(char *text);
+OPERAND *IRmakeCommentOPERAND(char *text);
+
+OPERAND *IRmakeTempDeRefOPERAND(TEMPORARY *temp);
 
 OPERAND *IRmakeTrueOPERAND();
 
@@ -163,7 +176,7 @@ INSTR* IRmakeSubINSTR(OPERAND *params);
 
 INSTR* IRmakeDivINSTR(OPERAND *params);
 
-INSTR* IRmakeTimINSTR(OPERAND *params);
+INSTR* IRmakeMulINSTR(OPERAND *params);
 
 INSTR* IRmakeAndINSTR(OPERAND *params);
 
@@ -194,6 +207,8 @@ INSTR *IRmakeJumpINSTR(OPERAND *params);
 INSTR *IRmakeJeINSTR(OPERAND *params);
 
 INSTR *IRmakeJneINSTR(OPERAND *params);
+
+INSTR *IRmakeJlessINSTR(OPERAND *params);
 
 INSTR *IRmakeCmpINSTR(OPERAND *params);
 

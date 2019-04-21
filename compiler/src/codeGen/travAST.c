@@ -1,6 +1,6 @@
 #include "internalASM.h"
 #include "memory.h"
-#include "symbol.h"
+//#include "symbol.h"
 #include "tree.h"
 #include "typecheck.h"
 #include <string.h>
@@ -13,8 +13,8 @@
 TEMPORARY* IRcreateNextTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
   tmp->temporarykind = actualTempT;
-  tmp->tempId = tempLocalCounter;
-  tempLocalCounter++;
+  tmp->tempId = tempIdVal;
+  tempIdVal++;
   tmp->placement.offset = offset;
   return tmp;
   //maybe they should be added to a collection containing all
@@ -32,8 +32,8 @@ TEMPORARY* IRcreateNextLocalTemp(int offset){
   // sprintf(str, "t%d\0", tempCounter);
   // tmp->tempName = str;
   tmp->temporarykind = localT;
-  tmp->tempId = tempLocalCounter;
-  tempLocalCounter++; //only if we want to do liveness analysis on locals
+  tmp->tempId = tempIdVal;
+  tempIdVal++; //only if we want to do liveness analysis on locals
   tmp->placement.offset = offset;
   return tmp;
 }
@@ -46,8 +46,8 @@ TEMPORARY* IRcreateNextLocalTemp(int offset){
 TEMPORARY* IRcreateParamTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
   tmp->temporarykind = paramT;
-  tmp->tempId = -1;
-  //tempCounter++; //only if we want to do liveness analysis on params
+  tmp->tempId = tempIdVal;
+  tempIdVal++; //only if we want to do liveness analysis on params
   tmp->placement.offset = offset;
   return tmp;
 }
@@ -64,9 +64,25 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
    * variables and shit, then traverse statements creating the
    * instructions and so on.
    */
-
+  beginHeapLabel = Malloc(5);
+  sprintf(beginHeapLabel, "heap%d", labelCounter);
+  labelCounter++;
+  freeHeapLabel = Malloc(10);
+  sprintf(freeHeapLabel, "freeHeap%d", labelCounter);
+  labelCounter++;
+  endHeapLabel = Malloc(10);
+  sprintf(endHeapLabel, "endHeap%d", labelCounter);
+  labelCounter++;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND("format")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".string	\"%d\\n\"")));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".data")));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".align 8")));
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(beginHeapLabel)));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 16384")));
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(freeHeapLabel)));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endHeapLabel)));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".text")));
   if(mainBody == NULL){
     return 0; //i guess no bodies gives rise to no errors
@@ -96,7 +112,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
   int error = 0;
   int paramCount = 0;
   ParamSymbol *pSym = element->scope->ParamHead;
-  char* mainName;
+  char* mainName = NULL;
   SYMBOL *func;
   char* labelName;
   if(element->funcId == NULL){
@@ -124,6 +140,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
     }
     labelCounter++;
     func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
+
   }
   SYMBOL *sym;
   while(pSym != NULL){
@@ -147,7 +164,8 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   //TODO set counter for locale variabler start
   SYMBOL *sym = getSymbol(body->scope, body->funcId); //todo, i think it should be table not body->scope
   sym->cgu->val.funcInfo.localStart = tempLocalCounter;
-  localCounter = 0;
+  //localCounter = 0;
+  tempLocalCounter = 0;
   error = IRtravDeclList(table, body->body->vList);
   if(error == -1){
     return -1;
@@ -156,6 +174,10 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   //TODO set counter for locale variabler slut
   //TODO calleé saves,
   IRappendINSTR(sym->cgu->val.funcInfo.funcLabel); //does the label exist?
+  if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
+    //Special stuff for beginning of main function
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(freeHeapLabel))));
+  }
   error = IRmakeCalleeProlog();
   if(error == -1){
     return -1;
@@ -167,14 +189,17 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   currentLocalStart = sym->cgu->val.funcInfo.localStart;
   currentTemporaryStart = sym->cgu->val.funcInfo.temporaryStart;
   error = IRtravStmtList(table, body->body->sList, labelName);
+  if(error == -1){
+    fprintf(stderr, "ERROR while traversing statements of %s\n", body->funcId);
+    return -1;
+  }
   sym->cgu->val.funcInfo.temporaryEnd = tempLocalCounter; //first number after our last temp
 
   currentTemporaryEnd = sym->cgu->val.funcInfo.temporaryEnd;
-  if(error == -1){
-    return -1;
-  }
+
   /*caution you enter the land of long lines of code for no reason at all!*/
-  int nrTempsAndLocals = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
+  //int nrTempsAndLocals = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
+  int nrTempsAndLocals = tempLocalCounter;
   IRinserINSTRhere(instrTempTail, IRmakeSubINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP))));
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
   IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP)))); //newly added
@@ -219,6 +244,7 @@ int IRmakeCalleeEpilog(){
 CODEGENUTIL *IRmakeNewCGU(){
   CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
   memset(newCGU, 0, sizeof(CODEGENUTIL));
+  newCGU->size = 1;
   return newCGU;
 }
 
@@ -249,7 +275,12 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
       break;
     case listK:
       ;//count number of variables
-      return IRtravVarDeclList(table, decl->val.list);
+      int varCount = IRtravVarDeclList(table, decl->val.list, tempLocalCounter);
+      if(varCount >= 0){
+        tempLocalCounter += varCount;
+        return 0;
+      }
+      return -1;
       break;
   }
   return 0;
@@ -258,36 +289,72 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
 
 /**
  * traverse variable decleration list
+ * Third parameter is the next offset to be used (in current scope)
+ * Returns the number of variables indexed
  */
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList){
-  int error = 0;
-  error = IRtravVarType(table, varDeclList->vType);
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int offset){
+  offset = IRtravVarType(table, varDeclList->vType, offset);
 
-  if((error == 0) && (varDeclList->vList != NULL)){
-    error = IRtravVarDeclList(table, varDeclList->vList);
+  if((offset != -1) && (varDeclList->vList != NULL)){
+    offset = IRtravVarDeclList(table, varDeclList->vList, offset);
   }
-  return error;
+  return offset;
 }
 
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType){
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
 
   SYMBOL *sym = getSymbol(table, varType->id);
   if(sym == NULL){
-    sprintf(stderr, "IRtravVarType: no symbol returned\n");
+    sprintf(stderr, "IRtravVarType: no symbol found for %s\n", varType->id);
     return -1;
   }
   if(sym->cgu == NULL){
     sym->cgu = IRmakeNewCGU();
-    sym->cgu->val.temp = IRcreateNextLocalTemp(localCounter);
-    localCounter++; //maybe this should be dine inside localTemp creator
-
+    //TODO: temporaries should only be made for locals
+    //TODO: need to ensure that no temps are made for variables in records
+    //TODO: the latter only needs an offset.
+    sym->cgu->val.temp = IRcreateNextLocalTemp(offset); //offset instread of local counter
+    //localCounter++; //maybe this should be done inside localTemp creator
+    offset++;
   } else {
-
+    //after including user defined types, i think it is legal to go here some times
     sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand \
                                   attatched, might be an error not sure");
     return -1;//dunno if we need this.
+    //TODO: I guess we should just return offset here?
   }
-  return 0;
+  SYMBOL *sym2 = sym;
+  TYPE *ty = sym2->typePtr;
+  while(1){ //carefull
+    if(ty->kind == idK){
+      //go to buttom of user types
+      sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
+      ty = sym2->typePtr;
+    }
+    if(ty->kind == recordK){
+      if(sym2->cgu == NULL){
+        sym2->cgu = IRmakeNewCGU();
+        sym2->cgu->val.temp = NULL;
+      }
+      if(sym2->cgu->val.temp == NULL || sym == sym2){
+        int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
+        if(varCount == -1){
+          fprintf(stderr, "Error while traversing record %s\n", sym2->name);
+          return -1;
+        }
+        sym2->cgu->size = varCount;
+      }
+      sym->cgu->size = sym2->cgu->size;
+      break;
+    }
+    else if(ty->kind == arrayK){
+      ty = ty->val.arrayType;
+    }
+    else{
+      break;
+    }
+  }
+  return offset;
 }
 
 /**
@@ -315,8 +382,13 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
   OPERAND *op2;
   OPERAND *op3;
   OPERAND *op4;
+  SYMBOL *sym;
+  TYPE *ty;
   char *elseLabel;
   char *endifLabel;
+  char *eqLabel;
+  int error;
+  int size;
   switch(stmt->kind){
     case returnK:
       //TODO ODOT
@@ -329,6 +401,9 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       break;
     case writeK:
       op1 = IRtravExp(t, stmt->val.write);
+      if(op1 == NULL){
+        fprintf(stderr, "OP1 line: %d\n", stmt->lineno);
+      }
       //check for NULL??                                                              //!!local string!!
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND("format"),IRmakeRegOPERAND(RDI))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,IRmakeRegOPERAND(RSI))));
@@ -340,15 +415,65 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       // call printf		# Automatically pushes return address
       return 0;
       break;
+    case allocateK:
+      error = IRtravVarRecursive(t, stmt->val.allocate, &sym, &ty, &op1);
+      if(error == -1){
+        fprintf(stderr, "IRtravStmt: didn't successfully find operand of variable\n");
+        return -1;
+      }
+      //op1 = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
+
+      size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
+      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size),IRmakeLabelOPERAND(freeHeapLabel))));
+      //out of memory check
+      eqLabel = Malloc(10);
+      sprintf(eqLabel, "allocSucc%d", labelCounter);
+      labelCounter++;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
+      IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
+      //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel allocation\n");
+      break;
+    case allocateLengthK:
+      error = IRtravVarRecursive(t, stmt->val.allocatelength.var, &sym, &ty, &op1);
+      if(error == -1){
+        fprintf(stderr, "IRtravStmt: didn't successfully find operand of variable\n");
+        return -1;
+      }
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
+
+      size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
+      op1 = IRtravExp(t,stmt->val.allocatelength.exp);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+      //IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size),IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeLabelOPERAND(freeHeapLabel))));
+      //out of memory check
+      eqLabel = Malloc(10);
+      sprintf(eqLabel, "allocSucc%d", labelCounter);
+      labelCounter++;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
+      IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
+      fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel array-allocation\n");
+      break;
     case assiK:
       op1 = IRtravVar(t, stmt->val.assign.var);
+      //op1 = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
       op2 = IRtravExp(t, stmt->val.assign.exp);
       //move expression into variabel -> source->destination
       op3 = IRmakeRegOPERAND(RBX);
-      localCounter++;
+      //localCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op3)));
       op4 = NEW(OPERAND);
       memcpy(op4, op3, sizeof(OPERAND));
+      op4->next = NULL; //newly added 180419
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op4, op1)));
 
       //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op1)));
@@ -396,35 +521,79 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
  */
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
   SYMBOL *sym;
+  TYPE *ty;
+  OPERAND *op;
+  int error = 0;
+  error = IRtravVarRecursive(t, var, &sym, &ty, &op);
+  if(error == -1){
+    fprintf(stderr, "DO we go here alot\n");
+    return NULL;
+  }
+  return op;
+}
+
+int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, OPERAND **op){
+  //SYMBOL *sym;
   OPERAND *op1, *op2;
+  TEMPORARY *t1;
+  int error = 0;
   switch (var->kind) {
   case idVarK:
-    sym = getSymbol(t, var->val.id);
-    //check if operand already exists: if not make one
-    if(sym->cgu == NULL){
-      //todo: create and save operand
-      sym->cgu = IRmakeNewCGU();
-      fprintf(stderr, "IRtravVar: How do I know if %s is a parameter or local\n", sym->name);
-      //sym->cgu->val.temp = IRcreateNext????();
-      return NULL;
+    *sym = getSymbol(t, var->val.id);
+    if((*sym)->cgu == NULL){
+      fprintf(stderr, "IRtravVar: How do I know if %s is a parameter or local\n", (*sym)->name);
+      return -1;
     }
-    //op = sym->cgu->val.operand;
-    op1 = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
-    //op2 = IRmakeTemporaryOPERAND(IRcreateNextTemp());
-    //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,op2)));
-    return op1;
-INSTR* intermediateTail;
+    if((*sym)->typeVal == idK){
+      *sym = recursiveSymbolRetrieval((*sym)->defScope, (*sym)->typePtr->val.id, NULL);
+    }
+    *ty = (*sym)->typePtr;
+    *op = IRmakeTemporaryOPERAND((*sym)->cgu->val.temp);
+    return 0; //op and sym is alread set and everything is fine
     //TODO: check if the type is a (userdefined) record or array type
     //i dont know if this works
     //recursiveSymbolRetrieval(sym->defScope, sym->val.id, NULL);
     break;
   case expK:
-    printf("not yet implemented 12\n");
-    break;
+    error = IRtravVarRecursive(t, var->val.varexp.var, sym, ty, op);
+    if(error == -1){
+      return -1;
+    }
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
+    op1 = IRtravExp(t, var->val.varexp.exp);
+    t1 = IRcreateNextTemp(tempLocalCounter);
+    tempLocalCounter++;
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+    *op = IRmakeTempDeRefOPERAND(t1);
+    //TODO:update symbol??
+    //*ty = (*sym)->typePtr->val.arrayType;
+    if((*sym)->typeVal == idK){
+      *sym = recursiveSymbolRetrieval((*sym)->defScope, (*sym)->typePtr->val.id, NULL);
+      *ty = (*sym)->typePtr;
+    }
+    *ty = (*ty)->val.arrayType;
+    fprintf(stderr, "IRtravVar: UnsupportedArrayVarException\n");
+    return 0;
   case dotK:
-    printf("not yet implemented 232\n");
-    break;
-
+    error = IRtravVarRecursive(t, var->val.vardot.var, sym, ty, op);
+    if(error == -1){
+      return -1;
+    }
+    if((*ty)->kind == idK){
+      *sym = recursiveSymbolRetrieval((*sym)->defScope, (*ty)->val.id, NULL);
+      *ty = (*sym)->typePtr;
+    }
+    *sym = getSymbol((*sym)->content, var->val.vardot.id); //recursiveSymbolRetrieval??
+    t1 = IRcreateNextTemp(tempLocalCounter);
+    tempLocalCounter++;
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
+    int offset = (*sym)->cgu->val.temp->placement.offset;
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(offset),IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTemporaryOPERAND(t1))));
+    *op = IRmakeTempDeRefOPERAND(t1);
+    fprintf(stderr, "IRtravVar: UnsupportedRecordVarException\n");
+    return 0;
   }
 }
 
@@ -441,7 +610,8 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
       op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
-      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter-currentLocalStart)); //result temporary
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(op2, op3)));
       op5 = NEW(OPERAND);
@@ -457,7 +627,8 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
       op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
-      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter-currentLocalStart)); //result temporary
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(op2, op3)));
       op5 = NEW(OPERAND);
@@ -476,7 +647,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
     case timesK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeTimINSTR(IRappendOPERAND(op1, op2)));
+      IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(op1, op2)));
     case andK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -493,7 +664,8 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
       op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
-      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter-currentLocalStart)); //result temporary
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
       char *eqLabel = Malloc(10);
       sprintf(eqLabel, "eq%d", labelCounter);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
@@ -518,7 +690,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
     case lessK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeLesINSTR(IRappendOPERAND(op1, op2)));
+      IRappendINSTR(IRmakeJlessINSTR(IRappendOPERAND(op1, op2)));
     case neK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -532,10 +704,15 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
  */
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   OPERAND *op, *op2, *staticLinkOP;
+  SYMBOL *sym;
   int error = 0;
   switch(term->kind){
     case varK:
       op = IRtravVar(t, term->val.var);
+      if(op == NULL){
+        fprintf(stderr, "OP line: %d\n", term->lineno);
+      }
+      //op = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
       return op;
       break;
     case idTermK: //function call
@@ -575,6 +752,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       //return NULL;
       //what to return? the result of function call? Where? %rax?
       op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter - currentLocalStart)); //todo: wrong offset
+      tempLocalCounter++;
       //op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter - cgu->val.funcInfo.localStart)); //todo: wrong offset
       //localCounter++;
       op2 = NEW(OPERAND);
@@ -650,13 +828,10 @@ OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
 OPERAND* IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
   int error = 0;
   if(exps != NULL){
-    //OPERAND* op = IRtravExp(t, exps->exp);
     OPERAND* op = IRtravExpListReverse(t, exps->expList);
     if(op == NULL){
       return IRtravExp(t, exps->exp);
     }
-    //return IRtravExpList(t, exps->expList);
-    //opposite order may be achieved by switching arguments: not that simple
     IRappendOPERAND(op, IRtravExp(t, exps->exp));
     return op;
   }
@@ -746,10 +921,18 @@ OPERAND *IRmakeTextOPERAND(char *text){
   return par;
 }
 
-OPERAND *IRmakecommentOPERAND(char *text){
+OPERAND *IRmakeCommentOPERAND(char *text){
   OPERAND *par = NEW(OPERAND);
   par->operandKind = commentO;
   par->val.label = text;
+  par->next = NULL;
+  return par;
+}
+
+OPERAND *IRmakeTempDeRefOPERAND(TEMPORARY *temp){
+  OPERAND *par = NEW(OPERAND);
+  par->operandKind = tempDeRefO;
+  par->val.temp = temp;
   par->next = NULL;
   return par;
 }
@@ -805,7 +988,7 @@ INSTR* IRmakeDivINSTR(OPERAND *params){
   return instr;
 }
 
-INSTR* IRmakeTimINSTR(OPERAND *params){
+INSTR* IRmakeMulINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = mulI;
   return instr;
@@ -847,7 +1030,7 @@ INSTR* IRmakeGreINSTR(OPERAND *params){
   return instr;
 }
 
-INSTR* IRmakeLesINSTR(OPERAND *params){
+INSTR* IRmakeJlessINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmplessI;
   return instr;
@@ -1050,7 +1233,7 @@ OPERAND *IRstaticFindVar(char *variableName){
   OPERAND *o1;
   int *nrJumps;
 
-  
+
 
   return o1;
 }

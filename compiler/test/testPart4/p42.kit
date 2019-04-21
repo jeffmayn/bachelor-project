@@ -1,0 +1,23 @@
+var y:record of {z:int, b:bool};
+type T = record of {z:int, b:bool};
+var x:int;
+var i: array of int;
+var ys:array of T;
+#allocate x;
+x=3;
+#allocate x;
+write x;
+
+allocate y;
+y.z = 2+2;
+write y.z;
+y.b = false;
+write y.b;
+allocate i of length 10;
+i[2] = 17;
+i=i;
+write i[2];
+allocate ys of length 17;
+allocate ys[3];
+ys[3].z=7;
+write ys[3].z;
