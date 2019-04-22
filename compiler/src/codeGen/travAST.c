@@ -64,7 +64,7 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
    * variables and shit, then traverse statements creating the
    * instructions and so on.
    */
-  dummyTemp = IRcreateNextTemp(0);
+  dummyTemp = IRcreateNextTemp(-1);
   beginHeapLabel = Malloc(5);
   sprintf(beginHeapLabel, "heap%d", labelCounter);
   labelCounter++;
@@ -764,7 +764,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       }
       //return NULL;
       //what to return? the result of function call? Where? %rax?
-      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter - currentLocalStart)); //todo: wrong offset
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //todo: wrong offset
       tempLocalCounter++;
       //op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter - cgu->val.funcInfo.localStart)); //todo: wrong offset
       //localCounter++;
