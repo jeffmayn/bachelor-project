@@ -1137,6 +1137,9 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
       return -1; //assume error already printed
     }
   }
+  if(sym->typePtr == exp->type){
+    return 0; //a little hack
+  }
   int error = cmpTypekind(sym->typeVal, exp->typekind);
   if(error == 0){ return 0; }
   if(exp->typekind == arrayK || exp->typekind == recordK || exp->typekind == idK){

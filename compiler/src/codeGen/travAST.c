@@ -339,7 +339,9 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
     }
     if(ty->kind == recordK){
       if(sym2->cgu->val.temp == NULL || sym == sym2){//First: wrong. latter: anonymous record
-        sym2->cgu->val.temp = dummyTemp; //used to test whether content of user-record has already been traversed
+        if(sym2->cgu->val.temp == NULL){
+          sym2->cgu->val.temp = dummyTemp; //used to test whether content of user-record has already been traversed
+        }
         int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
         if(varCount == -1){
           fprintf(stderr, "Error while traversing record %s\n", sym2->name);
@@ -604,6 +606,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     *ty = (*sym)->typePtr;
     t1 = IRcreateNextTemp(tempLocalCounter);
     tempLocalCounter++;
+    IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("creating record dereferencing")));
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
     int offset = (*sym)->cgu->val.temp->placement.offset;
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(offset*8),IRmakeRegOPERAND(RBX))));
