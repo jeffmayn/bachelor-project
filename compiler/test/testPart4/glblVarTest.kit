@@ -1,16 +1,24 @@
-var globalInt : int, globalBool : bool;
+(*
+  Should be syntactically correct.
+  Function increments global variable
+  by 10. We then try and print the
+  vairble before and after increment.
+*)
 
-func addToGlobal () : int
+var globalInt : int, globalBool : bool, voidFunc : int;
+
+func incGlobalBy10 () : int
   var localInt : int, temp : int;
 
   localInt = 10;
   temp = globalInt;
   globalInt = temp + localInt;
+  return 0;
 
-end addToGlobal
+end incGlobalBy10
 
 write globalInt;
 
-addToGlobal();
+voidFunc = incGlobalBy10();
 
 write globalInt;

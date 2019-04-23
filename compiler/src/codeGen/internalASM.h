@@ -236,7 +236,7 @@ int IRmakeBodyScheme(BODY *body);
 int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND *staticLinkOP);
 OPERAND *IRsetCalleeStaticLink(int nrJumps);
 int IRmakeFunctionAssiScheme();
-OPERAND *IRstaticFindVar(char *variableName);
+OPERAND *IRstaticFindBase(int *nrJumps);
 
 
 //Insert temporary name into symboltable for variables
