@@ -400,6 +400,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
   char *elseLabel;
   char *endifLabel;
   char *eqLabel;
+  char *startwhileLabel;
+  char *endwhileLabel;
   int error;
   int size;
   switch(stmt->kind){
@@ -524,6 +526,20 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       break;
     case listStmtK:
       return IRtravStmtList(t, stmt->val.list, funcEndLabel);
+    case whileK:
+    startwhileLabel = Malloc(10);
+    sprintf(startwhileLabel, "while%d", labelCounter);
+    endwhileLabel = Malloc(10);
+    sprintf(endwhileLabel, "endwhile%d", labelCounter);
+    labelCounter++;
+      op1 = IRtravExp(t,stmt->val.while_.cond);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(endwhileLabel)));
+      IRtravStmt(t, stmt->val.while_.body, funcEndLabel);
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(startwhileLabel)));
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endwhileLabel)));
+      break;
     default:
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: %d\n", stmt->kind);
       return -1;
