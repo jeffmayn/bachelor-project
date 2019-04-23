@@ -594,6 +594,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     t1 = IRcreateNextTemp(tempLocalCounter);
     tempLocalCounter++;
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(1), IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeCommentOPERAND("moving past array-size-value")))));
     IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8), IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
@@ -740,6 +741,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   OPERAND *op, *op2;
   SYMBOL *sym;
+  TYPE *type;
   int error = 0;
   switch(term->kind){
     case varK:
@@ -799,6 +801,34 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       fprintf(stderr, "IRtravTerm: UnsupportedTermException: notTermK\n");
       break;
     case expCardK:
+      op1 = IRtravExp(t, term->expCard);
+      type = term->expCard->type;
+      if(expCard->typekind == idk){
+        sym = recursiveSymbolRetrieval(expCard->type->scope, expCard->type->val.id, NULL);
+        type = sym->typePtr;
+      }
+      switch(type->kind){
+        case idK:
+          fprintf(stderr, "How the hell did this happen\n");
+          break;
+        case intK:
+          TEMPORARY *temp;
+          IRcreateNextTemp(tempLocalCounter);
+          tempLocalCounter++;
+          
+          break;
+        case boolK:
+          break;
+        case arrayK:
+          break;
+        case recordK:
+          break;
+        case nullKK:
+          break;
+        case errorK:
+          break;
+      }
+
       fprintf(stderr, "IRtravTerm: UnsupportedTermException: expCardK\n");
       break;
     case numK:
