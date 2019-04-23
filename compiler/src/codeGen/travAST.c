@@ -457,12 +457,16 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
         fprintf(stderr, "IRtravStmt: didn't successfully find operand of variable\n");
         return -1;
       }
+      TEMPORARY* temp = IRcreateNextTemp(tempLocalCounter);
+      tempLocalCounter++;
+
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTemporaryOPERAND(temp))));
 
       size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
-      op1 = IRtravExp(t,stmt->val.allocatelength.exp);
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+      op2 = IRtravExp(t,stmt->val.allocatelength.exp);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2,IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(1),IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeCommentOPERAND("making room for arraySize")))));
       IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8), IRmakeRegOPERAND(RBX))));
       //IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size),IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeLabelOPERAND(freeHeapLabel))));
@@ -475,6 +479,17 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
       IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
+
+      //saving the allocation in the given operand
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTemporaryOPERAND(temp),IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
+      //putting arraySize into first indeks of array
+      op3 = NEW(OPERAND);
+      memcpy(op3, op2, sizeof(OPERAND));
+      op3->next = NULL;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op3, IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTempDeRefOPERAND(temp))));
+
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel array-allocation\n");
       break;
     case assiK:
@@ -764,7 +779,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       }
       //return NULL;
       //what to return? the result of function call? Where? %rax?
-      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //todo: wrong offset
+      op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter));
       tempLocalCounter++;
       //op = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter - cgu->val.funcInfo.localStart)); //todo: wrong offset
       //localCounter++;
