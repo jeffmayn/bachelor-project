@@ -695,7 +695,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
     case leK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeLeINSTR(IRappendOPERAND(op1, op2)));
+      IRappendINSTR(IRmakeJleINSTR(IRappendOPERAND(op1, op2)));
     case eqK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
@@ -718,7 +718,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
     case geK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeGeINSTR(IRappendOPERAND(op1, op2)));
+      IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(op1, op2)));
     case greatK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -742,7 +742,9 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
   OPERAND *op, *op2;
   SYMBOL *sym;
   TYPE *type;
+  Typekind tk;
   int error = 0;
+  TEMPORARY *temp;
   switch(term->kind){
     case varK:
       op = IRtravVar(t, term->val.var);
@@ -801,31 +803,56 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       fprintf(stderr, "IRtravTerm: UnsupportedTermException: notTermK\n");
       break;
     case expCardK:
-      op1 = IRtravExp(t, term->expCard);
-      type = term->expCard->type;
-      if(expCard->typekind == idk){
-        sym = recursiveSymbolRetrieval(expCard->type->scope, expCard->type->val.id, NULL);
+      sym = NULL;
+      op = IRtravExp(t, term->val.expCard);
+      type = term->val.expCard->type;
+      tk = term->val.expCard->typekind;
+      if(tk == idK){
+        sym = recursiveSymbolRetrieval(term->val.expCard->type->scope, term->val.expCard->type->val.id, NULL);
         type = sym->typePtr;
+        tk = sym->typeVal;
       }
-      switch(type->kind){
+      switch(tk){
         case idK:
           fprintf(stderr, "How the hell did this happen\n");
           break;
         case intK:
-          TEMPORARY *temp;
-          IRcreateNextTemp(tempLocalCounter);
+          temp = IRcreateNextTemp(tempLocalCounter);
           tempLocalCounter++;
-          
-          break;
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op, IRmakeRegOPERAND(RBX))));
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(temp))));
+          IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0), IRmakeTemporaryOPERAND(temp))));
+          char *positiveLabel = Malloc(10);
+          sprintf(positiveLabel, "posi%d", labelCounter);
+          labelCounter++;
+          IRappendINSTR(IRmakeJgeINSTR(IRmakeLabelOPERAND(positiveLabel)));
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));
+          IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(IRmakeTemporaryOPERAND(temp), IRmakeRegOPERAND(RBX))));
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTemporaryOPERAND(temp))));
+          IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(positiveLabel)));
+          return IRmakeTemporaryOPERAND(temp);
         case boolK:
-          break;
+          return op;
         case arrayK:
-          break;
+          temp = IRcreateNextTemp(tempLocalCounter);
+          tempLocalCounter++;
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op, IRmakeRegOPERAND(RBX))));
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(temp))));
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTempDeRefOPERAND(temp), IRmakeRegOPERAND(RBX))));
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(RBX, IRmakeTemporaryOPERAND(temp))));
+          return IRmakeTemporaryOPERAND(temp);
         case recordK:
+          if(sym == NULL){
+            fprintf(stderr, "THIS is a dangerous warning as it is ignored: How to handle anonymous record\n");
+            return NULL;
+          }
+          return IRmakeConstantOPERAND(sym->cgu->size);
           break;
         case nullKK:
+          return IRmakeConstantOPERAND(0);
           break;
         case errorK:
+          fprintf(stderr, "What is the cardinalty of a type-error\n");
           break;
       }
 
@@ -1061,7 +1088,7 @@ INSTR* IRmakeOrINSTR(OPERAND *params){
   return instr;
 }
 
-INSTR* IRmakeLeINSTR(OPERAND *params){
+INSTR* IRmakeJleINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpleI;
   return instr;
@@ -1073,7 +1100,7 @@ INSTR* IRmakeJeINSTR(OPERAND *params){
   return instr;
 }
 
-INSTR* IRmakeGeINSTR(OPERAND *params){
+INSTR* IRmakeJgeINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpgeI;
   return instr;

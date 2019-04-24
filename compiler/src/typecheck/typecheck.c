@@ -547,7 +547,13 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       return ty;
       break;
     case expCardK: //cardinality
-      //TODO
+      error = expTypeTravExp(t, term->val.expCard);
+      if(error == -1){
+        fprintf(stderr, "Line %d: Hopefully error is already printed\n", term->lineno);
+        return errorK;
+      }
+      *type = NULL;
+      return intK;
       fprintf(stderr,"expTypeTravTerm: cardinality not yet fully supported\n");
       //check if term->val.expCard == array or int or maybe record or bool
       return intK;

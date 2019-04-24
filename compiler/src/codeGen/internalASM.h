@@ -182,9 +182,9 @@ INSTR* IRmakeAndINSTR(OPERAND *params);
 
 INSTR* IRmakeOrINSTR(OPERAND *params);
 
-INSTR* IRmakeLeINSTR(OPERAND *params);
+INSTR* IRmakeJleINSTR(OPERAND *params);
 
-INSTR* IRmakeGeINSTR(OPERAND *params);
+INSTR* IRmakeJgeINSTR(OPERAND *params);
 
 INSTR* IRmakeGreINSTR(OPERAND *params);
 
