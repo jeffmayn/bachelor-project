@@ -526,6 +526,7 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
   OPERAND *op;
   int error = 0;
   error = IRtravVarRecursive(t, var, &sym, &ty, &op);
+
   if(error == -1){
     fprintf(stderr, "DO we go here alot\n");
     return NULL;
@@ -553,6 +554,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     *ty = (*sym)->typePtr;
     *op = IRmakeTemporaryOPERAND((*sym)->cgu->val.temp);
     //TODO findbasepointer for operand.
+    
     //TODO flyt funden base pointer til rdi
     return 0; //op and sym is alread set and everything is fine
     //TODO: check if the type is a (userdefined) record or array type
@@ -1257,7 +1259,7 @@ OPERAND *IRstaticFindBase(int *nrJumps){
   //TEMPORARY *t1;
 
   //t1 = IRcreateNextTemp(tempLocalCounter);
-  tempLocalCounter++;
+  //tempLocalCounter++;
   o1 = IRsetCalleeStaticLink(*nrJumps);
   o2 = IRmakeRegOPERAND(RDI);
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(o1, o2)));
