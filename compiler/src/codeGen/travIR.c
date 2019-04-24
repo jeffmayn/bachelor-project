@@ -66,7 +66,13 @@ int IRtravPARAM(OPERAND *op){
       printf("%s", op->val.label);
       break;
     case commentO:
-      printf(" #%s", op->val.label);
+      printf("#%s", op->val.label);
+      break;
+    case derefO://we only dereference registers for now.
+      printf("(");
+      regMapping(op->val.reg);
+      printf(")");
+      break;
     case tempDeRefO:
       printf("(%%rcx)");
       //travTemporary(op->val.temp);
@@ -86,7 +92,7 @@ int travTemporary(TEMPORARY *temp){
       break;
     case localT:
       //printf("mov -%d, %%rdx\n", temp->placement.offset);
-      printf("(%%rbp,%%rdx,8)");
+      printf("(%%rdi,%%rdx,8)");
       break;
     case regT:
       printf("%s", regNames[temp->placement.reg]);
@@ -104,14 +110,14 @@ int checkOffsetOperand(INSTR *in){
   while(op != NULL){
     if(op->operandKind == temporaryO || op->operandKind == tempDeRefO){
       if(op->val.temp->temporarykind == paramT){
-        printf("\tmov $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
+        printf("\tmovq $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
       }
       else if(op->val.temp->temporarykind == localT || op->val.temp->temporarykind == actualTempT){
-        printf("\tmov $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
+        printf("\tmovq $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
       }
     }
     if(op->operandKind == tempDeRefO){
-      printf("\tmov (%%rbp,%%rdx,8), %%rcx\n");
+      printf("\tmovq (%%rbp,%%rdx,8), %%rcx\n");
       //TODO: %rdi is probably a bad choice
       //TODO: compile to a.s
     }

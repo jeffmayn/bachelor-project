@@ -1,0 +1,18 @@
+(*test static link igennem recursive kald*)
+
+
+var globalInt : int, retVal : int;
+
+func recPrintAndInc(counter : int) : int
+	counter = counter + 1;
+	globalInt = globalInt + 10;
+	write globalInt;
+	write counter;
+	if ( counter == 10 ) 
+		then return 0; 
+	else 
+		return recPrintAndInc(counter);
+end recPrintAndInc
+
+globalInt = 10;
+retVal = recPrintAndInc(0);

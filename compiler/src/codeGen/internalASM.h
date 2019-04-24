@@ -27,7 +27,7 @@ typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI, textI, commentI} INSTRkind;
 typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO,
-              textO, commentO, tempDeRefO} OPERANDkind;
+              textO, commentO, tempDeRefO, derefO} OPERANDkind;
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
 typedef enum {actualTempT, paramT, localT, regT} TEMPORARYkind;
@@ -61,6 +61,7 @@ typedef struct OPERAND {
     char *label;
     TEMPORARY *temp;
     registers reg;
+
   } val;
 } OPERAND;
 
@@ -166,6 +167,7 @@ OPERAND *IRmakeFalseOPERAND();
 
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next);//append next to tail
 
+OPERAND *IRmakeDeRefOPERAND(registers reg);
 
 //****Instruction constructors****//
 INSTR* IRmakeMovINSTR(OPERAND *params);
@@ -233,9 +235,10 @@ int IRmakeBodyScheme(BODY *body);
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList);
-
+int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND *staticLinkOP);
+OPERAND *IRsetCalleeStaticLink(int nrJumps);
 int IRmakeFunctionAssiScheme();
+OPERAND *IRsetStaticBase(int *nrJumps);
 
 
 //Insert temporary name into symboltable for variables
