@@ -679,8 +679,26 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       //operand 4 and 6 are the same, but with different next pointers
     case divK:
       op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeDivINSTR(IRappendOPERAND(op2, op3)));
+      op5 = NEW(OPERAND);
+      memcpy(op5, op3, sizeof(OPERAND));
+      op5->next = NULL;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op5, op4)));
+      op6 = NEW(OPERAND);
+      memcpy(op6, op4, sizeof(OPERAND));
+      op6->next = NULL;
+      return op6;
+      //operand 4 and 6 are the same, but with different next pointers
+    /*
+      op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeDivINSTR(IRappendOPERAND(op1, op2)));
+      */
     case timesK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -689,6 +707,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeAndINSTR(IRappendOPERAND(op1, op2)));
+      //IRmakeAndINSTR
     case orK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -711,7 +730,6 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         memcpy(op9, op4, sizeof(OPERAND));
         op9->next = NULL;
         return op9;
-
     case eqK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
@@ -730,7 +748,6 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       memcpy(op5, op4, sizeof(OPERAND));
       op5->next = NULL;
       return op5;
-      
     case geK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
@@ -749,7 +766,6 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       memcpy(op10, op4, sizeof(OPERAND));
       op10->next = NULL;
       return op10;
-
     case greatK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
@@ -768,7 +784,6 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       memcpy(op7, op4, sizeof(OPERAND));
       op7->next = NULL;
       return op7;
-
     case lessK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
@@ -787,7 +802,6 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       memcpy(op8, op4, sizeof(OPERAND));
       op8->next = NULL;
       return op8;
-
     case neK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
