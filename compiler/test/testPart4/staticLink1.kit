@@ -3,6 +3,7 @@
   Function increments global variable
   by 10. We then try and print the
   vairble before and after increment.
+  should output: "123\n133\n"
 *)
 
 var globalInt : int, globalBool : bool, voidFunc : int;
@@ -13,8 +14,6 @@ func incGlobalBy10 () : int
   localInt = 10;
   temp = globalInt;
   globalInt = temp + localInt;
-  write localInt;
-  write globalInt;
   return 0;
 
 end incGlobalBy10
