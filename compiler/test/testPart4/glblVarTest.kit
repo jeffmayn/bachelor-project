@@ -13,9 +13,13 @@ func incGlobalBy10 () : int
   localInt = 10;
   temp = globalInt;
   globalInt = temp + localInt;
+  write localInt;
+  write globalInt;
   return 0;
 
 end incGlobalBy10
+
+globalInt = 123;
 
 write globalInt;
 

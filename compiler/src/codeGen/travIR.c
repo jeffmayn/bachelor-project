@@ -110,14 +110,14 @@ int checkOffsetOperand(INSTR *in){
   while(op != NULL){
     if(op->operandKind == temporaryO || op->operandKind == tempDeRefO){
       if(op->val.temp->temporarykind == paramT){
-        printf("\tmov $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
+        printf("\tmovq $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
       }
       else if(op->val.temp->temporarykind == localT || op->val.temp->temporarykind == actualTempT){
-        printf("\tmov $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
+        printf("\tmovq $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
       }
     }
     if(op->operandKind == tempDeRefO){
-      printf("\tmov (%%rbp,%%rdx,8), %%rcx\n");
+      printf("\tmovq (%%rbp,%%rdx,8), %%rcx\n");
       //TODO: %rdi is probably a bad choice
       //TODO: compile to a.s
     }
