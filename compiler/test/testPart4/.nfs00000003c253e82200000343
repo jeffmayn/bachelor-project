@@ -1,0 +1,9 @@
+
+var b:bool;
+write !true;
+write !false;
+b = true;
+write !b;
+b = false;
+write !b;
+write (10>4);

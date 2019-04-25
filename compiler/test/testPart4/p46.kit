@@ -1,5 +1,7 @@
 
 var b:bool;
+Type T = record of {b:bool};
+var t:T;
 write !true;
 write !false;
 b = true;
@@ -7,3 +9,8 @@ write !b;
 b = false;
 write !b;
 write (10>4);
+write !(10>4);
+#write !10>4; #cannot negate 10 :)
+allocate t;
+t.b = false;
+write !t.b;
