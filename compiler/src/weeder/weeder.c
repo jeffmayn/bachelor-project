@@ -72,7 +72,7 @@ int expTravStmts(STATEMENT_LIST *stmtList){
   if(stmtList != NULL){
     if(expTravStmt(stmtList->statement) == 0){
       if(stmtList->statementList != NULL){
-        fprintf(stderr, "Warning! Line %d: Unreachable statement after return\n", stmtList->statementList->lineno);
+        fprintf(stderr, "Warning! Line %d: Unreachable statement in function\n", stmtList->statementList->lineno);
       }
       return 0;
     }
@@ -85,12 +85,16 @@ int expTravStmts(STATEMENT_LIST *stmtList){
 
 int expTravStmt(STATEMENT *s){
   int retVal = 0;
+  int blah = 0;
   switch(s->kind){
     case returnK:
       return 0;
       break;
     case ifK:
-      break;
+    //  blah = expTravStmt(s->val.ifthenelse.thenbody);
+      fprintf(stderr, "%d\n", blah);
+      return -1;
+      //return blah;
     case thenK:
       if(s->val.ifthenelse.thenbody->kind == returnK){
         return 0;

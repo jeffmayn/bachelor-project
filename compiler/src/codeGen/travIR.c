@@ -184,7 +184,7 @@ int IRtravINSTR(INSTR *in){
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jmpleI:
-      printf("\tjl ");
+      printf("\tjle ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case jmpgeI:

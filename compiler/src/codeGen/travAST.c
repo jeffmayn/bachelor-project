@@ -402,6 +402,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
   char *elseLabel;
   char *endifLabel;
   char *eqLabel;
+  char *startwhileLabel;
+  char *endwhileLabel;
   int error;
   int size;
   switch(stmt->kind){
@@ -565,6 +567,21 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       break;
     case listStmtK:
       return IRtravStmtList(t, stmt->val.list, funcEndLabel);
+    case whileK:
+    startwhileLabel = Malloc(10);
+    sprintf(startwhileLabel, "while%d", labelCounter);
+    endwhileLabel = Malloc(10);
+    sprintf(endwhileLabel, "endwhile%d", labelCounter);
+    labelCounter++;
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(startwhileLabel)));
+      op1 = IRtravExp(t,stmt->val.while_.cond);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(endwhileLabel)));
+      IRtravStmt(t, stmt->val.while_.body, funcEndLabel);
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(startwhileLabel)));
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endwhileLabel)));
+      break;
     default:
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: %d\n", stmt->kind);
       return -1;
@@ -680,7 +697,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
  * Traverse expression
  */
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
-  OPERAND *op1, *op2, *op3, *op4, *op5, *op6;
+  OPERAND *op1, *op2, *op3, *op4, *op5, *op6, *op7, *op8, *op9, *op10, *op11;
   switch(exp->kind){
     case termK:
       return IRtravTerm(t, exp->val.term);
@@ -721,9 +738,26 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       //operand 4 and 6 are the same, but with different next pointers
     case divK:
       op1 = IRtravExp(t, exp->val.binOP.left);
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeDivINSTR(IRappendOPERAND(op2, op3)));
+      op5 = NEW(OPERAND);
+      memcpy(op5, op3, sizeof(OPERAND));
+      op5->next = NULL;
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op5, op4)));
+      op6 = NEW(OPERAND);
+      memcpy(op6, op4, sizeof(OPERAND));
+      op6->next = NULL;
+      return op6;
+      //operand 4 and 6 are the same, but with different next pointers
+    /*
+      op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeDivINSTR(IRappendOPERAND(op1, op2)));
-      break;
+      */
     case timesK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.left);
@@ -740,10 +774,23 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeOrINSTR(IRappendOPERAND(op1, op2)));
       break;
     case leK:
-      op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeJleINSTR(IRappendOPERAND(op1, op2)));
-      break;
+        op1 = IRtravExp(t, exp->val.binOP.left);
+        op2 = IRtravExp(t, exp->val.binOP.right);
+        op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+        op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+        tempLocalCounter++;
+        char *leLabel = Malloc(10);
+        sprintf(leLabel, "le%d", labelCounter);
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
+        IRappendINSTR(IRmakeLeINSTR(IRmakeLabelOPERAND(leLabel))); //if true, skip next
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(leLabel)));
+        op9 = NEW(OPERAND);
+        memcpy(op9, op4, sizeof(OPERAND));
+        op9->next = NULL;
+        return op9;
     case eqK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
@@ -762,27 +809,78 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       memcpy(op5, op4, sizeof(OPERAND));
       op5->next = NULL;
       return op5;
-      //operand 4 and 5 are the same, but with different next pointers
     case geK:
       op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(op1, op2)));
-      break;
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
+      char *geLabel = Malloc(10);
+      sprintf(geLabel, "ge%d", labelCounter);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
+      IRappendINSTR(IRmakeGeINSTR(IRmakeLabelOPERAND(geLabel))); //if true, skip next
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(geLabel)));
+      op10 = NEW(OPERAND);
+      memcpy(op10, op4, sizeof(OPERAND));
+      op10->next = NULL;
+      return op10;
     case greatK:
       op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeGreINSTR(IRappendOPERAND(op1, op2)));
-      break;
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
+      char *greatLabel = Malloc(10);
+      sprintf(greatLabel, "great%d", labelCounter);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
+      IRappendINSTR(IRmakeGreINSTR(IRmakeLabelOPERAND(greatLabel))); //if true, skip next
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(greatLabel)));
+      op7 = NEW(OPERAND);
+      memcpy(op7, op4, sizeof(OPERAND));
+      op7->next = NULL;
+      return op7;
     case lessK:
       op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeJlessINSTR(IRappendOPERAND(op1, op2)));
-      break;
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
+      char *lessLabel = Malloc(10);
+      sprintf(lessLabel, "less%d", labelCounter);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
+      IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(lessLabel))); //if true, skip next
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(lessLabel)));
+      op8 = NEW(OPERAND);
+      memcpy(op8, op4, sizeof(OPERAND));
+      op8->next = NULL;
+      return op8;
     case neK:
       op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.left);
-      IRappendINSTR(IRmakeNeINSTR(IRappendOPERAND(op1, op2)));
-      break;
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      tempLocalCounter++;
+      char *neqLabel = Malloc(10);
+      sprintf(neqLabel, "neq%d", labelCounter);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
+      IRappendINSTR(IRmakeNeINSTR(IRmakeLabelOPERAND(neqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(neqLabel)));
+      op11 = NEW(OPERAND);
+      memcpy(op11, op4, sizeof(OPERAND));
+      op11->next = NULL;
+      return op11;
   }
 }
 
