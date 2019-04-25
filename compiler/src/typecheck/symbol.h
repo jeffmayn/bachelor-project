@@ -61,6 +61,7 @@ ParamSymbol *createParamSymbol(SYMBOL *sym);
 
 SYMBOL *getSymbol(SymbolTable *t, char *name);
 SYMBOL *getRecordSymbol(SymbolTable *t, char* name);
+SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps);
 
 void dumpSymbolTable(SymbolTable *t);
 #endif

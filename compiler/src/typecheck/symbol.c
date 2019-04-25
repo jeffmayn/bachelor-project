@@ -164,6 +164,32 @@ SYMBOL *getSymbol(SymbolTable *t, char *name){//TODO REFORMAT: getRecordSymbol k
   }
 }
 
+SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){//TODO REFORMAT: getRecordSymbol kan integreres.
+  //find index via hash
+  int hashIndex = Hash(name);
+
+  //search in current table
+  SYMBOL **table = t->table;
+  SYMBOL *temp = table[hashIndex];
+  while(temp != NULL){
+    if(!strcmp(temp->name, name)){
+      return temp;
+    } else {
+      temp = temp->next;
+    }
+  }
+
+  //navigate to next hashtable if there is one
+  if(t->next != NULL){
+    int intTemp = *nrJumps;
+    intTemp = intTemp + 1;
+    *nrJumps = intTemp;
+    return IRgetSymbol(t->next, name, nrJumps);
+  } else {
+    return NULL;
+  }
+}
+
 void dumpSymbolTable(SymbolTable *t){
   if(t == NULL){
     return;

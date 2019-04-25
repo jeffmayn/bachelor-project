@@ -1,0 +1,27 @@
+(*
+  Should be syntactically correct.
+  Function increments global variable
+  by 10. We then try and print the
+  vairble before and after increment.
+  should output: "123\n133\n"
+*)
+
+var globalInt : int, globalBool : bool, voidFunc : int;
+
+func incGlobalBy10 () : int
+  var localInt : int, temp : int;
+
+  localInt = 10;
+  temp = globalInt;
+  globalInt = temp + localInt;
+  return 0;
+
+end incGlobalBy10
+
+globalInt = 123;
+
+write globalInt;
+
+voidFunc = incGlobalBy10();
+
+write globalInt;
