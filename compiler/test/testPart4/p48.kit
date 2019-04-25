@@ -1,0 +1,113 @@
+(*VIRKER IKKE ENDNU!!!!!*)
+
+func buildData() : int
+
+    allocate values of length 60;
+    
+    values[0] = 599;
+    values[1] = 648;
+    values[2] = 8;
+    values[3] = 781;
+    values[4] = 796;
+    values[5] = 893;
+    values[6] = 412;
+    values[7] = 199;
+    values[8] = 561;
+    values[9] = 489;
+    values[10] = 236;
+    values[11] = 977;
+    values[12] = 630;
+    values[13] = 785;
+    values[14] = 280;
+    values[15] = 138;
+    values[16] = 127;
+    values[17] = 657;
+    values[18] = 361;
+    values[19] = 534;
+    values[20] = 179;
+    values[21] = 140;
+    values[22] = 334;
+    values[23] = 963;
+    values[24] = 909;
+    values[25] = 212;
+    values[26] = 34;
+    values[27] = 100;
+    values[28] = 12;
+    values[29] = 371;
+    values[30] = 219;
+    values[31] = 752;
+    values[32] = 519;
+    values[33] = 594;
+    values[34] = 903;
+    values[35] = 981;
+    values[36] = 258;
+    values[37] = 791;
+    values[38] = 873;
+    values[39] = 108;
+    values[40] = 511;
+    values[41] = 264;
+    values[42] = 327;
+    values[43] = 587;
+    values[44] = 815;
+    values[45] = 503;
+    values[46] = 851;
+    values[47] = 592;
+    values[48] = 396;
+    values[49] = 6;
+    values[50] = 156;
+    values[51] = 904;
+    values[52] = 617;
+    values[53] = 635;
+    values[54] = 899;
+    values[55] = 497;
+    values[56] = 585;
+    values[57] = 793;
+    values[58] = 269;
+    values[59] = 918;
+
+end buildData
+
+type Tree = record of   {   data : int,
+                            left : Tree,
+                            right : Tree; }
+
+type DATA = array of int;
+
+var globalTree : Tree;
+var values : DATA;
+var retVal : int;
+
+func buildTree(index : int) : int
+
+    val i : int;
+    i = 0;
+    while() do {
+        
+    }
+
+    return 0;
+end buildTree
+
+func insertValue(val : int, node : Tree) : int
+
+    if(val < node.data) then {
+        if(node.left == null) then {
+            allocate node.left;
+            node.left.data = val;
+        }
+        else {
+            retVal = insertValue(val, node.left);
+        }
+    }
+    else {
+        if(node.right == null) then {
+            allocate node.right;
+            node.right.data = val;
+        }
+        else {
+            retVal = insertValue(val, node.right);
+        }
+    }
+
+    return 0;
+end insertValue
