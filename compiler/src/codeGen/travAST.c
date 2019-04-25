@@ -1460,8 +1460,6 @@ OPERAND *IRsetCalleeStaticLink(int nrJumps){
   OPERAND *o1, *o2;
   //IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("STARTMYSHIT")));
   if(nrJumps == 0){//we are accessing a function in our own scope
-    t1 = IRcreateNextTemp(tempLocalCounter);
-    tempLocalCounter++;
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
       IRmakeRegOPERAND(RBP),
       IRmakeRegOPERAND(RBX))));
