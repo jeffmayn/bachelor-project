@@ -1,9 +1,11 @@
 #Tjekker kardinalitet
 
-var ar:array of int; #user defind array!!!!!!!!!!!
+var ar:array of int;
 var re:R;
 type R = record of {v:int};
 var re2:record of {a:int, b:R, c:array of R, d:bool};
+type userAr = array of R;
+var ar2:userAr;
 (*write 0-(0-(0-100));
 write |0-(0-(0-100))|;
 write |0-100|;
@@ -11,9 +13,10 @@ write |0-100|;
 allocate ar of length 8;
 write |ar|;
 allocate ar of length 65;
-write |ar|;*)
+write |ar|;
 write |re|;
-write |re2|;
+
+write |re2|;*)
 allocate re2;
 allocate re2.c of length 123;
 write |re2.a|;
@@ -26,3 +29,5 @@ write |re2.d|;
 write |null|;
 re2.c = null;
 write |re2.c|;
+allocate ar2 of length 28;
+write |ar2|;

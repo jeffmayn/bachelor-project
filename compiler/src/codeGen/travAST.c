@@ -894,12 +894,17 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
         case arrayK:
           temp = IRcreateNextTemp(tempLocalCounter);
           tempLocalCounter++;
+          char *nullLabel = Malloc(10);
+          sprintf(nullLabel, "null%d", labelCounter);
+          labelCounter++;
           IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op, IRmakeRegOPERAND(RBX))));
-          IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOperand(), IRmakeRegOPERAND(RBX))));
-          
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0), IRmakeTemporaryOPERAND(temp))));
+          IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOPERAND(), IRmakeRegOPERAND(RBX))));
+          IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(nullLabel)));
           IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(temp))));
           IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTempDeRefOPERAND(temp), IRmakeRegOPERAND(RBX))));
           IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(temp))));
+          IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nullLabel)));
           return IRmakeTemporaryOPERAND(temp);
         case recordK:
           if(sym == NULL){
@@ -916,7 +921,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
           return IRmakeConstantOPERAND(sym->cgu->size);
           break;
         case nullKK:
-          return IRmakeConstantOPERAND(0);
+          return IRmakeNullOPERAND();
           break;
         case errorK:
           fprintf(stderr, "What is the cardinalty of a type-error\n");
@@ -1099,6 +1104,10 @@ OPERAND *IRmakeTrueOPERAND(){
 }
 
 OPERAND *IRmakeFalseOPERAND(){
+  return IRmakeConstantOPERAND(0);
+}
+
+OPERAND *IRmakeNullOPERAND(){
   return IRmakeConstantOPERAND(0);
 }
 

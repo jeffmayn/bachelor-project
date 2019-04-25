@@ -165,6 +165,8 @@ OPERAND *IRmakeTrueOPERAND();
 
 OPERAND *IRmakeFalseOPERAND();
 
+OPERAND *IRmakeNullOPERAND();
+
 OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next);//append next to tail
 
 OPERAND *IRmakeDeRefOPERAND(registers reg);
