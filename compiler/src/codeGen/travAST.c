@@ -858,6 +858,23 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       //fprintf(stderr, "IRtravTerm: UnsupportedTermException: expTermK\n");
       break;
     case notTermK:
+      temp = IRcreateNextTemp(tempLocalCounter);
+      tempLocalCounter++;
+      char *falseLabel = Malloc(10);
+      sprintf(falseLabel, "false%d", labelCounter);
+      labelCounter++;
+      op = IRtravTerm(t, term->val.notTerm);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op, IRmakeRegOPERAND(RBX))));
+      IRresetBasePointer();
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeTrueOPERAND(), IRmakeTemporaryOPERAND(temp))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+        IRmakeFalseOPERAND(), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(falseLabel)));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeFalseOPERAND(), IRmakeTemporaryOPERAND(temp))));
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(falseLabel)));
+      return IRmakeTemporaryOPERAND(temp);
       fprintf(stderr, "IRtravTerm: UnsupportedTermException: notTermK\n");
       break;
     case expCardK:

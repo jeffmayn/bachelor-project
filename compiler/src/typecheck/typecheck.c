@@ -525,7 +525,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       break;
     case notTermK: //negation
       ty = expTypeTravTerm(t, term->val.notTerm, type);
-      if(*type == NULL){
+      if(ty == errorK){
         fprintf(stderr, "Line %d: Hopefully error is already printed\n", term->lineno);
         *type = NULL;
         return errorK; //Hopefully error is already printed;
@@ -539,7 +539,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
         }
         *type=sym->typePtr;
       }
-      if((*type)->kind != boolK){
+      if(ty != boolK){
         fprintf(stderr,"Line %d: Cannot negate something of different type than boolean\n", term->lineno);
         *type = NULL;
         return errorK;
