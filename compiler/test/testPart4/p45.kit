@@ -1,10 +1,28 @@
 #Tjekker kardinalitet
 
-var ar:array of int;
-
-write 0-(0-(0-100));
+var ar:array of int; #user defind array!!!!!!!!!!!
+var re:R;
+type R = record of {v:int};
+var re2:record of {a:int, b:R, c:array of R, d:bool};
+(*write 0-(0-(0-100));
 write |0-(0-(0-100))|;
 write |0-100|;
 
 allocate ar of length 8;
 write |ar|;
+allocate ar of length 65;
+write |ar|;*)
+write |re|;
+write |re2|;
+allocate re2;
+allocate re2.c of length 123;
+write |re2.a|;
+write |re2.b|;
+write |re2.c|;
+re2.d = false;
+write |re2.d|;
+re2.d = true;
+write |re2.d|;
+write |null|;
+re2.c = null;
+write |re2.c|;

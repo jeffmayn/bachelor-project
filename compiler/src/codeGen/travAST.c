@@ -837,14 +837,23 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
           temp = IRcreateNextTemp(tempLocalCounter);
           tempLocalCounter++;
           IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op, IRmakeRegOPERAND(RBX))));
+          IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOperand(), IRmakeRegOPERAND(RBX))));
+          
           IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(temp))));
           IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTempDeRefOPERAND(temp), IRmakeRegOPERAND(RBX))));
-          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(RBX, IRmakeTemporaryOPERAND(temp))));
+          IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(temp))));
           return IRmakeTemporaryOPERAND(temp);
         case recordK:
           if(sym == NULL){
-            fprintf(stderr, "THIS is a dangerous warning as it is ignored: How to handle anonymous record\n");
-            return NULL;
+            //This is going to be a very naive approach
+            VAR_DECL_LIST *vdl = type->val.vList;
+            int i = 0;
+            while(vdl!=NULL){
+              i++;
+              vdl = vdl->vList;
+            }
+            fprintf(stderr, "Here something naive is done\n");
+            return IRmakeConstantOPERAND(i);
           }
           return IRmakeConstantOPERAND(sym->cgu->size);
           break;

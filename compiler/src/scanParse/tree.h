@@ -37,10 +37,8 @@ typedef struct TAIL {
 
 typedef struct TYPE {
   int lineno;
-  //enum {idK, intK, boolK, arrayK, recordK} kind;
   Typekind kind;
   SymbolTable *scope; //defines the scope in which it is defined
-  //?!?!?!?!?!
   union{
     char *id;
     struct TYPE *arrayType;
