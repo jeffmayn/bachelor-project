@@ -110,6 +110,8 @@ int IRtravBody(SymbolTable *table, bodyListElm *body);
 int IRmakeCalleeProlog();
 int IRmakeCalleeEpilog();
 
+int travTemporary(TEMPORARY *temp);
+
 int IRinitParams(SymbolTable *table, bodyListElm *element);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
@@ -190,11 +192,13 @@ INSTR* IRmakeJleINSTR(OPERAND *params);
 
 INSTR* IRmakeJgeINSTR(OPERAND *params);
 
-INSTR* IRmakeGreINSTR(OPERAND *params);
+INSTR* IRmakeJgINSTR(OPERAND *params);
 
-INSTR* IRmakeLesINSTR(OPERAND *params);
+INSTR *IRmakeJlINSTR(OPERAND *params);
 
-INSTR* IRmakeNeINSTR(OPERAND *params);
+INSTR* IRmakeJneINSTR(OPERAND *params);
+
+INSTR *IRmakeJeINSTR(OPERAND *params);
 
 INSTR *IRmakeLabelINSTR(OPERAND *params);
 
@@ -207,12 +211,6 @@ INSTR *IRmakeCallINSTR(OPERAND *params);
 INSTR *IRmakeRetINSTR(OPERAND *params);//might not need params
 
 INSTR *IRmakeJumpINSTR(OPERAND *params);
-
-INSTR *IRmakeJeINSTR(OPERAND *params);
-
-INSTR *IRmakeJneINSTR(OPERAND *params);
-
-INSTR *IRmakeJlessINSTR(OPERAND *params);
 
 INSTR *IRmakeCmpINSTR(OPERAND *params);
 
@@ -241,6 +239,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND *sta
 OPERAND *IRsetCalleeStaticLink(int nrJumps);
 int IRmakeFunctionAssiScheme();
 OPERAND *IRsetStaticBase(int *nrJumps);
+int IRresetBasePointer();
 
 
 //Insert temporary name into symboltable for variables

@@ -320,7 +320,7 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
     offset++;
   } else {
     //after including user defined types, i think it is legal to go here some times
-    sprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand \
+    fprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand \
                                   attatched, might be an error not sure");
     return -1;//dunno if we need this.
     //TODO: I guess we should just return offset here?
@@ -459,7 +459,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       labelCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
-      IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
       IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel allocation\n");
@@ -493,7 +493,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       labelCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
-      IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
       IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
 
@@ -784,7 +784,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
         IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
         IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
-        IRappendINSTR(IRmakeLeINSTR(IRmakeLabelOPERAND(leLabel))); //if true, skip next
+        IRappendINSTR(IRmakeJleINSTR(IRmakeLabelOPERAND(leLabel))); //if true, skip next
         IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
         IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(leLabel)));
         op9 = NEW(OPERAND);
@@ -820,7 +820,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
-      IRappendINSTR(IRmakeGeINSTR(IRmakeLabelOPERAND(geLabel))); //if true, skip next
+      IRappendINSTR(IRmakeJgeINSTR(IRmakeLabelOPERAND(geLabel))); //if true, skip next
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(geLabel)));
       op10 = NEW(OPERAND);
@@ -838,7 +838,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
-      IRappendINSTR(IRmakeGreINSTR(IRmakeLabelOPERAND(greatLabel))); //if true, skip next
+      IRappendINSTR(IRmakeJgINSTR(IRmakeLabelOPERAND(greatLabel))); //if true, skip next
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(greatLabel)));
       op7 = NEW(OPERAND);
@@ -856,7 +856,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
-      IRappendINSTR(IRmakeJlessINSTR(IRmakeLabelOPERAND(lessLabel))); //if true, skip next
+      IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(lessLabel))); //if true, skip next
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(lessLabel)));
       op8 = NEW(OPERAND);
@@ -874,7 +874,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
-      IRappendINSTR(IRmakeNeINSTR(IRmakeLabelOPERAND(neqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(neqLabel))); //if true, skip next
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(neqLabel)));
       op11 = NEW(OPERAND);
@@ -1270,15 +1270,22 @@ INSTR* IRmakeOrINSTR(OPERAND *params){
   return instr;
 }
 
-INSTR* IRmakeJleINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params);
-  instr->instrKind = jmpleI;
-  return instr;
-}
-
 INSTR* IRmakeJeINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpeqI;
+  return instr;
+}
+
+
+INSTR* IRmakeJneINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmpneqI;
+  return instr;
+}
+
+INSTR* IRmakeJleINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = jmpleI;
   return instr;
 }
 
@@ -1288,21 +1295,15 @@ INSTR* IRmakeJgeINSTR(OPERAND *params){
   return instr;
 }
 
-INSTR* IRmakeGreINSTR(OPERAND *params){
+INSTR* IRmakeJgINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmpgreatI;
   return instr;
 }
 
-INSTR* IRmakeJlessINSTR(OPERAND *params){
+INSTR* IRmakeJlINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jmplessI;
-  return instr;
-}
-
-INSTR* IRmakeNeINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params);
-  instr->instrKind = jmpneqI;
   return instr;
 }
 
@@ -1339,12 +1340,6 @@ INSTR* IRmakeRetINSTR(OPERAND *params){
 INSTR *IRmakeJumpINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = jumpI;
-  return instr;
-}
-
-INSTR *IRmakeJneINSTR(OPERAND *params){
-  INSTR* instr = IRmakeINSTR(params);
-  instr->instrKind = jmpneqI;
   return instr;
 }
 
@@ -1386,7 +1381,7 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
  */
 int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND* staticLinkOP){
   if(labelINSTR->instrKind != labelI){
-    fprintf(stderr, "IRmakeFunctionCallScheme%s\n");
+    fprintf(stderr, "ERROR: IRmakeFunctionCallScheme, no label or whatever\n");
   }
   INSTR *ins; //Is this thingy used - Maybe I should jus delete things instead of making weird comments - but naaah
   //Caller save registers
@@ -1535,6 +1530,7 @@ int IRresetBasePointer(){
       IRmakeRegOPERAND(RDI),
       IRmakeCommentOPERAND("resetting basepointer")
       ))));
+  return 0;
 }
 
 

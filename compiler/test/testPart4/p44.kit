@@ -6,19 +6,40 @@ var a:int;
 var b:bool;
 var c:bool;
 
-x = 1;
-y = 10;
-z = 10;
-a = 10;
-
 b = true;
 c = true;
-  
+
+x = 1; 
 # printer 1-9
 while (x < 10) do {
   write x;
   x = x + 1;
 }
+write 123456789;
+
+x = 10;
+# printer 9-1
+while (x > 1) do {
+  write x;
+  x = x - 1;
+}
+write 123456789;
+
+x = 1;
+# printer 1-10
+while (x <= 10) do {
+  write x;
+  x = x + 1;
+}
+write 123456789;
+
+x = 10;
+# printer 10-1
+while (x >= 1) do {
+  write x;
+  x = x - 1;
+}
+write 123456789;
 
 (*
 # printer 1-9
@@ -37,25 +58,6 @@ while (1/1 == 1/1) do {
 while (true) do {
   write x;
   x = x +1;
-}
-
-
-# printer 10-1
-while (y > 0) do {
-  write y;
-  y = y - 1;
-}
-
-# printer 1-10
-while (x <= 10) do {
-  write x;
-  x = x + 1;
-}
-
-# printer 10-1
-while (a >= 1) do {
-  write a;
-  a = a - 1;
 }
 
 # printer 10-6
