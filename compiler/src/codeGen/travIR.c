@@ -140,7 +140,7 @@ int IRtravINSTR(INSTR *in){
       error = IRtravOPERANDlist(in->paramList);
       break;
     case mulI:
-      printf("\timul ");
+      printf("\tmulq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case divI:
