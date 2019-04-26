@@ -452,6 +452,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
       IRresetBasePointer();
       size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
+      fprintf(stderr, "BLAH ALLOCATEK!: %d, \t%s\n", size, sym->name);
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size*8),IRmakeLabelOPERAND(freeHeapLabel))));
       //out of memory check
       eqLabel = Malloc(10);
@@ -698,6 +699,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
  */
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
   OPERAND *op1, *op2, *op3, *op4, *op5, *op6, *op7, *op8, *op9, *op10, *op11;
+  TEMPORARY *t1, *t2, *t3, *t4;
   switch(exp->kind){
     case termK:
       return IRtravTerm(t, exp->val.term);
@@ -774,16 +776,20 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeOrINSTR(IRappendOPERAND(op1, op2)));
       break;
     case leK:
-        op1 = IRtravExp(t, exp->val.binOP.left);
-        op2 = IRtravExp(t, exp->val.binOP.right);
         op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
         op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
         tempLocalCounter++;
         char *leLabel = Malloc(10);
         sprintf(leLabel, "le%d", labelCounter);
         IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
+        
+        op1 = IRtravExp(t, exp->val.binOP.left);
         IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
+        IRresetBasePointer();
+        
+        op2 = IRtravExp(t, exp->val.binOP.right);
         IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
+        IRresetBasePointer();
         IRappendINSTR(IRmakeJleINSTR(IRmakeLabelOPERAND(leLabel))); //if true, skip next
         IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
         IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(leLabel)));
@@ -792,6 +798,31 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         op9->next = NULL;
         return op9;
     case eqK:
+      t1 = IRcreateNextTemp(tempLocalCounter);
+      tempLocalCounter++;
+      t2 = IRcreateNextTemp(tempLocalCounter);
+      tempLocalCounter++;
+      op4 = IRmakeTemporaryOPERAND(t1); //result temporary
+      char *eqLabel = Malloc(10);
+      sprintf(eqLabel, "eq%d", labelCounter);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeTemporaryOPERAND(t1)))); //assuming true
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
+      IRresetBasePointer();
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
+      IRresetBasePointer();
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
+      IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t1)))); //turned out to be false
+      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
+      op5 = NEW(OPERAND);
+      memcpy(op5, op4, sizeof(OPERAND));
+      op5->next = NULL;
+      return op5;
+
+      /*WHOA AOHW
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
       op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
@@ -808,7 +839,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op5 = NEW(OPERAND);
       memcpy(op5, op4, sizeof(OPERAND));
       op5->next = NULL;
-      return op5;
+      return op5;*/
     case geK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
@@ -846,18 +877,24 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op7->next = NULL;
       return op7;
     case lessK:
-      op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.right);
-      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
-      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      t1 = IRcreateNextTemp(tempLocalCounter);
       tempLocalCounter++;
+      t2 = IRcreateNextTemp(tempLocalCounter);
+      tempLocalCounter++;
+      op4 = IRmakeTemporaryOPERAND(t1); //result temporary
       char *lessLabel = Malloc(10);
       sprintf(lessLabel, "less%d", labelCounter);
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeTemporaryOPERAND(t1)))); //assuming true
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
+      IRresetBasePointer();
+      op2 = IRtravExp(t, exp->val.binOP.right);
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
+      IRresetBasePointer();
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
       IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(lessLabel))); //if true, skip next
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t1)))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(lessLabel)));
       op8 = NEW(OPERAND);
       memcpy(op8, op4, sizeof(OPERAND));
@@ -925,7 +962,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       //slå symboler i actionlist op i symboltable
       //for ting der ikke er symboler: lav temporaries og operander
       //link operander sammen (evt. i omvendt rækkefølge)
-      op = IRtravActList(t, term->val.idact.list); //param list
+      ////////////////////////////////////////////////////////////////////op = IRtravActList(t, term->val.idact.list); //param list
 
       //TODO - Generate code to put static link in rdx;
       staticLinkOP = IRsetCalleeStaticLink(*nrJumps);
@@ -933,7 +970,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
         return NULL;
       }
       //kald IRmakeFunctionCallScheme
-      error = IRmakeFunctionCallScheme(label, op, staticLinkOP);
+      error = IRmakeFunctionCallScheme(t, label, term->val.idact.list, staticLinkOP);
       if(error == -1){
         return NULL;
       }
@@ -1056,9 +1093,9 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
 /**
  * Traversing actionlist
  */
-OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist){
+int IRtravActList(SymbolTable *t, ACT_LIST *actlist){
   if(actlist == NULL){
-    return NULL;
+    return 0;
   }
   return IRtravExpListReverse(t, actlist->expList);
 }
@@ -1082,17 +1119,26 @@ OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
   return NULL;
 }
 
-OPERAND* IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
+int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
   int error = 0;
+  int i=0;
+  OPERAND *op;
   if(exps != NULL){
-    OPERAND* op = IRtravExpListReverse(t, exps->expList);
-    if(op == NULL){
-      return IRtravExp(t, exps->exp);
+    i = IRtravExpListReverse(t, exps->expList);
+    if(i==-1){
+      return -1;
     }
-    IRappendOPERAND(op, IRtravExp(t, exps->exp));
-    return op;
+    op = IRtravExp(t, exps->exp);
+    if(op == NULL){
+      return -1;
+    }
+    IRappendINSTR(IRmakePushINSTR(op));
+    IRresetBasePointer();
+    i++;
   }
-  return NULL;
+    //IRappendOPERAND(op, IRtravExp(t, exps->exp));
+    //return op;
+  return i;
 }
 
 
@@ -1379,7 +1425,7 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND* staticLinkOP){
+int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramList, OPERAND* staticLinkOP){
   if(labelINSTR->instrKind != labelI){
     fprintf(stderr, "ERROR: IRmakeFunctionCallScheme, no label or whatever\n");
   }
@@ -1393,15 +1439,20 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND* sta
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R9)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R10)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R11)));
-  int ParamCount = 1; //static link already inkluded
-  while(paramList != NULL){//maybe change to recursive form?
+  //int ParamCount = 1; //static link already inkluded
+  int paramCount = IRtravActList(t, paramList);
+  if(paramCount == -1){
+    fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme\n");
+  }
+  paramCount++; //static link included
+  /*while(paramList != NULL){//maybe change to recursive form?
     //this migh be the wrong order
     OPERAND *tempOp = paramList->next;
     paramList->next = NULL; //a little hack
     IRappendINSTR(IRmakePushINSTR(paramList));
     paramList = tempOp;
     ParamCount += 1;
-  }
+  }*/
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(staticLinkOP, IRmakeRegOPERAND(RBX))));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX))); //Static link field
   //do the actual call
@@ -1410,7 +1461,7 @@ int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND* sta
   //remove static link and parameters
   IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("remove static link and parameters")));
   IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
-    IRmakeConstantOPERAND(ParamCount*8),
+    IRmakeConstantOPERAND(paramCount*8),
     IRappendOPERAND(IRmakeRegOPERAND(RSP),
     IRmakeCommentOPERAND("remove static link and parameters")))));
 

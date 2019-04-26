@@ -64,12 +64,12 @@ func buildData() : int
     values[57] = 793;
     values[58] = 269;
     values[59] = 918;
-
+    return 0;
 end buildData
 
 type Tree = record of   {   data : int,
                             left : Tree,
-                            right : Tree; }
+                            right : Tree };
 
 type DATA = array of int;
 
@@ -77,38 +77,129 @@ var globalTree : Tree;
 var values : DATA;
 var retVal : int;
 
-func buildTree(index : int) : int
+func buildTree() : int
+	
+    var i : int;
+    var temp : int;
+    i = 1;
+    globalTree.data = values[0];
+    write globalTree.data;
 
-    val i : int;
-    i = 0;
     while(i < 60) do {
+    	temp = values[i];
+        retVal = insertValue(temp, globalTree);
         i = i + 1;
-        
     }
+    
 
     return 0;
 end buildTree
 
 func insertValue(val : int, node : Tree) : int
-
+	
+	write 10001;
+	write val;
+	write node.data;
     if(val < node.data) then {
+    	write 10002;
         if(node.left == null) then {
+        	write 10004;
             allocate node.left;
+            node.left.left = null;
+            node.left.right = null;
             node.left.data = val;
         }
         else {
+        	write 10005;
             retVal = insertValue(val, node.left);
         }
     }
     else {
+    	write 10003;
         if(node.right == null) then {
+        	write 10006;
             allocate node.right;
+            node.right.left = null;
+            node.right.right = null;
             node.right.data = val;
         }
         else {
+        	write 10007;
             retVal = insertValue(val, node.right);
         }
     }
 
     return 0;
 end insertValue
+
+func testGlobal() : int
+
+	write values[0];
+	write values[1];
+	write values[2];
+	return 0;
+end testGlobal
+
+func testParam(listparam : DATA) : int
+
+	write listparam[0];
+	write listparam[1];
+	write listparam[2];
+
+end testParam
+
+func testOneParam(val : int) : int
+
+	write val;
+
+end testOneParam
+
+func testRecordParam(val : int, node : Tree) : int
+
+	write node.data;
+	node.data = 7;
+	return 0;
+end testRecordParam
+
+var i : int;
+
+allocate globalTree;
+globalTree.left = null;
+globalTree.right = null;
+
+(*
+allocate globalTree.left;
+allocate globalTree.right;
+
+allocate values of length 3;
+values[0] = 1234;
+values[1] = 12345;
+values[2] = 123456;
+
+globalTree.data = values[0];
+globalTree.left.data = values[1];
+globalTree.right.data = values[2];
+write globalTree.left.data;
+write globalTree.data;
+write globalTree.right.data;
+
+retVal = testGlobal();
+retVal = testParam(values);
+retVal = testOneParam(values[0]);
+*)
+
+retVal = buildData();
+retVal = buildTree();
+
+(*
+i = 45;
+write values[i];
+globalTree.data = 57262;
+write globalTree.data;
+
+retVal = testRecordParam(1234, globalTree);
+write globalTree.data;
+allocate globalTree.left;
+globalTree.left.data = 12345;
+write globalTree.left.data;
+*)

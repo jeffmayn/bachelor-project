@@ -702,6 +702,7 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, ParamSymbol* pSym){
         return -1; //error in argument
       }
       SYMBOL *param = pSym->data;
+      param = recursiveSymbolRetrieval(param->defScope, param->name, NULL);
       if(eList->exp->typekind != param->typeVal){
         fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, eList->exp->typekind, param->typeVal );
         return -1;
