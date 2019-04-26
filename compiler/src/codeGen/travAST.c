@@ -74,15 +74,25 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
   endHeapLabel = Malloc(10);
   sprintf(endHeapLabel, "endHeap%d", labelCounter);
   labelCounter++;
+  mainSPointLabel = malloc(15);
+  sprintf(mainSPointLabel, "mainSPoint%d", labelCounter);
+  labelCounter++;
+  errorCleanupLabel = malloc(15);
+  sprintf(errorCleanupLabel, "errorCleanup%d", labelCounter);
+  labelCounter++;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND("format")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".string	\"%d\\n\"")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".data")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".align 8")));
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(beginHeapLabel)));
-  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 16384")));
+  char *str = Malloc(20);
+  sprintf(str, ".space %d", HEAPSIZE);
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(str)));
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(freeHeapLabel)));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endHeapLabel)));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(mainSPointLabel)));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".text")));
   if(mainBody == NULL){
@@ -105,8 +115,21 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
     }
     bElm = getBody(mainBody);
   }
+  IRruntimeErrorCleanupCode();
   return 0;
 }
+
+void IRruntimeErrorCleanupCode(){
+  //here i assume the right error value is already found in %rax;
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainSPointLabel), IRmakeRegOPERAND(RSP))));
+  //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainEndLabel),IRmakeRegOPERAND(RSP))));
+  //IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8), IRappendOPERAND(IRmakeRegOPERAND(RBP), IRmakeCommentOPERAND("this is to avoid removing main-locals twice")))));
+  IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(mainEndLabel)));
+  //IRappendINSTR(IRmakeJumpINSTR(IRmakeRegOPERAND(RBX)));
+}
+
+
 
 int IRinitParams(SymbolTable *table, bodyListElm *element){
 
@@ -175,10 +198,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   //TODO set counter for locale variabler slut
   //TODO calleé saves,
   IRappendINSTR(sym->cgu->val.funcInfo.funcLabel); //does the label exist?
-  if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
-    //Special stuff for beginning of main function
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(freeHeapLabel))));
-  }
+
   error = IRmakeCalleeProlog();
   if(error == -1){
     return -1;
@@ -187,6 +207,20 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
   sprintf(labelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
   labelCounter++;
+  if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
+    //Special stuff for beginning of main function
+    mainEndLabel = labelName;
+    //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBP),IRmakeRegOPERAND(RBX))));
+    //IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8),IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeCommentOPERAND("Moving past the main-local removal")))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RSP),IRmakeLabelOPERAND(mainSPointLabel))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(freeHeapLabel))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(endHeapLabel))));
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(HEAPSIZE),IRmakeLabelOPERAND(endHeapLabel))));
+
+  }
+
+
+
   currentLocalStart = sym->cgu->val.funcInfo.localStart;
   currentTemporaryStart = sym->cgu->val.funcInfo.temporaryStart;
   error = IRtravStmtList(table, body->body->sList, labelName);
@@ -458,9 +492,11 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       sprintf(eqLabel, "allocSucc%d", labelCounter);
       labelCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeCommentOPERAND("may be out of order")))));
       IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
-      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(OUTOFMEMORYCODE), IRappendOPERAND(IRmakeRegOPERAND(RAX), IRmakeCommentOPERAND("outofMemory")))));
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+      //IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel allocation\n");
       break;
@@ -492,9 +528,13 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       sprintf(eqLabel, "allocSucc%d", labelCounter);
       labelCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeCommentOPERAND("may be out of order")))));
+      //IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeLabelOPERAND(endHeapLabel), IRmakeCommentOPERAND("may be out of order")))));
       IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
-      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(OUTOFMEMORYCODE), IRappendOPERAND(IRmakeRegOPERAND(RAX), IRmakeCommentOPERAND("outofMemory")))));
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+
+      //IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Here some kind of error should  be returned"))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
 
 
