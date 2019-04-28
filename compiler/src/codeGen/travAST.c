@@ -566,7 +566,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
 
 
       //size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
-      size = findVarSymSize(sym);
+      //size = findVarSymSize(sym);
+      size = 1; //size of pointer
       if(size == -1){
         fprintf(stderr, "AllocLen: Hopefully error is already printed\n");
         return -1;
@@ -751,7 +752,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
       *ty = (*sym)->typePtr;
     }
     *ty = (*ty)->val.arrayType;
-    fprintf(stderr, "IRtravVar: UnsupportedArrayVarException\n");
+    //fprintf(stderr, "IRtravVar: UnsupportedArrayVarException\n");
     return 0;
   case dotK:
     error = IRtravVarRecursive(t, var->val.vardot.var, sym, ty, op);

@@ -702,7 +702,9 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, ParamSymbol* pSym){
         return -1; //error in argument
       }
       SYMBOL *param = pSym->data;
-      if(eList->exp->typekind != param->typeVal){
+      error = cmpTypeSymExp(t, param, eList->exp);
+      //if(eList->exp->typekind != param->typeVal){
+      if(error == -1){
         fprintf(stderr, "Line %d: The type %d of the argument, does not match expected type %d of parameter\n", eList->lineno, eList->exp->typekind, param->typeVal );
         return -1;
       }
@@ -1144,6 +1146,10 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
       return -1; //assume error already printed
     }
   }
+  // if(exp->typeKind == idK){
+  //   SYMBOL *sym2 = recursiveSymbolRetrieval(exp->type->scope, exp->type->val.id, NULL);
+  //   return cmpTypeSymSym(t,sym,sym2);
+  // }
   if(sym->typePtr == exp->type){
     return 0; //a little hack
   }
@@ -1212,6 +1218,9 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
     fprintf(stderr, "Missing second type\n");
     return -1;
   }
+  if(ty1 == ty2){
+    return 0; //Hacked: the two types are the same;
+  }
   Typekind tk1 = ty1->kind;
   Typekind tk2 = ty2->kind;
   SYMBOL *sym1 = NULL; //important for recordK cases below
@@ -1245,6 +1254,7 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
   }
   if(tk1 == tk2 && tk1 == arrayK){
     return cmpTypeTyTy(t,ty1->val.arrayType, ty2->val.arrayType);
+    //this has a problem for type A = array of A;
   }
   return cmpTypekind(tk1,tk2);
 }
