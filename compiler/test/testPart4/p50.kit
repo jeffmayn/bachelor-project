@@ -1,10 +1,12 @@
 type Tree = record of {data:int, left:Tree, right:Tree};
 var tree:Tree;
-#type A = array of B;
-#type B = A;
-#var a:A;
+type A = array of B;
+type B = A;
+var a:A;
 #type H = I;
 #type I = H;
 
 allocate tree;
 allocate tree.left;
+allocate a of length 3;
+allocate a[2] of length 300;
