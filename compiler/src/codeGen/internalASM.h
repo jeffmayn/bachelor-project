@@ -140,6 +140,9 @@ OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps);
 
 OPERAND* IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps);
 
+int findVarSymSize(SYMBOL *sym);
+
+
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
 
