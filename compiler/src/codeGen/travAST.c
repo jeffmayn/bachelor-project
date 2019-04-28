@@ -650,7 +650,7 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
 int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, OPERAND **op){
   //SYMBOL *sym;
   OPERAND *op1, *op2;
-  TEMPORARY *t1;
+  TEMPORARY *t1, *t2;
   int error = 0;
   int *nrJumps = Calloc(sizeof(int));
   switch (var->kind) {
@@ -676,23 +676,45 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     //recursiveSymbolRetrieval(sym->defScope, sym->val.id, NULL);
     break;
   case expK:
-
-
-    op1 = IRtravExp(t, var->val.varexp.exp);
-    t1 = IRcreateNextTemp(tempLocalCounter);
+    t1 = IRcreateNextTemp(tempLocalCounter);  //array address
     tempLocalCounter++;
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(1), IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeCommentOPERAND("moving past array-size-value")))));
-    IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8), IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+    char *indeksAllowedLabel = Malloc(10);
+    sprintf(indeksAllowedLabel, "indeksAllowed%d", labelCounter);
+    labelCounter++;
+    char *indeksErrorLabel = Malloc(10);
+    sprintf(indeksErrorLabel, "indeksError%d", labelCounter);
+    labelCounter++;
+
     error = IRtravVarRecursive(t, var->val.varexp.var, sym, ty, op);
     if(error == -1){
       return -1;
     }
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTemporaryOPERAND(t1),IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op,IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
     IRresetBasePointer();//RESET VALUE IN RDI TO BASEPOINTER
+
+    op1 = IRtravExp(t, var->val.varexp.exp);
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
+    IRresetBasePointer();
+
+    //TODO ODOT: indexOutOfBounds check
+    //TODO ODOT: negative index check
+    IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTempDeRefOPERAND(t1),IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(IRmakeLabelOPERAND(indeksErrorLabel), IRmakeCommentOPERAND("indexOutOfBounds"))));
+    IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0),IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(IRmakeLabelOPERAND(indeksAllowedLabel), IRmakeCommentOPERAND("not indexOutOfBounds"))));
+    IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(indeksErrorLabel)));
+    IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Exit program with error here")));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(INDEXOUTOFBOUNDSCODE), IRappendOPERAND(IRmakeRegOPERAND(RAX), IRmakeCommentOPERAND("IndexOutOfBounds")))));
+    IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+    IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(indeksAllowedLabel)));
+
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(1), IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeCommentOPERAND("moving past array-size-value")))));
+    IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8), IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+
+    // IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeTemporaryOPERAND(t2), IRmakeRegOPERAND(RBX))));
+    // IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
     *op = IRmakeTempDeRefOPERAND(t1);
     //TODO:update symbol??
     //*ty = (*sym)->typePtr->val.arrayType;

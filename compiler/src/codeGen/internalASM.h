@@ -12,6 +12,7 @@
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
 #define HEAPSIZE 16384
 #define OUTOFMEMORYCODE 6
+#define INDEXOUTOFBOUNDSCODE 2
 extern const char* regNames[];
 
 /**
