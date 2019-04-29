@@ -721,7 +721,9 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       //operand 4 and 6 are the same, but with different next pointers
     case plusK:
       op1 = IRtravExp(t, exp->val.binOP.left);
+      fprintf(stderr, "!!! OP1: %s !!!\n", exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
+      fprintf(stderr, "!!! OP2: %s !!!\n", exp->val.binOP.right);
       op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
       op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
       tempLocalCounter++;
@@ -737,43 +739,33 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       return op6;
       //operand 4 and 6 are the same, but with different next pointers
     case divK:
-      fprintf(stderr, "!!! GOING IN DIV !!!\n");
-      /*
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
-      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
-      fprintf(stderr, "!!! -- !!!\n");
-      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+      TEMPORARY* t1 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
       tempLocalCounter++;
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
-      IRappendINSTR(IRmakeDivINSTR(IRappendOPERAND(op2, op3)));
-      op5 = NEW(OPERAND);
-      memcpy(op5, op3, sizeof(OPERAND));
-      op5->next = NULL;
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op5, op4)));
-      op6 = NEW(OPERAND);
-      memcpy(op6, op4, sizeof(OPERAND));
-      op6->next = NULL;
-      return op6;
-      */
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        op1, IRmakeRegOPERAND(RAX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        op2, IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RDX))));
+      IRappendINSTR(IRmakeDivINSTR(IRmakeRegOPERAND(RBX)));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX), IRmakeTemporaryOPERAND(t1))));
+      return IRmakeTemporaryOPERAND(t1);
       break;
     case timesK:
-      fprintf(stderr, "!!! GOING IN MULT !!!\n");
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
-      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
+      op3 = IRmakeRegOPERAND(RAX); //aritmetic operation register
       op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
       tempLocalCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
-      IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(op1, op2)));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, op4)));
+      IRappendINSTR(IRmakeMulINSTR(op4));
       op5 = NEW(OPERAND);
       memcpy(op5, op3, sizeof(OPERAND));
       op5->next = NULL;
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op5, op4)));
-      op6 = NEW(OPERAND);
-      memcpy(op6, op4, sizeof(OPERAND));
-      op6->next = NULL;
-      return op6;
+      return op5;
     break;
     case andK:
       op1 = IRtravExp(t, exp->val.binOP.left);

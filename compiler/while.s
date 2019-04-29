@@ -19,7 +19,7 @@ main:
 	push %r13
 	push %r14
 	push %r15
-	subq $1328, %rsp
+	subq $1208, %rsp
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq $-133, %rdx
@@ -139,76 +139,61 @@ main:
 	movq $-69, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
-	push %rbx
-	movq %rbp, %rbx
-	movq $-147, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-147, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	push %rdi
-	movq $-7, %rdx
-	movq (%rdi,%rdx,8), %rsi
-	movq $format, %rdi
-	movq $0, %rax
-	call printf
-	pop %rdi
 while3:
 	push %rbx
 	movq %rbp, %rbx
-	movq $-148, %rdx
+	movq $-147, %rdx
 	movq %rbx, (%rbp,%rdx,8)
-	movq $-148, %rdx
+	movq $-147, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-149, %rdx
+	movq $-148, %rdx
 	movq $1, (%rbp,%rdx,8)
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	cmp $1, %rbx
 	je eq4
-	movq $-149, %rdx
+	movq $-148, %rdx
 	movq $0, (%rbp,%rdx,8)
 eq4:
 	push %rbx
 	movq %rbp, %rbx
-	movq $-150, %rdx
+	movq $-149, %rdx
 	movq %rbx, (%rbp,%rdx,8)
-	movq $-150, %rdx
+	movq $-149, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-151, %rdx
+	movq $-150, %rdx
 	movq $1, (%rbp,%rdx,8)
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	cmp $10, %rbx
-	je eq5
-	movq $-151, %rdx
+	cmp $0, %rbx
+	jg great5
+	movq $-150, %rdx
 	movq $0, (%rbp,%rdx,8)
-eq5:
-	movq $-149, %rdx
+great5:
+	movq $-148, %rdx
 	movq (%rbp,%rdx,8), %rbx
+	movq $-150, %rdx
+	and (%rbp,%rdx,8), %rbx
 	movq $-151, %rdx
-	or (%rbp,%rdx,8), %rbx
-	movq $-152, %rdx
 	movq %rbx, (%rbp,%rdx,8)
-	movq $-152, %rdx
+	movq $-151, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	cmp $1, %rbx
 	jne endwhile3
 	push %rbx
 	movq %rbp, %rbx
-	movq $-153, %rdx
+	movq $-152, %rdx
 	movq %rbx, (%rbp,%rdx,8)
-	movq $-153, %rdx
+	movq $-152, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	push %rdi
-	movq $-6, %rdx
+	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rsi
 	movq $format, %rdi
 	movq $0, %rax
@@ -216,163 +201,39 @@ eq5:
 	pop %rdi
 	push %rbx
 	movq %rbp, %rbx
-	movq $-154, %rdx
+	movq $-153, %rdx
 	movq %rbx, (%rbp,%rdx,8)
-	movq $-154, %rdx
+	movq $-153, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	subq $1, %rbx
-	movq $-155, %rdx
+	movq $-154, %rdx
 	movq %rbx, (%rbp,%rdx,8)
-	movq $-155, %rdx
+	movq $-154, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq $-156, %rdx
+	movq $-155, %rdx
 	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq $-157, %rdx
+	movq $-156, %rdx
 	movq %rbx, (%rbp,%rdx,8)
-	movq $-157, %rdx
+	movq $-156, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-156, %rdx
+	movq $-155, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	movq $-7, %rdx
-	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
-	push %rbx
-	movq %rbp, %rbx
-	movq $-158, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-158, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	movq $-6, %rdx
-	movq (%rdi,%rdx,8), %rbx
-	addq $1, %rbx
-	movq $-159, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-159, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
-	movq $-160, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	push %rbx
-	movq %rbp, %rbx
-	movq $-161, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-161, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	movq $-160, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	jmp while3
 endwhile3:
-	push %rbx
-	movq %rbp, %rbx
-	movq $-162, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-162, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	movq $-7, %rdx
-	movq (%rdi,%rdx,8), %rbx
-	addq $1, %rbx
-	movq $-163, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-163, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
-	movq $-164, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	push %rbx
-	movq %rbp, %rbx
-	movq $-165, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-165, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	movq $-164, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq $-7, %rdx
-	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
-	push %rbx
-	movq %rbp, %rbx
-	movq $-166, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-166, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	push %rdi
-	movq $-7, %rdx
-	movq (%rdi,%rdx,8), %rsi
-	movq $format, %rdi
-	movq $0, %rax
-	call printf
-	pop %rdi
-	push %rbx
-	movq %rbp, %rbx
-	movq $-167, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-167, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	movq $-7, %rdx
-	movq (%rdi,%rdx,8), $2
-	movq $-7, %rdx
-	mulq (%rdi,%rdx,8), $2
-	movq $-168, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-168, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
-	movq $-169, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	push %rbx
-	movq %rbp, %rbx
-	movq $-170, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-170, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	movq $-169, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq $-7, %rdx
-	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
-	push %rbx
-	movq %rbp, %rbx
-	movq $-171, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-171, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq %rbx, %rdi
-	pop %rbx
-	push %rdi
-	movq $-7, %rdx
-	movq (%rdi,%rdx,8), %rsi
-	movq $format, %rdi
-	movq $0, %rax
-	call printf
-	pop %rdi
 mainend:
-	addq $1328, %rsp
+	addq $1208, %rsp
 	pop %r15
 	pop %r14
 	pop %r13
