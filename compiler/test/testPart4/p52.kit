@@ -17,13 +17,13 @@ b = true;
 c = true;
 
 
+(*
 # printer 1-9
 while (x < 10) do {
   write x;
   x = x + 1;
 }
 
-(*
 
 # printer uendeligt
 while (b && c) do {
@@ -42,7 +42,6 @@ while (true) do {
   x = x +1;
 }
 
-*)
 
 # printer 10-1
 while (y > 0) do {
@@ -93,3 +92,10 @@ while (x == 1 && y > 0) do{
 if(x == 1 && y == 10) then{
   write x;
 }
+
+*)
+
+write y;
+y = y / 0;
+write y;
+return 0;

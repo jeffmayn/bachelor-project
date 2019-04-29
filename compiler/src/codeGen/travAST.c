@@ -903,18 +903,34 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       return op6;
       //operand 4 and 6 are the same, but with different next pointers
     case divK:
+    /*
+    IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("Exit program with error here")));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(INDEXOUTOFBOUNDSCODE), IRappendOPERAND(IRmakeRegOPERAND(RAX), IRmakeCommentOPERAND("IndexOutOfBounds")))));
+    */
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
-      TEMPORARY* t1 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
+
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        op2, IRmakeRegOPERAND(RBX))));
+
+      // check divsion by zero
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+        IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeConstantOPERAND(DEVISIONBYZERO), IRmakeRegOPERAND(RAX))));
+      IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+
+      TEMPORARY* t1 = IRmakeTemporaryOPERAND(
+        IRcreateNextTemp(tempLocalCounter)); //result temporary
       tempLocalCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RAX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        op2, IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
       IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RDX))));
+
       IRappendINSTR(IRmakeDivINSTR(IRmakeRegOPERAND(RBX)));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RAX), IRmakeTemporaryOPERAND(t1))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeRegOPERAND(RAX), IRmakeTemporaryOPERAND(t1))));
       return IRmakeTemporaryOPERAND(t1);
       break;
     case timesK:
