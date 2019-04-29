@@ -119,6 +119,7 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       sym = putSymbol(t, d->val.func->head->id, 0, funcS, d->val.func->head->type->kind, child, d->val.func->head->type); //add some shit for named types, records and arrays
       if(sym == NULL){
         fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, d->val.func->head->id);
+        return -1;
       }
 
       //add parameters to that scope
@@ -143,6 +144,10 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
             TYPE *newType = makeID(name);
             prev->val.arrayType = newType;
             sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
+            if(sym == NULL){
+              fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, name);
+              return -1;
+            }
             sym->content=scopeSymbolTable(t);
             idTypeTravVDecls(sym->content, ty->val.vList);
           }
@@ -165,6 +170,10 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       //   }
       // }
       sym = putSymbol(t, d->val.id.id, 0, typeS, d->val.id.type->kind, NULL, d->val.id.type);
+      if(sym == NULL){
+        fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, d->val.id.id);
+        return -1;
+      }
       //TODO: something more to add in case of struct
       //might be done
       if(d->val.id.type->kind == recordK){
