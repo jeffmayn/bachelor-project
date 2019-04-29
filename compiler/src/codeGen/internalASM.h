@@ -11,6 +11,9 @@
 #define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
 #define HEAPSIZE 16384
+#define OUTOFMEMORYCODE 6
+#define INDEXOUTOFBOUNDSCODE 2
+#define NONPOSITIVEALLOCCODE 4
 extern const char* regNames[];
 
 /**
@@ -96,7 +99,12 @@ int currentTemporaryEnd;
 char* beginHeapLabel; //points to the beginning of the heap
 char* freeHeapLabel; //contains the next free heap space
 char* endHeapLabel; //contains the heapEndAddress
-//TEMPORARY *freeHeapAddr;
+char* mainSPointLabel;
+
+char* mainEndLabel;
+char* errorCleanupLabel;
+
+
 
 TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
 
@@ -139,6 +147,10 @@ OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist);
 OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps);
 
 OPERAND* IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps);
+
+
+
+void IRruntimeErrorCleanupCode();
 
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
