@@ -971,6 +971,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         tempLocalCounter++;
         char *leLabel = Malloc(10);
         sprintf(leLabel, "le%d", labelCounter);
+        labelCounter++;
         IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
 
         op1 = IRtravExp(t, exp->val.binOP.left);
@@ -995,6 +996,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op4 = IRmakeTemporaryOPERAND(t1); //result temporary
       char *eqLabel = Malloc(10);
       sprintf(eqLabel, "eq%d", labelCounter);
+      labelCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeTemporaryOPERAND(t1)))); //assuming true
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
@@ -1011,26 +1013,6 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       memcpy(op5, op4, sizeof(OPERAND));
       op5->next = NULL;
       return op5;
-
-      /*WHOA AOHW
-      op1 = IRtravExp(t, exp->val.binOP.left);
-      op2 = IRtravExp(t, exp->val.binOP.right);
-      op3 = IRmakeRegOPERAND(RBX); //aritmetic operation register
-      op4 = IRmakeTemporaryOPERAND(IRcreateNextTemp(tempLocalCounter)); //result temporary
-      tempLocalCounter++;
-      char *eqLabel = Malloc(10);
-      sprintf(eqLabel, "eq%d", labelCounter);
-      labelCounter++;
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
-      IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),op4))); //turned out to be false
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
-      op5 = NEW(OPERAND);
-      memcpy(op5, op4, sizeof(OPERAND));
-      op5->next = NULL;
-      return op5;*/
     case geK:
       op1 = IRtravExp(t, exp->val.binOP.left);
       op2 = IRtravExp(t, exp->val.binOP.right);
@@ -1100,6 +1082,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       tempLocalCounter++;
       char *neqLabel = Malloc(10);
       sprintf(neqLabel, "neq%d", labelCounter);
+      labelCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),op4))); //assuming true
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op3)));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(op2, op3)));
