@@ -142,11 +142,11 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
 
-OPERAND* IRtravActList(SymbolTable *t, ACT_LIST *actlist);
+int IRtravActList(SymbolTable *t, ACT_LIST *actlist);
 
 OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps);
 
-OPERAND* IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps);
+int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps);
 
 
 
@@ -248,7 +248,7 @@ int IRmakeBodyScheme(BODY *body);
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(INSTR *labelINSTR, OPERAND *paramList, OPERAND *staticLinkOP);
+int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramList, OPERAND* staticLinkOP);
 OPERAND *IRsetCalleeStaticLink(int nrJumps);
 int IRmakeFunctionAssiScheme();
 OPERAND *IRsetStaticBase(int *nrJumps);
