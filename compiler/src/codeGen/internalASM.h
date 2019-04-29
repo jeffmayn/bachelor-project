@@ -13,6 +13,7 @@
 #define HEAPSIZE 16384
 #define OUTOFMEMORYCODE 6
 #define INDEXOUTOFBOUNDSCODE 2
+#define NONPOSITIVEALLOCCODE 4
 extern const char* regNames[];
 
 /**
