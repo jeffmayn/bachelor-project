@@ -2,6 +2,7 @@ var x:int;
 var y:int;
 var z:int;
 var a:int;
+var d:int;
 
 var b:bool;
 var c:bool;
@@ -10,17 +11,18 @@ x = 1;
 y = 10;
 z = 10;
 a = 10;
+d = 5;
 
 b = true;
 c = true;
-
+(*
 # printer 1-9
 while (x < 10) do {
   write x;
   x = x + 1;
 }
 
-(*
+
 # printer 1-9
 while (b && c) do {
   write x;
@@ -62,5 +64,36 @@ while (a >= 1) do {
 while (z != 5) do {
   write z;
   z = z - 1;
+}
+
+write y;
+
+while (x == 1 || y == 10) do{
+  write x;
+  y = y - 1;
+  x = x + 1;
+}
+
+while (x == 1 && y == 10) do{
+  write x;
+  write y;
+  y = y / 2;
+  write y;
+  x = x + 5;
+  write x;
+}
+
+*)
+
+while (x == 1 && y > 0) do{
+  write y;
+  y = y - 1;
+}
+
+
+
+(*
+if(x == 1 && y == 10) then{
+  write x;
 }
 *)
