@@ -152,6 +152,7 @@ OPERAND* IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps);
 
 void IRruntimeErrorCleanupCode();
 
+int findVarSymSize(SYMBOL *sym);
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
 

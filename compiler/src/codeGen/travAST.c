@@ -280,7 +280,7 @@ int IRmakeCalleeEpilog(){
 CODEGENUTIL *IRmakeNewCGU(){
   CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
   memset(newCGU, 0, sizeof(CODEGENUTIL));
-  newCGU->size = 1;
+  newCGU->size = -1;
   return newCGU;
 }
 
@@ -301,11 +301,51 @@ int IRtravDeclList(SymbolTable *table, DECL_LIST *declarations){
  * as these are already in the bodylist!
  */
 int IRtravDecl(SymbolTable *table, DECLARATION *decl){
+  SYMBOL *sym;
   if(decl == NULL){
     return 0;
   }
   switch(decl->kind){
     case idDeclK:
+      sym = getSymbol(table, decl->val.id.id);
+      if(sym->cgu != NULL){
+        return 0; //the size of the type already found
+      }
+      sym->cgu = IRmakeNewCGU();
+      sym->cgu->val.temp = NULL;
+      SYMBOL *sym2 = sym;
+      TYPE *ty = sym2->typePtr;
+      if(ty->kind == idK){
+        //go to buttom of user types
+        sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
+        ty = sym2->typePtr;
+      }
+      if(sym2->cgu == NULL){
+        sym2->cgu = IRmakeNewCGU();
+        sym2->cgu->val.temp = NULL;
+      }
+      if(ty->kind == recordK){
+        if(sym2->cgu->size == -1){
+          int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
+          if(varCount == -1){
+            fprintf(stderr, "Error while traversing record %s\n", sym2->name);
+            return -1;
+          }
+          sym2->cgu->size = varCount;
+        }
+      }
+      else if(ty->kind == boolK || ty->kind == intK || ty->kind == arrayK){
+        // sym->cgu->val.temp = IRcreateNextTemp(offset);
+        // offset++;
+        sym2->cgu->size = 1;
+        break;
+      }
+      else{
+        fprintf(stderr, "IRtravVarType: how did i get here %d\n", ty->kind);
+        return -1;
+        break;
+      }
+      sym->cgu->size = sym2->cgu->size;
       break;
     case funcK://assign numbers to parameters.
       break;
@@ -341,16 +381,12 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
 
   SYMBOL *sym = getSymbol(table, varType->id);
   if(sym == NULL){
-    fprintf(stderr, "IRtravVarType: no symbol found for %s\n", varType->id);
+    fprintf(stderr, "Line %d: IRtravVarType: no symbol found for %d\n", varType->id, varType->lineno);
     return -1;
   }
   if(sym->cgu == NULL){
     sym->cgu = IRmakeNewCGU();
-    //TODO: temporaries should only be made for locals
-    //TODO: need to ensure that no temps are made for variables in records
-    //TODO: the latter only needs an offset.
-    sym->cgu->val.temp = IRcreateNextLocalTemp(offset); //offset instread of local counter
-    //localCounter++; //maybe this should be done inside localTemp creator
+    sym->cgu->val.temp = IRcreateNextLocalTemp(offset);
     offset++;
   } else {
     //after including user defined types, i think it is legal to go here some times
@@ -359,50 +395,94 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
     return -1;//dunno if we need this.
     //TODO: I guess we should just return offset here?
   }
-  SYMBOL *sym2 = sym;
-  TYPE *ty = sym2->typePtr;
-  while(1){ //carefull
-    if(ty->kind == idK){
-      //go to buttom of user types
-      sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
-      ty = sym2->typePtr;
-    }
-    if(sym2->cgu == NULL){
-      sym2->cgu = IRmakeNewCGU();
-      sym2->cgu->val.temp = NULL;
-      sym2->cgu->size = 1; //default size
-    }
-    if(ty->kind == recordK){
-      if(sym2->cgu->val.temp == NULL || sym == sym2){//First: wrong. latter: anonymous record
-        if(sym2->cgu->val.temp == NULL){
-          sym2->cgu->val.temp = dummyTemp; //used to test whether content of user-record has already been traversed
-        }
-        int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
-        if(varCount == -1){
-          fprintf(stderr, "Error while traversing record %s\n", sym2->name);
+  // SYMBOL *sym2 = sym;
+  // TYPE *ty = sym2->typePtr;
+  // while(1){ //carefull
+  //   if(ty->kind == idK){
+  //     //go to buttom of user types
+  //     sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
+  //     ty = sym2->typePtr;
+  //   }
+  //   if(sym2->cgu == NULL){
+  //     sym2->cgu = IRmakeNewCGU();
+  //     sym2->cgu->val.temp = NULL;
+  //     sym2->cgu->size = 1; //default size
+  //   }
+  //   if(ty->kind == recordK){
+  //     if(sym2->cgu->val.temp == NULL || sym == sym2){//latter: anonymous record
+  //       if(sym2->cgu->val.temp == NULL){
+  //         sym2->cgu->val.temp = dummyTemp; //used to test whether content of user-record has already been traversed
+  //       }
+  //       int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
+  //       if(varCount == -1){
+  //         fprintf(stderr, "Error while traversing record %s\n", sym2->name);
+  //         return -1;
+  //       }
+  //       sym2->cgu->size = varCount;
+  //     }
+  //     sym->cgu->size = sym2->cgu->size;
+  //     break;
+  //   }
+  //   else if(ty->kind == arrayK){
+  //     ty = ty->val.arrayType;
+  //   }
+  //   else if(ty->kind == boolK || ty->kind == intK){
+  //     // sym->cgu->val.temp = IRcreateNextTemp(offset);
+  //     // offset++;
+  //     sym->cgu->size = 1;
+  //     break;
+  //   }
+  //   else{
+  //     fprintf(stderr, "IRtravVarType: how did i get here %d\n", ty->kind);
+  //     return -1;
+  //     break;
+  //   }
+  // }
+  return offset;
+}
+
+/**
+* this function assumes that declarations of all user types
+* has been traversed
+*/
+int findVarSymSize(SYMBOL *sym){
+  if(sym->kind != varS){
+    fprintf(stderr, "INTERNAL ERROR: The symbol %s is not a variable\n", sym->name);
+    return -1;
+  }
+  Typekind tk;
+  int size;
+  SYMBOL *sym2;
+  if(sym->cgu->size == -1){
+    tk = sym->typeVal;
+    switch(tk){
+      case idK:
+        sym2 = recursiveSymbolRetrieval(sym->defScope, sym->typePtr->val.id, 0);
+        if(sym2->cgu->size == -1){
+          fprintf(stderr, "INTERNAL ERROR: The size of %s has not been specified\n", sym->name);
           return -1;
         }
-        sym2->cgu->size = varCount;
-      }
-      sym->cgu->size = sym2->cgu->size;
-      break;
-    }
-    else if(ty->kind == arrayK){
-      ty = ty->val.arrayType;
-    }
-    else if(ty->kind == boolK || ty->kind == intK){
-      // sym->cgu->val.temp = IRcreateNextTemp(offset);
-      // offset++;
-      sym->cgu->size = 1;
-      break;
-    }
-    else{
-      fprintf(stderr, "IRtravVarType: how did i get here %d\n", ty->kind);
-      return -1;
-      break;
+        sym->cgu->size = sym2->cgu->size;
+        break;
+      case intK:
+      case boolK:
+      case arrayK:
+        sym->cgu->size = 1;
+        break;
+      case recordK:
+        size = IRtravVarDeclList(sym->content, sym->typePtr->val.vList, 0);
+        if(size == -1){
+          fprintf(stderr, "Hopefully error is already printed\n");
+          return -1;
+        }
+        sym->cgu->size = size;
+        break;
+      case errorK:
+        fprintf(stderr, "INTERNAL ERROR: Symbol %s has type with error\n");
+        return -1;
     }
   }
-  return offset;
+  return sym->cgu->size;
 }
 
 /**
@@ -486,7 +566,12 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
       IRresetBasePointer();
-      size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
+      //size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
+      size = findVarSymSize(sym);
+      if(size == -1){
+        fprintf(stderr, "Alloc: Hopefully error is already printed\n");
+        return -1;
+      }
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size*8),IRmakeLabelOPERAND(freeHeapLabel))));
       //out of memory check
       allocSuccLabel = Malloc(10);
@@ -517,7 +602,13 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTemporaryOPERAND(temp))));
 
 
-      size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
+      //size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
+      //size = findVarSymSize(sym);
+      size = 1; //size of pointer
+      if(size == -1){
+        fprintf(stderr, "AllocLen: Hopefully error is already printed\n");
+        return -1;
+      }
       op2 = IRtravExp(t,stmt->val.allocatelength.exp);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2,IRmakeRegOPERAND(RBX))));
       //postive allocation size check
@@ -735,7 +826,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
       *ty = (*sym)->typePtr;
     }
     *ty = (*ty)->val.arrayType;
-    fprintf(stderr, "IRtravVar: UnsupportedArrayVarException\n");
+    //fprintf(stderr, "IRtravVar: UnsupportedArrayVarException\n");
     return 0;
   case dotK:
     error = IRtravVarRecursive(t, var->val.vardot.var, sym, ty, op);
@@ -1107,7 +1198,12 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
             fprintf(stderr, "Here something naive is done\n");
             return IRmakeConstantOPERAND(i);
           }
-          return IRmakeConstantOPERAND(sym->cgu->size);
+          int size = findVarSymSize(sym);
+          if(size == -1){
+            fprintf(stderr, "cardinalty: Hopefully error is already printed\n");
+            return -1;
+          }
+          return IRmakeConstantOPERAND(size);
           break;
         case nullKK:
           return IRmakeNullOPERAND();
