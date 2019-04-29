@@ -1,4 +1,11 @@
-(*VIRKER IKKE ENDNU!!!!!*)
+(*
+    legal test, creates a 60 index long list with random numbers from 0 to 1000
+    then creates a binary search tree and inserts values into
+    then prints the binary search tree in correct order.
+
+    this test tests static link, parameters, allocation.
+    should output a ascending sorted list.
+*)
 
 func buildData() : int
 
@@ -83,14 +90,12 @@ func buildTree() : int
     var temp : int;
     i = 1;
     globalTree.data = values[0];
-    write globalTree.data;
 
     while(i < 60) do {
     	temp = values[i];
         retVal = insertValue(temp, globalTree);
         i = i + 1;
     }
-    write i;
     
 
     return 0;
@@ -98,34 +103,25 @@ end buildTree
 
 func insertValue(val : int, node : Tree) : int
 	
-	write 10001;
-	write val;
-	write node.data;
     if(val < node.data) then {
-    	write 10002;
         if(node.left == null) then {
-        	write 10004;
             allocate node.left;
             node.left.left = null;
             node.left.right = null;
             node.left.data = val;
         }
         else {
-        	write 10005;
             retVal = insertValue(val, node.left);
         }
     }
     else {
-    	write 10003;
         if(node.right == null) then {
-        	write 10006;
             allocate node.right;
             node.right.left = null;
             node.right.right = null;
             node.right.data = val;
         }
         else {
-        	write 10007;
             retVal = insertValue(val, node.right);
         }
     }
@@ -133,74 +129,33 @@ func insertValue(val : int, node : Tree) : int
     return 0;
 end insertValue
 
-func testGlobal() : int
+func printTree(node : Tree) : int
 
-	write values[0];
-	write values[1];
-	write values[2];
-	return 0;
-end testGlobal
+    if(node.left == null) then {
+        retVal = 0;
+    }
+    else {
+        retVal = printTree(node.left);
+    }
 
-func testParam(listparam : DATA) : int
+    write node.data;
 
-	write listparam[0];
-	write listparam[1];
-	write listparam[2];
+    if(node.right == null) then {
+        retVal = 0;
+    }
+    else {
+        retVal = printTree(node.right);
+    }
 
-end testParam
+    return 0;
+end printTree
 
-func testOneParam(val : int) : int
 
-	write val;
-
-end testOneParam
-
-func testRecordParam(val : int, node : Tree) : int
-
-	write node.data;
-	node.data = 7;
-	return 0;
-end testRecordParam
-
-var i : int;
 
 allocate globalTree;
 globalTree.left = null;
 globalTree.right = null;
 
-(*
-allocate globalTree.left;
-allocate globalTree.right;
-
-allocate values of length 3;
-values[0] = 1234;
-values[1] = 12345;
-values[2] = 123456;
-
-globalTree.data = values[0];
-globalTree.left.data = values[1];
-globalTree.right.data = values[2];
-write globalTree.left.data;
-write globalTree.data;
-write globalTree.right.data;
-
-retVal = testGlobal();
-retVal = testParam(values);
-retVal = testOneParam(values[0]);
-*)
-
 retVal = buildData();
 retVal = buildTree();
-
-(*
-i = 45;
-write values[i];
-globalTree.data = 57262;
-write globalTree.data;
-
-retVal = testRecordParam(1234, globalTree);
-write globalTree.data;
-allocate globalTree.left;
-globalTree.left.data = 12345;
-write globalTree.left.data;
-*)
+retVal = printTree(globalTree);
