@@ -177,7 +177,7 @@ allocSucc3:
 	movq $0, %rax
 	call printf
 	pop %rdi
-	movq $10, %rbx
+	movq $1000000, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq $-52, %rdx
 	movq %rbx, (%rbp,%rdx,8)
