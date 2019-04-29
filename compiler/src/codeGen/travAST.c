@@ -236,6 +236,14 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   //int nrTempsAndLocals = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
   int nrTempsAndLocals = tempLocalCounter;
   IRinserINSTRhere(instrTempTail, IRmakeSubINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP))));
+
+  if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
+    //Special stuff for end of main function
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RAX))));
+  }
+
+
+
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
   IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP)))); //newly added
   error = IRmakeCalleeEpilog();
@@ -352,8 +360,10 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
     case listK:
       ;//count number of variables
       int varCount = IRtravVarDeclList(table, decl->val.list, tempLocalCounter);
+      //fprintf(stderr, "tempLocalCounter %d : varCount %d\n", tempLocalCounter, varCount);
       if(varCount >= 0){
-        tempLocalCounter += varCount;
+        //tempLocalCounter += (varCount-tempLocalCounter);
+        tempLocalCounter = varCount;
         return 0;
       }
       return -1;
