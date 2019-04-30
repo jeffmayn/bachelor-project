@@ -498,10 +498,12 @@ typedef struct TempListNode{
 TempList *createList();
 
 /**
- * adds an element to the list
- * returns the same list given
+ * adds the temporary to the list
+ * returns 0 if the element already were in the list
+ * returns 1 if the element was added
+ * returns -1 if an error occurred
  */
-TempList *addElement(TempList *list, TEMPORARY *temp);
+int addElement(TempList *list, TEMPORARY *temp);
 
 /**
  * Removes the element from the list

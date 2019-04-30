@@ -14,13 +14,19 @@ TempList *createList(){
 }
 
 /**
- * adds an element to the list
- * returns the same list given
+ * adds the temporary to the list
+ * returns 0 if the element already were in the list
+ * returns 1 if the element was added
+ * returns -1 if an error occurred
  */
-TempList *addElement(TempList *list, TEMPORARY *temp){
+int addElement(TempList *list, TEMPORARY *temp){
   if(list == NULL){
     fprintf(stderr, "INTERNAL ERROR in addElement: no list given\n");
-    return NULL;
+    return -1;
+  }
+  if(temp == NULL){
+    fprintf(stderr, "INTERNAL ERROR: Tried to insert the NULL pointer\n");
+    return -1;
   }
   TempListNode *node = NEW(TempListNode);
   node->temp = temp;
@@ -42,7 +48,7 @@ TempList *addElement(TempList *list, TEMPORARY *temp){
       while(travNode != NULL){
         if(travNode->temp == temp){
           //element already there
-          return list;
+          return 0;
         }
         if(travNode->next == NULL){
           //insert last in list
@@ -57,28 +63,103 @@ TempList *addElement(TempList *list, TEMPORARY *temp){
           travNode->next->prev = node;
           travNode->next = node;
         }
+        travNode = travNode->next;
       }
     }
   }
-  return list;
+  return 1;
 }
 
-/**
- * Removes the element from the list
- * returns the same list as given
- */
-TempList *removeElement(TempList *list, TEMPORARY *temp);
+// /**
+//  * Removes the element from the list
+//  * returns the same list as given
+//  */
+// TempList *removeElement(TempList *list, TEMPORARY *temp){
+//   if(list == NULL){
+//     fprintf(stderr, "INTERNAL ERROR in removeElement: no list given\n");
+//     return NULL;
+//   }
+//   if(temp == NULL){
+//     fprintf(stderr, "INTERNAL ERROR: Tried to remove the NULL pointer\n");
+//     return NULL;
+//   }
+//   TempListNode *travNode = list->head;
+//   while(tempNode != NULL){
+//     if(travNode->temp->tempId == temp->tempId){
+//       //TODO: remove node
+//     }
+//     if(travNode->temp->tempId > temp->tempId){
+//       return list
+//     }
+//   }
+// }
 
 /**
  * Finds the union of the two lists and puts it into the destination
  * returns 0 if no change where made. Otherwise 1 is returned.
  */
-int listUnion(TempList *src, TempList *dest);
+int listUnion(TempList *src, TempList *dest){
+  if(src == NULL){
+    fprintf(stderr, "INTERNAL ERROR in listUnion: no src given\n");
+    return -1;
+  }
+  if(src == NULL){
+    fprintf(stderr, "INTERNAL ERROR in listUnion: no dest given\n");
+    return -1;
+  }
+  int isChanged = 0;
+  TempListNode *srcNode = src->head;
+  //TempListNode *destNode = dest->head;
+  while(srcNode != NULL){
+    isChanged += addElement(dest, srcNode->temp);
+    srcNode = srcNode->next;
+  }
+  if(isChanged){
+    return 1;
+  }
+  return 0;
+}
 
 /**
  * Finds the difference of the two lists
  * returns a new list
  */
-TempList *listDiff(TempList *minuend, TempList *subtrahend);
+TempList *listDiff(TempList *minuend, TempList *subtrahend){
+  TempList *diff = createList();
+  TempListNode *minNode = minuend->head;
+  TempListNode *subNode = subtrahend->head;
+  while(minNode != NULL){
+    if(minNode->temp->tempId == subNode->temp->tempId){
+      minNode = minNode->next; //do not add element
+    }
+    else if(minNode->temp->tempId < subNode->temp->tempId){
+      //element not in subtrahend: add to diff
+      addElement(diff, minNode->temp);
+      minNode = minNode->next;
+    }
+    else if(minNode->temp->tempId > subNode->temp->tempId){
+      subNode = subNode->next; //subtrahend is behind
+    }
+  }
+  return diff;
+}
 
-int freeList(TempList *list);
+
+/**
+ * Frees a list
+ * If the list is NULL, then it is trivially freed
+ */
+int freeList(TempList *list){
+  if(list == NULL){
+    return 0;
+  }
+  TempListNode *node = list->head;
+  TempListNode *node2;
+  while(node != NULL){
+    node2 = node;
+    node = node->next;
+    free(node2);
+  }
+  free(list);
+  return 0;
+}
