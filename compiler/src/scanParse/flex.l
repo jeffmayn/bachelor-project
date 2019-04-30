@@ -69,6 +69,8 @@ int nestedcomments = 0;
 <INITIAL>"then"     { NCP; return tTHEN;}
 <INITIAL>"while"    { NCP; return tWHILE;}
 <INITIAL>"do"       { NCP; return tDO;}
+<INITIAL>"break"	{ NCP; return tBREAK;}
+<INITIAL>"continue"	{ NCP; return tCONTINUE;}
 
 <INITIAL>0|[1-9][0-9]*          { yylval.uint = atoi(yytext);
                                   NCP; return tINT;}
