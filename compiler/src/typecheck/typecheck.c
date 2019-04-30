@@ -10,6 +10,7 @@ extern BODY *theexpression;
 extern SymbolTable *childScopeForDebugging;
 bodyList *bodies = NULL;
 int anonymousRecordCounter = 0;
+int whileLoopCounter = 0;
 
 
 /**
@@ -354,14 +355,30 @@ int expTypeTravStmt(SymbolTable *t, STATEMENT *s){
       }
       break;
     case whileK:
+      whileLoopCounter++;
       i = expTypeTravExp(t, s->val.while_.cond);
       if(i == 0){
-        return expTypeTravStmt(t, s->val.while_.body);
+        i = expTypeTravStmt(t, s->val.while_.body);
       }
+      whileLoopCounter--;
       return i;
       break;
     case listStmtK:
       return expTypeTravStmts(t, s->val.list);
+      break;
+    case breakK:
+    case continueK:
+      ;
+      /*something to see if we are in a while loop somehow
+      something with a counter maybe, global counter 
+      being increased whenever we enter a whileloop
+      and decreased when we exit*/
+      if(whileLoopCounter >= 1){
+        return 0;
+      } else {
+        fprintf(stderr, "%s\n", "expTypeTravStmt: you are not allowed to break or continue outside loops");
+        return -1;
+      }
       break;
   }
   return -1; //compiler warning
@@ -936,17 +953,21 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       return 0;
       break;
     case whileK:
+      whileLoopCounter++;
       //check if the expression is bool
       tk = expOfType(s->val.ifthenelse.cond);
       if(tk != boolK){
         fprintf(stderr,"Line %d: Type of condition in if-statmemt should be boolean\n", s->lineno);
+        whileLoopCounter--;
         return -1;
       }
       //traverse body
       error = checkTypeTravStmt(t, s->val.while_.body, funcId);
       if(error == -1){
+        whileLoopCounter--;
         return -1;
       }
+      whileLoopCounter--;  
       return 0;
       break;
     case listStmtK:
@@ -956,6 +977,20 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         return -1;
       }
       return 0;
+      break;
+    case breakK:
+    case continueK:
+      ;
+      /*something to see if we are in a while loop somehow
+      something with a counter maybe, global counter 
+      being increased whenever we enter a whileloop
+      and decreased when we exit*/
+      if(whileLoopCounter >= 1){
+        return 0;
+      } else {
+        fprintf(stderr, "%s\n", "checkTypeTravStmt: you are not allowed to break or continue outside loops");
+        return -1;
+      }
       break;
   }
   return 0;

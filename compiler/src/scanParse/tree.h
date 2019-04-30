@@ -5,7 +5,7 @@ typedef enum {false, true} bool;
 typedef enum Typekind {idK, intK, boolK, arrayK, recordK, nullKK, errorK} Typekind;
 typedef enum DeclKind {idDeclK, funcK, listK} DeclKind;
 typedef enum StmtKind {returnK, writeK, allocateK, allocateLengthK, assiK, ifK, thenK,\
-      whileK, listStmtK} StmtKind;
+      whileK, listStmtK, breakK, continueK} StmtKind;
 
 //TODO: This is a crazy hack as circular headerfile includes doesn't work
 typedef struct SymbolTable SymbolTable;
@@ -184,6 +184,8 @@ STATEMENT *makeSTMif_then(EXP *if_, STATEMENT *then);
 STATEMENT *makeSTMif_then_else(EXP *if_, STATEMENT *then, STATEMENT *else_);
 STATEMENT *makeSTMwhile_do(EXP *while_, STATEMENT *do_);
 STATEMENT *makeSTMlist(STATEMENT_LIST *list);
+STATEMENT *makeSTMbreak();
+STATEMENT *makeSTMcontinue();
 
 VARIABLE *makeVARIABLEid(char *id);
 VARIABLE *makeVARIABLEexp(VARIABLE *var, EXP *exp);

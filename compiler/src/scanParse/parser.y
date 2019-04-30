@@ -45,8 +45,11 @@ void yyerror() {
 //all terminals
 %token <uint> tINT
 %token <uid> tID
-%token tPLUS tMINUS tTIMES tDIV tEQ tNE tLE tGE tLESS tGREAT tAND tOR tLPAR tRPAR tLSQ tRSQ tLCURL tRCURL
-%token tEND tINTTYPE tBOOLTYPE tARRAYTYPE tOF tRECORDTYPE tTYPE tVAR tRETURN tWRITE tALLOC tLEN tIF tTHEN tELSE tWHILE tDO tNULL
+%token tPLUS tMINUS tTIMES tDIV tEQ tNE tLE tGE tLESS tGREAT tAND tOR 
+%token tLPAR tRPAR tLSQ tRSQ tLCURL tRCURL
+%token tEND tINTTYPE tBOOLTYPE tARRAYTYPE tOF tRECORDTYPE tTYPE tVAR 
+%token tRETURN tWRITE tALLOC tLEN tIF tTHEN tELSE tWHILE tDO tNULL 
+%token tBREAK tCONTINUE
 %token tTRUE tFALSE
 %token tASSI tNEG tDOT
 %token tFUNC
@@ -136,6 +139,8 @@ stmt : tRETURN exp tSEMI {$$ = makeSTMreturn($2);}
      | tIF exp tTHEN stmt tELSE stmt {$$ = makeSTMif_then_else($2,$4,$6);}
      | tWHILE exp tDO stmt {$$ = makeSTMwhile_do($2,$4);}
      | tLCURL stmt_list tRCURL {$$ = makeSTMlist($2);}
+     | tBREAK tSEMI {$$ = makeSTMbreak();}
+     | tCONTINUE tSEMI {$$ = makeSTMcontinue();}
      | error tSEMI {yyerrok; }
 
 var : tID {$$ = makeVARIABLEid($1);}

@@ -83,17 +83,19 @@ extern int yydebug;
     tWHILE = 293,
     tDO = 294,
     tNULL = 295,
-    tTRUE = 296,
-    tFALSE = 297,
-    tASSI = 298,
-    tNEG = 299,
-    tDOT = 300,
-    tFUNC = 301,
-    tBAR = 302,
-    tCOL = 303,
-    tCOM = 304,
-    tSEMI = 305,
-    tMOD = 306
+    tBREAK = 296,
+    tCONTINUE = 297,
+    tTRUE = 298,
+    tFALSE = 299,
+    tASSI = 300,
+    tNEG = 301,
+    tDOT = 302,
+    tFUNC = 303,
+    tBAR = 304,
+    tCOL = 305,
+    tCOM = 306,
+    tSEMI = 307,
+    tMOD = 308
   };
 #endif
 /* Tokens.  */
@@ -135,17 +137,19 @@ extern int yydebug;
 #define tWHILE 293
 #define tDO 294
 #define tNULL 295
-#define tTRUE 296
-#define tFALSE 297
-#define tASSI 298
-#define tNEG 299
-#define tDOT 300
-#define tFUNC 301
-#define tBAR 302
-#define tCOL 303
-#define tCOM 304
-#define tSEMI 305
-#define tMOD 306
+#define tBREAK 296
+#define tCONTINUE 297
+#define tTRUE 298
+#define tFALSE 299
+#define tASSI 300
+#define tNEG 301
+#define tDOT 302
+#define tFUNC 303
+#define tBAR 304
+#define tCOL 305
+#define tCOM 306
+#define tSEMI 307
+#define tMOD 308
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -177,7 +181,7 @@ union YYSTYPE
 
   void* uvoid; //only used for testing during development
 
-#line 181 "y.tab.h" /* yacc.c:1909  */
+#line 185 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

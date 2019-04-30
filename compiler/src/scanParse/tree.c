@@ -368,6 +368,22 @@ STATEMENT *makeSTMlist(STATEMENT_LIST *list){
   return stm;
 }
 
+STATEMENT *makeSTMbreak(){
+  STATEMENT *stm;
+  stm = NEW(STATEMENT);
+  stm->lineno = lineno;
+  stm->kind = breakK;
+  return stm;
+}
+
+STATEMENT *makeSTMcontinue(){
+  STATEMENT *stm;
+  stm = NEW(STATEMENT);
+  stm->lineno = lineno;
+  stm->kind = continueK;
+  return stm;
+}
+
 PAR_DECL_LIST *makePDL(VAR_DECL_LIST *vList){
   PAR_DECL_LIST *pdl;
   pdl = NEW(PAR_DECL_LIST);

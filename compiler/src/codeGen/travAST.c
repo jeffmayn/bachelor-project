@@ -217,7 +217,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
 
   currentLocalStart = sym->cgu->val.funcInfo.localStart;
   currentTemporaryStart = sym->cgu->val.funcInfo.temporaryStart;
-  error = IRtravStmtList(table, body->body->sList, labelName);
+  error = IRtravStmtList(table, body->body->sList, labelName, NULL, NULL);
   if(error == -1){
     fprintf(stderr, "ERROR while traversing statements of %s\n", body->funcId);
     return -1;
@@ -497,14 +497,14 @@ int findVarSymSize(SYMBOL *sym){
  * do not dive into functions etc.
  * Generate code for all statements.
  */
-int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, char* funcEndLabel){
+int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, char* funcEndLabel, char* startLabel, char* endLabel){
   int error = 0;
-  error = IRtravStmt(table, statements->statement, funcEndLabel);
+  error = IRtravStmt(table, statements->statement, funcEndLabel, startLabel, endLabel);
   if(error == -1){
     return -1;
   }
   if(statements->statementList != NULL){
-    return IRtravStmtList(table, statements->statementList, funcEndLabel);
+    return IRtravStmtList(table, statements->statementList, funcEndLabel, startLabel, endLabel);
   }
   return 0;
 }
@@ -512,7 +512,7 @@ int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, char* funcEnd
 /*
  * traversing the statement
  */
-int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
+int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startLabel, char* endLabel){
   OPERAND *op1;
   OPERAND *op2;
   OPERAND *op3;
@@ -691,7 +691,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       IRresetBasePointer();
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(endifLabel)));
-      IRtravStmt(t, stmt->val.ifthenelse.thenbody, funcEndLabel);
+      IRtravStmt(t, stmt->val.ifthenelse.thenbody, funcEndLabel, startLabel, endLabel);
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endifLabel)));
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: if-statement\n");
       break;
@@ -706,15 +706,15 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       IRresetBasePointer();
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(elseLabel)));
-      IRtravStmt(t, stmt->val.ifthenelse.thenbody, funcEndLabel);
+      IRtravStmt(t, stmt->val.ifthenelse.thenbody, funcEndLabel, startLabel, endLabel);
       IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(endifLabel)));
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(elseLabel)));
-      IRtravStmt(t, stmt->val.ifthenelse.elsebody, funcEndLabel);
+      IRtravStmt(t, stmt->val.ifthenelse.elsebody, funcEndLabel, startLabel, endLabel);
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endifLabel)));
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: if-statement\n");
       break;
     case listStmtK:
-      return IRtravStmtList(t, stmt->val.list, funcEndLabel);
+      return IRtravStmtList(t, stmt->val.list, funcEndLabel, startLabel, endLabel);
     case whileK:
     startwhileLabel = Malloc(10);
     sprintf(startwhileLabel, "while%d", labelCounter);
@@ -726,9 +726,15 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(endwhileLabel)));
-      IRtravStmt(t, stmt->val.while_.body, funcEndLabel);
+      IRtravStmt(t, stmt->val.while_.body, funcEndLabel, startwhileLabel, endwhileLabel);
       IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(startwhileLabel)));
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endwhileLabel)));
+      break;
+    case breakK:
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(endLabel)));
+      break;
+    case continueK:
+      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(startLabel)));
       break;
     default:
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: %d\n", stmt->kind);
