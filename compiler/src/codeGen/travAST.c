@@ -58,12 +58,7 @@ TEMPORARY* IRcreateParamTemp(int offset){
  * In this way we go through alle bodies, that is functions, in a bread-first
  * starting with the main-body.
  */
-int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
-  //TODO call all the stuff and shit and things.
-  /* for each body first traverse declerations to count local
-   * variables and shit, then traverse statements creating the
-   * instructions and so on.
-   */
+int IRcreateInternalRep(bodyList *mainBody){
   dummyTemp = IRcreateNextTemp(-1);
   beginHeapLabel = Malloc(5);
   sprintf(beginHeapLabel, "heap%d", labelCounter);
@@ -133,7 +128,6 @@ void IRruntimeErrorCleanupCode(){
 
 int IRinitParams(SymbolTable *table, bodyListElm *element){
 
-  int error = 0;
   int paramCount = 0;
   ParamSymbol *pSym = element->scope->ParamHead;
   char* mainName = NULL;
@@ -391,7 +385,7 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
 
   SYMBOL *sym = getSymbol(table, varType->id);
   if(sym == NULL){
-    fprintf(stderr, "Line %d: IRtravVarType: no symbol found for %d\n", varType->id, varType->lineno);
+    fprintf(stderr, "Line %s: IRtravVarType: no symbol found for %d\n", varType->id, varType->lineno);
     return -1;
   }
   if(sym->cgu == NULL){
@@ -488,7 +482,10 @@ int findVarSymSize(SYMBOL *sym){
         sym->cgu->size = size;
         break;
       case errorK:
-        fprintf(stderr, "INTERNAL ERROR: Symbol %s has type with error\n");
+        fprintf(stderr, "INTERNAL ERROR: findVarSymSize error during run\n");
+        return -1;
+      case nullKK:
+        fprintf(stderr, "%s\n", "INTERNAL ERROR: findVarSymSize nullKK error");
         return -1;
     }
   }
@@ -519,13 +516,11 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
   OPERAND *op1;
   OPERAND *op2;
   OPERAND *op3;
-  OPERAND *op4;
   TEMPORARY *temp;
   SYMBOL *sym;
   TYPE *ty;
   char *elseLabel;
   char *endifLabel;
-  char *eqLabel;
   char *allocSuccLabel;
   char *startwhileLabel;
   char *endwhileLabel;
@@ -761,9 +756,8 @@ OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var){
 }
 
 int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, OPERAND **op){
-  //SYMBOL *sym;
-  OPERAND *op1, *op2;
-  TEMPORARY *t1, *t2;
+  OPERAND *op1;
+  TEMPORARY *t1;
   int error = 0;
   int *nrJumps = Calloc(sizeof(int));
   switch (var->kind) {
@@ -872,8 +866,8 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
  * Traverse expression
  */
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
-  OPERAND *op1, *op2, *op3, *op4, *op5, *op6, *op7, *op8, *op9, *op10, *op11;
-  TEMPORARY *t1, *t2, *t3, *t4;
+  OPERAND *op1, *op2, *op4;
+  TEMPORARY *t1, *t2;
   switch(exp->kind){
     case termK:
       return IRtravTerm(t, exp->val.term);
@@ -1223,7 +1217,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
     ;
       //slå id i symbol-table
       int *nrJumps = Calloc(sizeof(int));//new function in compiler/src/utility/memory.c
-      SYMBOL *sym = IRgetSymbol(t, term->val.idact.id, nrJumps);
+      sym = IRgetSymbol(t, term->val.idact.id, nrJumps);
       //find function-body-scope ???
       //find CODEGENUTIL
       //tjek om label findes -> brug eller lav label
@@ -1352,7 +1346,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
           int size = findVarSymSize(sym);
           if(size == -1){
             fprintf(stderr, "cardinalty: Hopefully error is already printed\n");
-            return -1;
+            return NULL;
           }
           return IRmakeConstantOPERAND(size);
           break;
@@ -1405,7 +1399,6 @@ int IRtravActList(SymbolTable *t, ACT_LIST *actlist){
  * Traversing expression list
  */
 OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
-  int error = 0;
   if(exps != NULL){
     OPERAND* op = IRtravExp(t, exps->exp);
     if(op == NULL){
@@ -1421,7 +1414,6 @@ OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
 }
 
 int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
-  int error = 0;
   int i=0;
   OPERAND *op;
   if(exps != NULL){
@@ -1730,7 +1722,6 @@ int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramL
   if(labelINSTR->instrKind != labelI){
     fprintf(stderr, "ERROR: IRmakeFunctionCallScheme, no label or whatever\n");
   }
-  INSTR *ins; //Is this thingy used - Maybe I should jus delete things instead of making weird comments - but naaah
   //Caller save registers
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RCX)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RDX)));
@@ -1746,14 +1737,7 @@ int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramL
     fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme\n");
   }
   paramCount++; //static link included
-  /*while(paramList != NULL){//maybe change to recursive form?
-    //this migh be the wrong order
-    OPERAND *tempOp = paramList->next;
-    paramList->next = NULL; //a little hack
-    IRappendINSTR(IRmakePushINSTR(paramList));
-    paramList = tempOp;
-    ParamCount += 1;
-  }*/
+ 
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(staticLinkOP, IRmakeRegOPERAND(RBX))));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX))); //Static link field
   //do the actual call
@@ -1792,7 +1776,7 @@ int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramL
  */
 OPERAND *IRsetCalleeStaticLink(int nrJumps){
   TEMPORARY *t1, *t2;
-  OPERAND *o1, *o2;
+  OPERAND *o2;
   //IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("STARTMYSHIT")));
   if(nrJumps == 0){//we are accessing a function in our own scope
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(

@@ -114,7 +114,7 @@ TEMPORARY *dummyTemp; //used to test whether content of user-record has already 
 TEMPORARY* IRcreateNextTemp();
 CODEGENUTIL *IRmakeNewCGU();
 
-int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody);
+int IRcreateInternalRep(bodyList *mainBody);
 
 int IRtravBody(SymbolTable *table, bodyListElm *body);
 int IRmakeCalleeProlog();
