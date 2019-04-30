@@ -917,11 +917,12 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       return IRmakeTemporaryOPERAND(t1);
 
     case divK://TODOMADS THIS IS YOUR JOB YOU SLACKER! - mads to mads
-      op1 = IRtravExp(t, exp->val.binOP.left);
+      t1 = IRcreateNextTemp(tempLocalCounter);
+      tempLocalCounter++;
       op2 = IRtravExp(t, exp->val.binOP.right);
-
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
+      IRresetBasePointer();
 
       // check divsion by zero
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
@@ -930,11 +931,11 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         IRmakeConstantOPERAND(DEVISIONBYZERO), IRmakeRegOPERAND(RAX))));
       IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
 
-      TEMPORARY* t1 = IRmakeTemporaryOPERAND(
-        IRcreateNextTemp(tempLocalCounter)); //result temporary
-      tempLocalCounter++;
+      op1 = IRtravExp(t, exp->val.binOP.left);
+      
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RAX))));
+      IRresetBasePointer();//alle de her reset basepointer er måske overflødige! - mads
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
       IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RDX))));
 
