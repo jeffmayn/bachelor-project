@@ -1558,7 +1558,7 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
    intermediateTail->next = newINSTR;
    intermediateTail = newINSTR;
  }
- newInst.id = intermediateInstrCount;
+ newINSTR->id = intermediateInstrCount;
  intermediateInstrCount++;
  return newINSTR;
 }

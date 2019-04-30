@@ -109,6 +109,7 @@ char* errorCleanupLabel;
 int intermediateInstrCount;
 
 
+
 TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
 
 //should return the next tempID;
@@ -448,47 +449,77 @@ int IGcolorGraph();
 
 
 
-//#######Sorted linked list containing temporaries
+
+
+
+//#########label instruction hash table###############
+#define HASHSIZE2 517
+
+
+typedef struct InstrUnit {
+  INSTR *instr;
+  struct InstrUnit *next;
+} InstrUnit;
+
+
+typedef struct InstrTable {
+    InstrUnit *table[HASHSIZE2]; //**table
+} InstrTable;
+
+int Hash2(char *str);
+
+InstrTable *initInstrHashTable();
+
+int instrHashPutInstr(InstrTable *t, INSTR *instr);
+
+INSTR *instrHashGetINSTR(InstrTable *t, char *label);
+
+
+
+
+
+
+//#######Sorted linked list containing temporaries###########
 
 typedef struct TempList{
-  ListNode *head;
-  ListNode *tail;
+  struct TempListNode *head;
+  struct TempListNode *tail;
 } TempList;
 
 typedef struct TempListNode{
   TEMPORARY *temp;
-  ListNode *next;
-  ListNode *prev;
+  struct TempListNode *next;
+  struct TempListNode *prev;
 } TempListNode;
 
-/*
+/**
  * returns a new list
  */
-LinkedList *createList(int size);
+TempList *createList();
 
-/*
+/**
  * adds an element to the list
  * returns the same list given
  */
-LinkedList *addElement(TempList *list, TEMPORARY *temp);
+TempList *addElement(TempList *list, TEMPORARY *temp);
 
-/*
+/**
  * Removes the element from the list
  * returns the same list as given
  */
-LinkedList *removeElement(TempList *list, TEMPORARY *temp);
+TempList *removeElement(TempList *list, TEMPORARY *temp);
 
-/*
+/**
  * Finds the union of the two lists and puts it into the destination
- * returns the destination list
+ * returns 0 if no change where made. Otherwise 1 is returned.
  */
-LinkedList *listUnion(TempList *src, LinkedList *dest);
+int listUnion(TempList *src, TempList *dest);
 
-/*
+/**
  * Finds the difference of the two lists
  * returns a new list
  */
-LinkedList *listDiff(TempList *minuend, LinkedList *subtrahend)
+TempList *listDiff(TempList *minuend, TempList *subtrahend);
 
 int freeList(TempList *list);
 
@@ -500,6 +531,38 @@ typedef struct LivenessInstructionArray{
   int succ[3];
   int isMove;
 } LivenessInstructionArray;
+
+InstrTable *labelINSTRTabel;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
