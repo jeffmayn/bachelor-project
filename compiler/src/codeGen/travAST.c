@@ -64,6 +64,7 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
    * variables and shit, then traverse statements creating the
    * instructions and so on.
    */
+  intermediateInstrCount = 0;
   dummyTemp = IRcreateNextTemp(-1);
   beginHeapLabel = Malloc(5);
   sprintf(beginHeapLabel, "heap%d", labelCounter);
@@ -1557,6 +1558,8 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
    intermediateTail->next = newINSTR;
    intermediateTail = newINSTR;
  }
+ newInst.id = intermediateInstrCount;
+ intermediateInstrCount++;
  return newINSTR;
 }
 

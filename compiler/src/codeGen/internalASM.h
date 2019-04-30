@@ -69,6 +69,7 @@ typedef struct OPERAND {
 } OPERAND;
 
 typedef struct INSTR {
+  int id;
   INSTRkind instrKind;
   struct OPERAND *paramList;
   struct INSTR *next;
@@ -104,6 +105,8 @@ char* mainSPointLabel;
 char* mainEndLabel;
 char* errorCleanupLabel;
 
+
+int intermediateInstrCount;
 
 
 TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
@@ -442,6 +445,64 @@ int IGhighestOutDegree();
  * uses the graphNodes pointer as graph and colors all nodes
  */
 int IGcolorGraph();
+
+
+
+//#######Sorted linked list containing temporaries
+
+typedef struct TempList{
+  ListNode *head;
+  ListNode *tail;
+} TempList;
+
+typedef struct TempListNode{
+  TEMPORARY *temp;
+  ListNode *next;
+  ListNode *prev;
+} TempListNode;
+
+/*
+ * returns a new list
+ */
+LinkedList *createList(int size);
+
+/*
+ * adds an element to the list
+ * returns the same list given
+ */
+LinkedList *addElement(TempList *list, TEMPORARY *temp);
+
+/*
+ * Removes the element from the list
+ * returns the same list as given
+ */
+LinkedList *removeElement(TempList *list, TEMPORARY *temp);
+
+/*
+ * Finds the union of the two lists and puts it into the destination
+ * returns the destination list
+ */
+LinkedList *listUnion(TempList *src, LinkedList *dest);
+
+/*
+ * Finds the difference of the two lists
+ * returns a new list
+ */
+LinkedList *listDiff(TempList *minuend, LinkedList *subtrahend)
+
+int freeList(TempList *list);
+
+typedef struct LivenessInstructionArray{
+  TempList *in;
+  TempList *out;
+  TempList *use;
+  TempList *def;
+  int succ[3];
+  int isMove;
+} LivenessInstructionArray;
+
+
+
 
 
 //######################assembler generation############//
