@@ -74,7 +74,7 @@ int main() {
   // if(tempMap == NULL){
   //   return -1;
   // }
-  
+  /*
   error = 0;
   error = IRcreateInternalRep(bodies);
   if(error == -1){
@@ -92,7 +92,7 @@ int main() {
   IRtravInternalRep(intermediateHead);
 
 
-
+*/
 
   return 0;
 }

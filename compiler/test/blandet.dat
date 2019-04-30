@@ -1,0 +1,25 @@
+
+#find file1.dat -type d -name target -execdir testSuite.sh \;
+
+dir="/testFolder/*"
+invoke_cmp() {
+  if cmp -s "$dir/$ret1.kit" "$dir/$ret2.kit" ; then
+    echo "PASSED!"
+  else
+    echo "FAILED!"
+  fi
+}
+
+for f in $dir
+do
+    if [ -d "$f" ]
+    then
+        for ff in $f/*
+        do
+            echo "Processing $ff"
+        done
+    else
+        echo "starting test: $f"
+        invoke_cmp
+    fi
+done

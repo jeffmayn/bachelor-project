@@ -2,36 +2,24 @@
 #make clean -C ../ -s
 make -C ../
 reset
-printf "\n<<<<<< STARTING TEST SUITE >>>>>>\n\n"
-
-#find file1.dat -type d -name target -execdir testSuite.sh \;
+printf "<<<<<< STARTING TEST SUITE >>>>>>\n"
+echo "Test 1 is checking for correct return value of program."
+echo "Test 2 compare binarys of program and expected program."
+printf "\n\n"
 
 dir="/testFolder/*"
+# compare binarys on two files
 invoke_cmp() {
-  if cmp -s "$dir/$ret1.kit" "$dir/$ret2.kit" ; then
-    echo "PASSED!"
+  if cmp -s "$dir/file1.kit" "$dir/file2.kit" ; then
+    echo " |--> Test 2: SUCCESS!"
   else
-    echo "FAILED!"
+    echo " |--> Test 2: FAILED!"
   fi
 }
 
-for f in $dir
-do
-    if [ -d "$f" ]
-    then
-        for ff in $f/*
-        do
-            echo "Processing $ff"
-        done
-    else
-        echo "starting test: $f"
-        invoke_cmp
-    fi
-done
-
-
-#invoke_tests
+# invoke_tests
 invoke_tests () {
+  echo "######## RUNNING TEST-FOLDER: ${PWD##*/} ########"
   while read line
   do
     for ret in $line
@@ -45,13 +33,15 @@ invoke_tests () {
         ((count=count+1))
         file=$filename$count".kit" #its crazy but it works
         #echo $file
-        printf "\n\n\n /********* $file **********\\ \n"
+        printf " |--> File  : $file \n"
         ../../build/compiler < "$file" >/dev/null 2>&1
         v=$?
         #echo $v
         if [ $v -eq $ret ]
         then
-          echo SUCCESS
+          echo " |--> Test 1: SUCCESS!"
+          invoke_cmp
+          echo ""
         else
           ../../build/compiler < "$file" #>/dev/null 2>&1
           echo FAIL
@@ -60,4 +50,12 @@ invoke_tests () {
       fi
     done
   done < returns.txt
+  echo ""
 }
+
+#run tests in all subfolders
+function beginTest() {
+  for dir in ./*/; do (cd "$dir" && invoke_tests); done
+}
+
+beginTest
