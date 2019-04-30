@@ -42,6 +42,7 @@ int livenessTravAST(INSTR *instr){
       case xorI:
       case lshiftI:
       case rshiftI:
+        instr.operand;
         break;
       case cmpI: //use both
         break;
