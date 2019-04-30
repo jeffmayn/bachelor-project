@@ -14,6 +14,8 @@
 #define OUTOFMEMORYCODE 6
 #define INDEXOUTOFBOUNDSCODE 2
 #define NONPOSITIVEALLOCCODE 4
+#define DEVISIONBYZERO 3
+
 extern const char* regNames[];
 
 /**
