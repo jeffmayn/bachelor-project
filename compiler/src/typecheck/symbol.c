@@ -89,7 +89,10 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
         free(newSym);
         return NULL;
       }
-      if(temp->next != NULL){//as long as there is a next, check the next one.
+      if(temp->next == NULL){
+        //we are at the end;
+        break;
+      } else {
         temp = temp->next;
       }
     }
