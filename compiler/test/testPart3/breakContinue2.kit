@@ -1,0 +1,18 @@
+var i: int, j: int, k:int;
+
+i = 0;
+
+while(i < 10) do {
+	write 10011;
+	write i;
+	j = 0;
+	while(j < 10) do {
+		write 10021;
+		write j;
+		if( (i + j) == 5 ) then {
+			break;
+		}
+		j = j+1;
+	}
+	i = i+1;
+}

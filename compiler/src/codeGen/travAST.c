@@ -72,6 +72,9 @@ int IRcreateInternalRep(bodyList *mainBody){
   mainSPointLabel = malloc(15);
   sprintf(mainSPointLabel, "mainSPoint%d", labelCounter);
   labelCounter++;
+  mainBPointLabel = malloc(15);
+  sprintf(mainBPointLabel, "mainBPoint%d", labelCounter);
+  labelCounter++;
   errorCleanupLabel = malloc(15);
   sprintf(errorCleanupLabel, "errorCleanup%d", labelCounter);
   labelCounter++;
@@ -88,6 +91,8 @@ int IRcreateInternalRep(bodyList *mainBody){
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endHeapLabel)));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(mainSPointLabel)));
+  IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(mainBPointLabel)));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".text")));
   if(mainBody == NULL){
@@ -118,6 +123,7 @@ void IRruntimeErrorCleanupCode(){
   //here i assume the right error value is already found in %rax;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainSPointLabel), IRmakeRegOPERAND(RSP))));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainBPointLabel), IRmakeRegOPERAND(RBP))));
   //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainEndLabel),IRmakeRegOPERAND(RSP))));
   //IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8), IRappendOPERAND(IRmakeRegOPERAND(RBP), IRmakeCommentOPERAND("this is to avoid removing main-locals twice")))));
   IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(mainEndLabel)));
@@ -207,6 +213,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
     //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBP),IRmakeRegOPERAND(RBX))));
     //IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8),IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeCommentOPERAND("Moving past the main-local removal")))));
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RSP),IRmakeLabelOPERAND(mainSPointLabel))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBP),IRmakeLabelOPERAND(mainBPointLabel))));
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(freeHeapLabel))));
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(endHeapLabel))));
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(HEAPSIZE),IRmakeLabelOPERAND(endHeapLabel))));
@@ -653,7 +660,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op3, IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTempDeRefOPERAND(temp))));
 
-      fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel array-allocation\n");
+      //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel array-allocation\n");
       break;
     case assiK:
       //op1 = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
@@ -863,7 +870,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
       IRmakeRegOPERAND(RBX),
       IRmakeTemporaryOPERAND(t1))));
     *op = IRmakeTempDeRefOPERAND(t1);
-    fprintf(stderr, "IRtravVar: UnsupportedRecordVarException\n");
+    //fprintf(stderr, "IRtravVar: UnsupportedRecordVarException\n");
     return 0;
   }
 }
@@ -1289,7 +1296,6 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
         IRmakeFalseOPERAND(), IRmakeTemporaryOPERAND(temp))));
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(falseLabel)));
       return IRmakeTemporaryOPERAND(temp);
-      fprintf(stderr, "IRtravTerm: UnsupportedTermException: notTermK\n");
       break;
     case expCardK:
       sym = NULL;
@@ -1364,7 +1370,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
           break;
       }
 
-      fprintf(stderr, "IRtravTerm: UnsupportedTermException: expCardK\n");
+      fprintf(stderr, "IRtravTerm: SOME INTERNAL ERROR\n");
       break;
     case numK:
       op = IRmakeConstantOPERAND(term->val.num);

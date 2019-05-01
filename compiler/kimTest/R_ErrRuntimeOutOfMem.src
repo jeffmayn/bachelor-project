@@ -8,8 +8,8 @@ func outOfMem() : int
   var subArr : intarr;
   write counter;
   counter = counter + 1;
-  allocate arr of length 2000;
-  allocate subArr of length 2000;
+  allocate arr of length 200;
+  allocate subArr of length 200;
   return outOfMem();
 end outOfMem
 

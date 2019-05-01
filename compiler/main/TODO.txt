@@ -1,0 +1,39 @@
+TODO.txt
+1 Kims tests der fejler:
+
+	1.1	O_ArrayOfRecords - vi allocere ikke korrekt
+
+	1.2 O_TypeJumpToScope - typecheck problem
+
+	1.3 O_FuncRedefinedInItself - problem med label der ikke bliver talt op korrekt måske
+
+	1.4 O_StaticLinkB - number of operands mismatch for movq
+
+	1.5 O_ArrayComparisonB - segfault
+
+	1.6 F_ShortCircutOR - lav OR operator lazy
+
+	1.7 O_FuncCallAsParamB - et eller andet sted sker der noget forkert med division måske? der bliver returneret noget forkert i rax i hvertfald
+
+	1.8 R_ErrRuntimeNullPointer - segfault
+
+	1.9 O_MultiDimArray - typecheck error multidimarray
+
+	1.10 C_ErrUnmatchedBeginComment - vi kontrollere ikke om multiline comments bliver afsluttet.
+
+	1.11 O_FuncReturnRecord - vi returnere ikke records korrekt fra funktioner
+
+	1.12 C_ErrInvalidToken - vi skal returnere fejl hvis der er et tegn vi ikke genkender i scanneren
+
+	1.13 F_ShortCircutAND - lav lazy AND, hvis den ser en af left eller right som false skal den terminere med det samme
+
+	1.14 F_FuncParamsEvalOrder - vi evaluere parametre fra højre til venstre.
+
+	1.15 O_FuncModifyingParams - der sker en fejl et eller andet sted hvor vi gør noget forkert med movq
+
+	1.16 O_Assoc - noget galt med rækkefølge på + - * / Det er noget lort
+
+	1.17 F_SimpleStructuralEquiv - vi understøtter ikke strukturel ekvivalens
+
+2 Ryd op i mærkelige prints!
+

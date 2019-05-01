@@ -102,6 +102,7 @@ char* beginHeapLabel; //points to the beginning of the heap
 char* freeHeapLabel; //contains the next free heap space
 char* endHeapLabel; //contains the heapEndAddress
 char* mainSPointLabel;
+char* mainBPointLabel;
 
 char* mainEndLabel;
 char* errorCleanupLabel;
