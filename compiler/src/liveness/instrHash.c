@@ -16,11 +16,8 @@ int Hash2(char *str){
 }
 
 InstrTable *initInstrHashTable(){
-  SymbolTable* table = Malloc(sizeof(SymbolTable));
+  InstrTable* table = Malloc(sizeof(InstrTable));
   memset(table->table, 0, sizeof(table->table));
-  table->next = NULL;
-  table->ParamHead = NULL;
-  table->ParamTail = NULL;
   return table;
 }
 
@@ -43,11 +40,11 @@ int instrHashPutInstr(InstrTable *t, INSTR *instr){
   //insert into table
   InstrUnit **table = t->table;
   if(table[hashIndex] == NULL){
-    table[hashIndex] = instr;
+    table[hashIndex] = iu;
   } else {
     InstrUnit *temp = table[hashIndex];
     while(temp != NULL){
-      if(temp == instr){
+      if(temp->instr == instr){
         //name is already in this table
         fprintf(stderr, "instrHashPutInstr(): Somehow the instruction was already inserted\n");
         return -1;
@@ -56,7 +53,7 @@ int instrHashPutInstr(InstrTable *t, INSTR *instr){
         temp = temp->next;
       }
     }
-    temp->next = instr;
+    temp->next = iu;
   }
 
   return 0;
@@ -71,7 +68,7 @@ INSTR *instrHashGetINSTR(InstrTable *t, char *label){
   InstrUnit *temp = table[hashIndex];
   while(temp != NULL){
     if(!strcmp(temp->instr->paramList->val.label, label)){
-      return temp;
+      return temp->instr;
     } else {
       temp = temp->next;
     }

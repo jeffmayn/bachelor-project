@@ -7,10 +7,17 @@
  */
 TempList *createList(){
   TempList *list = NEW(TempList);
-
   list->head = NULL;
   list->tail = NULL;
   return list;
+}
+
+TempListNode *createTempListNode(TEMPORARY *temp){
+  TempListNode *node = NEW(TempListNode);
+  node->temp = temp;
+  node->next = NULL;
+  node->prev = NULL;
+  return node;
 }
 
 /**
@@ -28,10 +35,7 @@ int addElement(TempList *list, TEMPORARY *temp){
     fprintf(stderr, "INTERNAL ERROR: Tried to insert the NULL pointer\n");
     return -1;
   }
-  TempListNode *node = NEW(TempListNode);
-  node->temp = temp;
-  node->next = NULL;
-  node->prev = NULL;
+  TempListNode *node = createTempListNode(temp);
   if(list->head == NULL){
     list->head = node;
     list->tail = node;
@@ -70,30 +74,6 @@ int addElement(TempList *list, TEMPORARY *temp){
   return 1;
 }
 
-// /**
-//  * Removes the element from the list
-//  * returns the same list as given
-//  */
-// TempList *removeElement(TempList *list, TEMPORARY *temp){
-//   if(list == NULL){
-//     fprintf(stderr, "INTERNAL ERROR in removeElement: no list given\n");
-//     return NULL;
-//   }
-//   if(temp == NULL){
-//     fprintf(stderr, "INTERNAL ERROR: Tried to remove the NULL pointer\n");
-//     return NULL;
-//   }
-//   TempListNode *travNode = list->head;
-//   while(tempNode != NULL){
-//     if(travNode->temp->tempId == temp->tempId){
-//       //TODO: remove node
-//     }
-//     if(travNode->temp->tempId > temp->tempId){
-//       return list
-//     }
-//   }
-// }
-
 /**
  * Finds the union of the two lists and puts it into the destination
  * returns 0 if no change where made. Otherwise 1 is returned.
@@ -126,16 +106,22 @@ int listUnion(TempList *src, TempList *dest){
  */
 TempList *listDiff(TempList *minuend, TempList *subtrahend){
   TempList *diff = createList();
+  if(minuend == NULL){
+    return diff;
+  }
+  TempListNode *subNode = NULL;
   TempListNode *minNode = minuend->head;
-  TempListNode *subNode = subtrahend->head;
+  if(subtrahend != NULL){
+    subNode = subtrahend->head;
+  }
   while(minNode != NULL){
-    if(minNode->temp->tempId == subNode->temp->tempId){
-      minNode = minNode->next; //do not add element
-    }
-    else if(minNode->temp->tempId < subNode->temp->tempId){
+    if(subNode == NULL || minNode->temp->tempId < subNode->temp->tempId){
       //element not in subtrahend: add to diff
       addElement(diff, minNode->temp);
       minNode = minNode->next;
+    }
+    else if(minNode->temp->tempId == subNode->temp->tempId){
+      minNode = minNode->next; //do not add element
     }
     else if(minNode->temp->tempId > subNode->temp->tempId){
       subNode = subNode->next; //subtrahend is behind
@@ -163,3 +149,37 @@ int freeList(TempList *list){
   free(list);
   return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+// /**
+//  * Removes the element from the list
+//  * returns the same list as given
+//  */
+// TempList *removeElement(TempList *list, TEMPORARY *temp){
+//   if(list == NULL){
+//     fprintf(stderr, "INTERNAL ERROR in removeElement: no list given\n");
+//     return NULL;
+//   }
+//   if(temp == NULL){
+//     fprintf(stderr, "INTERNAL ERROR: Tried to remove the NULL pointer\n");
+//     return NULL;
+//   }
+//   TempListNode *travNode = list->head;
+//   while(tempNode != NULL){
+//     if(travNode->temp->tempId == temp->tempId){
+//       //TODO: remove node
+//     }
+//     if(travNode->temp->tempId > temp->tempId){
+//       return list
+//     }
+//   }
+// }

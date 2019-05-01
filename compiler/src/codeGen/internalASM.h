@@ -110,6 +110,7 @@ int intermediateInstrCount;
 
 
 
+
 TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
 
 //should return the next tempID;
@@ -380,6 +381,14 @@ int IRtraverseDeclerationList(DECL_LIST *declerations);
 // int BitMapIsEqual(BITMAP *m1, BITMAP *m2);
 
 
+
+//#############LIVENESS ANALYSIS#################
+int liveness();
+int initLiveness();
+int livenessTravIR(INSTR *instr);
+int livenessAnalysis();
+int buildInterferenceGraph();
+
 //####Interferens graph####//
 //IG: Interferens Graph
 //The graph is DIRECTED
@@ -534,7 +543,7 @@ typedef struct LivenessInstructionArray{
   int isMove;
 } LivenessInstructionArray;
 
-InstrTable *labelINSTRTabel;
+InstrTable *labelINSTRTable;
 
 
 

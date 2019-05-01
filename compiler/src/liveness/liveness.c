@@ -2,13 +2,34 @@
  * This file should implement liveness analysis
  */
  #include "internalASM.h"
+ #include "memory.h"
 
  LivenessInstructionArray *lia;
 
  int liveness(){
-   initLiveness();
-   livenessTravAST();
+   int error = 0;
+   error = initLiveness();
+   if(error == -1){
+     fprintf(stderr, "INTERNAL ERROR: initLiveness\n");
+     return -1;
+   }
+   error = livenessTravIR(intermediateHead);
+   if(error == -1){
+     fprintf(stderr, "INTERNAL ERROR: livenessTravIR\n");
+     return -1;
+   }
+   error = livenessAnalysis();
+   if(error == -1){
+     fprintf(stderr, "INTERNAL ERROR: livenessAnalysis\n");
+     return -1;
+   }
 
+   error = buildInterferenceGraph();
+   if(error == -1){
+     fprintf(stderr, "INTERNAL ERROR: buildInterferenceGraph\n");
+     return -1;
+   }
+   return 0;
  }
 
 
@@ -27,7 +48,7 @@ int initLiveness(){
   return 0;
 }
 
-int livenessTravAST(INSTR *instr){
+int livenessTravIR(INSTR *instr){
   OPERAND* op;
   int index;
   INSTR *jINSTR;
@@ -45,6 +66,7 @@ int livenessTravAST(INSTR *instr){
       case lshiftI:
       case rshiftI:
         if(op == NULL){
+          fprintf(stderr, "return -1 1\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -52,6 +74,7 @@ int livenessTravAST(INSTR *instr){
         }
         op = op->next;
         if(op == NULL){
+          fprintf(stderr, "return -1 2\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -61,6 +84,7 @@ int livenessTravAST(INSTR *instr){
         break;
       case cmpI: //use both
         if(op == NULL){
+          fprintf(stderr, "return -1 3\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -68,6 +92,7 @@ int livenessTravAST(INSTR *instr){
         }
         op = op->next;
         if(op == NULL){
+          fprintf(stderr, "return -1 4\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -77,6 +102,7 @@ int livenessTravAST(INSTR *instr){
       case movI: //use first; def second
         lia[index].isMove = 1;
         if(op == NULL){
+          fprintf(stderr, "return -1 5\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -84,6 +110,7 @@ int livenessTravAST(INSTR *instr){
         }
         op = op->next;
         if(op == NULL){
+          fprintf(stderr, "return -1 6\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -92,13 +119,16 @@ int livenessTravAST(INSTR *instr){
         break;
       case pushI: //use one
         if(op == NULL){
+          fprintf(stderr, "return -1 7\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
+        break;
       case popI: //def one
         if(op == NULL){
+          fprintf(stderr, "return -1 8\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -106,12 +136,15 @@ int livenessTravAST(INSTR *instr){
         }
         break;
       case jumpI: //primary succ is different
-      case callI:
-        jINSTR = instrHashGetINSTR(labelINSTRTabel, instr->paramList->val.label);
+        jINSTR = instrHashGetINSTR(labelINSTRTable, instr->paramList->val.label);
         if(jINSTR == NULL){
+          fprintf(stderr, "Error occurred when getting instruction with label %s\n", instr->paramList->val.label);
           return -1;
         }
         lia[index].succ[0] = jINSTR->id;
+        break;
+      case callI:
+        //dont think I have to do anything
         break;
       case jmplessI: //secondary succ is different
       case jmpgreatI:
@@ -119,7 +152,7 @@ int livenessTravAST(INSTR *instr){
       case jmpgeI:
       case jmpeqI:
       case jmpneqI:
-        jINSTR = instrHashGetINSTR(labelINSTRTabel, instr->paramList->val.label);
+        jINSTR = instrHashGetINSTR(labelINSTRTable, instr->paramList->val.label);
         if(jINSTR == NULL){
           fprintf(stderr, "INTERNAL ERROR during livness\n");
           return -1;
@@ -136,6 +169,7 @@ int livenessTravAST(INSTR *instr){
       //unless we reached the end of program
       lia[index].succ[0] = index+1;
     }
+    listUnion(lia[index].use, lia[index].in);
     instr = instr->next;
   }
   return 0;
@@ -144,18 +178,29 @@ int livenessTravAST(INSTR *instr){
 /**
  * Based on algorithm on page 221
  */
-int livnessAnalysis(){
+int livenessAnalysis(){
   int isChanged;
+  int res;
   while(true){
     isChanged = 0;
     for(int n=intermediateInstrCount - 1; n>=0; n--){
       //TODO add use somewhere else
       TempList *diff = listDiff(lia[n].out, lia[n].def);
-      isChanged += listUnion(diff, lia[n].in);
+      res = listUnion(diff, lia[n].in);
+      if(res == -1){
+        fprintf(stderr, "Some error occurred\n");
+        return -1;
+      }
+      isChanged += res;
       freeList(diff);
       for(int j=0; j<3; j++){
         if(lia[n].succ[j] != -1){
-          isChanged += listUnion(lia[n].in, lia[n].out);
+          res = listUnion(lia[n].in, lia[n].out);
+          if(res == -1){
+            fprintf(stderr, "Some error occurred\n");
+            return -1;
+          }
+          isChanged += res;
         }
       }
     }
@@ -163,4 +208,10 @@ int livnessAnalysis(){
       break;
     }
   }
+  return 0;
+}
+
+
+int buildInterferenceGraph(){
+  fprintf(stderr, "UnsupportedOperationException: buildInterferenceGraph\n");
 }

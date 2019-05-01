@@ -65,6 +65,7 @@ int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
    * instructions and so on.
    */
   intermediateInstrCount = 0;
+  labelINSTRTable = initInstrHashTable();
   dummyTemp = IRcreateNextTemp(-1);
   beginHeapLabel = Malloc(5);
   sprintf(beginHeapLabel, "heap%d", labelCounter);
@@ -1498,6 +1499,11 @@ INSTR* IRmakeJlINSTR(OPERAND *params){
 INSTR* IRmakeLabelINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = labelI;
+  int error = 0;
+  error = instrHashPutInstr(labelINSTRTable, instr);
+  if(error == -1){
+    fprintf(stderr, "INTERNAL ERROR occurred putting instruction\n");
+  }
   return instr;
 }
 
