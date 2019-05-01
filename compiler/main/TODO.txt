@@ -31,9 +31,11 @@ TODO.txt
 
 	1.15 O_FuncModifyingParams - der sker en fejl et eller andet sted hvor vi gør noget forkert med movq
 
-	1.16 O_Assoc - noget galt med rækkefølge på + - * / Det er noget lort
+	1.16 O_Assoc -#####!FIXED!#####- noget galt med rækkefølge på + - * / Det er noget lort
 
-	1.17 F_SimpleStructuralEquiv - vi understøtter ikke strukturel ekvivalens
+	1.17 F_SimpleStructuralEquiv - vi understøtter ikke strukturel ekvivalens, det er ok
+
+	1.18 F_RecordIsTupleOrSet - vi har implementeret records som tupler, det er ok
 
 2 Ryd op i mærkelige prints!
 

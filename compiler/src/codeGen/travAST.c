@@ -876,7 +876,10 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
 }
 
 /**
- * Traverse expression
+ * Traverse expression, for most of these we evaluate the tree right first.
+ * this was done because for division and multiplication the left operand
+ * needed to be in a specific register so then it was nice to just be able
+ * to move it straight there without moving into a temporary.
  */
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
   OPERAND *op1, *op2, *op4;
@@ -930,19 +933,24 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
       // check divsion by zero
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RAX)));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeConstantOPERAND(DEVISIONBYZERO), IRmakeRegOPERAND(RAX))));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+        IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-
+      IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RAX)));
       op1 = IRtravExp(t, exp->val.binOP.left);
       
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RAX))));
       IRresetBasePointer();//alle de her reset basepointer er måske overflødige! - mads
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
       IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RDX))));
 
