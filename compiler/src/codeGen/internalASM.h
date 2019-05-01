@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "symbol.h"
+#include "bitmap.h"
 //#include "typecheck.h" //this gives a cycle internalASM->typecheck->symbol->internalASM
 
 #define HASHSIZE2 517
@@ -402,7 +403,8 @@ typedef struct GraphNode {
   //char *tempNumber; //unique and in equivalence with tempName;
   int id; //used as an internal identifier
   registers reg;
-  //BITMAP *neighbors; this one should stay here
+  //int color;
+  BITMAP *neighbors; //this one should stay here
   int isMarked;
   int inDegree;
   int outDegree;
@@ -417,7 +419,7 @@ int graphSize; //the number of nodes in the graph
 /**
  * Creates a new graph node and returns its ID
 */
-int IGmakeGraphNode();
+int IGmakeGraphNode(TEMPORARY *temp);
 
 /**
  * makes the neighbor a neighbor of node
@@ -433,6 +435,7 @@ int IGremoveNeighbor(int nodeID, int neighborID);
 /**
  * Returns the neighbors as a list of integer IDs
  * First element is the number of integers in the list excluding that lenght
+ * NULL is returned if an error occurred
  */
 int* IGgetNeighbors(int nodeID);
 
@@ -458,6 +461,15 @@ int IGhighestOutDegree();
  */
 int IGcolorGraph();
 
+/**
+ * Returns the color of the given node
+ */
+registers IGgetColor(int nodeID);
+
+/**
+ * Prints the graph
+ */
+int IGprintGraph();
 
 
 

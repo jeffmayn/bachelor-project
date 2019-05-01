@@ -18,7 +18,7 @@ int graphLimit = 0;
 /**
  * Creates a new graph node and returns its ID
 */
-int IGmakeGraphNode(){
+int IGmakeGraphNode(TEMPORARY *temp){
   //TODO: errorchecking
   if(graphNodes == NULL){
     graphLimit = 32; //size of integer: full bitmap
@@ -38,10 +38,12 @@ int IGmakeGraphNode(){
   }
   graphNodes[graphSize].id = graphSize;
   graphNodes[graphSize].reg = NA;
+  //graphNodes[graphSize].color = -1;
   graphNodes[graphSize].isMarked = 0;
   graphNodes[graphSize].neighbors = bitMapMakeBitMap(graphLimit);
   graphNodes[graphSize].inDegree = 0;
   graphNodes[graphSize].outDegree = 0;
+  graphNodes[graphSize].temp = temp;
   graphSize++;
   return graphSize-1;
 }
@@ -90,22 +92,24 @@ int IGremoveNeighbor(int nodeID, int neighborID){
 /**
  * Returns the neighbors as a list of integer IDs
  * First element is the number of integers in the list excluding that lenght
- * If the first value is -1, then an error occured
+ * NULL is returned if an error occurred
  */
 int* IGgetNeighbors(int nodeID){
   //TODO: do not return pointers to local variables!?!!??!?
   if(nodeID >= graphSize){
     fprintf(stderr, "IGinsertNeighbor: nodeID %d does not exists\n", nodeID);
-    int ret = -1;
-    return &ret;
+    //int ret = -1;
+    return NULL;
   }
   BITMAP *neighbors = graphNodes[nodeID].neighbors;
   int neighborCount = bitMap1Count(neighbors);
   if(neighborCount == -1){
     //error print needed?
-    return &neighborCount;
+    //return &neighborCount;
+    return NULL;
   }
-  int neighborIDs[neighborCount];
+  //int neighborIDs[neighborCount];
+  int *neighborIDs = Malloc(sizeof(int)*neighborCount);
   neighborIDs[0] = neighborCount;
   int j = 1;
   for(int i=0; i < graphSize; i++){
@@ -113,7 +117,8 @@ int* IGgetNeighbors(int nodeID){
     switch(val){
       case -1:
         fprintf(stderr, "IGgetNeighbors: error when checking neighbor\n");
-        return &val;
+        //return &val;
+        return NULL;
         break;
       case 0:
         //I guess we should do nothing here
@@ -124,8 +129,7 @@ int* IGgetNeighbors(int nodeID){
         break;
       default:
         fprintf(stderr, "IGgetNeighbors: got the weird value '%d'", val);
-        val = -1;
-        return &val;
+        return NULL;
         break;
     }
   }
@@ -189,7 +193,8 @@ int IGhighestOutDegree(){
 /**
  * uses the graphNodes pointer as graph and colors all nodes
  */
-int IGcolorGraph(int colorCount){
+int IGcolorGraph(){
+  int colorCount = R15-R8;
   Stack *graphStack = stackCreate();
   //Uses coloring by simplification
   int lowestID = IGlowestOutDegree();
@@ -216,7 +221,7 @@ int IGcolorGraph(int colorCount){
   }
   int *neighbors = IGgetNeighbors(i);
   int colorFound = 1;
-  for(registers reg = (registers)RAX; reg < (registers) R15; reg = (registers) (reg+1)){
+  for(registers reg = (registers)R8; reg < (registers) R15; reg = (registers) (reg+1)){
     colorFound = 1;
     for(int j = 1; j<neighbors[0]; j++){
       if(graphNodes[neighbors[j]].reg == reg){
@@ -232,4 +237,33 @@ int IGcolorGraph(int colorCount){
   if(!colorFound){
     graphNodes[i].reg = SPILL; //actual spill
   }
+  return 0;
+}
+
+/**
+ * Returns the color of the given node
+ */
+registers IGgetColor(int nodeID){
+  return graphNodes[nodeID].reg;
+}
+
+/**
+ * Prints the graph
+ */
+int IGprintGraph(){
+  int *neighbors;
+  int neighborCount = 0;
+  for(int i = 0; i<graphSize; i++){
+    fprintf(stderr, "node %d -> ", i);
+    neighbors = IGgetNeighbors(i);
+    if(neighbors != NULL){
+      neighborCount = neighbors[0];
+
+    }
+    for(int j = 0; j<neighborCount; j++){
+      fprintf(stderr, "%d; ", neighbors[j+1]);
+    }
+    fprintf(stderr, "\n Color %d", IGgetColor(i));
+  }
+  return 0;
 }

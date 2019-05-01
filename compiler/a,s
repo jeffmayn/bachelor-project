@@ -2,7 +2,7 @@ format:
 .string	"%d\n"
 .data
 .align 8
-@›>:
+@œ:
 .space 16384
 :
 .space 8
@@ -22,8 +22,8 @@ main:
 	push %r15
 	subq $40, %rsp
 	movq %rsp, mainSPoint3
-	movq $@›>, 
-	movq $@›>, 
+	movq $@œ, 
+	movq $@œ, 
 	addq $16384, 
 	movq $1, %rbx
 	addq $1, %rbx

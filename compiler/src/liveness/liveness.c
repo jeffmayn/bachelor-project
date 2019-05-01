@@ -29,6 +29,14 @@
      fprintf(stderr, "INTERNAL ERROR: buildInterferenceGraph\n");
      return -1;
    }
+
+   error = IGcolorGraph();
+   if(error == -1){
+     fprintf(stderr, "INTERNAL ERROR: buildInterferenceGraph\n");
+     return -1;
+   }
+
+   IGprintGraph();
    return 0;
  }
 
@@ -213,16 +221,31 @@ int livenessAnalysis(){
 
 
 int buildInterferenceGraph(){
-  TempListNode *listNode;
-  for(n=0; n<intermediateInstrCount; n++){
-    listNode = lia[n].def->head;
-    while(listNode != NULL){
-      if(!lia[n].isMove || listNode->temp != lia[n].use[0]){
-        //add interference edge
+  TempListNode *defNode;
+  TempListNode *liveNode;
+  for(int n=0; n<intermediateInstrCount; n++){
+    defNode = lia[n].def->head;
+    while(defNode != NULL){
+      liveNode = lia[n].out->head;
+      while(liveNode != NULL){
+        if(!lia[n].isMove || defNode->temp != liveNode->temp){
+          int error;
+          error = IGinsertNeighbor(defNode->temp->graphNodeId, liveNode->temp->graphNodeId);
+          if(error == -1){
+            fprintf(stderr, "INTERNAL ERROR\n");
+            return 0;
+          }
+          error = IGinsertNeighbor(liveNode->temp->graphNodeId, defNode->temp->graphNodeId);
+          if(error == -1){
+            fprintf(stderr, "INTERNAL ERROR\n");
+            return 0;
+          }
+        }
+        liveNode = liveNode->next;
       }
-      listNode = listNode->next;
+      defNode = defNode->next;
     }
   }
-  fprintf(stderr, "UnsupportedOperationException: buildInterferenceGraph\n");
+  //fprintf(stderr, "UnsupportedOperationException: buildInterferenceGraph\n");
   return 0;
 }

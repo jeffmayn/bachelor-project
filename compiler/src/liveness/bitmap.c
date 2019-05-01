@@ -1,21 +1,23 @@
+#include "bitmap.h"
+#include "memory.h"
+#include <stdio.h>
 
-
-#define BITSPERINT 32;
+#define BITSPERINT 32
 /**
  * Creates a bitmap with size number of bits
  * All bits are reset from start (set to 0)
  */
 BITMAP* bitMapMakeBitMap(int size){
   BITMAP *map = NEW(BITMAP);
-  int sectionCount = size/BITSPERINT //sizeofint()
+  int sectionCount = size/BITSPERINT; //sizeofint()
   if(size%BITSPERINT > 0){
     sectionCount++;
   }
-  map.bits = Malloc(sizeof(int)*sectionCount);
-  for(i=0; i<sectionCount; i++){
-    map.bits[i] = 0;
+  map->bits = Malloc(sizeof(int)*sectionCount);
+  for(int i=0; i<sectionCount; i++){
+    map->bits[i] = 0;
   }
-  map.size = size;
+  map->size = size;
   return map;
 }
 
@@ -24,11 +26,11 @@ BITMAP* bitMapMakeBitMap(int size){
  * Returns: -1 if bit is out of bounds
 */
 int bitMapSetBit(BITMAP *map, int index){
-  if(size > map.size){
+  if(index > map->size){
     return -1;
   }
-  int offset = index%map.size;
-  map.bits[index/BITSPERINT] |= 1 << offset;
+  int offset = index%BITSPERINT;
+  map->bits[index/BITSPERINT] |= 1 << offset;
   return 0;
 }
 
@@ -37,11 +39,11 @@ int bitMapSetBit(BITMAP *map, int index){
  * Returns: -1 if bit is out of bounds
 */
 int bitMapResetBit(BITMAP *map, int index){
-  if(size > map.size){
+  if(index > map->size){
     return -1;
   }
-  int offset = index%map.size;
-  map.bits[index/BITSPERINT] &= ~(1 << offset);
+  int offset = index%BITSPERINT;
+  map->bits[index/BITSPERINT] &= ~(1 << offset);
   return 0;
 }
 //use UINT_MAX from limits.h to do the AND correctly
@@ -52,11 +54,11 @@ int bitMapResetBit(BITMAP *map, int index){
  * returns -1 at index out of bounds
  */
 int bitMapBitIsSet(BITMAP *map, int index){
-  if(size > map.size){
+  if(index > map->size){
     return -1;
   }
-  int offset = index%map.size;
-  return (map.bits[index/BITSPERINT] >> offset) & 1;
+  int offset = index%BITSPERINT;
+  return (map->bits[index/BITSPERINT] >> offset) & 1;
 }
 
 BITMAP* bitMapUnion(BITMAP *src, BITMAP *dest){
@@ -86,7 +88,21 @@ int bitMapIsEqual(BITMAP *m1, BITMAP *m2){
   return -1;
 }
 
+/**
+ * Counts the number of 1's in map
+ */
 int bitMap1Count(BITMAP *map){
-  fprintf(stderr, "UnsupportedException: bitMap1Count\n");
-  return -1;
+  int blockCount = map->size/BITSPERINT;
+  int n;
+  int count = 0;
+  for(int i=0; i<blockCount; i++){
+    n = map->bits[i];
+    while(n){
+      count += n & 1;
+      n >>= 1;
+    }
+  }
+  return count;
+  //fprintf(stderr, "UnsupportedException: bitMap1Count\n");
+  //return -1;
 }

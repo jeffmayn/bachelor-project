@@ -17,6 +17,13 @@ TEMPORARY* IRcreateNextTemp(int offset){
   tempIdVal++;
   tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
+
+  //for liveness analysis
+  int error = IGmakeGraphNode(tmp);
+  if(error == -1){
+    fprintf(stderr, "INTERNAL ERROR in IRcreateNextTemp occurred when making graphNode\n");
+  }
+  tmp->graphNodeId = error;
   return tmp;
   //maybe they should be added to a collection containing all
   //non-placed temporaries
