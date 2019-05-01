@@ -15,6 +15,7 @@ TEMPORARY* IRcreateNextTemp(int offset){
   tmp->temporarykind = actualTempT;
   tmp->tempId = tempIdVal;
   tempIdVal++;
+  tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
   //maybe they should be added to a collection containing all
@@ -34,6 +35,7 @@ TEMPORARY* IRcreateNextLocalTemp(int offset){
   tmp->temporarykind = localT;
   tmp->tempId = tempIdVal;
   tempIdVal++; //only if we want to do liveness analysis on locals
+  tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
 }
@@ -48,6 +50,7 @@ TEMPORARY* IRcreateParamTemp(int offset){
   tmp->temporarykind = paramT;
   tmp->tempId = tempIdVal;
   tempIdVal++; //only if we want to do liveness analysis on params
+  tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
 }

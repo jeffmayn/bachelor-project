@@ -34,7 +34,7 @@
 
 
 int initLiveness(){
-  lia = Calloc(sizeof(LivenessInstructionArray)*intermediateInstrCount);
+  lia = Malloc(sizeof(LivenessInstructionArray)*intermediateInstrCount);
   for(int i=0; i<intermediateInstrCount; i++){
     lia[i].use = createList(tempIdVal);
     lia[i].def = createList(tempIdVal);
@@ -213,5 +213,16 @@ int livenessAnalysis(){
 
 
 int buildInterferenceGraph(){
+  TempListNode *listNode;
+  for(n=0; n<intermediateInstrCount; n++){
+    listNode = lia[n].def->head;
+    while(listNode != NULL){
+      if(!lia[n].isMove || listNode->temp != lia[n].use[0]){
+        //add interference edge
+      }
+      listNode = listNode->next;
+    }
+  }
   fprintf(stderr, "UnsupportedOperationException: buildInterferenceGraph\n");
+  return 0;
 }

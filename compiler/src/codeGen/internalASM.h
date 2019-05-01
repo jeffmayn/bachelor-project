@@ -47,6 +47,7 @@ typedef struct TEMPORARY {
   //int tempNr; //WASTEOFSPACE //the number given to the temp by the tempcount
   TEMPORARYkind temporarykind;
   int tempId;
+  int graphNodeId;
   union {
     //heap vs. stack
     //int address;
@@ -405,6 +406,7 @@ typedef struct GraphNode {
   int isMarked;
   int inDegree;
   int outDegree;
+  TEMPORARY *temp;
   //GraphNode *next //Only used within internal management of graph
 } GraphNode;
 

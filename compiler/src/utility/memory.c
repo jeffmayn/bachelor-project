@@ -20,7 +20,7 @@ void *Malloc(unsigned n)
 void *Calloc(unsigned n)
 {
   void *p;
-  if(!(p = calloc(0, n)))
+  if(!(p = calloc(1, n)))
   {
     fprintf(stderr,"Calloc(%d) failed.\n",n);
     fflush(stderr);
