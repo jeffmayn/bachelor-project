@@ -1102,7 +1102,7 @@ YY_RULE_SETUP
 case 55:
 YY_RULE_SETUP
 #line 85 "src/scanParse/flex.l"
-{ NCP; /*TODO Errors*/}
+{ NCP; yyerror();}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
@@ -1113,7 +1113,7 @@ case 57:
 YY_RULE_SETUP
 #line 88 "src/scanParse/flex.l"
 { NCP; nestedcomments--;
-                  if(nestedcomments==0){BEGIN INITIAL;}}
+                    if(nestedcomments==0){BEGIN INITIAL;}}
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
@@ -1121,30 +1121,33 @@ YY_RULE_SETUP
 #line 90 "src/scanParse/flex.l"
 { charpos = 0; lineno++;}
 	YY_BREAK
+case YY_STATE_EOF(COMMENT):
+#line 91 "src/scanParse/flex.l"
+{ yyerror(); BEGIN INITIAL;}
+	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 91 "src/scanParse/flex.l"
+#line 92 "src/scanParse/flex.l"
 { NCP; /*ignore*/}
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-#line 93 "src/scanParse/flex.l"
+#line 94 "src/scanParse/flex.l"
 { charpos = 0; lineno++; BEGIN INITIAL;}
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 94 "src/scanParse/flex.l"
+#line 95 "src/scanParse/flex.l"
 { NCP; /*ignore*/}
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 95 "src/scanParse/flex.l"
+#line 96 "src/scanParse/flex.l"
 ECHO;
 	YY_BREAK
-#line 1146 "lex.yy.c"
+#line 1150 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
-case YY_STATE_EOF(COMMENT):
 case YY_STATE_EOF(ONELINECOMMENT):
 	yyterminate();
 
@@ -2149,6 +2152,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 95 "src/scanParse/flex.l"
+#line 96 "src/scanParse/flex.l"
 
 

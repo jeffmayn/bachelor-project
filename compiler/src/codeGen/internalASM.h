@@ -10,7 +10,7 @@
 
 #define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
-#define HEAPSIZE 16384
+#define HEAPSIZE 1048576//oldvalue = 16384
 #define OUTOFMEMORYCODE 6
 #define INDEXOUTOFBOUNDSCODE 2
 #define NONPOSITIVEALLOCCODE 4

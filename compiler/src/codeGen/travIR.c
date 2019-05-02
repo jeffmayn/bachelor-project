@@ -88,7 +88,7 @@ int travTemporary(TEMPORARY *temp){
       break;
     case paramT:
       //printf("mov %d, %%rdx\n", temp->placement.offset);
-      printf("(%%rbp,%%rdx,8)");
+      printf("(%%rdi,%%rdx,8)");
       break;
     case localT:
       //printf("mov -%d, %%rdx\n", temp->placement.offset);

@@ -156,10 +156,10 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
           vList = vList->vList;
         }
       }
-      //recursively traverse on body of function
-      idTypeTravBody(child,d->val.func->body, bList);
       //save body for statement traversal
       saveBody(bList, d->val.func->body, child, d->val.func->head->id);
+      //recursively traverse on body of function
+      idTypeTravBody(child,d->val.func->body, bList);
     break;
     case idDeclK: //userdefined types
       //TODO: may be copied from somewhere else      ;

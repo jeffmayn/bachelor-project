@@ -82,13 +82,14 @@ int nestedcomments = 0;
 <INITIAL>"(*"     { NCP; nestedcomments++; BEGIN COMMENT;}
 <INITIAL>#        { NCP; BEGIN ONELINECOMMENT;}
 <INITIAL>\n       { charpos = 0; lineno++;}
-<INITIAL>.        { NCP; /*TODO Errors*/}
+<INITIAL>.        { NCP; yyerror();}
 
-<COMMENT>"(*"   { NCP; nestedcomments++;}
-<COMMENT>"*)"   { NCP; nestedcomments--;
-                  if(nestedcomments==0){BEGIN INITIAL;}}
-<COMMENT>\n     { charpos = 0; lineno++;}
-<COMMENT>.      { NCP; /*ignore*/}
+<COMMENT>"(*"     { NCP; nestedcomments++;}
+<COMMENT>"*)"     { NCP; nestedcomments--;
+                    if(nestedcomments==0){BEGIN INITIAL;}}
+<COMMENT>\n       { charpos = 0; lineno++;}
+<COMMENT><<EOF>>  { yyerror(); BEGIN INITIAL;}
+<COMMENT>.        { NCP; /*ignore*/}
 
 <ONELINECOMMENT>\n  { charpos = 0; lineno++; BEGIN INITIAL;}
 <ONELINECOMMENT>.   { NCP; /*ignore*/}

@@ -170,12 +170,13 @@ SYMBOL *getSymbol(SymbolTable *t, char *name){//TODO REFORMAT: getRecordSymbol k
 SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){//TODO REFORMAT: getRecordSymbol kan integreres.
   //find index via hash
   int hashIndex = Hash(name);
-
+  //fprintf(stderr, "%s, %s\n", "IRgetSymbol - Trying to find: ", name);
   //search in current table
   SYMBOL **table = t->table;
   SYMBOL *temp = table[hashIndex];
   while(temp != NULL){
     if(!strcmp(temp->name, name)){
+      //fprintf(stderr, "%s, %s, %p\n", "IRgetSymbol - found:", name, temp->cgu );
       return temp;
     } else {
       temp = temp->next;
@@ -189,6 +190,7 @@ SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){//TODO REFORMAT: g
     *nrJumps = intTemp;
     return IRgetSymbol(t->next, name, nrJumps);
   } else {
+    //fprintf(stderr, "%s, %s\n", "IRgetSymbol - didn't find: ", name);
     return NULL;
   }
 }
