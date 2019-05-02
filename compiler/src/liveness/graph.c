@@ -22,10 +22,13 @@ int IGmakeGraphNode(TEMPORARY *temp){
   //TODO: errorchecking
   if(graphNodes == NULL){
     graphLimit = 32; //size of integer: full bitmap
-    graphNodes = NEW(GraphNode); //MALLOC(sizeof(GraphNode)*graphLimit);
+    //graphNodes = NEW(GraphNode);
+    graphNodes = Malloc(sizeof(GraphNode)*graphLimit);
   }
   else if(graphSize == graphLimit){
-    GraphNode *graphNodesTemp = NEW(GraphNode); //MALLOC(sizeof(GraphNode)*graphLimit*2);
+    fprintf(stderr, "WARNING: DOUBLES GRAPH - MOST LIKELY CAUSES HARM TO SOMEBODY\n");
+    //GraphNode *graphNodesTemp = NEW(GraphNode);
+    GraphNode *graphNodesTemp = Malloc(sizeof(GraphNode)*graphLimit*2);
     memset(graphNodesTemp, 0, sizeof(GraphNode)*graphLimit*2);
     memcpy(graphNodesTemp, graphNodes, sizeof(GraphNode)*graphLimit);
     free(graphNodes);
@@ -103,13 +106,18 @@ int* IGgetNeighbors(int nodeID){
   }
   BITMAP *neighbors = graphNodes[nodeID].neighbors;
   int neighborCount = bitMap1Count(neighbors);
+  if(neighborCount != graphNodes[nodeID].outDegree){ //double check: may be removed later
+    fprintf(stderr, "INTERNAL ERROR in IGgetNeighbors: outdegree does not match number of neighbors for node %d\n", nodeID);
+    return NULL;
+  }
+  neighborCount = graphNodes[nodeID].outDegree;
   if(neighborCount == -1){
     //error print needed?
     //return &neighborCount;
     return NULL;
   }
   //int neighborIDs[neighborCount];
-  int *neighborIDs = Malloc(sizeof(int)*neighborCount);
+  int *neighborIDs = Malloc(sizeof(int)*neighborCount+1);
   neighborIDs[0] = neighborCount;
   int j = 1;
   for(int i=0; i < graphSize; i++){
@@ -151,6 +159,7 @@ int IGisNeighbor(int nodeID, int neighborID);
 
 /**
  * Lowest degree node among all unmarked nodes
+ * returns -1 if there are no more such nodes
 */
 int IGlowestOutDegree(){
   if(graphSize == 0){
@@ -159,7 +168,7 @@ int IGlowestOutDegree(){
   //lowestID = -2;
   int lowestID = -2;
   int degree = -2;
-  for(int i = 1; i<graphSize; i++){
+  for(int i = 0; i<graphSize; i++){
     if(graphNodes[i].isMarked){
       continue;
     }
@@ -167,6 +176,9 @@ int IGlowestOutDegree(){
       lowestID = i;
       degree = graphNodes[i].outDegree;
     }
+  }
+  if(lowestID == -2){
+    return -1;
   }
   return lowestID;
 }
@@ -178,7 +190,7 @@ int IGhighestOutDegree(){
   //lowestID = -2;
   int highestID = -1;
   int degree = -1;
-  for(int i = 1; i<graphSize; i++){
+  for(int i = 0; i<graphSize; i++){
     if(graphNodes[i].isMarked){
       continue;
     }
@@ -194,48 +206,61 @@ int IGhighestOutDegree(){
  * uses the graphNodes pointer as graph and colors all nodes
  */
 int IGcolorGraph(){
-  int colorCount = R15-R8;
+  int colorCount = R15-R8+1;
   Stack *graphStack = stackCreate();
   //Uses coloring by simplification
   int lowestID = IGlowestOutDegree();
-  GraphNode lnode = graphNodes[lowestID];
-  if(lnode.outDegree >= colorCount){
-    //TODO: det skal være noden med højst grad der bliver spilled
-    lnode.reg = SPILL; //potential spill
-  }
-  //The spilled node is also removed from the graph
-  for(int i = 0; i < graphSize; i++){
-    if(i == lowestID){
-      continue;
+  while(lowestID != -1){
+
+    GraphNode lnode = graphNodes[lowestID];
+    if(lnode.outDegree >= colorCount){
+      //TODO: det skal være noden med højst grad der bliver spilled
+      lnode.reg = SPILL; //potential spill
     }
-    IGremoveNeighbor(i, lowestID);
-    //Put i on a stack
-    stackPush(graphStack, i);
+    //The spilled node is also removed from the graph
+    int *neighbors = IGgetNeighbors(lowestID);
+    for(int i = 1; i <= neighbors[0]; i++){
+      if(neighbors[i] == lowestID){
+        continue;
+      }
+      //remove this node as neighbor of all other nodes
+      IGremoveNeighbor(neighbors[i],lowestID);
+    }
+    //Put lowest id on a stack
+    stackPush(graphStack, lowestID);
+    graphNodes[lowestID].isMarked = 1;
+    lowestID = IGlowestOutDegree();
+
   }
 
   //pop i from the stack
   int i = stackPop(graphStack);
-  if(i == -1){
-    fprintf(stderr, "IGcolorGraph: error popping from stack\n");
-    return -1;
-  }
-  int *neighbors = IGgetNeighbors(i);
-  int colorFound = 1;
-  for(registers reg = (registers)R8; reg < (registers) R15; reg = (registers) (reg+1)){
-    colorFound = 1;
-    for(int j = 1; j<neighbors[0]; j++){
-      if(graphNodes[neighbors[j]].reg == reg){
-        colorFound = 0;
+  while(i != -1){
+    fprintf(stderr, "%d\n", i);
+
+    if(i == -1){
+      fprintf(stderr, "IGcolorGraph: error popping from stack\n");
+      return -1;
+    }
+    int *neighbors = IGgetNeighbors(i);
+    int colorFound = 1;
+    for(registers reg = (registers)R8; reg < (registers) R15; reg = (registers) (reg+1)){
+      colorFound = 1;
+      for(int j = 1; j<=neighbors[0]; j++){
+        if(graphNodes[neighbors[j]].reg == reg){
+          colorFound = 0;
+          break;
+        }
+      }
+      if(colorFound){
+        graphNodes[i].reg = reg;
         break;
       }
     }
-    if(colorFound){
-      graphNodes[i].reg = reg;
-      break;
+    if(!colorFound){
+      graphNodes[i].reg = SPILL; //actual spill
     }
-  }
-  if(!colorFound){
-    graphNodes[i].reg = SPILL; //actual spill
+    i = stackPop(graphStack);
   }
   return 0;
 }
@@ -246,6 +271,31 @@ int IGcolorGraph(){
 registers IGgetColor(int nodeID){
   return graphNodes[nodeID].reg;
 }
+
+
+/**
+ * Transfer colors from graph nodes to its temporaries
+ */
+int IGTransferColors(){
+  TEMPORARY *temp;
+  GraphNode node;
+  registers color;
+  for(int i = 0; i<graphSize; i++){
+    node = graphNodes[i];
+    color = node.reg;
+    if(color == NA){
+      fprintf(stderr, "INTERNAL ERROR: found NA color while transfering to tempts\n");
+      return -1;
+    }
+    if(color != SPILL){
+      temp = node.temp;
+      temp->temporarykind = regT;
+      temp->placement.reg = color;
+    }
+  }
+  return 0;
+}
+
 
 /**
  * Prints the graph
@@ -263,7 +313,8 @@ int IGprintGraph(){
     for(int j = 0; j<neighborCount; j++){
       fprintf(stderr, "%d; ", neighbors[j+1]);
     }
-    fprintf(stderr, "\n Color %d", IGgetColor(i));
+    fprintf(stderr, "\nColor %s\n", regNames[IGgetColor(i)]);
+    fprintf(stderr, "--------\n");
   }
   return 0;
 }

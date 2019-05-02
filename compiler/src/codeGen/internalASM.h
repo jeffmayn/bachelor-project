@@ -390,8 +390,10 @@ int initLiveness();
 int livenessTravIR(INSTR *instr);
 int livenessAnalysis();
 int buildInterferenceGraph();
+void printLIA();
 
 //####Interferens graph####//
+
 //IG: Interferens Graph
 //The graph is DIRECTED
 //TODO: Somebody make graph representation
@@ -470,6 +472,11 @@ registers IGgetColor(int nodeID);
  * Prints the graph
  */
 int IGprintGraph();
+
+/**
+ * Transfer colors from graph nodes to its temporaries
+ */
+int IGTransferColors();
 
 
 

@@ -24,19 +24,29 @@
      return -1;
    }
 
+   //printLIA();
+
    error = buildInterferenceGraph();
    if(error == -1){
      fprintf(stderr, "INTERNAL ERROR: buildInterferenceGraph\n");
      return -1;
    }
 
+   //IGprintGraph();
+
    error = IGcolorGraph();
    if(error == -1){
-     fprintf(stderr, "INTERNAL ERROR: buildInterferenceGraph\n");
+     fprintf(stderr, "INTERNAL ERROR: colorGraph\n");
      return -1;
    }
 
    IGprintGraph();
+
+   error = IGTransferColors();
+   if(error == -1){
+     fprintf(stderr, "INTERNAL ERROR: TransferColors\n");
+     return -1;
+   }
    return 0;
  }
 
@@ -52,6 +62,7 @@ int initLiveness(){
       lia[i].succ[j] = -1;
     }
     lia[i].isMove = 0;
+
   }
   return 0;
 }
@@ -107,6 +118,7 @@ int livenessTravIR(INSTR *instr){
           addElement(lia[index].use, op->val.temp);
         }
         break;
+
       case movI: //use first; def second
         lia[index].isMove = 1;
         if(op == NULL){
@@ -164,6 +176,7 @@ int livenessTravIR(INSTR *instr){
         if(jINSTR == NULL){
           fprintf(stderr, "INTERNAL ERROR during livness\n");
           return -1;
+
         }
         lia[index].succ[0] = jINSTR->id;
       case labelI:
@@ -177,7 +190,7 @@ int livenessTravIR(INSTR *instr){
       //unless we reached the end of program
       lia[index].succ[0] = index+1;
     }
-    listUnion(lia[index].use, lia[index].in);
+    listUnion(lia[index].use, lia[index].in); //when we use its also liveIn
     instr = instr->next;
   }
   return 0;
@@ -195,19 +208,20 @@ int livenessAnalysis(){
       //TODO add use somewhere else
       TempList *diff = listDiff(lia[n].out, lia[n].def);
       res = listUnion(diff, lia[n].in);
+      freeList(diff);
       if(res == -1){
         fprintf(stderr, "Some error occurred\n");
         return -1;
       }
       isChanged += res;
-      freeList(diff);
       for(int j=0; j<3; j++){
         if(lia[n].succ[j] != -1){
-          res = listUnion(lia[n].in, lia[n].out);
+          res = listUnion(lia[lia[n].succ[j]].in, lia[n].out);
           if(res == -1){
             fprintf(stderr, "Some error occurred\n");
             return -1;
           }
+
           isChanged += res;
         }
       }
@@ -224,11 +238,15 @@ int buildInterferenceGraph(){
   TempListNode *defNode;
   TempListNode *liveNode;
   for(int n=0; n<intermediateInstrCount; n++){
+
     defNode = lia[n].def->head;
     while(defNode != NULL){
+      //fprintf(stderr, "instr %d with liveOut %p\n", n, lia[n].out->head);
+      //fprintf(stderr, "defNode->temp->id %d, offset %d\n", defNode->temp->tempId, defNode->temp->placement.offset);
       liveNode = lia[n].out->head;
       while(liveNode != NULL){
-        if(!lia[n].isMove || defNode->temp != liveNode->temp){
+        if((!lia[n].isMove) || defNode->temp != liveNode->temp){
+          //HUGE MISTAKE HERE OR small
           int error;
           error = IGinsertNeighbor(defNode->temp->graphNodeId, liveNode->temp->graphNodeId);
           if(error == -1){
@@ -248,4 +266,57 @@ int buildInterferenceGraph(){
   }
   //fprintf(stderr, "UnsupportedOperationException: buildInterferenceGraph\n");
   return 0;
+}
+
+
+
+
+
+void printLIA(){
+  for(int n = 0; n<intermediateInstrCount; n++){
+    if(    (lia[n].use->head == NULL)
+        && (lia[n].def->head == NULL)
+        && (lia[n].in->head == NULL)
+        && (lia[n].out->head == NULL)){
+          continue;
+        }
+    fprintf(stderr, "INSTR %d ", n);
+    if(lia[n].isMove){
+      fprintf(stderr, "isMove ");
+    }fprintf(stderr, "with successors ");
+    for(int j=0; j<3; j++){
+      if(lia[n].succ[j] != -1)
+      fprintf(stderr, "%d ", lia[n].succ[j]);
+    }
+    fprintf(stderr, "\n");
+    TempListNode *node;
+    fprintf(stderr, "USE: ");
+    node = lia[n].use->head;
+    while(node != NULL){
+      fprintf(stderr, "%d; ", node->temp->tempId);
+      node = node->next;
+    }
+    fprintf(stderr, "\n");
+    fprintf(stderr, "DEF: ");
+    node = lia[n].def->head;
+    while(node != NULL){
+      fprintf(stderr, "%d; ", node->temp->tempId);
+      node = node->next;
+    }
+    fprintf(stderr, "\n");
+    fprintf(stderr, "IN: ");
+    node = lia[n].in->head;
+    while(node != NULL){
+      fprintf(stderr, "%d; ", node->temp->tempId);
+      node = node->next;
+    }
+    fprintf(stderr, "\n");
+    fprintf(stderr, "OUT: ");
+    node = lia[n].out->head;
+    while(node != NULL){
+      fprintf(stderr, "%d; ", node->temp->tempId);
+      node = node->next;
+    }
+    fprintf(stderr, "\n--------------------------\n");
+  }
 }
