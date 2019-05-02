@@ -8,7 +8,7 @@ echo "Test 2 compare output of program with expected output."
 printf "\n\n"
 
 
-# compile files to assembly and produce executables
+# compile files to assembly and produce output files
 invoke_asm() {
   ../../build/compiler < $1.kit > tmp/$1.s 2>/dev/null
   gcc -no-pie -m64 tmp/$1.s -o tmp/$1.dat
@@ -18,17 +18,29 @@ invoke_asm() {
   invoke_cmp $1
 }
 
+# if an test fails, a log is generated
 invoke_log(){
-  #sed -i '1s;^;############################\n\n;' log/$1.log
-  ../../build/compiler < "$1.kit" > log/$1.log 2>&1
-  sed -i '1s;^;\n############################\nOther stuff:\n------------\n;' log/$1.log
-  cat tmp/expected/$1.txt log/$1.log >out && mv out log/$1.log
-  sed -i '1s;^;\n############################\nExpected output:\n----------------\n;' log/$1.log
-  cat tmp/output/$1.txt log/$1.log >out && mv out log/$1.log
-  sed -i '1s;^;############################\nActual output:\n--------------\n;' log/$1.log
+  if [ $2 -eq $3 ]; then
+    #sed -i '1s;^;############################\n\n;' log/$1.log
+    ../../build/compiler < "$1.kit" > log/$1.log 2>&1
+    sed -i '1s;^;\n############################\nOther stuff:\n------------\n;' log/$1.log
+    cat tmp/expected/$1.txt log/$1.log >out && mv out log/$1.log
+    sed -i '1s;^;\n############################\nExpected output:\n----------------\n;' log/$1.log
+    cat tmp/output/$1.txt log/$1.log >out && mv out log/$1.log
+    sed -i '1s;^;############################\nActual output:\n--------------\n;' log/$1.log
+  else
+    ../../build/compiler < "$1.kit" > log/$1.log 2>&1
+    sed -i '1s;^;\n############################\nOther stuff:\n------------\n;' log/$1.log
+    sed -i '1s;^;Expected: '$2'\n;' log/$1.log
+    sed -i '1s;^;Got: '$3'\n;' log/$1.log
+    sed -i '1s;^;\n############################\nReturn code error:\n------------\n;' log/$1.log
+
+    #echo returned $2 but expected $3
+  fi
+
 }
 
-# compare on two files
+# compare expected output to actual output
 invoke_cmp() {
   if cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
     echo "  |--> Test 2: SUCCESS!"
@@ -65,9 +77,13 @@ invoke_tests () {
           invoke_asm "$filename$count"
           echo ""
         else
-          ../../build/compiler < "$file" #>/dev/null 2>&1
-          echo FAIL
-          echo returned $v but expected $ret
+          echo "  |--> Test 1: FAILED!"
+          echo "  |--> Test 2: not initialised!"
+          #../../build/compiler < "$file" #>/dev/null 2>&1
+          echo "  |--> SEE LOGFILE: ${PWD##}/log/$filename$count.log"
+          echo ""
+          invoke_log $filename$count $v $ret
+          #echo returned $v but expected $ret
         fi
       fi
     done
