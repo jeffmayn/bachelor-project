@@ -84,7 +84,7 @@ invoke_tests () {
         else
           printf "  |--> Test 1: ${RED}FAILED!${NC}\n"
           #echo "  |--> Test 1: FAILED!"
-          printf "  |--> Test 2: ${YELLOW}not initialised!${NC}"
+          printf "  |--> Test 2: ${YELLOW}not initialised!${NC}\n"
           #../../build/compiler < "$file" #>/dev/null 2>&1
           echo "  |--> SEE LOGFILE: ${PWD##}/log/$filename$count.log"
           echo ""
