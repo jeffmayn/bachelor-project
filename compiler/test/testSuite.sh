@@ -2,6 +2,9 @@
 #make clean -C ../ -s
 make -C ../
 reset
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 printf "<<<<<< STARTING TEST SUITE >>>>>>\n"
 echo "Test 1 is checking for correct return value of program."
 echo "Test 2 compare output of program with expected output."
@@ -45,7 +48,9 @@ invoke_cmp() {
   if cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
     echo "  |--> Test 2: SUCCESS!"
   else
-    echo "  |--> Test 2: FAILED!"
+
+    #printf "I ${RED}love${NC} Stack Overflow\n"
+    printf "  |--> Test 2: ${RED}FAILED!${NC}\n"
     echo "  |--> SEE LOGFILE: ${PWD##}/log/$1.log"
     invoke_log $1
   fi
@@ -77,8 +82,9 @@ invoke_tests () {
           invoke_asm "$filename$count"
           echo ""
         else
-          echo "  |--> Test 1: FAILED!"
-          echo "  |--> Test 2: not initialised!"
+          printf "  |--> Test 1: ${RED}FAILED!${NC}\n"
+          #echo "  |--> Test 1: FAILED!"
+          printf "  |--> Test 2: ${YELLOW}not initialised!${NC}"
           #../../build/compiler < "$file" #>/dev/null 2>&1
           echo "  |--> SEE LOGFILE: ${PWD##}/log/$filename$count.log"
           echo ""
