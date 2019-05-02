@@ -10,34 +10,32 @@ printf "\n\n"
 
 # compile files to assembly and produce executables
 invoke_asm() {
-  ../../build/compiler < $1.kit > asm/$1.s 2>/dev/null
-  gcc -no-pie -m64 asm/$1.s -o asm/$1.dat
-  ./asm/$1.dat > asm/$1.txt
-  rm asm/*.dat
-  rm asm/*.s
+  ../../build/compiler < $1.kit > tmp/$1.s 2>/dev/null
+  gcc -no-pie -m64 tmp/$1.s -o tmp/$1.dat
+  ./tmp/$1.dat > tmp/output/$1.txt
+  rm tmp/*.dat
+  rm tmp/*.s
   invoke_cmp $1
+}
+
+invoke_log(){
+  #sed -i '1s;^;############################\n\n;' log/$1.log
+  ../../build/compiler < "$1.kit" > log/$1.log 2>&1
+  sed -i '1s;^;\n############################\nOther stuff:\n------------\n;' log/$1.log
+  cat tmp/expected/$1.txt log/$1.log >out && mv out log/$1.log
+  sed -i '1s;^;\n############################\nExpected output:\n----------------\n;' log/$1.log
+  cat tmp/output/$1.txt log/$1.log >out && mv out log/$1.log
+  sed -i '1s;^;############################\nActual output:\n--------------\n;' log/$1.log
 }
 
 # compare on two files
 invoke_cmp() {
-
-  if cmp -s "asm/$1.txt" "asm/expected/$1.txt" ; then
+  if cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
     echo "  |--> Test 2: SUCCESS!"
   else
     echo "  |--> Test 2: FAILED!"
     echo "  |--> SEE LOGFILE: ${PWD##}/log/$1.log"
-    ../../build/compiler < "$1.kit" > log/$1.log 2>&1
-    sed -i '1s;^;############################\n\n;' log/$1.log
-    sed -i '1s;^;OTHER:'$1'\n;' log/$1.log
-    sed -i '1s;^;############################\n;' log/$1.log
-
-    sed -i '1s;^;############################\n\n;' log/$1.log
-    sed -i '1s;^;PROGRAM CODE:'$1'\n;' log/$1.log
-    sed -i '1s;^;############################\n;' log/$1.log
-
-    sed -i '1s;^;############################\n\n;' log/$1.log
-    sed -i '1s;^;LOG-FILE: '$1'\n;' log/$1.log
-    sed -i '1s;^;############################\n;' log/$1.log
+    invoke_log $1
   fi
 }
 
