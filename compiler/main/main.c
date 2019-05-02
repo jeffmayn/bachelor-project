@@ -41,7 +41,7 @@ SymbolTable* findFunctionScope(SymbolTable *t, char *fId){
 int main() {
   int error = 0;
   lineno = 1;
-  fprintf(stderr, "%s\n", "######## STARTING PARSING ########");
+  fprintf(stderr, "%s\n", "  |--> STARTING PARSING");
   yyparse();
   if(SYNTAX_ERROR){
     fprintf(stderr, "%s\n", "compilation ended in error\n");
@@ -49,14 +49,14 @@ int main() {
   }
 
 
-  fprintf(stderr, "%s\n", "######## STARTING 1ST WEEDER ########");
+  fprintf(stderr, "%s\n", "  |--> STARTING 1ST WEEDER");
   error = 0;
   error = weederBody(theexpression);
   if(error == -1){
     fprintf(stderr, "%s\n", "ERROR: compilation ended in error\n");
     return -1;
   }
-  fprintf(stderr, "%s\n", "######## STARTING TYPECHECK ########");
+  fprintf(stderr, "%s\n", "  |--> STARTING TYPECHECK");
   SymbolTable *table = initSymbolTable();
   error = 0;
   error = typeCheck(table);
@@ -64,17 +64,17 @@ int main() {
     return -1;
   }
 
-  fprintf(stderr, "%s\n", "######## STARTING PRINTING BODY ########");
+  fprintf(stderr, "%s\n", "  |--> STARTING PRINTING BODY");
   //pBODY(theexpression);
 
 
 
-  fprintf(stderr, "%s\n", "######## STARTING INTERNAL REPRESENTATION ########");
+  fprintf(stderr, "%s\n", "  |--> STARTING INTERNAL REPRESENTATION");
   //TempLocMap tempMap = TempLocMap* IRsetupTemporaries(bodies, table);
   // if(tempMap == NULL){
   //   return -1;
   // }
-  
+
   error = 0;
   error = IRcreateInternalRep(bodies);
   if(error == -1){
@@ -82,11 +82,11 @@ int main() {
     return -1;
   }
 
-  fprintf(stderr, "%s\n", "######## STARTING PRINTING INTERNAL REPRESENTATION ########");
+  fprintf(stderr, "%s\n", "  |--> STARTING PRINTING INTERNAL REPRESENTATION");
   //printINSTRnode(intermediateHead);
 
 
-  fprintf(stderr, "%s\n", "######## STARTING FINAL OUTPUT GENERATION ########");
+  fprintf(stderr, "%s\n", "  |--> STARTING FINAL OUTPUT GENERATION");
   //printf("WHEREDOES THIS GO\n");
   //IRtravINSTR(intermediateHead);
   IRtravInternalRep(intermediateHead);

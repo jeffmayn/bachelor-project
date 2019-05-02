@@ -23,7 +23,7 @@ int whileLoopCounter = 0;
 int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck(Symboltable* target){})
   int error = 0;
   bodies = initBodyList();
-  //fprintf(stderr, "******** Symbol collection ********\n");
+  fprintf(stderr, "   |--> Symbol collection\n");
   error = idTypeFinder(table, bodies);
   if(error == -1){
     fprintf(stderr, "Error: Symbol collection did not complete\n");
@@ -32,7 +32,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
   else{
     //fprintf(stderr, "Symbol collection completed successfully\n");
   }
-  //fprintf(stderr, "******** Expression type collection ********\n");
+  fprintf(stderr, "   |--> Expression type collection\n");
   error = 0;
   bodyListElm *bElm = getBody(bodies);
   while(bElm != NULL){
@@ -49,7 +49,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
   else{
     //fprintf(stderr, "Expression type collection completed successfully\n");
   }
-  //fprintf(stderr, "******** Typechecking ********\n");
+  fprintf(stderr, "   |--> Typechecking\n");
   error = 0;
   resetbodyListIndex(bodies);
   bElm = getBody(bodies);
