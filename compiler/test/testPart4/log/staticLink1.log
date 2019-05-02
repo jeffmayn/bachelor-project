@@ -23,12 +23,14 @@ format:
 .data
 .align 8
 heap0:
-.space 16384
+.space 1048576
 freeHeap1:
 .space 8
 endHeap2:
 .space 8
 mainSPoint3:
+.space 8
+mainBPoint4:
 .space 8
 .text
 .globl main
@@ -42,9 +44,10 @@ main:
 	push %r15
 	subq $88, %rsp
 	movq %rsp, mainSPoint3
+	movq %rbp, mainBPoint4
 	movq $heap0, freeHeap1
 	movq $heap0, endHeap2
-	addq $16384, endHeap2
+	addq $1048576, endHeap2
 	movq $123, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq $-9, %rdx
@@ -221,11 +224,11 @@ incGlobalBy103:
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-6, %rdx
+	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi#resetting basepointer
 	movq $-14, %rdx
 	movq %rbx, (%rbp,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
 	movq $-16, %rdx
@@ -234,13 +237,11 @@ incGlobalBy103:
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-7, %rdx
+	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq $-14, %rdx
-	addq (%rbp,%rdx,8), %rbx
-	movq $-14, %rdx
-	movq %rbx, (%rbp,%rdx,8)
+	addq %rbx, (%rbp,%rdx,8)
 	movq $-14, %rdx
 	movq (%rbp,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
@@ -284,6 +285,7 @@ incGlobalBy103end:
 
 
 
-errorCleanup4:
+errorCleanup5:
 	movq mainSPoint3, %rsp
+	movq mainBPoint4, %rbp
 	jmp mainend
