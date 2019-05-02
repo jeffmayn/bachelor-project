@@ -61,6 +61,8 @@ invoke_cmp() {
 # invoke_tests
 invoke_tests () {
   echo "######## RUNNING TEST-FOLDER: ${PWD##*/} ########"
+
+
   while read line
   do
     for ret in $line
@@ -80,7 +82,7 @@ invoke_tests () {
         #echo $v
         if [ $v -eq $ret ]
         then
-            printf "  |--> Test 1: ${GREEN}SUCCESS!${NC}\n"
+          printf "  |--> Test 1: ${GREEN}SUCCESS!${NC}\n"
         #  echo "  |--> Test 1: SUCCESS!"
           invoke_asm "$filename$count"
           echo ""

@@ -1,0 +1,18 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 139
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+   |--> Typechecking
+  |--> STARTING PRINTING BODY
+  |--> STARTING INTERNAL REPRESENTATION
