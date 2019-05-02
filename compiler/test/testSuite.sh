@@ -4,6 +4,7 @@ make -C ../
 reset
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 printf "<<<<<< STARTING TEST SUITE >>>>>>\n"
 echo "Test 1 is checking for correct return value of program."
@@ -46,7 +47,8 @@ invoke_log(){
 # compare expected output to actual output
 invoke_cmp() {
   if cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
-    echo "  |--> Test 2: SUCCESS!"
+  #  echo "  |--> Test 2: SUCCESS!"
+    printf "  |--> Test 2: ${GREEN}SUCCESS!${NC}\n"
   else
 
     #printf "I ${RED}love${NC} Stack Overflow\n"
@@ -78,7 +80,8 @@ invoke_tests () {
         #echo $v
         if [ $v -eq $ret ]
         then
-          echo "  |--> Test 1: SUCCESS!"
+            printf "  |--> Test 1: ${GREEN}SUCCESS!${NC}\n"
+        #  echo "  |--> Test 1: SUCCESS!"
           invoke_asm "$filename$count"
           echo ""
         else
