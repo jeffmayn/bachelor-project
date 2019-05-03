@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "symbol.h"
+#include "bitmap.h"
 //#include "typecheck.h" //this gives a cycle internalASM->typecheck->symbol->internalASM
 
 #define HASHSIZE2 517
@@ -49,6 +50,8 @@ typedef struct TEMPORARY {
   //int tempNr; //WASTEOFSPACE //the number given to the temp by the tempcount
   TEMPORARYkind temporarykind;
   int tempId;
+  int graphNodeId;
+  struct TEMPORARY *next; //used for liveness
   union {
     //heap vs. stack
     //int address;
@@ -71,6 +74,7 @@ typedef struct OPERAND {
 } OPERAND;
 
 typedef struct INSTR {
+  int id;
   INSTRkind instrKind;
   struct OPERAND *paramList;
   struct INSTR *next;
@@ -106,6 +110,12 @@ char* mainBPointLabel;
 
 char* mainEndLabel;
 char* errorCleanupLabel;
+
+
+int intermediateInstrCount;
+
+TEMPORARY *livenessTempList;
+
 
 
 
@@ -379,7 +389,17 @@ int IRtraverseDeclerationList(DECL_LIST *declerations);
 // int BitMapIsEqual(BITMAP *m1, BITMAP *m2);
 
 
+
+//#############LIVENESS ANALYSIS#################
+int liveness();
+int initLiveness();
+int livenessTravIR(INSTR *instr);
+int livenessAnalysis();
+int buildInterferenceGraph();
+void printLIA();
+
 //####Interferens graph####//
+
 //IG: Interferens Graph
 //The graph is DIRECTED
 //TODO: Somebody make graph representation
@@ -391,10 +411,12 @@ typedef struct GraphNode {
   //char *tempNumber; //unique and in equivalence with tempName;
   int id; //used as an internal identifier
   registers reg;
-  //BITMAP *neighbors; this one should stay here
+  //int color;
+  BITMAP *neighbors; //this one should stay here
   int isMarked;
   int inDegree;
   int outDegree;
+  TEMPORARY *temp;
   //GraphNode *next //Only used within internal management of graph
 } GraphNode;
 
@@ -402,10 +424,13 @@ typedef struct GraphNode {
 GraphNode *graphNodes; //only used internally in graph
 int graphSize; //the number of nodes in the graph
 
+
+int IGcreateGraph(int size, TEMPORARY *tempList);
+
 /**
  * Creates a new graph node and returns its ID
 */
-int IGmakeGraphNode();
+int IGmakeGraphNode(TEMPORARY *temp);
 
 /**
  * makes the neighbor a neighbor of node
@@ -421,6 +446,7 @@ int IGremoveNeighbor(int nodeID, int neighborID);
 /**
  * Returns the neighbors as a list of integer IDs
  * First element is the number of integers in the list excluding that lenght
+ * NULL is returned if an error occurred
  */
 int* IGgetNeighbors(int nodeID);
 
@@ -445,6 +471,142 @@ int IGhighestOutDegree();
  * uses the graphNodes pointer as graph and colors all nodes
  */
 int IGcolorGraph();
+
+/**
+ * Returns the color of the given node
+ */
+registers IGgetColor(int nodeID);
+
+/**
+ * Prints the graph
+ */
+int IGprintGraph();
+
+/**
+ * Transfer colors from graph nodes to its temporaries
+ */
+int IGTransferColors();
+
+
+
+
+
+//#########label instruction hash table###############
+#define HASHSIZE2 517
+
+
+typedef struct InstrUnit {
+  INSTR *instr;
+  struct InstrUnit *next;
+} InstrUnit;
+
+
+typedef struct InstrTable {
+    InstrUnit *table[HASHSIZE2]; //**table
+} InstrTable;
+
+int Hash2(char *str);
+
+InstrTable *initInstrHashTable();
+
+int instrHashPutInstr(InstrTable *t, INSTR *instr);
+
+INSTR *instrHashGetINSTR(InstrTable *t, char *label);
+
+
+
+
+
+
+//#######Sorted linked list containing temporaries###########
+
+typedef struct TempList{
+  struct TempListNode *head;
+  struct TempListNode *tail;
+} TempList;
+
+typedef struct TempListNode{
+  TEMPORARY *temp;
+  struct TempListNode *next;
+  struct TempListNode *prev;
+} TempListNode;
+
+/**
+ * returns a new list
+ */
+TempList *createList();
+
+/**
+ * adds the temporary to the list
+ * returns 0 if the element already were in the list
+ * returns 1 if the element was added
+ * returns -1 if an error occurred
+ */
+int addElement(TempList *list, TEMPORARY *temp);
+
+/**
+ * Removes the element from the list
+ * returns the same list as given
+ */
+TempList *removeElement(TempList *list, TEMPORARY *temp);
+
+/**
+ * Finds the union of the two lists and puts it into the destination
+ * returns 0 if no change where made. Otherwise 1 is returned.
+ */
+int listUnion(TempList *src, TempList *dest);
+
+/**
+ * Finds the difference of the two lists
+ * returns a new list
+ */
+TempList *listDiff(TempList *minuend, TempList *subtrahend);
+
+int freeList(TempList *list);
+
+typedef struct LivenessInstructionArray{
+  TempList *in;
+  TempList *out;
+  TempList *use;
+  TempList *def;
+  int succ[3];
+  int isMove;
+} LivenessInstructionArray;
+
+InstrTable *labelINSTRTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //######################assembler generation############//

@@ -64,16 +64,12 @@ int main() {
     return -1;
   }
 
-  fprintf(stderr, "%s\n", "  |--> STARTING PRINTING BODY");
+  //fprintf(stderr, "%s\n", "  |--> STARTING PRINTING BODY");
   //pBODY(theexpression);
 
 
 
   fprintf(stderr, "%s\n", "  |--> STARTING INTERNAL REPRESENTATION");
-  //TempLocMap tempMap = TempLocMap* IRsetupTemporaries(bodies, table);
-  // if(tempMap == NULL){
-  //   return -1;
-  // }
 
   error = 0;
   error = IRcreateInternalRep(bodies);
@@ -84,6 +80,17 @@ int main() {
 
   fprintf(stderr, "%s\n", "  |--> STARTING PRINTING INTERNAL REPRESENTATION");
   //printINSTRnode(intermediateHead);
+
+
+  fprintf(stderr, "%s\n", "  |--> STARTING LIVNESS ANALYSIS");
+  error = 0;
+  error = liveness();
+  if(error == -1){
+    fprintf(stderr, "ERROR: liveness analysis\n");
+    return -1;
+  }
+
+
 
 
   fprintf(stderr, "%s\n", "  |--> STARTING FINAL OUTPUT GENERATION");

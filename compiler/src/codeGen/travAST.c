@@ -15,7 +15,17 @@ TEMPORARY* IRcreateNextTemp(int offset){
   tmp->temporarykind = actualTempT;
   tmp->tempId = tempIdVal;
   tempIdVal++;
+  tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
+
+  //for liveness analysis
+  // int error = IGmakeGraphNode(tmp);
+  // if(error == -1){
+  //   fprintf(stderr, "INTERNAL ERROR in IRcreateNextTemp occurred when making graphNode\n");
+  // }
+  // tmp->graphNodeId = error;
+  tmp->next = livenessTempList;
+  livenessTempList = tmp;
   return tmp;
   //maybe they should be added to a collection containing all
   //non-placed temporaries
@@ -33,7 +43,8 @@ TEMPORARY* IRcreateNextLocalTemp(int offset){
   // tmp->tempName = str;
   tmp->temporarykind = localT;
   tmp->tempId = tempIdVal;
-  tempIdVal++; //only if we want to do liveness analysis on locals
+  //tempIdVal++; //only if we want to do liveness analysis on locals
+  tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
 }
@@ -47,7 +58,8 @@ TEMPORARY* IRcreateParamTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
   tmp->temporarykind = paramT;
   tmp->tempId = tempIdVal;
-  tempIdVal++; //only if we want to do liveness analysis on params
+  //tempIdVal++; //only if we want to do liveness analysis on params
+  tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
 }
@@ -58,7 +70,14 @@ TEMPORARY* IRcreateParamTemp(int offset){
  * In this way we go through alle bodies, that is functions, in a bread-first
  * starting with the main-body.
  */
-int IRcreateInternalRep(bodyList *mainBody){
+int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
+  //TODO call all the stuff and shit and things.
+  /* for each body first traverse declerations to count local
+   * variables and shit, then traverse statements creating the
+   * instructions and so on.
+   */
+  intermediateInstrCount = 0;
+  labelINSTRTable = initInstrHashTable();
   dummyTemp = IRcreateNextTemp(-1);
   beginHeapLabel = Malloc(5);
   sprintf(beginHeapLabel, "heap%d", labelCounter);
@@ -658,7 +677,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       memcpy(op3, op2, sizeof(OPERAND));
       op3->next = NULL;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op3, IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTempDeRefOPERAND(temp))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTempDeRefOPERAND(temp)))); //ODOT PROBLEMS appears here
 
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel array-allocation\n");
       break;
@@ -1931,6 +1950,11 @@ INSTR* IRmakeJlINSTR(OPERAND *params){
 INSTR* IRmakeLabelINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = labelI;
+  int error = 0;
+  error = instrHashPutInstr(labelINSTRTable, instr);
+  if(error == -1){
+    fprintf(stderr, "INTERNAL ERROR occurred putting instruction\n");
+  }
   return instr;
 }
 
@@ -1991,6 +2015,8 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
    intermediateTail->next = newINSTR;
    intermediateTail = newINSTR;
  }
+ newINSTR->id = intermediateInstrCount;
+ intermediateInstrCount++;
  return newINSTR;
 }
 

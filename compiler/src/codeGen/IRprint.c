@@ -8,7 +8,7 @@ const char* instrNames[] = {"add", "sub", "mul", "div", "and", "or",
 
 void printINSTRnode(INSTR *instr){
   if(instr != NULL){
-    fprintf(stderr, "Instr: %s\n", instrNames[instr->instrKind]);
+    fprintf(stderr, "Instr %d: %s\n", instr->id, instrNames[instr->instrKind]);
     printOPERANDs(instr->paramList);
     //fprintf(stderr, "\t ||\n");
     //fprintf(stderr, "_______________________________________\n");
@@ -54,6 +54,14 @@ void printOPERANDnode(OPERAND *op){
       break;
     case derefO:
       fprintf(stderr, "dereference register: %s\n", regNames[op->val.reg]);
+      break;
+    case commentO:
+      fprintf(stderr, "#%s\n", op->val.label);
+      break;
+    case tempDeRefO:
+      fprintf(stderr, "deref");
+      printTEMPORARYnode(op->val.temp);
+      break;
   }
 
 }

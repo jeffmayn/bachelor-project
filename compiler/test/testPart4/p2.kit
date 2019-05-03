@@ -20,10 +20,12 @@ write y.b;
 a = 10;
 allocate i of length a;
 i[2] = 17;
-i=i;
+#i=i;
+
 write i[2];
 allocate ys of length 17;
 allocate ys[3];
 ys[3].z=7;
 write ys[3].z;
-#return 0;
+
+return 0;

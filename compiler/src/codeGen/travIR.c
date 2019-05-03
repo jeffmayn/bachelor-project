@@ -117,7 +117,13 @@ int checkOffsetOperand(INSTR *in){
       }
     }
     if(op->operandKind == tempDeRefO){
-      printf("\tmovq (%%rbp,%%rdx,8), %%rcx\n");
+      if( op->val.temp->temporarykind == regT){
+        printf("\tmovq %s, %%rcx\n", regNames[op->val.temp->placement.reg]);
+
+      }
+      else{
+        printf("\tmovq (%%rbp,%%rdx,8), %%rcx\n");
+      }
       //TODO: %rdi is probably a bad choice
       //TODO: compile to a.s
     }
