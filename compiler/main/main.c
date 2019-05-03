@@ -87,13 +87,13 @@ int main() {
   printINSTRnode(intermediateHead);
 
 
-  // fprintf(stderr, "%s\n", "######## STARTING LIVNESS ANALYSIS ########");
-  // error = 0;
-  // error = liveness();
-  // if(error == -1){
-  //   fprintf(stderr, "ERROR: liveness analysis\n");
-  //   return -1;
-  // }
+  fprintf(stderr, "%s\n", "######## STARTING LIVNESS ANALYSIS ########");
+  error = 0;
+  error = liveness();
+  if(error == -1){
+    fprintf(stderr, "ERROR: liveness analysis\n");
+    return -1;
+  }
 
 
 

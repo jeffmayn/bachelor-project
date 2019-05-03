@@ -91,6 +91,9 @@ int livenessTravIR(INSTR *instr){
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
+        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
+        }
         op = op->next;
         if(op == NULL){
           fprintf(stderr, "return -1 2\n");
@@ -99,6 +102,9 @@ int livenessTravIR(INSTR *instr){
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
           addElement(lia[index].def, op->val.temp);
+        }
+        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
         }
         break;
       case cmpI: //use both
@@ -109,12 +115,18 @@ int livenessTravIR(INSTR *instr){
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
+        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
+        }
         op = op->next;
         if(op == NULL){
           fprintf(stderr, "return -1 4\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
+        }
+        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
         break;
@@ -128,6 +140,9 @@ int livenessTravIR(INSTR *instr){
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
+        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
+        }
         op = op->next;
         if(op == NULL){
           fprintf(stderr, "return -1 6\n");
@@ -135,6 +150,9 @@ int livenessTravIR(INSTR *instr){
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].def, op->val.temp);
+        }
+        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
         }
         break;
       case pushI: //use one
@@ -145,6 +163,9 @@ int livenessTravIR(INSTR *instr){
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
+        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
+        }
         break;
       case popI: //def one
         if(op == NULL){
@@ -153,6 +174,9 @@ int livenessTravIR(INSTR *instr){
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].def, op->val.temp);
+        }
+        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
         }
         break;
       case jumpI: //primary succ is different
@@ -283,7 +307,7 @@ void printLIA(){
         && (lia[n].def->head == NULL)
         && (lia[n].in->head == NULL)
         && (lia[n].out->head == NULL)){
-          continue;
+          //continue;
         }
     fprintf(stderr, "INSTR %d ", n);
     if(lia[n].isMove){
