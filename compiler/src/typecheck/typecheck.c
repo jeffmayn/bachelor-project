@@ -392,6 +392,8 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
   //error cheking needed from recursive calls
   int error1;
   int error2;
+  SYMBOL *sym1, *sym2;
+  Typekind type1, type2;
   switch(exp->kind){
     case termK:
       ; //empty statement
@@ -412,14 +414,15 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
       error1 = expTypeTravExp(t, exp->val.binOP.left);
       error2 = expTypeTravExp(t, exp->val.binOP.right);
       if(error1 == 0 && error2 == 0){
-        Typekind type1 = exp->val.binOP.left->typekind;
-        Typekind type2 = exp->val.binOP.right->typekind;
+        type1 = exp->val.binOP.left->typekind;
+        type2 = exp->val.binOP.right->typekind;
         if(type1 == idK){
-          SYMBOL *sym1 = recursiveSymbolRetrieval(exp->val.binOP.left->type->scope, exp->val.binOP.left->type->val.id, NULL);
+          sym1 = recursiveSymbolRetrieval(exp->val.binOP.left->type->scope, exp->val.binOP.left->type->val.id, NULL);
           type1 = sym1->typePtr->kind;
+          fprintf(stderr, "%d\n", type1);
         }
         if(type2 == idK){
-          SYMBOL *sym2 = recursiveSymbolRetrieval(exp->val.binOP.right->type->scope, exp->val.binOP.right->type->val.id, NULL);
+          sym2 = recursiveSymbolRetrieval(exp->val.binOP.right->type->scope, exp->val.binOP.right->type->val.id, NULL);
           type2 = sym2->typePtr->kind;
         }
         if(type1 == type2 && type1 == intK){
@@ -429,6 +432,8 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
         fprintf(stderr,"Line %d: expTypeTravExp left and right not both integers.\n", exp->lineno);
         exp->typekind = errorK;
         return -1;
+      } else {
+        fprintf(stderr, "%s\n", "expTypeTravExp: error in either left or right operand traversal");
       }
       fprintf(stderr, "Line %d: error happened in binary expression\n", exp->lineno);
       exp->typekind = errorK;
