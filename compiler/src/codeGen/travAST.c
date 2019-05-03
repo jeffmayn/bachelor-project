@@ -70,7 +70,7 @@ TEMPORARY* IRcreateParamTemp(int offset){
  * In this way we go through alle bodies, that is functions, in a bread-first
  * starting with the main-body.
  */
-int IRcreateInternalRep(SymbolTable *table, bodyList *mainBody){
+int IRcreateInternalRep(bodyList *mainBody){
   //TODO call all the stuff and shit and things.
   /* for each body first traverse declerations to count local
    * variables and shit, then traverse statements creating the
