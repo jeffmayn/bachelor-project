@@ -1,0 +1,13 @@
+
+############################
+Expected output:
+----------------
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+Error! Line 27: missing return statement
+ERROR: compilation ended in error
+
