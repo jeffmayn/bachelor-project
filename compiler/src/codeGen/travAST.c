@@ -457,10 +457,10 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
 * has been traversed
 */
 int findVarSymSize(SYMBOL *sym){
-  if(sym->kind != varS){
+  /*if(sym->kind != varS){
     fprintf(stderr, "INTERNAL ERROR: The symbol %s is not a variable\n", sym->name);
     return -1;
-  }
+  }*/
   Typekind tk;
   int size;
   SYMBOL *sym2;

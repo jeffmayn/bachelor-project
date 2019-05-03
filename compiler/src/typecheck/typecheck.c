@@ -606,7 +606,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
 */
 Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
   SYMBOL *s;
-  //Typekind ty;
+  Typekind ty;
   int error;
   switch(v->kind){
     case idVarK:
@@ -617,7 +617,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
 
       }
       if(s->kind == typeS){
-        fprintf(stderr, "Line %d: cannot assign type to variable '%s'\n", v->lineno, v->val.id);
+        fprintf(stderr, "Line %d: cannot use type %s as variable\n", v->lineno, s->name);
         return errorK;
       }
       *sym = s; //may be relevant in some cases
@@ -631,7 +631,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
         fprintf(stderr, "Line %d: Hopefully the error was already printed\n", v->lineno);
         return errorK;
       }
-      Typekind ty = expOfType(v->val.varexp.exp);
+      ty = expOfType(v->val.varexp.exp);
       if(ty != intK){
         fprintf(stderr, "Line %d: the index-expression have type %d, and does not cohere with type %d, expected here\n", v->lineno, ty, intK);
         return errorK;
@@ -666,6 +666,10 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       break;
     case dotK:
       ty = expTypeTravVar(t, v->val.vardot.var, sym, type);
+      if(ty == errorK){
+        fprintf(stderr, "%s\n", "expTypeTravVar: error traversing variable.");
+        return errorK;
+      }
       //type->kind == ty??
       //check if it is a userdefined record type
       if((*type)->kind == idK){
@@ -785,6 +789,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
   TYPE *type;
   int error;
   Typekind tk;
+  VARIABLE *var;
   switch(s->kind){
     case returnK:
       ; //empty statement
@@ -820,10 +825,17 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       }
       return 0;
       break;
-    case allocateK:
-      //TODO: check user type
-      //TODO: cannot do this
-      //check if variable.id is a var or a record not a function
+    case allocateK: //according to the grammar, only records are allocated here.
+      /*var = s->val.allocate; //the variable we are looking at.
+      type = checkTypeTravVar(t, var, &sym);
+      if(sym == NULL){
+        fprintf(stderr, "%s\n", "checkTypeTravStmt ERROR: symbol not found");
+        return -1;
+      }
+      if(type->kind != recordK){
+
+      }*/
+
       type = checkTypeTravVar(t, s->val.allocate, &sym);
       if(sym == NULL){
         fprintf(stderr, "Line %d: Hopefully error is already printed\n", s->lineno);
@@ -835,22 +847,15 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
           return -1;
         }
-        // sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->name, NULL);
-        // if(sym == NULL){
-        //   fprintf(stderr, "Line %d: The type of %s could not be expanded\n", s->lineno, sym->name);
-        //   return -1;
-        // }
+        
       }
-      //sym = getSymbol(t, s->val.allocate->val.id);
-      // if(sym == NULL){
-      //   fprintf(stderr,"Line %d: Symbol '%s' was not found\n", s->lineno, s->val.allocate->val.id);
-      //   return -1;
-      // }
-      if(sym->kind != varS){
+      
+      /*if(sym->kind != varS){
         fprintf(stderr,"Line %d: can only allocate variables\n", s->lineno);
         return -1;
-      }
+      }*/
       return 0;
+      fprintf(stderr, "%s\n", "we should not get here at all !");
       break;
     case allocateLengthK:
       //check user type
@@ -1023,7 +1028,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
         return NULL;
       }
       if(type->kind == errorK){
-        fprintf(stderr, "Line %d: Hopefully the error has already been printed\n", v->lineno);
+        fprintf(stderr, "Line %d: checkTypeTravVar ERROR.\n", v->lineno);
         return NULL;
       }
       //check for user defined types

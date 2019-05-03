@@ -1,0 +1,11 @@
+(* Ukorrekt program bør fejle, forsøger at allokere en type *)
+
+type Banana = record of { peel : bool, 
+							ripeness : int,
+							ecoFriendy : bool,
+							stem : array of Banana
+						};
+
+var myBanana : Banana;
+Banana.peel = true;
+#allocate Banana;
