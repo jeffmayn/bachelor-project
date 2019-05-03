@@ -49,5 +49,5 @@ herfra og ned melder testen ikke "correct output" men det er ok.
 
 	C_ErrAssignToType - det er meningen den skal fejle, ser us som om den fejler af den rigtige grund.
 
-2 Ryd op i mærkelige prints!
+2 Ryd op i mærkelige prints og kommentare!
 
