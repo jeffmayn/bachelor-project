@@ -27,32 +27,41 @@ main:
 	addq $16384, endHeap2
 	movq $10, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-37, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-38, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-38, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-37, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-21, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-39, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-39, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq freeHeap1, %rbx
 	movq $-9, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-40, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-41, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-41, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-21, %rdx
@@ -73,6 +82,7 @@ allocPos3:
 allocSucc4:
 	movq $-21, %rdx
 	movq (%rdi,%rdx,8), %rbx
+	movq $-40, %rdx
 	movq (%rbp,%rdx,8), %rcx
 	movq %rbx, (%rcx)
 	movq $0, %rax

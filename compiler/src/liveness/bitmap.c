@@ -93,7 +93,10 @@ int bitMapIsEqual(BITMAP *m1, BITMAP *m2){
  */
 int bitMap1Count(BITMAP *map){
   int blockCount = map->size/BITSPERINT;
-  int n;
+  if(map->size%BITSPERINT > 0){
+    blockCount++;
+  }
+  unsigned int n;
   int count = 0;
   for(int i=0; i<blockCount; i++){
     n = map->bits[i];

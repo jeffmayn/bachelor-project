@@ -49,7 +49,10 @@ int instrHashPutInstr(InstrTable *t, INSTR *instr){
         fprintf(stderr, "instrHashPutInstr(): Somehow the instruction was already inserted\n");
         return -1;
       }
-      if(temp->next != NULL){//as long as there is a next, check the next one.
+      if(temp->next == NULL){//as long as there is a next, check the next one.
+        break;
+      }
+      else{
         temp = temp->next;
       }
     }

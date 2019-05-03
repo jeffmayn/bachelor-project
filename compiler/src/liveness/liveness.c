@@ -24,7 +24,7 @@
      return -1;
    }
 
-   //printLIA();
+   printLIA();
 
    error = buildInterferenceGraph();
    if(error == -1){
@@ -32,7 +32,7 @@
      return -1;
    }
 
-   //IGprintGraph();
+   IGprintGraph();
 
    error = IGcolorGraph();
    if(error == -1){
@@ -237,6 +237,11 @@ int livenessAnalysis(){
 int buildInterferenceGraph(){
   TempListNode *defNode;
   TempListNode *liveNode;
+  int error = IGcreateGraph(tempIdVal, livenessTempList);
+  if(error == -1){
+    fprintf(stderr, "Error while building graph\n");
+    return -1;
+  }
   for(int n=0; n<intermediateInstrCount; n++){
 
     defNode = lia[n].def->head;

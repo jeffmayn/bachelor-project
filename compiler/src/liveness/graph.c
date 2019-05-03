@@ -15,41 +15,68 @@ GraphNode *graphNodes = NULL; //only used internally in graph
 int graphSize = 0; //the number of nodes in the graph
 int graphLimit = 0;
 
-/**
- * Creates a new graph node and returns its ID
-*/
-int IGmakeGraphNode(TEMPORARY *temp){
-  //TODO: errorchecking
-  if(graphNodes == NULL){
-    graphLimit = 32; //size of integer: full bitmap
-    //graphNodes = NEW(GraphNode);
-    graphNodes = Malloc(sizeof(GraphNode)*graphLimit);
-  }
-  else if(graphSize == graphLimit){
-    fprintf(stderr, "WARNING: DOUBLES GRAPH - MOST LIKELY CAUSES HARM TO SOMEBODY\n");
-    //GraphNode *graphNodesTemp = NEW(GraphNode);
-    GraphNode *graphNodesTemp = Malloc(sizeof(GraphNode)*graphLimit*2);
-    memset(graphNodesTemp, 0, sizeof(GraphNode)*graphLimit*2);
-    memcpy(graphNodesTemp, graphNodes, sizeof(GraphNode)*graphLimit);
-    free(graphNodes);
-    graphNodes = graphNodesTemp;
-    for(int i = 0; i<graphSize; i++){
-      //TODO: free map
-      graphNodes[i].neighbors = bitMapUnion(graphNodes[i].neighbors, bitMapMakeBitMap(graphLimit*2));
+
+
+int IGcreateGraph(int size, TEMPORARY *tempList){
+  TEMPORARY *temp = tempList;
+  graphLimit = size;
+  graphSize = 0;
+  graphNodes = Malloc(sizeof(GraphNode)*size);
+  for(int i = 0; i < size; i++){
+    if(temp==NULL){
+      fprintf(stderr, "INTERNAL ERROR in createGraph: to few temporaries given\n");
+      return -1;
     }
-    graphLimit = graphLimit*2;
+    //i should be the same as graphSize
+    graphNodes[i].id = graphSize;
+    graphNodes[i].reg = NA;
+    graphNodes[i].isMarked = 0;
+    graphNodes[i].neighbors = bitMapMakeBitMap(size);
+    graphNodes[i].inDegree = 0;
+    graphNodes[i].outDegree = 0;
+    graphNodes[i].temp = temp;
+    temp->graphNodeId = graphSize;
+    graphSize++;
+    temp = temp->next;
   }
-  graphNodes[graphSize].id = graphSize;
-  graphNodes[graphSize].reg = NA;
-  //graphNodes[graphSize].color = -1;
-  graphNodes[graphSize].isMarked = 0;
-  graphNodes[graphSize].neighbors = bitMapMakeBitMap(graphLimit);
-  graphNodes[graphSize].inDegree = 0;
-  graphNodes[graphSize].outDegree = 0;
-  graphNodes[graphSize].temp = temp;
-  graphSize++;
-  return graphSize-1;
+  return 0;
 }
+
+// /**
+//  * Creates a new graph node and returns its ID
+// */
+// int IGmakeGraphNode(TEMPORARY *temp){
+//   //TODO: errorchecking
+//   if(graphNodes == NULL){
+//     graphLimit = 32; //size of integer: full bitmap
+//     //graphNodes = NEW(GraphNode);
+//     graphNodes = Malloc(sizeof(GraphNode)*graphLimit);
+//   }
+//   else if(graphSize == graphLimit){
+//     fprintf(stderr, "WARNING: DOUBLES GRAPH - MOST LIKELY CAUSES HARM TO SOMEBODY\n");
+//     //GraphNode *graphNodesTemp = NEW(GraphNode);
+//     GraphNode *graphNodesTemp = Malloc(sizeof(GraphNode)*graphLimit*2);
+//     memset(graphNodesTemp, 0, sizeof(GraphNode)*graphLimit*2);
+//     memcpy(graphNodesTemp, graphNodes, sizeof(GraphNode)*graphLimit);
+//     free(graphNodes);
+//     graphNodes = graphNodesTemp;
+//     for(int i = 0; i<graphSize; i++){
+//       //TODO: free map
+//       graphNodes[i].neighbors = bitMapUnion(graphNodes[i].neighbors, bitMapMakeBitMap(graphLimit*2));
+//     }
+//     graphLimit = graphLimit*2;
+//   }
+//   graphNodes[graphSize].id = graphSize;
+//   graphNodes[graphSize].reg = NA;
+//   //graphNodes[graphSize].color = -1;
+//   graphNodes[graphSize].isMarked = 0;
+//   graphNodes[graphSize].neighbors = bitMapMakeBitMap(graphLimit);
+//   graphNodes[graphSize].inDegree = 0;
+//   graphNodes[graphSize].outDegree = 0;
+//   graphNodes[graphSize].temp = temp;
+//   graphSize++;
+//   return graphSize-1;
+// }
 
 /**
  * makes the neighbor a neighbor of node
@@ -107,7 +134,7 @@ int* IGgetNeighbors(int nodeID){
   BITMAP *neighbors = graphNodes[nodeID].neighbors;
   int neighborCount = bitMap1Count(neighbors);
   if(neighborCount != graphNodes[nodeID].outDegree){ //double check: may be removed later
-    fprintf(stderr, "INTERNAL ERROR in IGgetNeighbors: outdegree does not match number of neighbors for node %d\n", nodeID);
+    fprintf(stderr, "INTERNAL ERROR in IGgetNeighbors: outdegree %d does not match number of neighbors %d for node %d\n", graphNodes[nodeID].outDegree, neighborCount, nodeID);
     return NULL;
   }
   neighborCount = graphNodes[nodeID].outDegree;

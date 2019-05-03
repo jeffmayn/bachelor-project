@@ -19,11 +19,13 @@ TEMPORARY* IRcreateNextTemp(int offset){
   tmp->placement.offset = offset;
 
   //for liveness analysis
-  int error = IGmakeGraphNode(tmp);
-  if(error == -1){
-    fprintf(stderr, "INTERNAL ERROR in IRcreateNextTemp occurred when making graphNode\n");
-  }
-  tmp->graphNodeId = error;
+  // int error = IGmakeGraphNode(tmp);
+  // if(error == -1){
+  //   fprintf(stderr, "INTERNAL ERROR in IRcreateNextTemp occurred when making graphNode\n");
+  // }
+  // tmp->graphNodeId = error;
+  tmp->next = livenessTempList;
+  livenessTempList = tmp;
   return tmp;
   //maybe they should be added to a collection containing all
   //non-placed temporaries
@@ -41,7 +43,7 @@ TEMPORARY* IRcreateNextLocalTemp(int offset){
   // tmp->tempName = str;
   tmp->temporarykind = localT;
   tmp->tempId = tempIdVal;
-  tempIdVal++; //only if we want to do liveness analysis on locals
+  //tempIdVal++; //only if we want to do liveness analysis on locals
   tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
@@ -56,7 +58,7 @@ TEMPORARY* IRcreateParamTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
   tmp->temporarykind = paramT;
   tmp->tempId = tempIdVal;
-  tempIdVal++; //only if we want to do liveness analysis on params
+  //tempIdVal++; //only if we want to do liveness analysis on params
   tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
@@ -658,7 +660,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel){
       memcpy(op3, op2, sizeof(OPERAND));
       op3->next = NULL;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op3, IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTempDeRefOPERAND(temp))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeTempDeRefOPERAND(temp)))); //ODOT PROBLEMS appears here
 
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel array-allocation\n");
       break;

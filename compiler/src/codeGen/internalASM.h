@@ -49,6 +49,7 @@ typedef struct TEMPORARY {
   TEMPORARYkind temporarykind;
   int tempId;
   int graphNodeId;
+  struct TEMPORARY *next; //used for liveness
   union {
     //heap vs. stack
     //int address;
@@ -109,6 +110,8 @@ char* errorCleanupLabel;
 
 
 int intermediateInstrCount;
+
+TEMPORARY *livenessTempList;
 
 
 
@@ -417,6 +420,9 @@ typedef struct GraphNode {
 //if we want to make another graph we would have to make a struct for these two
 GraphNode *graphNodes; //only used internally in graph
 int graphSize; //the number of nodes in the graph
+
+
+int IGcreateGraph(int size, TEMPORARY *tempList);
 
 /**
  * Creates a new graph node and returns its ID
