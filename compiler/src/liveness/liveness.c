@@ -202,7 +202,7 @@ int livenessTravIR(INSTR *instr){
           return -1;
 
         }
-        lia[index].succ[0] = jINSTR->id;
+        lia[index].succ[1] = jINSTR->id;
       case labelI:
       case retI:
       case textI:
@@ -307,7 +307,7 @@ void printLIA(){
         && (lia[n].def->head == NULL)
         && (lia[n].in->head == NULL)
         && (lia[n].out->head == NULL)){
-          //continue;
+          continue;
         }
     fprintf(stderr, "INSTR %d ", n);
     if(lia[n].isMove){

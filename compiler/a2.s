@@ -30,15 +30,18 @@ main:
 	addq $1048576, endHeap2
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-9, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-9, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq freeHeap1, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-10, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq $7, %rbx
 	cmp $0, %rbx
 	jg allocPos3
@@ -55,62 +58,80 @@ allocPos3:
 	jmp errorCleanup5
 allocSucc4:
 	movq $7, %rbx
-	movq %r8, %rcx
+	movq $-10, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	movq %rbx, (%rcx)
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-11, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-12, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-12, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-11, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 while5:
-	movq $1, %r9
+	movq $-14, %rdx
+	movq $1, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-15, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-15, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-13, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq $7, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	cmp %rbx, %r8
+	movq $-13, %rdx
+	cmp %rbx, (%rbp,%rdx,8)
 	jl ge6
-	movq $0, %r9
+	movq $-14, %rdx
+	movq $0, (%rbp,%rdx,8)
 ge6:
-	movq %r9, %rbx
+	movq $-14, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	cmp $1, %rbx
 	jne endwhile5
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-17, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-17, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbx, %r8
+	movq $-16, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-18, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-18, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %r8, %rcx
+	movq $-16, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	cmp (%rcx), %rbx
 	jge indeksError8#indexOutOfBounds
 	cmp $0, %rbx
@@ -122,9 +143,11 @@ indeksError8:
 indeksAllowed7:
 	addq $1, %rbx#moving past array-size-value
 	imulq $8, %rbx
-	addq %rbx, %r8
+	movq $-16, %rdx
+	addq %rbx, (%rbp,%rdx,8)
 	movq freeHeap1, %rbx
-	movq %r8, %rcx
+	movq $-16, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	movq %rbx, (%rcx)
 	movq %rbp, %rdi#resetting basepointer
 	addq $16, freeHeap1
@@ -136,27 +159,36 @@ indeksAllowed7:
 allocSucc9:
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-20, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-20, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-19, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	addq %rbx, %r8
-	movq %r8, %rbx
+	movq $-19, %rdx
+	addq %rbx, (%rbp,%rdx,8)
+	movq $-19, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-21, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-22, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-22, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-21, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
@@ -164,68 +196,88 @@ allocSucc9:
 endwhile5:
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-23, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-24, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-24, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-23, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 while10:
-	movq $1, %r9
+	movq $-26, %rdx
+	movq $1, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-27, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-27, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-25, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq $7, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	cmp %rbx, %r8
+	movq $-25, %rdx
+	cmp %rbx, (%rbp,%rdx,8)
 	jl ge11
-	movq $0, %r9
+	movq $-26, %rdx
+	movq $0, (%rbp,%rdx,8)
 ge11:
-	movq %r9, %rbx
+	movq $-26, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	cmp $1, %rbx
 	jne endwhile10
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-28, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-28, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r9
+	movq $-29, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-31, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-31, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbx, %r8
+	movq $-30, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r10
-	movq %r10, %rbx
+	movq $-32, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-32, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %r8, %rcx
+	movq $-30, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	cmp (%rcx), %rbx
 	jge indeksError13#indexOutOfBounds
 	cmp $0, %rbx
@@ -237,40 +289,52 @@ indeksError13:
 indeksAllowed12:
 	addq $1, %rbx#moving past array-size-value
 	imulq $8, %rbx
-	addq %rbx, %r8
+	movq $-30, %rdx
+	addq %rbx, (%rbp,%rdx,8)
 #creating record dereferencing
-	movq %r8, %rcx
+	movq $-30, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	movq (%rcx), %rbx
 	movq %rbp, %rdi#resetting basepointer
 	addq $0, %rbx
-	movq %rbx, %r8
-	movq %r9, %rbx
-	movq %r8, %rcx
+	movq $-33, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-29, %rdx
+	movq (%rbp,%rdx,8), %rbx
+	movq $-33, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	movq %rbx, (%rcx)
 	movq %rbp, %rdi#resetting basepointer
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r9
+	movq $-34, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-36, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-36, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbx, %r8
+	movq $-35, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r10
-	movq %r10, %rbx
+	movq $-37, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-37, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %r8, %rcx
+	movq $-35, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	cmp (%rcx), %rbx
 	jge indeksError15#indexOutOfBounds
 	cmp $0, %rbx
@@ -282,40 +346,54 @@ indeksError15:
 indeksAllowed14:
 	addq $1, %rbx#moving past array-size-value
 	imulq $8, %rbx
-	addq %rbx, %r8
+	movq $-35, %rdx
+	addq %rbx, (%rbp,%rdx,8)
 #creating record dereferencing
-	movq %r8, %rcx
+	movq $-35, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	movq (%rcx), %rbx
 	movq %rbp, %rdi#resetting basepointer
 	addq $8, %rbx
-	movq %rbx, %r8
-	movq %r9, %rbx
-	movq %r8, %rcx
+	movq $-38, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-34, %rdx
+	movq (%rbp,%rdx,8), %rbx
+	movq $-38, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	movq %rbx, (%rcx)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-40, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-40, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-39, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	addq %rbx, %r8
-	movq %r8, %rbx
+	movq $-39, %rdx
+	addq %rbx, (%rbp,%rdx,8)
+	movq $-39, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-41, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-42, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-42, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-41, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
@@ -323,81 +401,105 @@ indeksAllowed14:
 endwhile10:
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-43, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-44, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-44, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-43, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-45, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-46, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-46, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-45, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-8, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 while16:
-	movq $1, %r9
+	movq $-48, %rdx
+	movq $1, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-49, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-49, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-47, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq $7, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	cmp %rbx, %r8
+	movq $-47, %rdx
+	cmp %rbx, (%rbp,%rdx,8)
 	jl ge17
-	movq $0, %r9
+	movq $-48, %rdx
+	movq $0, (%rbp,%rdx,8)
 ge17:
-	movq %r9, %rbx
+	movq $-48, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	cmp $1, %rbx
 	jne endwhile16
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-51, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-51, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-8, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-50, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-53, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-53, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbx, %r9
+	movq $-52, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r10
-	movq %r10, %rbx
+	movq $-54, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-54, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %r9, %rcx
+	movq $-52, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	cmp (%rcx), %rbx
 	jge indeksError19#indexOutOfBounds
 	cmp $0, %rbx
@@ -409,53 +511,72 @@ indeksError19:
 indeksAllowed18:
 	addq $1, %rbx#moving past array-size-value
 	imulq $8, %rbx
-	addq %rbx, %r9
+	movq $-52, %rdx
+	addq %rbx, (%rbp,%rdx,8)
 #creating record dereferencing
-	movq %r9, %rcx
+	movq $-52, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	movq (%rcx), %rbx
 	movq %rbp, %rdi#resetting basepointer
 	addq $0, %rbx
-	movq %rbx, %r9
-	movq %r9, %rcx
+	movq $-55, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-55, %rdx
+	movq (%rbp,%rdx,8), %rcx
 	movq (%rcx), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	addq %rbx, %r8
-	movq %r8, %rbx
+	movq $-50, %rdx
+	addq %rbx, (%rbp,%rdx,8)
+	movq $-50, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-56, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-57, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-57, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-56, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-8, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-59, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-59, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-58, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	addq %rbx, %r8
-	movq %r8, %rbx
+	movq $-58, %rdx
+	addq %rbx, (%rbp,%rdx,8)
+	movq $-58, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq %rbx, %r8
+	movq $-60, %rdx
+	movq %rbx, (%rbp,%rdx,8)
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r9
-	movq %r9, %rbx
+	movq $-61, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-61, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq %r8, %rbx
+	movq $-60, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
@@ -463,8 +584,10 @@ indeksAllowed18:
 endwhile16:
 	push %rbx
 	movq %rbp, %rbx
-	movq %rbx, %r8
-	movq %r8, %rbx
+	movq $-62, %rdx
+	movq %rbx, (%rbp,%rdx,8)
+	movq $-62, %rdx
+	movq (%rbp,%rdx,8), %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	push %rdi

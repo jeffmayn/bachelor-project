@@ -416,7 +416,7 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
   }
   if(sym->cgu == NULL){
     sym->cgu = IRmakeNewCGU();
-    fprintf(stderr, "%s %d\n", sym->name, offset);
+    //fprintf(stderr, "%s %d\n", sym->name, offset);
     sym->cgu->val.temp = IRcreateNextLocalTemp(offset);
     offset++;
   } else {
