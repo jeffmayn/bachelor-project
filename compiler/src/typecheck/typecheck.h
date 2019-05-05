@@ -30,11 +30,6 @@ typedef struct bodyList {
 } bodyList;
 
 
-typedef struct SymbolList {
-  SYMBOL *symbol;
-  struct SymbolList *next;
-} SymbolList;
-
 
 int typeCheck(SymbolTable *table);
 

@@ -227,3 +227,36 @@ void dumpSymbolTable(SymbolTable *t){
   }
 
 }
+
+/**
+ * Returns 1 if symbol is in list
+ * Returns 0 if not, if no list or no symbol is given
+ */
+int containsSym(SymbolList *list, SYMBOL *sym){
+  if(sym == NULL){
+    return 0;
+  }
+  while(list != NULL){
+    if(sym == list->symbol){
+      return 1;
+    }
+    list = list->next;
+  }
+  return 0;
+}
+
+/**
+ * Prepends the symbol to the list
+ * list may have repetitions
+ * the given and returned list is the same
+ */
+SymbolList* prependSymbol(SymbolList *list, SYMBOL *sym){
+  if(sym == NULL){
+    return list;
+  }
+  SymbolList *sl = NEW(SymbolList);
+  sl->symbol = sym;
+  sl->next = list;
+  list = sl;
+  return sl;
+}

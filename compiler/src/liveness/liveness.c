@@ -24,7 +24,7 @@
      return -1;
    }
 
-   printLIA();
+   //printLIA();
 
    error = buildInterferenceGraph();
    if(error == -1){
@@ -32,7 +32,7 @@
      return -1;
    }
 
-   IGprintGraph();
+   //IGprintGraph();
 
    error = IGcolorGraph();
    if(error == -1){
@@ -40,7 +40,7 @@
      return -1;
    }
 
-   IGprintGraph();
+   //IGprintGraph();
 
    error = IGTransferColors();
    if(error == -1){

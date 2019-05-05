@@ -45,6 +45,11 @@ typedef struct SymbolTable {
     struct SymbolTable *next;
 } SymbolTable;
 
+typedef struct SymbolList {
+  SYMBOL *symbol;
+  struct SymbolList *next;
+} SymbolList;
+
 int Hash(char *str);
 
 SymbolTable *initSymbolTable();
@@ -64,4 +69,17 @@ SYMBOL *getRecordSymbol(SymbolTable *t, char* name);
 SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps);
 
 void dumpSymbolTable(SymbolTable *t);
+
+/**
+ * Returns 1 if symbol is in list
+ * Returns 0 if not, if no list or no symbol is given
+ */
+int containsSym(SymbolList *list, SYMBOL *s);
+
+/**
+ * Prepends the symbol to the list
+ * list may have repetitions
+ * the given and returned list is the same
+ */
+SymbolList* prependSymbol(SymbolList *list, SYMBOL *sym);
 #endif

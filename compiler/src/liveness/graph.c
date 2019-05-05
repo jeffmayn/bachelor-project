@@ -263,7 +263,7 @@ int IGcolorGraph(){
   //pop i from the stack
   int i = stackPop(graphStack);
   while(i != -1){
-    fprintf(stderr, "%d\n", i);
+    //fprintf(stderr, "%d\n", i);
 
     if(i == -1){
       fprintf(stderr, "IGcolorGraph: error popping from stack\n");

@@ -1,7 +1,7 @@
 TODO.txt
 1 Kims tests der fejler:
 
-	O_ArrayOfRecords - segfault! alvorligt skal kigges på.
+	O_ArrayOfRecords - segfault! alvorligt skal kigges på. Ser ud til at virke uden liveness nu.
 
 	O_ArrayComparisonsB - segfault! alvorligt skal kigges på.
 
@@ -21,7 +21,7 @@ herfra og ned melder testen ikke "correct output" men det er ok.
 
 	F_SimpleStructuralEquiv - fejler fordi vi ikke understøtter structure equivilence.
 
-	F_RecordIsTupleOrSet - Fejler fordi vi har implementeret records som tupler og ikke som set, det er ok at den fejler.	
+	F_RecordIsTupleOrSet - Fejler fordi vi har implementeret records som tupler og ikke som set, det er ok at den fejler.
 
 	C_ErrTypeLoop - det er meningen den skal fejle, ser us som om den fejler af den rigtige grund. måske lige kig på prints.
 
@@ -50,4 +50,3 @@ herfra og ned melder testen ikke "correct output" men det er ok.
 	C_ErrAssignToType - det er meningen den skal fejle, ser us som om den fejler af den rigtige grund.
 
 2 Ryd op i mærkelige prints!
-
