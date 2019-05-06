@@ -602,7 +602,19 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
       IRresetBasePointer();
       //size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
-      size = findVarSymSize(sym);
+      if(ty != sym->typePtr){ //this is a bit hacked
+        if(ty->kind == idK){
+          sym = recursiveSymbolRetrieval(ty->scope, ty->val.id, NULL);
+          size = findVarSymSize(sym);
+        }
+        else{
+          size = 1; //Guess
+        }
+      }
+      else{
+        size = findVarSymSize(sym); //ODOTO
+
+      }
       if(size == -1){
         fprintf(stderr, "Alloc: Hopefully error is already printed\n");
         return -1;
@@ -841,8 +853,6 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
     IRresetBasePointer();
 
-    //TODO ODOT: indexOutOfBounds check
-    //TODO ODOT: negative index check
     IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTempDeRefOPERAND(t1),IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(IRmakeLabelOPERAND(indeksErrorLabel), IRmakeCommentOPERAND("indexOutOfBounds"))));
     IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0),IRmakeRegOPERAND(RBX))));
@@ -864,7 +874,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     //*ty = (*sym)->typePtr->val.arrayType;
     //if((*sym)->typeVal == idK){
     if((*ty)->kind == idK){
-      *sym = recursiveSymbolRetrieval((*sym)->defScope, (*sym)->typePtr->val.id, NULL);
+      *sym = recursiveSymbolRetrieval((*sym)->defScope, (*ty)->val.id, NULL);
       *ty = (*sym)->typePtr;
     }
     *ty = (*ty)->val.arrayType;
