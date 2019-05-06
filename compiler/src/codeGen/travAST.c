@@ -416,58 +416,62 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
   }
   if(sym->cgu == NULL){
     sym->cgu = IRmakeNewCGU();
+    //fprintf(stderr, "%s %d\n", sym->name, offset);
     sym->cgu->val.temp = IRcreateNextLocalTemp(offset);
     offset++;
   } else {
     //after including user defined types, i think it is legal to go here some times
-    fprintf(stderr, "%s\n", "IRtravVarType: symbol already had operand \
-                                  attatched, might be an error not sure");
-    return -1;//dunno if we need this.
+    fprintf(stderr, "IRtravVarType: symbol %s already had cgu \
+attatched\n", sym->name);
+    return ++offset;//dunno if we need this.
     //TODO: I guess we should just return offset here?
   }
-  // SYMBOL *sym2 = sym;
-  // TYPE *ty = sym2->typePtr;
-  // while(1){ //carefull
-  //   if(ty->kind == idK){
-  //     //go to buttom of user types
-  //     sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
-  //     ty = sym2->typePtr;
-  //   }
-  //   if(sym2->cgu == NULL){
-  //     sym2->cgu = IRmakeNewCGU();
-  //     sym2->cgu->val.temp = NULL;
-  //     sym2->cgu->size = 1; //default size
-  //   }
-  //   if(ty->kind == recordK){
-  //     if(sym2->cgu->val.temp == NULL || sym == sym2){//latter: anonymous record
-  //       if(sym2->cgu->val.temp == NULL){
-  //         sym2->cgu->val.temp = dummyTemp; //used to test whether content of user-record has already been traversed
-  //       }
-  //       int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
-  //       if(varCount == -1){
-  //         fprintf(stderr, "Error while traversing record %s\n", sym2->name);
-  //         return -1;
-  //       }
-  //       sym2->cgu->size = varCount;
-  //     }
-  //     sym->cgu->size = sym2->cgu->size;
-  //     break;
-  //   }
-  //   else if(ty->kind == arrayK){
-  //     ty = ty->val.arrayType;
-  //   }
-  //   else if(ty->kind == boolK || ty->kind == intK){
-  //     // sym->cgu->val.temp = IRcreateNextTemp(offset);
-  //     // offset++;
-  //     sym->cgu->size = 1;
-  //     break;
-  //   }
-  //   else{
-  //     fprintf(stderr, "IRtravVarType: how did i get here %d\n", ty->kind);
-  //     return -1;
-  //     break;
-  //   }
-  // }
+  SYMBOL *sym2 = sym;
+  TYPE *ty = sym2->typePtr;
+  SymbolList *knownSyms = NULL;
+  while(1){ //carefull
+    if(ty->kind == idK){
+      //go to buttom of user types
+      sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
+      if(containsSym(knownSyms, sym2)){
+        break;
+      }
+      knownSyms = prependSymbol(knownSyms, sym2);
+      ty = sym2->typePtr;
+    }
+    if(sym2->cgu == NULL){
+      sym2->cgu = IRmakeNewCGU();
+      sym2->cgu->val.temp = NULL;
+      sym2->cgu->size = -1; //default size
+    }
+    if(ty->kind == recordK){
+      if(sym2->cgu->val.temp == NULL || sym == sym2){//latter: anonymous record
+        if(sym2->cgu->val.temp == NULL){
+          sym2->cgu->val.temp = dummyTemp; //used to test whether content of user-record has already been traversed
+        }
+        int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
+        if(varCount == -1){
+          fprintf(stderr, "Error while traversing record %s\n", sym2->name);
+          return -1;
+        }
+        sym2->cgu->size = varCount;
+      }
+      sym->cgu->size = sym2->cgu->size;
+      break;
+    }
+    else if(ty->kind == arrayK){
+      ty = ty->val.arrayType;
+    }
+    else if(ty->kind == boolK || ty->kind == intK){
+      sym->cgu->size = 1;
+      break;
+    }
+    else{
+      fprintf(stderr, "IRtravVarType: how did i get here %d\n", ty->kind);
+      return -1;
+      break;
+    }
+  }
   return offset;
 }
 
@@ -911,13 +915,13 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
     case minusK:
       t1 = IRcreateNextTemp(tempLocalCounter);
       tempLocalCounter++;
-      op1 = IRtravExp(t, exp->val.binOP.left);      
+      op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
       op2 = IRtravExp(t, exp->val.binOP.right);
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));   
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
 
       IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(
@@ -935,7 +939,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
       op2 = IRtravExp(t, exp->val.binOP.right);
 
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));   
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
 
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
@@ -956,7 +960,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRappendOPERAND(IRmakeTemporaryOPERAND(t1), IRmakeCommentOPERAND("first operand in t1")))));//left op in t1
 
-      op2 = IRtravExp(t, exp->val.binOP.right);      
+      op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();//alle de her reset basepointer er måske overflødige! - mads
@@ -971,7 +975,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));//cmp right op with 0
       IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
       IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RAX)));
-      
+
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeTemporaryOPERAND(t2), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
@@ -993,19 +997,20 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-      
+
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        op2, IRmakeRegOPERAND(RBX))));   
+        op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RAX))));
+      // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      //   IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RAX))));
 
-      IRappendINSTR(IRmakeMulINSTR(
-        IRmakeRegOPERAND(RBX)));
+
+      IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(
+        IRmakeTemporaryOPERAND(t1),IRmakeRegOPERAND(RBX))));
 
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeRegOPERAND(RAX), IRmakeTemporaryOPERAND(t1))));
+        IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
       return IRmakeTemporaryOPERAND(t1);
 
@@ -1029,7 +1034,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        op2, IRmakeRegOPERAND(RBX))));   
+        op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
 
       IRappendINSTR(IRmakeAndINSTR(IRappendOPERAND(//bitwise and, should only ever work on 0 or 1 so we should only ever get 0 or 1 back
@@ -1055,7 +1060,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));//right operand in t1
-      
+
       //TODO LAZY CHECK if first operand is false we just return false.
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeFalseOPERAND(), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(lazyOrLabel)));
@@ -1094,7 +1099,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        op2, IRmakeRegOPERAND(RBX))));   
+        op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
 
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
@@ -1131,7 +1136,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t1)))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
-      
+
       return IRmakeTemporaryOPERAND(t1);
 
     case geK:
@@ -1154,7 +1159,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        op2, IRmakeRegOPERAND(RBX))));   
+        op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
 
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
@@ -1188,7 +1193,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        op2, IRmakeRegOPERAND(RBX))));   
+        op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
 
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
@@ -1222,7 +1227,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        op2, IRmakeRegOPERAND(RBX))));   
+        op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
 
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
@@ -1259,7 +1264,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(neLabel))); //if true, skip next
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t1)))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(neLabel)));
-      
+
       return IRmakeTemporaryOPERAND(t1);
   }
 }
@@ -1813,7 +1818,7 @@ int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramL
     fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme\n");
   }
   paramCount++; //static link included
- 
+
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(staticLinkOP, IRmakeRegOPERAND(RBX))));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX))); //Static link field
   //do the actual call

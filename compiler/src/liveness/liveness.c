@@ -24,7 +24,7 @@
      return -1;
    }
 
-   printLIA();
+   //printLIA();
 
    error = buildInterferenceGraph();
    if(error == -1){
@@ -32,7 +32,7 @@
      return -1;
    }
 
-   IGprintGraph();
+   //IGprintGraph();
 
    error = IGcolorGraph();
    if(error == -1){
@@ -40,7 +40,7 @@
      return -1;
    }
 
-   IGprintGraph();
+   //IGprintGraph();
 
    error = IGTransferColors();
    if(error == -1){
@@ -78,7 +78,7 @@ int livenessTravIR(INSTR *instr){
       case addI: //use both; define second
       case subI:
       case mulI:
-      case divI:
+      //case divI:
       case andI:
       case orI:
       case xorI:
@@ -155,7 +155,8 @@ int livenessTravIR(INSTR *instr){
           addElement(lia[index].use, op->val.temp);
         }
         break;
-      case pushI: //use one
+      case divI: //use one
+      case pushI:
         if(op == NULL){
           fprintf(stderr, "return -1 7\n");
           return -1;
@@ -202,7 +203,7 @@ int livenessTravIR(INSTR *instr){
           return -1;
 
         }
-        lia[index].succ[0] = jINSTR->id;
+        lia[index].succ[1] = jINSTR->id;
       case labelI:
       case retI:
       case textI:
@@ -307,7 +308,7 @@ void printLIA(){
         && (lia[n].def->head == NULL)
         && (lia[n].in->head == NULL)
         && (lia[n].out->head == NULL)){
-          //continue;
+          continue;
         }
     fprintf(stderr, "INSTR %d ", n);
     if(lia[n].isMove){

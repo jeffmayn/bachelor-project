@@ -14,7 +14,6 @@ Other stuff:
    |--> Symbol collection
    |--> Expression type collection
    |--> Typechecking
-  |--> STARTING PRINTING BODY
   |--> STARTING INTERNAL REPRESENTATION
   |--> STARTING PRINTING INTERNAL REPRESENTATION
   |--> STARTING FINAL OUTPUT GENERATION

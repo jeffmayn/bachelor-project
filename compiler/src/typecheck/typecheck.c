@@ -139,10 +139,12 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
            * er det med vilje at vi navngiver alle anonyme records?
            */
           if(ty->kind == recordK){
-            char name[10] = "";
+            //char name[10] = "";
+            char *name = Malloc(10); //10 bytes;
             sprintf(name, "$%d", anonymousRecordCounter);
             anonymousRecordCounter++;
             TYPE *newType = makeID(name);
+            newType->scope = t;
             prev->val.arrayType = newType;
             sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
             if(sym == NULL){
@@ -232,10 +234,12 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
       ty = ty->val.arrayType;
     }
     if(ty->kind == recordK){
-      char name[10] = "";
+      //char name[10] = "";
+      char *name = Malloc(10); //10 bytes;
       sprintf(name, "$%d", anonymousRecordCounter);
       anonymousRecordCounter++;
       TYPE *newType = makeID(name);
+      newType->scope = t;
       prev->val.arrayType = newType;
       sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
       sym->content=scopeSymbolTable(t);
@@ -370,7 +374,7 @@ int expTypeTravStmt(SymbolTable *t, STATEMENT *s){
     case continueK:
       ;
       /*something to see if we are in a while loop somehow
-      something with a counter maybe, global counter 
+      something with a counter maybe, global counter
       being increased whenever we enter a whileloop
       and decreased when we exit*/
       if(whileLoopCounter >= 1){
@@ -977,7 +981,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         whileLoopCounter--;
         return -1;
       }
-      whileLoopCounter--;  
+      whileLoopCounter--;
       return 0;
       break;
     case listStmtK:
@@ -992,7 +996,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
     case continueK:
       ;
       /*something to see if we are in a while loop somehow
-      something with a counter maybe, global counter 
+      something with a counter maybe, global counter
       being increased whenever we enter a whileloop
       and decreased when we exit*/
       if(whileLoopCounter >= 1){
@@ -1107,7 +1111,7 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *kno
     fprintf(stderr, "Line %d: recursiveSymbolRetrieval: symbol id: %s not in scope\n", -1, symbolID);
     return NULL;
   }
-  if(knownSyms != NULL){ //this is to damn hacked
+  if(knownSyms != NULL){ //this is too damn hacked
     if(sym->kind != typeS){
       fprintf(stderr, "Line %d: The id with kind %d is not a type\n", sym->typePtr->lineno, sym->kind);
       return NULL;
