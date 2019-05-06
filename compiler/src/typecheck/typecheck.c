@@ -670,7 +670,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       }
       //(*sym) = s;
       (*type) = (*type)->val.arrayType;
-      return (*sym)->typeVal;
+      return (*type)->kind; //(*sym)->typeVal; //TODO ODOT return type->kind instead??
       //********We are in deep shit trouble right now*******//
       break;
     case dotK:
@@ -856,9 +856,9 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
           return -1;
         }
-        
+
       }
-      
+
       /*if(sym->kind != varS){
         fprintf(stderr,"Line %d: can only allocate variables\n", s->lineno);
         return -1;

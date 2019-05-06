@@ -16,6 +16,7 @@ Other stuff:
    |--> Typechecking
   |--> STARTING INTERNAL REPRESENTATION
   |--> STARTING PRINTING INTERNAL REPRESENTATION
+  |--> STARTING LIVNESS ANALYSIS
   |--> STARTING FINAL OUTPUT GENERATION
 format:
 .string	"%d\n"
@@ -49,27 +50,21 @@ main:
 	addq $1048576, endHeap2
 	movq $123, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq $-9, %rdx
-	movq %rbx, (%rbp,%rdx,8)
+	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
-	movq $-10, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-10, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-9, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq $-11, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-11, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	push %rdi
@@ -80,8 +75,7 @@ main:
 	call printf
 	pop %rdi
 	movq %rbp, %rbx
-	movq $-12, %rdx
-	movq %rbx, (%rbp,%rdx,8)
+	movq %rbx, %r8
 	push %rcx
 	push %rdx
 	push %rsi
@@ -90,8 +84,7 @@ main:
 	push %r9
 	push %r10
 	push %r11
-	movq $-12, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %r8, %rbx
 	push %rbx
 	call incGlobalBy103
 #remove static link and parameters
@@ -104,32 +97,24 @@ main:
 	pop %rsi
 	pop %rdx
 	pop %rcx
-	movq $-13, %rdx
-	movq %rax, (%rbp,%rdx,8)
-	movq $-13, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rax, %r8
+	movq %r8, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq $-14, %rdx
-	movq %rbx, (%rbp,%rdx,8)
+	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
-	movq $-15, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-15, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-14, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %r8, %rbx
 	movq $-8, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq $-16, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-16, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	push %rdi
@@ -164,108 +149,77 @@ incGlobalBy103:
 	subq $112, %rsp
 	movq $10, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq $-8, %rdx
-	movq %rbx, (%rbp,%rdx,8)
+	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
-	movq $-9, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-9, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-8, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
-	movq $-10, %rdx
-	movq %rbp, (%rbp,%rdx,8)
-	movq $-10, %rdx
-	addq $16, (%rbp,%rdx,8)
-	movq $-10, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbp, %r8
+	addq $16, %r8
+	movq %r8, %rbx
 	movq (%rbx), %rbx
-	movq $-10, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-10, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq $-11, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-11, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq $-12, %rdx
-	movq %rbx, (%rbp,%rdx,8)
+	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
-	movq $-13, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-13, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-12, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %r8, %rbx
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	push %rbx
 	movq %rbp, %rbx
-	movq $-15, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-15, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-7, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq $-14, %rdx
-	movq %rbx, (%rbp,%rdx,8)
+	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
-	movq $-16, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-16, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
 	movq %rbx, %rdi
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq $-14, %rdx
-	addq %rbx, (%rbp,%rdx,8)
-	movq $-14, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	addq %rbx, %r8
+	movq %r8, %rbx
 	movq %rbp, %rdi#resetting basepointer
-	movq $-17, %rdx
-	movq %rbx, (%rbp,%rdx,8)
+	movq %rbx, %r9
 	push %rbx
-	movq $-18, %rdx
-	movq %rbp, (%rbp,%rdx,8)
-	movq $-18, %rdx
-	addq $16, (%rbp,%rdx,8)
-	movq $-18, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbp, %r8
+	addq $16, %r8
+	movq %r8, %rbx
 	movq (%rbx), %rbx
-	movq $-18, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-18, %rdx
-	movq (%rbp,%rdx,8), %rbx
-	movq $-19, %rdx
-	movq %rbx, (%rbp,%rdx,8)
-	movq $-19, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
 	movq %rbx, %rdi
 	pop %rbx
-	movq $-17, %rdx
-	movq (%rbp,%rdx,8), %rbx
+	movq %r9, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
