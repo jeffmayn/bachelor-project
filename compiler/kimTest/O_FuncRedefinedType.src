@@ -14,4 +14,3 @@ end d
 
 v1 = 42;
 write d();
-

@@ -14,4 +14,3 @@ func b(d : int) : int
 end b
 
 write b(5);
-

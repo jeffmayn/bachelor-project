@@ -1,0 +1,49 @@
+
+Checking: O_RecordComparisonsB
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: C_ErrFuncParamsTooMany
+Compiling....[compiler ERROR code 255]
+
+Checking: R_ErrRuntimeDiv0
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: C_ErrFuncParamsInvalidType
+Compiling....[compiler ERROR code 255]
+
+Checking: C_NullWrong
+Compiling....[compiler ERROR code 255]
+
+Checking: O_FuncRedefinedReturnType
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: R_ErrRuntimeOutOfMem
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: O_NullCorrect
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_RecordsWithArray
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: C_ErrAssignToType
+Compiling....[compiler ERROR code 255]
+
+Checking: O_TypeJumpScope
+Compiling....Done
+Assembling...

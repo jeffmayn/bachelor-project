@@ -1301,8 +1301,13 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
         //create and save funcLabel
         sym->cgu = IRmakeNewCGU();
         char* labelName = Malloc(strlen(term->val.idact.id)+6);
-        sprintf(labelName, "%s%d", term->val.idact.id, labelCounter);
         labelCounter++;
+        sprintf(labelName, "%s%d", term->val.idact.id, labelCounter);
+        sym->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
+      } else {
+        labelCounter++;
+        char* labelName = Malloc(strlen(term->val.idact.id)+6);
+        sprintf(labelName, "%s%d", term->val.idact.id, labelCounter);
         sym->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
       }
       CODEGENUTIL *cgu = sym->cgu;

@@ -1,0 +1,314 @@
+
+Checking: O_RecordComparisonsB
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: C_ErrFuncParamsTooMany
+Compiling....[compiler ERROR code 255]
+
+Checking: R_ErrRuntimeDiv0
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: C_ErrFuncParamsInvalidType
+Compiling....[compiler ERROR code 255]
+
+Checking: C_NullWrong
+Compiling....[compiler ERROR code 255]
+
+Checking: O_FuncRedefinedReturnType
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: R_ErrRuntimeOutOfMem
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: O_NullCorrect
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_RecordsWithArray
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: C_ErrAssignToType
+Compiling....[compiler ERROR code 255]
+
+Checking: O_TypeJumpScope
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: F_SimpleStructuralEquiv
+Compiling....[compiler ERROR code 255]
+
+Checking: R_ErrRuntimeNegArraySize
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: O_Recursion
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: O_FuncRedefinedType
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: C_ReturnInMainScope
+Compiling....Done
+Assembling...Done
+Executing....[runtime ERROR code 42]
+
+Checking: O_MultipleTypecheckPassesC
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: O_ArrayComparisonsB
+Compiling....[compiler ERROR code 139]
+
+Checking: O_MultipleTypecheckPassesB
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_FuncCallAsParamA
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: C_ErrTypeLoop
+Compiling....[compiler ERROR code 255]
+
+Checking: O_ArrayIndex
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_Assoc
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: F_FuncParamsEvalOrder
+Compiling....Done
+Assembling...Done
+Executing....Done
+INCORRECT output
+
+Checking: O_AbsTest
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_SimpleRecord
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_BinarySearchTree
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: O_WhileDo
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_Comments
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_MultiDimArray
+Compiling....[compiler ERROR code 255]
+
+Checking: O_ArrayOfOwnType
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_Function
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_StaticLink
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_FuncCallAsParamB
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: O_StaticLinkB
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_FuncReturnRecord
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_ArrayOfRecords
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_LargeExpTreeB
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_ArrayComparisonsA
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_Factorial
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: C_ErrInvalidToken
+Compiling....[compiler ERROR code 255]
+
+Checking: R_ErrOutOfBounds2
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: C_ErrUnmatchedBeginComment
+Compiling....[compiler ERROR code 255]
+
+Checking: O_FuncModifyingParams
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_LargeExpTreeA
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_Knapsack
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: O_StaticLinkA
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_FuncRedefinedInItself
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: C_ErrFuncParamsTooFew
+Compiling....[compiler ERROR code 255]
+
+Checking: O_ArrayLength
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_KnapsackNoComments
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: F_ShortCircuitAND
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_IfThen
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_AbsoluteValueTest
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: R_ErrOutOfBounds1
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: R_ErrRuntimeNullPointer
+Compiling....Done
+Assembling...Done
+Executing....[runtime ERROR code 139]
+
+Checking: O_RecordComparisonsA
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: O_MultipleTypecheckPassesA
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
+
+Checking: F_RecordIsTupleOrSet
+Compiling....[compiler ERROR code 255]
+
+Checking: O_LargeExpTreeC
+Compiling....Done
+Assembling...Done [assembler ERROR code 1]
+Executing....[runtime ERROR code 127]
+
+Checking: F_ShortCircuitOR
+Compiling....Done
+Assembling...Done
+Executing....Done
+Correct output
