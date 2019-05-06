@@ -7,7 +7,7 @@ TODO.txt
 
 	R_ErrRuntimeNullPointer - segfault! alvorligt skal kigges på. måske noget med at kontrollere for null flere steder end vi gør? ved ikke om vi skal kontrollere dette.
 
-	O_TypeJumpScope - Fejl i typecheck, skal fikses, problem med allokering
+	O_TypeJumpScope - Fejl i typecheck, skal fikses, problem med allokering.
 
 	O_MultiDimArray - fejl i type checker, igen noget med arrays og allokering.
 

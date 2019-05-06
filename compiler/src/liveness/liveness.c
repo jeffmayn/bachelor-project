@@ -78,7 +78,7 @@ int livenessTravIR(INSTR *instr){
       case addI: //use both; define second
       case subI:
       case mulI:
-      case divI:
+      //case divI:
       case andI:
       case orI:
       case xorI:
@@ -155,7 +155,8 @@ int livenessTravIR(INSTR *instr){
           addElement(lia[index].use, op->val.temp);
         }
         break;
-      case pushI: //use one
+      case divI: //use one
+      case pushI:
         if(op == NULL){
           fprintf(stderr, "return -1 7\n");
           return -1;

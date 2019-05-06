@@ -1071,15 +1071,15 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
       IRresetBasePointer();
+      // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      //   IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RAX))));
+
+
+      IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(
+        IRmakeTemporaryOPERAND(t1),IRmakeRegOPERAND(RBX))));
+
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RAX))));
-
-
-      IRappendINSTR(IRmakeMulINSTR(
-        IRmakeRegOPERAND(RBX)));
-
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeRegOPERAND(RAX), IRmakeTemporaryOPERAND(t1))));
+        IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
       return IRmakeTemporaryOPERAND(t1);
 /*
