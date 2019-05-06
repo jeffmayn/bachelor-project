@@ -862,7 +862,8 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     *op = IRmakeTempDeRefOPERAND(t1);
     //TODO:update symbol??
     //*ty = (*sym)->typePtr->val.arrayType;
-    if((*sym)->typeVal == idK){
+    //if((*sym)->typeVal == idK){
+    if((*ty)->kind == idK){
       *sym = recursiveSymbolRetrieval((*sym)->defScope, (*sym)->typePtr->val.id, NULL);
       *ty = (*sym)->typePtr;
     }
