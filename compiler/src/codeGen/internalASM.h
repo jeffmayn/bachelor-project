@@ -16,6 +16,7 @@
 #define INDEXOUTOFBOUNDSCODE 2
 #define NONPOSITIVEALLOCCODE 4
 #define DEVISIONBYZERO 3
+#define DEREFNULLCODE 5
 
 extern const char* regNames[];
 

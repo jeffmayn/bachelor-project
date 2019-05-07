@@ -124,6 +124,13 @@ int checkOffsetOperand(INSTR *in){
       else{
         printf("\tmovq (%%rbp,%%rdx,8), %%rcx\n");
       }
+      /*
+        cmp 0, %rcx
+    	  je deref%d
+    	  movq $5, %rax #deref NULL
+    	  jmp errorCleanup5
+      deref%d:
+      */
       //TODO: %rdi is probably a bad choice
       //TODO: compile to a.s
     }

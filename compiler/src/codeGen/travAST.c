@@ -809,6 +809,8 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
   int error = 0;
   int *nrJumps = Calloc(sizeof(int));
   *nrJumps = 0;
+  char *nonNullDerefLabel1;
+  char *nonNullDerefLabel2;
   switch (var->kind) {
   case idVarK:
     *sym = IRgetSymbol(t, var->val.id, nrJumps);//TODOMADS should be IRgetSymbol
@@ -840,6 +842,12 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     char *indeksErrorLabel = Malloc(10);
     sprintf(indeksErrorLabel, "indeksError%d", labelCounter);
     labelCounter++;
+    nonNullDerefLabel1 = Malloc(10);
+    sprintf(nonNullDerefLabel1, "nonNullDeref%d", labelCounter);
+    labelCounter++;
+    nonNullDerefLabel2 = Malloc(10);
+    sprintf(nonNullDerefLabel2, "nonNullDeref%d", labelCounter);
+    labelCounter++;
 
     error = IRtravVarRecursive(t, var->val.varexp.var, sym, ty, op);
     if(error == -1){
@@ -852,6 +860,13 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     op1 = IRtravExp(t, var->val.varexp.exp);
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
     IRresetBasePointer();
+
+    //check if array is null
+    IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
+    IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(IRmakeLabelOPERAND(nonNullDerefLabel1), IRmakeCommentOPERAND("not NULL"))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
+    IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+    IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel1)));
 
     IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTempDeRefOPERAND(t1),IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(IRmakeLabelOPERAND(indeksErrorLabel), IRmakeCommentOPERAND("indexOutOfBounds"))));
@@ -867,8 +882,14 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8), IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
-    // IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeTemporaryOPERAND(t2), IRmakeRegOPERAND(RBX))));
-    // IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+    //check if array index is null
+    IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
+    IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(IRmakeLabelOPERAND(nonNullDerefLabel2), IRmakeCommentOPERAND("not NULL"))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
+    IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+    IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel2)));
+
+
     *op = IRmakeTempDeRefOPERAND(t1);
     //TODO:update symbol??
     //*ty = (*sym)->typePtr->val.arrayType;
@@ -881,6 +902,13 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     //fprintf(stderr, "IRtravVar: UnsupportedArrayVarException\n");
     return 0;
   case dotK:
+    nonNullDerefLabel1 = Malloc(10);
+    sprintf(nonNullDerefLabel1, "nonNullDeref%d", labelCounter);
+    labelCounter++;
+    nonNullDerefLabel2 = Malloc(10);
+    sprintf(nonNullDerefLabel2, "nonNullDeref%d", labelCounter);
+    labelCounter++;
+
     error = IRtravVarRecursive(t, var->val.vardot.var, sym, ty, op);
     if(error == -1){
       return -1;
@@ -897,6 +925,14 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("creating record dereferencing")));
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
     IRresetBasePointer();
+
+    //check if record is null
+    IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOPERAND(),IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(IRmakeLabelOPERAND(nonNullDerefLabel1), IRmakeCommentOPERAND("not NULL"))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
+    IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+    IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel1)));
+
     int offset = (*sym)->cgu->val.temp->placement.offset;
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
       IRmakeConstantOPERAND(offset*8),
@@ -904,6 +940,15 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
       IRmakeRegOPERAND(RBX),
       IRmakeTemporaryOPERAND(t1))));
+
+
+    //check of deref variable is NULL
+    IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
+    IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(IRmakeLabelOPERAND(nonNullDerefLabel2), IRmakeCommentOPERAND("not NULL"))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
+    IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+    IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel2)));
+
     *op = IRmakeTempDeRefOPERAND(t1);
     //fprintf(stderr, "IRtravVar: UnsupportedRecordVarException\n");
     return 0;
