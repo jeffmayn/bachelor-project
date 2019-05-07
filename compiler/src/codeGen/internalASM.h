@@ -93,6 +93,7 @@ typedef struct CODEGENUTIL {
 int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
 INSTR* intermediateTail;
+int changeMade;
 
 int tempLocalCounter; //the next temp and local offset in current scope
 int labelCounter; //the next label value
@@ -576,6 +577,13 @@ typedef struct LivenessInstructionArray{
 
 InstrTable *labelINSTRTable;
 
+
+
+//################### peephole Optimization ###############
+
+int peephole();
+int loopInternalRep();
+int loopPatterns(INSTR *instr);
 
 
 

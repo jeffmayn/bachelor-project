@@ -90,7 +90,13 @@ int main() {
     return -1;
   }
 
-
+  fprintf(stderr, "%s\n", "  |--> STARTING PEEPHOLE OPTIMIZATION");
+  error = 0;
+  error = peephole();
+  if(error == -1){
+    fprintf(stderr, "ERROR: peephole optimization\n");
+    return -1;
+  }
 
 
   fprintf(stderr, "%s\n", "  |--> STARTING FINAL OUTPUT GENERATION");
