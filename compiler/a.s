@@ -402,7 +402,7 @@ mainend:
 	pop %rbx
 	movq %rbp, %rsp
 	pop %rbp
-	ret 
+	ret
 
 
 

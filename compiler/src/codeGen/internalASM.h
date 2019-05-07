@@ -85,7 +85,7 @@ typedef struct INSTR {
 typedef struct CODEGENUTIL {
   int size; //only relevant for records
   union {
-    struct {INSTR *funcLabel; int localStart; int temporaryStart; int temporaryEnd;} funcInfo ;
+    INSTR *funcLabel;
     TEMPORARY *temp;
   } val;
 } CODEGENUTIL;
@@ -96,12 +96,7 @@ INSTR* intermediateTail;
 
 int tempLocalCounter; //the next temp and local offset in current scope
 int labelCounter; //the next label value
-//int localCounter;
 int tempIdVal; //used to give each temp a unique ID
-
-int currentLocalStart;
-int currentTemporaryStart;
-int currentTemporaryEnd;
 
 char* beginHeapLabel; //points to the beginning of the heap
 char* freeHeapLabel; //contains the next free heap space
