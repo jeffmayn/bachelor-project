@@ -1307,15 +1307,8 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       //tjek om label findes -> brug eller lav label
       //if(cgu->val.funcInfo.funcLabel == NULL){
       if(sym->cgu == NULL){
-        //create and save funcLabel
-        sym->cgu = IRmakeNewCGU();
-        labelCounter++;
-        char* labelName = Malloc(strlen(term->val.idact.id)+6);
-        sprintf(labelName, "%s%d", term->val.idact.id, labelCounter);
-        sym->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
-      } else {
-        fprintf(stderr, "%s, %s\n", "function had a label already", sym->name);
-        fprintf(stderr, "%p, %p\n", sym->scope, sym->defScope);
+        fprintf(stderr, "%s\n", "should be a mistake");
+        return NULL;
       }
       CODEGENUTIL *cgu = sym->cgu;
       INSTR *label = cgu->val.funcInfo.funcLabel;
