@@ -1,2 +1,2 @@
 p 0 0 0 0 0 0 0 0 0 0 0
-staticLink 1 0
+staticLink 0 0
