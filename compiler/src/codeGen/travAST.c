@@ -76,6 +76,7 @@ int IRcreateInternalRep(bodyList *mainBody){
    * variables and shit, then traverse statements creating the
    * instructions and so on.
    */
+  labelCounter = 1;
   intermediateInstrCount = 0;
   labelINSTRTable = initInstrHashTable();
   dummyTemp = IRcreateNextTemp(-1);
@@ -118,16 +119,25 @@ int IRcreateInternalRep(bodyList *mainBody){
     return 0; //i guess no bodies gives rise to no errors
   }
   tempLocalCounter = 1;
-  labelCounter = 1;
   int error = 0;
   resetbodyListIndex(mainBody);
   bodyListElm *bElm = getBody(mainBody);
   //TODO something to treat the first body specially.
+
+
+
   while(bElm != NULL){
-    error = IRinitParams(bElm->scope, bElm);
+    error = IRinitParams(bElm->defScope, bElm);
     if(error == -1){
       return -1;
     }
+    bElm = getBody(mainBody);
+  }
+
+  resetbodyListIndex(mainBody);
+  bElm = getBody(mainBody);
+  while(bElm != NULL){
+
     error = IRtravBody(bElm->scope, bElm);
     if(error == -1){
       return -1;
@@ -148,7 +158,6 @@ void IRruntimeErrorCleanupCode(){
   IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(mainEndLabel)));
   //IRappendINSTR(IRmakeJumpINSTR(IRmakeRegOPERAND(RBX)));
 }
-
 
 
 int IRinitParams(SymbolTable *table, bodyListElm *element){
@@ -205,7 +214,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   int error = 0;
   //TODO create the INSTRlabel, to signify the beginning of the body.
   //TODO set counter for locale variabler start
-  SYMBOL *sym = getSymbol(body->scope, body->funcId); //todo, i think it should be table not body->scope
+  SYMBOL *sym = getSymbol(body->defScope, body->funcId); //todo, i think it should be table not body->scope
   sym->cgu->val.funcInfo.localStart = tempLocalCounter;
   //localCounter = 0;
   tempLocalCounter = 0;
@@ -1300,10 +1309,13 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       if(sym->cgu == NULL){
         //create and save funcLabel
         sym->cgu = IRmakeNewCGU();
+        labelCounter++;
         char* labelName = Malloc(strlen(term->val.idact.id)+6);
         sprintf(labelName, "%s%d", term->val.idact.id, labelCounter);
-        labelCounter++;
         sym->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
+      } else {
+        fprintf(stderr, "%s, %s\n", "function had a label already", sym->name);
+        fprintf(stderr, "%p, %p\n", sym->scope, sym->defScope);
       }
       CODEGENUTIL *cgu = sym->cgu;
       INSTR *label = cgu->val.funcInfo.funcLabel;

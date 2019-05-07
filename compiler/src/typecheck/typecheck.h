@@ -18,6 +18,7 @@ Værdien i en variable? Den skal vel ikke bruges endnu
 typedef struct bodyListElm {
   BODY *body;
   SymbolTable *scope;
+  SymbolTable *defScope;
   char* funcId;
   struct bodyListElm *prev;
   struct bodyListElm *next;
@@ -120,7 +121,7 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *kno
 
 bodyList* initBodyList();
 
-void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId);
+void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId, SymbolTable* defScope);
 
 bodyListElm* getBody(bodyList *list);
 
