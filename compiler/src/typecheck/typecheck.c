@@ -77,7 +77,6 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
   Finds the types of all declared types
   First parameter is the current scope
   Second parameter is for saving bodies for later traversals
-
 */
 int idTypeFinder(SymbolTable *table, bodyList *bList){
   saveBody(bList, theexpression, table, NULL, table);

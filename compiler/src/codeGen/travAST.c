@@ -1095,7 +1095,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
 
       //TODO LAZY CHECK if first operand is false we just return false.
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeFalseOPERAND(), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(lazyAndLabel)));
+      IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(lazyAndLabel)));
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
@@ -1127,8 +1127,8 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));//right operand in t1
 
       //TODO LAZY CHECK if first operand is false we just return false.
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeFalseOPERAND(), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(lazyOrLabel)));
+      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(lazyOrLabel)));
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(

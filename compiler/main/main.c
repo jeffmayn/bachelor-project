@@ -63,10 +63,10 @@ int main() {
   if(error == -1){
     return -1;
   }
-
-  //fprintf(stderr, "%s\n", "  |--> STARTING PRINTING BODY");
-  //pBODY(theexpression);
-
+/*
+  fprintf(stderr, "%s\n", "  |--> STARTING PRINTING BODY");
+  pBODY(theexpression);
+*/
 
 
   fprintf(stderr, "%s\n", "  |--> STARTING INTERNAL REPRESENTATION");
