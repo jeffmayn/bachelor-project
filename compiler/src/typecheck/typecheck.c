@@ -80,7 +80,7 @@ int typeCheck(SymbolTable *table){//TODO error reporting, perhaps (int typeCheck
 
 */
 int idTypeFinder(SymbolTable *table, bodyList *bList){
-  saveBody(bList, theexpression, table, NULL);
+  saveBody(bList, theexpression, table, NULL, table);
   return idTypeTravBody(table, theexpression, bList);
 }
 
@@ -159,7 +159,7 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
         }
       }
       //save body for statement traversal
-      saveBody(bList, d->val.func->body, child, d->val.func->head->id);
+      saveBody(bList, d->val.func->body, child, d->val.func->head->id, t);
       //recursively traverse on body of function
       idTypeTravBody(child,d->val.func->body, bList);
     break;
@@ -670,7 +670,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       }
       //(*sym) = s;
       (*type) = (*type)->val.arrayType;
-      return (*type)->kind; //(*sym)->typeVal; //TODO ODOT return type->kind instead??
+
       //********We are in deep shit trouble right now*******//
       break;
     case dotK:
@@ -2149,7 +2149,7 @@ bodyList* initBodyList(){
   return l;
 }
 
-void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId){
+void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId, SymbolTable* defScope){
   bodyListElm *ble = Malloc(sizeof(bodyListElm));
   ble->next = NULL;
   if(list->head == NULL){
@@ -2165,6 +2165,7 @@ void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId){
   }
   list->tail->body = body;
   list->tail->scope = scope;
+  list->tail->defScope = defScope;
   list->tail->funcId = funcId;
 }
 
