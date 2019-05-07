@@ -85,7 +85,7 @@ typedef struct INSTR {
 typedef struct CODEGENUTIL {
   int size; //only relevant for records
   union {
-    struct {INSTR *funcLabel; int localStart; int temporaryStart; int temporaryEnd;} funcInfo ;
+    INSTR *funcLabel;
     TEMPORARY *temp;
   } val;
 } CODEGENUTIL;
