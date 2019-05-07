@@ -17,20 +17,10 @@ TEMPORARY* IRcreateNextTemp(int offset){
   tempIdVal++;
   tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
-
-  //for liveness analysis
-  // int error = IGmakeGraphNode(tmp);
-  // if(error == -1){
-  //   fprintf(stderr, "INTERNAL ERROR in IRcreateNextTemp occurred when making graphNode\n");
-  // }
-  // tmp->graphNodeId = error;
   tmp->next = livenessTempList;
   livenessTempList = tmp;
   return tmp;
-  //maybe they should be added to a collection containing all
-  //non-placed temporaries
 }
-
 
 /**
  * Creates new local-variabel temp
@@ -48,7 +38,6 @@ TEMPORARY* IRcreateNextLocalTemp(int offset){
   tmp->placement.offset = offset;
   return tmp;
 }
-
 
 /**
  * Creates new param-variabel temp
@@ -71,15 +60,13 @@ TEMPORARY* IRcreateParamTemp(int offset){
  * starting with the main-body.
  */
 int IRcreateInternalRep(bodyList *mainBody){
-  //TODO call all the stuff and shit and things.
-  /* for each body first traverse declerations to count local
-   * variables and shit, then traverse statements creating the
-   * instructions and so on.
-   */
+  int error = 0;
   labelCounter = 1;
   intermediateInstrCount = 0;
+  tempLocalCounter = 1;
   labelINSTRTable = initInstrHashTable();
   dummyTemp = IRcreateNextTemp(-1);
+  //**Fixed part in beginning of program**//
   beginHeapLabel = Malloc(5);
   sprintf(beginHeapLabel, "heap%d", labelCounter);
   labelCounter++;
@@ -116,17 +103,13 @@ int IRcreateInternalRep(bodyList *mainBody){
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".space 8")));
   IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(".text")));
   if(mainBody == NULL){
-    return 0; //i guess no bodies gives rise to no errors
+    return 0; //no bodies gives rise to no errors
   }
-  tempLocalCounter = 1;
-  int error = 0;
   resetbodyListIndex(mainBody);
   bodyListElm *bElm = getBody(mainBody);
-  //TODO something to treat the first body specially.
-
-
 
   while(bElm != NULL){
+    //initializes each function
     error = IRinitParams(bElm->defScope, bElm);
     if(error == -1){
       return -1;
@@ -137,65 +120,61 @@ int IRcreateInternalRep(bodyList *mainBody){
   resetbodyListIndex(mainBody);
   bElm = getBody(mainBody);
   while(bElm != NULL){
-
+    //traverse each sub-body of this body
     error = IRtravBody(bElm->scope, bElm);
     if(error == -1){
       return -1;
     }
     bElm = getBody(mainBody);
   }
+
   IRruntimeErrorCleanupCode();
   return 0;
 }
 
+/**
+ * Generates cleanupcode used in case of runtime error
+ */
 void IRruntimeErrorCleanupCode(){
-  //here i assume the right error value is already found in %rax;
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainSPointLabel), IRmakeRegOPERAND(RSP))));
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainBPointLabel), IRmakeRegOPERAND(RBP))));
-  //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainEndLabel),IRmakeRegOPERAND(RSP))));
-  //IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8), IRappendOPERAND(IRmakeRegOPERAND(RBP), IRmakeCommentOPERAND("this is to avoid removing main-locals twice")))));
   IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(mainEndLabel)));
-  //IRappendINSTR(IRmakeJumpINSTR(IRmakeRegOPERAND(RBX)));
 }
 
-
+/**
+ *
+ */
 int IRinitParams(SymbolTable *table, bodyListElm *element){
-
   int paramCount = 0;
   ParamSymbol *pSym = element->scope->ParamHead;
-  char* mainName = NULL;
+  char *mainName = NULL;
   SYMBOL *func;
-  char* labelName;
-  if(element->funcId == NULL){
-    //naming main scope
+  char *labelName;
+  if(element->funcId == NULL){ //main scope
     mainName = Malloc(sizeof(char)*6);
-    sprintf(mainName, "%s", "$main");
-    putSymbol(table, mainName, 0, funcK, intK, table, NEW(TYPE));
-    //element->funcId = mainName;
-    char* glblmain = Malloc(sizeof(char)*20);
-    sprintf(glblmain, ".globl main");
+    sprintf(mainName, "$main"); //create main-scope symbol
+    func = putSymbol(table, mainName, 0, funcK, intK, table, NEW(TYPE));
+    element->funcId = mainName;
+    char* glblmain = Malloc(sizeof(char)*15);
+    sprintf(glblmain, ".globl main"); //add globl-thingy
     IRappendINSTR(IRmakeTextINSTR(IRmakeTextOPERAND(glblmain)));
-    func = getSymbol(table, "$main");
-  } else {
-    func = getSymbol(table, element->funcId);
-  }
-  if(func->cgu == NULL){ //er det her godt nok til at tjekke om der er en label instrution?
-    func->cgu = IRmakeNewCGU();
-    if(element->funcId == NULL){
-      labelName = Malloc(sizeof(char)*10);
-      element->funcId = mainName;
-      sprintf(labelName, "main");
-    } else {
-      labelName = Malloc(strlen(element->funcId)+6);
-      sprintf(labelName, "%s%d", element->funcId, labelCounter);
-    }
+    labelName = Malloc(sizeof(char)*6);
+    sprintf(labelName, "main"); //main label
+  } else { //other scope
+    labelName = Malloc(strlen(element->funcId)+6); //other label
+    sprintf(labelName, "%s%d", element->funcId, labelCounter);
     labelCounter++;
-    func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName));
-
   }
+  func = getSymbol(table, element->funcId);
+  func->cgu = IRmakeNewCGU(); //save the label
+  func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(
+    IRmakeLabelOPERAND(labelName));
+
   SYMBOL *sym;
   while(pSym != NULL){
+    //create scug for each parameter
+    //with associated offset
     sym = pSym->data;
     if(sym->cgu == NULL){
       sym->cgu = IRmakeNewCGU();
@@ -209,74 +188,65 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
 
 /**
  * Traverse the body of a function
+ * Generates code for function
  */
 int IRtravBody(SymbolTable *table, bodyListElm *body){
   int error = 0;
-  //TODO create the INSTRlabel, to signify the beginning of the body.
-  //TODO set counter for locale variabler start
-  SYMBOL *sym = getSymbol(body->defScope, body->funcId); //todo, i think it should be table not body->scope
-  sym->cgu->val.funcInfo.localStart = tempLocalCounter;
-  //localCounter = 0;
-  tempLocalCounter = 0;
-  error = IRtravDeclList(table, body->body->vList);
+  SYMBOL *sym = getSymbol(body->defScope, body->funcId);
+  tempLocalCounter = 0; //number of temps and locals in current scope
+  error = IRtravDeclList(table, body->body->vList); //find all local variables
   if(error == -1){
     return -1;
   }
-  sym->cgu->val.funcInfo.temporaryStart = tempLocalCounter;
-  //TODO set counter for locale variabler slut
-  //TODO calleé saves,
-  IRappendINSTR(sym->cgu->val.funcInfo.funcLabel); //does the label exist?
+  IRappendINSTR(sym->cgu->val.funcInfo.funcLabel);
 
   error = IRmakeCalleeProlog();
   if(error == -1){
     return -1;
   }
+
   INSTR * instrTempTail = intermediateTail;
-  char* labelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
-  sprintf(labelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
+  //create func end label
+  char* endLabelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
+  sprintf(endLabelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
   labelCounter++;
   if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
     //Special stuff for beginning of main function
-    mainEndLabel = labelName;
-    //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBP),IRmakeRegOPERAND(RBX))));
-    //IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(8),IRappendOPERAND(IRmakeRegOPERAND(RBX),IRmakeCommentOPERAND("Moving past the main-local removal")))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RSP),IRmakeLabelOPERAND(mainSPointLabel))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBP),IRmakeLabelOPERAND(mainBPointLabel))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(freeHeapLabel))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(endHeapLabel))));
-    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(HEAPSIZE),IRmakeLabelOPERAND(endHeapLabel))));
-
+    mainEndLabel = endLabelName;
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeRegOPERAND(RSP),IRmakeLabelOPERAND(mainSPointLabel))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeRegOPERAND(RBP),IRmakeLabelOPERAND(mainBPointLabel))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(freeHeapLabel))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeAddrLabelOPERAND(beginHeapLabel),IRmakeLabelOPERAND(endHeapLabel))));
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+      IRmakeConstantOPERAND(HEAPSIZE),IRmakeLabelOPERAND(endHeapLabel))));
   }
 
-
-
-  currentLocalStart = sym->cgu->val.funcInfo.localStart;
-  currentTemporaryStart = sym->cgu->val.funcInfo.temporaryStart;
-  error = IRtravStmtList(table, body->body->sList, labelName, NULL, NULL);
+  error = IRtravStmtList(table, body->body->sList, endLabelName, NULL, NULL);
   if(error == -1){
-    fprintf(stderr, "ERROR while traversing statements of %s\n", body->funcId);
+    fprintf(stderr, "INTERNAL ERROR: while traversing statements of %s\n", body->funcId);
     return -1;
   }
-  sym->cgu->val.funcInfo.temporaryEnd = tempLocalCounter; //first number after our last temp
-
-  currentTemporaryEnd = sym->cgu->val.funcInfo.temporaryEnd;
-
-  /*caution you enter the land of long lines of code for no reason at all!*/
-  //int nrTempsAndLocals = sym->cgu->val.funcInfo.temporaryEnd - sym->cgu->val.funcInfo.localStart;
+  //make room for locals and temps
   int nrTempsAndLocals = tempLocalCounter;
-  IRinserINSTRhere(instrTempTail, IRmakeSubINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP))));
+  IRinserINSTRhere(instrTempTail, IRmakeSubINSTR(IRappendOPERAND(
+    IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP))));
 
   if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
-    //Special stuff for end of main function
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RAX))));
+    //return 0 at end of main
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RAX))));
   }
 
-
-
-  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(labelName)));
-  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP)))); //newly added
-  error = IRmakeCalleeEpilog();
-  return error;
+  //function epilogue
+  IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endLabelName)));
+  //remove all temps and locals
+  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+    IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP))));
+  return IRmakeCalleeEpilog();
 }
 
 int IRinserINSTRhere(INSTR *prev, INSTR* new){
@@ -287,7 +257,8 @@ int IRinserINSTRhere(INSTR *prev, INSTR* new){
 
 int IRmakeCalleeProlog(){
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBP)));
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RSP), IRmakeRegOPERAND(RBP))));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    IRmakeRegOPERAND(RSP), IRmakeRegOPERAND(RBP))));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R12)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R13)));
@@ -302,18 +273,15 @@ int IRmakeCalleeEpilog(){
   IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R13)));
   IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R12)));
   IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RBX)));
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBP), IRmakeRegOPERAND(RSP))));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    IRmakeRegOPERAND(RBP), IRmakeRegOPERAND(RSP))));
   IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RBP)));
   IRappendINSTR(IRmakeRetINSTR(NULL));
   return 0;
 }
 
 
-/**
- * only traverse the declerations immediately available
- * do not dive into functions etc.
- * Count the number of variables.
- */
+
 CODEGENUTIL *IRmakeNewCGU(){
   CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
   memset(newCGU, 0, sizeof(CODEGENUTIL));
@@ -321,6 +289,11 @@ CODEGENUTIL *IRmakeNewCGU(){
   return newCGU;
 }
 
+/**
+ * only traverse the declerations immediately available
+ * do not dive into functions etc.
+ * Count the number of variables.
+ */
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declarations){
   int error = 0;
   error = IRtravDecl(table, declarations->decl);
@@ -338,60 +311,56 @@ int IRtravDeclList(SymbolTable *table, DECL_LIST *declarations){
  * as these are already in the bodylist!
  */
 int IRtravDecl(SymbolTable *table, DECLARATION *decl){
-  SYMBOL *sym;
+  SYMBOL *sym, *sym2;
+  TYPE *ty = NULL;
+  int varCount;
   if(decl == NULL){
     return 0;
   }
   switch(decl->kind){
-    case idDeclK:
+    case idDeclK: //userdefined type
       sym = getSymbol(table, decl->val.id.id);
       if(sym->cgu != NULL){
-        return 0; //the size of the type already found
+        return 0; //type already investigated
       }
       sym->cgu = IRmakeNewCGU();
       sym->cgu->val.temp = NULL;
-      SYMBOL *sym2 = sym;
-      TYPE *ty = sym2->typePtr;
-      if(ty->kind == idK){
-        //go to buttom of user types
-        sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
-        ty = sym2->typePtr;
+      sym2 = sym;
+      if(sym2->typePtr->kind == idK){ //go to buttom of user types
+        sym2 = recursiveSymbolRetrieval(table, sym2->typePtr->val.id, NULL);
       }
+      ty = sym2->typePtr;
       if(sym2->cgu == NULL){
         sym2->cgu = IRmakeNewCGU();
         sym2->cgu->val.temp = NULL;
       }
       if(ty->kind == recordK){
-        if(sym2->cgu->size == -1){
-          int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
+        if(sym2->cgu->size == -1){ //not yet investiated
+          varCount = IRtravVarDeclList(sym2->content, ty->val.vList, 0);
           if(varCount == -1){
-            fprintf(stderr, "Error while traversing record %s\n", sym2->name);
+            fprintf(stderr, "INTERNAL ERROR: while traversing record %s\n", sym2->name);
             return -1;
           }
           sym2->cgu->size = varCount;
         }
       }
       else if(ty->kind == boolK || ty->kind == intK || ty->kind == arrayK){
-        // sym->cgu->val.temp = IRcreateNextTemp(offset);
-        // offset++;
         sym2->cgu->size = 1;
         break;
       }
       else{
-        fprintf(stderr, "IRtravVarType: how did i get here %d\n", ty->kind);
+        fprintf(stderr, "INTERNAL ERROR: how did i get here %d\n", ty->kind);
         return -1;
         break;
       }
       sym->cgu->size = sym2->cgu->size;
       break;
-    case funcK://assign numbers to parameters.
+    case funcK:
+      //functions are handled breadth first in IRinitParams()
       break;
-    case listK:
-      ;//count number of variables
-      int varCount = IRtravVarDeclList(table, decl->val.list, tempLocalCounter);
-      //fprintf(stderr, "tempLocalCounter %d : varCount %d\n", tempLocalCounter, varCount);
+    case listK: //count number of variables
+      varCount = IRtravVarDeclList(table, decl->val.list, tempLocalCounter);
       if(varCount >= 0){
-        //tempLocalCounter += (varCount-tempLocalCounter);
         tempLocalCounter = varCount;
         return 0;
       }
@@ -403,52 +372,52 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
 
 
 /**
- * traverse variable decleration list
+ * traverse variable declaration list
  * Third parameter is the next offset to be used (in current scope)
- * Returns the number of variables indexed
+ * For each variable found the offset is incremented
+ * The offset is returned as it is after all variables are found
  */
 int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int offset){
   offset = IRtravVarType(table, varDeclList->vType, offset);
-
   if((offset != -1) && (varDeclList->vList != NULL)){
     offset = IRtravVarDeclList(table, varDeclList->vList, offset);
   }
   return offset;
 }
 
+/**
+ * Creates a CGU for each variable traversed and increments the offset
+ * returns incremented offset
+ */
 int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
-
   SYMBOL *sym = getSymbol(table, varType->id);
   if(sym == NULL){
-    fprintf(stderr, "Line %s: IRtravVarType: no symbol found for %d\n", varType->id, varType->lineno);
+    fprintf(stderr, "INTERNAL ERROR: Line %s: IRtravVarType: no symbol found for %d\n", varType->id, varType->lineno);
     return -1;
   }
   if(sym->cgu == NULL){
     sym->cgu = IRmakeNewCGU();
-    //fprintf(stderr, "%s %d\n", sym->name, offset);
     sym->cgu->val.temp = IRcreateNextLocalTemp(offset);
     offset++;
   } else {
-    //after including user defined types, i think it is legal to go here some times
-    fprintf(stderr, "IRtravVarType: symbol %s already had cgu \
-attatched\n", sym->name);
-    return ++offset;//dunno if we need this.
-    //TODO: I guess we should just return offset here?
+    //even if the symbol already have cgu
+    //we still have to count the element
+    return ++offset;
   }
   SYMBOL *sym2 = sym;
   TYPE *ty = sym2->typePtr;
-  SymbolList *knownSyms = NULL;
+  SymbolList *knownSyms = NULL; //for circulation detection
+  int varCount;
   while(1){ //carefull
-    if(ty->kind == idK){
-      //go to buttom of user types
+    if(ty->kind == idK){ //go to buttom of user types
       sym2 = recursiveSymbolRetrieval(table, ty->val.id, NULL);
       if(containsSym(knownSyms, sym2)){
-        break;
+        break; //already visited symbol
       }
       knownSyms = prependSymbol(knownSyms, sym2);
       ty = sym2->typePtr;
     }
-    if(sym2->cgu == NULL){
+    if(sym2->cgu == NULL){ //symbol not visited
       sym2->cgu = IRmakeNewCGU();
       sym2->cgu->val.temp = NULL;
       sym2->cgu->size = -1; //default size
@@ -456,11 +425,13 @@ attatched\n", sym->name);
     if(ty->kind == recordK){
       if(sym2->cgu->val.temp == NULL || sym == sym2){//latter: anonymous record
         if(sym2->cgu->val.temp == NULL){
-          sym2->cgu->val.temp = dummyTemp; //used to test whether content of user-record has already been traversed
+          //usertypes does not need af temporary
+          //dummy used to test whether content of user-record has already been traversed
+          sym2->cgu->val.temp = dummyTemp;
         }
-        int varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
+        varCount = IRtravVarDeclList(sym2->content, sym2->typePtr->val.vList, 0);
         if(varCount == -1){
-          fprintf(stderr, "Error while traversing record %s\n", sym2->name);
+          fprintf(stderr, "INTERNAL ERROR: while traversing record %s\n", sym2->name);
           return -1;
         }
         sym2->cgu->size = varCount;
@@ -476,7 +447,7 @@ attatched\n", sym->name);
       break;
     }
     else{
-      fprintf(stderr, "IRtravVarType: how did i get here %d\n", ty->kind);
+      fprintf(stderr, "INTERNAL ERROR: how did i get here %d\n", ty->kind);
       return -1;
       break;
     }
@@ -485,14 +456,12 @@ attatched\n", sym->name);
 }
 
 /**
-* this function assumes that declarations of all user types
-* has been traversed
+* finds the size of the given symbol
+* Assumes that declarations of all user types
+* have been traversed and its sizes found
+* returns -1 on error
 */
 int findVarSymSize(SYMBOL *sym){
-  /*if(sym->kind != varS){
-    fprintf(stderr, "INTERNAL ERROR: The symbol %s is not a variable\n", sym->name);
-    return -1;
-  }*/
   Typekind tk;
   int size;
   SYMBOL *sym2;
@@ -521,7 +490,7 @@ int findVarSymSize(SYMBOL *sym){
         sym->cgu->size = size;
         break;
       case errorK:
-        fprintf(stderr, "INTERNAL ERROR: findVarSymSize error during run\n");
+        fprintf(stderr, "INTERNAL ERROR: findVarSymSize\n");
         return -1;
       case nullKK:
         fprintf(stderr, "%s\n", "INTERNAL ERROR: findVarSymSize nullKK error");
@@ -532,9 +501,9 @@ int findVarSymSize(SYMBOL *sym){
 }
 
 /**
- * only traverse the statements immediately available
- * do not dive into functions etc.
- * Generate code for all statements.
+ * Generates code for the statements in the given list
+ * start and end labels are for loop jumping when using contine and break
+ * returns -1 on error
  */
 int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, char* funcEndLabel, char* startLabel, char* endLabel){
   int error = 0;
@@ -548,81 +517,62 @@ int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, char* funcEnd
   return 0;
 }
 
-/*
- * traversing the statement
+/**
+ * Generates coed for the given statement
  */
 int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startLabel, char* endLabel){
-  OPERAND *op1;
-  OPERAND *op2;
-  OPERAND *op3;
+  OPERAND *op1, *op2, *op3;
   TEMPORARY *temp;
   SYMBOL *sym;
   TYPE *ty;
-  char *elseLabel;
-  char *endifLabel;
-  char *allocSuccLabel;
-  char *startwhileLabel;
-  char *endwhileLabel;
-  int error;
-  int size;
+  char *elseLabel, *endifLabel, *allocSuccLabel, *startwhileLabel, *endwhileLabel;
+  int error, size;
   switch(stmt->kind){
     case returnK:
-      //TODO ODOT
-      //how the hell do we know which function we are in?? label??
       op1 = IRtravExp(t, stmt->val.return_);
       op2 = IRmakeRegOPERAND(RAX);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op2)));
       IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(funcEndLabel)));
-      //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: return\n");
       break;
     case writeK:
-
       op1 = IRtravExp(t, stmt->val.write);
       if(op1 == NULL){
-        fprintf(stderr, "OP1 line: %d\n", stmt->lineno);
+        fprintf(stderr, "INTERNAL ERROR: OP1 line: %d\n", stmt->lineno);
       }
-      //check for NULL??
-      IRappendINSTR(IRmakePushINSTR(
-        IRmakeRegOPERAND(RDI)));
+      IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RDI)));
+
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        op1, IRmakeRegOPERAND(RSI))));                                                             //!!local string!!
+        op1, IRmakeRegOPERAND(RSI))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeAddrLabelOPERAND("format"), IRmakeRegOPERAND(RDI))));
-
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeConstantOPERAND(0),IRmakeRegOPERAND(RAX))));
       IRappendINSTR(IRmakeCallINSTR(IRmakeLabelOPERAND("printf")));
-      // movq $form,%rdi		# Passing string address (1. argument)
-      // movq %rax,%rsi		# Passing %rax (2. argument)
-      // movq $0, %rax           # No floating point registers used
-      // call printf		# Automatically pushes return address
-      IRappendINSTR(IRmakePopINSTR(
-        IRmakeRegOPERAND(RDI)));
+
+      IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RDI)));
       return 0;
       break;
     case allocateK:
       error = IRtravVarRecursive(t, stmt->val.allocate, &sym, &ty, &op1);
       if(error == -1){
-        fprintf(stderr, "IRtravStmt: didn't successfully find operand of variable\n");
+        fprintf(stderr, "INTERNAL ERROR: IRtravStmt: didn't successfully find operand of variable\n");
         return -1;
       }
-      //op1 = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
       IRresetBasePointer();
-      //size = sym->cgu->size; //1; //TODO: how much space to allocate??????????????????
-      if(ty != sym->typePtr){ //this is a bit hacked
+      if(ty != sym->typePtr){
+        //only when arrays are traversed
         if(ty->kind == idK){
           sym = recursiveSymbolRetrieval(ty->scope, ty->val.id, NULL);
           size = findVarSymSize(sym);
         }
-        else{
-          size = 1; //Guess
+        else{ //if not idK then int, bool or array
+          size = 1;
         }
       }
       else{
-        size = findVarSymSize(sym); //ODOTO
-
+        size = findVarSymSize(sym);
       }
       if(size == -1){
         fprintf(stderr, "Alloc: Hopefully error is already printed\n");
@@ -2014,3 +1964,4 @@ int IRresetBasePointer(){
 
 
 //comfort space
+//2002 lines before cleanup
