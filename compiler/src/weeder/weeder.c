@@ -2,139 +2,156 @@
 #include <string.h>
 #include "weeder.h"
 #include "memory.h"
+#include "tree.h"
 
 extern BODY *theexpression;
 
 int retVal = -2;
 int retVal2 = -2;
 
-int weederBody(BODY *body){//TODO return -1 on error.
-  //int retVal = -2;
-  body = theexpression;
-  retVal = traverseBody(body);
-//  printf("main return: %d\n", retVal);
-  return retVal;
+
+/**
+ * Returns -1 if function with different ids or without return were found
+ * Also returns -1 if return statement found in main
+ * Returns 0 otherwise
+ */
+int weeder1(BODY *body){
+  if(weederTravMainStmtList(body->sList) == -1){
+    return -1;
+  }
+  return weederTraverseDECL(body->vList);
 }
 
-int traverseBody(BODY *body){
-  //int retVal = -2;
-  retVal = traverseDECL(body->vList);
-  return retVal;
+/**
+ * Traverses single body (not used for main) to check if its id's match
+ * and if it will reach return statement
+ */
+int weederTraverseBody(BODY *body, char *name){
+  int ret = weederTravStmtList(body->sList);
+  if(ret == -1){
+    fprintf(stderr, "ERROR: Some path in function %s does not reach a return statement\n", name);
+    return -1;
+  }
+  return weederTraverseDECL(body->vList);
+
 }
 
-int traverseDECL(DECL_LIST *decl){
-  //int retVal = -2;
-  if(decl != NULL){                    // kind 1 = function
-    if (decl->decl != NULL && decl->decl->kind == 1){
-      return retVal = weederFunction(decl->decl->val.func);
+/**
+ * Finds function declarations to check if IDs match
+ * and check for returns in body of declared function
+ */
+int weederTraverseDECL(DECL_LIST *declList){
+  if(declList != NULL){                    // kind 1 = function
+    if (declList->decl != NULL && declList->decl->kind == funcK){
+      retVal = weederTravFunction(declList->decl->val.func);
       if(retVal == -1){
         return -1;
       }
     }
-    return traverseDECL(decl->decl_list);
+    return weederTraverseDECL(declList->decl_list);
   }
-  if (retVal == -1){
-    return -1;
-  } else {
-    return 0;
-  }
+  return 0;
 }
 
-int weederFunction(FUNCTION *f){
-//  int retVal = -2;
-//  int retVal2 = -2;
+/**
+ * checks ids of function and checks body for returns
+ */
+int weederTravFunction(FUNCTION *f){
   if ((strcmp (f->head->id, f->tail->id))==0 ){
     retVal = 0;
   } else {
-    fprintf(stderr, "Error! Line %d: mismatch in header-id and tail-id\n", f->head->lineno);
+    fprintf(stderr, "ERROR: Line %d: mismatch in header-id %s and tail-id %s\n", f->head->lineno, f->head->id, f->tail->id);
     return -1;
   }
-  retVal = traverseBody(f->body);
-  retVal2 = travCheckForReturn(f->body);
-
-  if(retVal == -1 || retVal2 == -1){
-    return -1;
-  } else {
-    return 0;
-  }
+  return weederTraverseBody(f->body, f->head->id);
 }
 
-// NEW STUFF
-int travCheckForReturn(BODY *body){
-  int result = expTravStmts(body->sList);
-  if(result == -1){
-    fprintf(stderr, "Error! Line %d: missing return statement\n", body->lineno);
-  }
-  return result;
-}
 
-int expTravStmts(STATEMENT_LIST *stmtList){
+/**
+ * Traverses statement     case ifK:
+      return -1;list to check for returns
+ */
+int weederTravStmtList(STATEMENT_LIST *stmtList){
   if(stmtList != NULL){
-    if(expTravStmt(stmtList->statement) == 0){
+    if(weederTravStmt(stmtList->statement) == 0){
       if(stmtList->statementList != NULL){
-        fprintf(stderr, "Warning! Line %d: Unreachable statement in function\n", stmtList->statementList->lineno);
+        fprintf(stderr, "Warning! Line %d: Unreachable statement after return\n", stmtList->statementList->lineno);
       }
       return 0;
     }
-    return expTravStmts(stmtList->statementList);
+    return weederTravStmtList(stmtList->statementList);
   }
   else{
     return -1;
   }
 }
 
-int expTravStmt(STATEMENT *s){
+/**
+ * Traverses single statement to check its type
+ */
+int weederTravStmt(STATEMENT *s){
   int retVal = 0;
-  int blah = 0;
+  //int blah = 0;
   switch(s->kind){
     case returnK:
       return 0;
       break;
-    case ifK:
-    //  blah = expTravStmt(s->val.ifthenelse.thenbody);
-      fprintf(stderr, "%d\n", blah);
-      return -1;
-      //return blah;
     case thenK:
-      if(s->val.ifthenelse.thenbody->kind == returnK){
-        return 0;
+      retVal = weederTravStmt(s->val.ifthenelse.thenbody);
+      if(retVal == -1){
+        return -1;
       }
-      else{
-        if(s->val.ifthenelse.thenbody->kind == listStmtK){
-          retVal = expTravStmts(s->val.ifthenelse.thenbody->val.list);
-        }
-        else{
-          return -1;
-        }
-      }
-      if(retVal == 0){
-        if(s->val.ifthenelse.elsebody->kind == returnK){
-          return 0;
-        }
-        else{
-          if(s->val.ifthenelse.elsebody->kind == listStmtK){
-            return expTravStmts(s->val.ifthenelse.elsebody->val.list);
-          }
-          else {
-            return -1;
-          }
-        }
-      }
-      return -1;
+      return weederTravStmt(s->val.ifthenelse.elsebody);
       break;
     case listStmtK:
-      return expTravStmts(s->val.list);
-      fprintf(stderr, "INTERNAL WEEDER ERROR: listStmtK not checked for return\n");
-
-      return -1;
+      return weederTravStmtList(s->val.list);
       break;
     default:
       return -1;
       break;
   }
-  if (retVal == -1){
-    return -1;
-  } else {
-    return 0;
+}
+
+/**
+ * Returns -1 as soon as a return statment is found
+ * Main scope cannot contain return statement
+ */
+int weederTravMainStmtList(STATEMENT_LIST *stmtList){
+  if(stmtList != NULL){
+    if(weederTravMainStmt(stmtList->statement) == -1){
+      return -1;
+    }
+    return weederTravMainStmtList(stmtList->statementList);
+  }
+  return 0;
+}
+
+/**
+ * returns -1 if a return is found
+ */
+int weederTravMainStmt(STATEMENT *s){
+  int retVal = 0;
+  //int blah = 0;
+  switch(s->kind){
+    case returnK:
+      fprintf(stderr, "ERROR: Line %d: return statemenet found i main scope\n", s->lineno);
+      return -1;
+      break;
+    case ifK:
+      return weederTravMainStmt(s->val.ifthenelse.thenbody);
+    case thenK:
+      retVal = weederTravMainStmt(s->val.ifthenelse.thenbody);
+      if(retVal == -1){ return -1; }
+      return weederTravMainStmt(s->val.ifthenelse.elsebody);
+      break;
+    case whileK:
+      return weederTravMainStmt(s->val.while_.body);
+      break;
+    case listStmtK:
+      return weederTravMainStmtList(s->val.list);
+      break;
+    default:
+      return 0;
+      break;
   }
 }

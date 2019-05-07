@@ -51,7 +51,7 @@ int main() {
 
   fprintf(stderr, "%s\n", "  |--> STARTING 1ST WEEDER");
   error = 0;
-  error = weederBody(theexpression);
+  error = weeder1(theexpression);
   if(error == -1){
     fprintf(stderr, "%s\n", "ERROR: compilation ended in error\n");
     return -1;
