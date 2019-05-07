@@ -28,6 +28,7 @@ main:
 	movq $heap1, freeHeap2
 	movq $heap1, endHeap3
 	addq $1048576, endHeap3
+#line: 5 assign statement
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -41,6 +42,7 @@ main:
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 6 assign statement
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -54,6 +56,7 @@ main:
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 7 assign statement
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -67,6 +70,7 @@ main:
 	movq $-8, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 11 if then statement
 	push %rbx
 	movq %rbp, %rbx
 	movq %rbx, %r8
@@ -112,6 +116,7 @@ ge10:
 	movq %rbp, %rdi#resetting basepointer
 	cmp $1, %rbx
 	jne endif9
+#line: 9 write statement
 	push %rdi
 	movq $1, %rsi
 	movq $format, %rdi
@@ -119,6 +124,7 @@ ge10:
 	call printf
 	pop %rdi
 endif9:
+#line: 11 assign statement
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -132,6 +138,7 @@ endif9:
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 12 assign statement
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -145,6 +152,7 @@ endif9:
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 13 assign statement
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -158,6 +166,7 @@ endif9:
 	movq $-8, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 17 if then statement
 	push %rbx
 	movq %rbp, %rbx
 	movq %rbx, %r8
@@ -203,6 +212,7 @@ ge13:
 	movq %rbp, %rdi#resetting basepointer
 	cmp $1, %rbx
 	jne endif12
+#line: 15 write statement
 	push %rdi
 	movq $2, %rsi
 	movq $format, %rdi
@@ -210,6 +220,7 @@ ge13:
 	call printf
 	pop %rdi
 endif12:
+#line: 17 assign statement
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -223,6 +234,7 @@ endif12:
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 18 assign statement
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -236,6 +248,7 @@ endif12:
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 19 assign statement
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -249,6 +262,7 @@ endif12:
 	movq $-8, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 23 if then statement
 	push %rbx
 	movq %rbp, %rbx
 	movq %rbx, %r8
@@ -294,6 +308,7 @@ ge16:
 	movq %rbp, %rdi#resetting basepointer
 	cmp $1, %rbx
 	jne endif15
+#line: 21 write statement
 	push %rdi
 	movq $3, %rsi
 	movq $format, %rdi
@@ -301,6 +316,7 @@ ge16:
 	call printf
 	pop %rdi
 endif15:
+#line: 23 assign statement
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -314,6 +330,7 @@ endif15:
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 24 assign statement
 	movq $0, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -327,6 +344,7 @@ endif15:
 	movq $-7, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 25 assign statement
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -340,6 +358,7 @@ endif15:
 	movq $-8, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
+#line: 27 if then statement
 	push %rbx
 	movq %rbp, %rbx
 	movq %rbx, %r8
@@ -385,6 +404,7 @@ ge19:
 	movq %rbp, %rdi#resetting basepointer
 	cmp $1, %rbx
 	jne endif18
+#line: 27 write statement
 	push %rdi
 	movq $4, %rsi
 	movq $format, %rdi

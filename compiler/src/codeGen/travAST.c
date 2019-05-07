@@ -565,10 +565,12 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
   char *endwhileLabel;
   int error;
   int size;
+  char* commentString;
   switch(stmt->kind){
     case returnK:
-      //TODO ODOT
-      //how the hell do we know which function we are in?? label??
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d return statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
       op1 = IRtravExp(t, stmt->val.return_);
       op2 = IRmakeRegOPERAND(RAX);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, op2)));
@@ -576,7 +578,9 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: return\n");
       break;
     case writeK:
-
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d write statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
       op1 = IRtravExp(t, stmt->val.write);
       if(op1 == NULL){
         fprintf(stderr, "OP1 line: %d\n", stmt->lineno);
@@ -601,6 +605,10 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       return 0;
       break;
     case allocateK:
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d allocate statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
+
       error = IRtravVarRecursive(t, stmt->val.allocate, &sym, &ty, &op1);
       if(error == -1){
         fprintf(stderr, "IRtravStmt: didn't successfully find operand of variable\n");
@@ -643,6 +651,10 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel allocation\n");
       break;
     case allocateLengthK:
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d allocate of length statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
+
       error = IRtravVarRecursive(t, stmt->val.allocatelength.var, &sym, &ty, &op1);
       if(error == -1){
         fprintf(stderr, "IRtravStmt: didn't successfully find operand of variable\n");
@@ -707,6 +719,9 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: variabel array-allocation\n");
       break;
     case assiK:
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d assign statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
       //op1 = IRmakeTemporaryOPERAND(sym->cgu->val.temp);
       op2 = IRtravExp(t, stmt->val.assign.exp);
       //move expression into variabel -> source->destination
@@ -734,6 +749,9 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       return 0;
       break;
     case ifK:
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d if then statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
       endifLabel = Malloc(10);
       sprintf(endifLabel, "endif%d", labelCounter);
       labelCounter++;
@@ -747,6 +765,9 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: if-statement\n");
       break;
     case thenK:
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d if then else statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
       elseLabel = Malloc(10);
       sprintf(elseLabel, "else%d", labelCounter);
       endifLabel = Malloc(10);
@@ -765,13 +786,19 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //fprintf(stderr, "IRtravStmt: UnsupportedStatementException: if-statement\n");
       break;
     case listStmtK:
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d list statement statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
       return IRtravStmtList(t, stmt->val.list, funcEndLabel, startLabel, endLabel);
     case whileK:
-    startwhileLabel = Malloc(10);
-    sprintf(startwhileLabel, "while%d", labelCounter);
-    endwhileLabel = Malloc(10);
-    sprintf(endwhileLabel, "endwhile%d", labelCounter);
-    labelCounter++;
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d while statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
+      startwhileLabel = Malloc(10);
+      sprintf(startwhileLabel, "while%d", labelCounter);
+      endwhileLabel = Malloc(10);
+      sprintf(endwhileLabel, "endwhile%d", labelCounter);
+      labelCounter++;
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(startwhileLabel)));
       op1 = IRtravExp(t,stmt->val.while_.cond);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
@@ -782,12 +809,20 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(endwhileLabel)));
       break;
     case breakK:
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d break statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
       IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(endLabel)));
       break;
     case continueK:
+      commentString = Calloc(45);
+      sprintf(commentString, "line: %d continue statement", stmt->lineno);
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND(commentString)));
       IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(startLabel)));
       break;
     default:
+      IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("something we didn't support was supposed to be here statement")));
+
       fprintf(stderr, "IRtravStmt: UnsupportedStatementException: %d\n", stmt->kind);
       return -1;
       break;
