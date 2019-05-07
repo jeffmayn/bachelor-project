@@ -1,17 +1,19 @@
+############################
+Actual output:
+--------------
 
 ############################
-Return code error:
-------------
-Got: 0
-Expected: 139
+Expected output:
+----------------
 
 ############################
 Other stuff:
 ------------
   |--> STARTING PARSING
   |--> STARTING 1ST WEEDER
+0
   |--> STARTING TYPECHECK
    |--> Symbol collection
    |--> Expression type collection
-   |--> Typechecking
-  |--> STARTING INTERNAL REPRESENTATION
+Line 15: ID w, not found
+Error: Expression type collection did not complete
