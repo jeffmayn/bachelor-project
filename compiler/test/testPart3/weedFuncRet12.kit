@@ -1,0 +1,24 @@
+(* korrekt kitty-program, her testes for, at weeder
+   kan håndtere mangel på return-statements i både
+   else delen af en if-then-else betingelse,
+   men finder et return-statement udenfor denne betingelse.
+   Programmet skal returnere -1 *)
+
+var x:bool;
+var z:int;
+var u:int;
+
+func f2(x:bool,u:int) : bool
+  if(x)
+  then{
+    u = 9;
+    return x;
+  }
+  else{
+    u = 7;
+    #return x;
+  }
+  return x;
+end f2
+
+x = true;

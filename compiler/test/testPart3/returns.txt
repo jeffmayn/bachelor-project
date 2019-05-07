@@ -1,4 +1,4 @@
 type 255 0 255 255 0 0 0 255 0 0 0 0 255
 weedFuncID 0 255
-weedFuncRet 0 255 0 255 255 0 0 0 255 255 0
+weedFuncRet 0 255 0 255 255 0 0 0 255 255 0 0
 p 0
