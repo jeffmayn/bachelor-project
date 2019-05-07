@@ -45,7 +45,6 @@ ParamSymbol *createParamSymbol(SYMBOL *sym){
  * return SYMBOL* to the new symbol on success
  */
 SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope, TYPE* arrayType){
-  //make new symbol add name and value
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
   newSym->kind = kind;
   newSym->typeVal = type;
@@ -74,9 +73,8 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
     table[hashIndex] = newSym;
   } else {
     SYMBOL *temp = table[hashIndex];
-    
+
     while(temp != NULL){
-      //temp = temp->next;
       if(!strcmp(name,temp->name)){
         //name is already in this table
         fprintf(stderr, "putSymbol(): SYMBOL name: %s alredy in table\n", name);
@@ -99,8 +97,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
 
 
 SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType){
-  //fprintf(stderr, "putParam*****************************\n");
-  SYMBOL* s = putSymbol(t, name, value, kind, type, NULL, arrayType); //assuming param is variable, so no scope is relevant
+  SYMBOL* s = putSymbol(t, name, value, kind, type, NULL, arrayType);
   if(s == NULL){
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);
     return NULL;
@@ -115,17 +112,11 @@ SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE
     t->ParamTail->next = pSym;
     t->ParamTail = pSym;
   }
-  // if(getSymbol(t, name) == NULL){
-  //   fprintf(stderr, "param %s not found after putting it\n", name);
-  // }
   return s;
 }
 
 SYMBOL *getRecordSymbol(SymbolTable *t, char* name){
-    //find index via hash
     int hashIndex = Hash(name);
-
-    //search in current table
     SYMBOL **table = t->table;
     SYMBOL *temp = table[hashIndex];
     while(temp != NULL){
@@ -135,15 +126,11 @@ SYMBOL *getRecordSymbol(SymbolTable *t, char* name){
         temp = temp->next;
       }
     }
-    /*we only check one symboltable*/
     return NULL;
 }
 
-SYMBOL *getSymbol(SymbolTable *t, char *name){//TODO REFORMAT: getRecordSymbol kan integreres.
-  //find index via hash
+SYMBOL *getSymbol(SymbolTable *t, char *name){
   int hashIndex = Hash(name);
-
-  //search in current table
   SYMBOL **table = t->table;
   SYMBOL *temp = table[hashIndex];
   while(temp != NULL){
@@ -153,7 +140,6 @@ SYMBOL *getSymbol(SymbolTable *t, char *name){//TODO REFORMAT: getRecordSymbol k
       temp = temp->next;
     }
   }
-
   //navigate to next hashtable if there is one
   if(t->next != NULL){
     return getSymbol(t->next, name);
@@ -162,22 +148,19 @@ SYMBOL *getSymbol(SymbolTable *t, char *name){//TODO REFORMAT: getRecordSymbol k
   }
 }
 
-SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){//TODO REFORMAT: getRecordSymbol kan integreres.
-  //find index via hash
+SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){
   int hashIndex = Hash(name);
-  //fprintf(stderr, "%s, %s\n", "IRgetSymbol - Trying to find: ", name);
+
   //search in current table
   SYMBOL **table = t->table;
   SYMBOL *temp = table[hashIndex];
   while(temp != NULL){
     if(!strcmp(temp->name, name)){
-      //fprintf(stderr, "%s, %s, %p\n", "IRgetSymbol - found:", name, temp->cgu );
       return temp;
     } else {
       temp = temp->next;
     }
   }
-
   //navigate to next hashtable if there is one
   if(t->next != NULL){
     int intTemp = *nrJumps;
@@ -185,7 +168,6 @@ SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){//TODO REFORMAT: g
     *nrJumps = intTemp;
     return IRgetSymbol(t->next, name, nrJumps);
   } else {
-    //fprintf(stderr, "%s, %s\n", "IRgetSymbol - didn't find: ", name);
     return NULL;
   }
 }

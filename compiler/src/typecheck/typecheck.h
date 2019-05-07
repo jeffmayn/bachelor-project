@@ -14,7 +14,6 @@ Parameters defined in new scope?
 Værdien i en variable? Den skal vel ikke bruges endnu
 */
 
-
 typedef struct bodyListElm {
   BODY *body;
   SymbolTable *scope;
@@ -27,10 +26,8 @@ typedef struct bodyListElm {
 typedef struct bodyList {
   bodyListElm *head;
   bodyListElm *tail;
-  bodyListElm *next; //the next element fetched
+  bodyListElm *next;
 } bodyList;
-
-
 
 int typeCheck(SymbolTable *table);
 
@@ -50,9 +47,6 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
 
 /**
  * Finds the types of expressions
-
-
- * TODO: only runs on theexpression, not the bodies of declared functions
  * For each body declaration i could put the stmtlist into a list
  * traversed by this function.
 */
@@ -69,8 +63,6 @@ int expTypeTravExp(SymbolTable *t, EXP *exp);
 Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type);
 
 Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type);
-
-//TYPE* expTypeTravType(SymbolTable *t, VARIABLE *v, SYMBOL *sym);
 
 int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, ParamSymbol* pSym);
 
@@ -93,18 +85,6 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
 
 Typekind expOfType(EXP *exp);
 
-//Typekind typeOfType(SymbolTable *t, TYPE *type);
-
-// int compareSymNExp(SymbolTable *t, SYMBOL *sym, EXP *exp);
-//
-// int compareSymNSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2);
-//
-// int compareTypeNExp(SymbolTable *t, TYPE *ty, EXP *exp);
-//
-// int compareTypeNSym(SymbolTable *t, TYPE *ty, SYMBOL *sym);
-//
-// int compareTypeNType(SymbolTable *t, TYPE *t1, TYPE* t2);
-
 int cmpTypekind(Typekind tk1, Typekind tk2);
 
 int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp);
@@ -117,7 +97,7 @@ int cmpTypeSymTy(SymbolTable *t, SYMBOL *sym, TYPE *ty);
 
 int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2);
 
-SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms);//YAY mads har lavet noget
+SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms);
 
 bodyList* initBodyList();
 
