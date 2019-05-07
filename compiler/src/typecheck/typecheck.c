@@ -670,7 +670,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       }
       //(*sym) = s;
       (*type) = (*type)->val.arrayType;
-
+      return (*type)->kind;
       //********We are in deep shit trouble right now*******//
       break;
     case dotK:

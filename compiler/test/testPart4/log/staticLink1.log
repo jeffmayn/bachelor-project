@@ -22,15 +22,15 @@ format:
 .string	"%d\n"
 .data
 .align 8
-heap0:
+heap1:
 .space 1048576
-freeHeap1:
+freeHeap2:
 .space 8
-endHeap2:
+endHeap3:
 .space 8
-mainSPoint3:
+mainSPoint4:
 .space 8
-mainBPoint4:
+mainBPoint5:
 .space 8
 .text
 .globl main
@@ -43,11 +43,11 @@ main:
 	push %r14
 	push %r15
 	subq $88, %rsp
-	movq %rsp, mainSPoint3
-	movq %rbp, mainBPoint4
-	movq $heap0, freeHeap1
-	movq $heap0, endHeap2
-	addq $1048576, endHeap2
+	movq %rsp, mainSPoint4
+	movq %rbp, mainBPoint5
+	movq $heap1, freeHeap2
+	movq $heap1, endHeap3
+	addq $1048576, endHeap3
 	movq $123, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -86,7 +86,7 @@ main:
 	push %r11
 	movq %r8, %rbx
 	push %rbx
-	call incGlobalBy103
+	call incGlobalBy108
 #remove static link and parameters
 	addq $8, %rsp#remove static link and parameters
 	pop %r11
@@ -138,7 +138,7 @@ mainend:
 
 
 
-incGlobalBy103:
+incGlobalBy108:
 	push %rbp
 	movq %rsp, %rbp
 	push %rbx
@@ -224,8 +224,8 @@ incGlobalBy103:
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
 	movq $0, %rax
-	jmp incGlobalBy103end
-incGlobalBy103end:
+	jmp incGlobalBy108end
+incGlobalBy108end:
 	addq $112, %rsp
 	pop %r15
 	pop %r14
@@ -238,7 +238,7 @@ incGlobalBy103end:
 
 
 
-errorCleanup5:
-	movq mainSPoint3, %rsp
-	movq mainBPoint4, %rbp
+errorCleanup6:
+	movq mainSPoint4, %rsp
+	movq mainBPoint5, %rbp
 	jmp mainend
