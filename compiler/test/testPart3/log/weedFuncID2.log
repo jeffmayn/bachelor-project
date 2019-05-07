@@ -11,6 +11,6 @@ Other stuff:
 ------------
   |--> STARTING PARSING
   |--> STARTING 1ST WEEDER
-Error! Line 7: mismatch in header-id and tail-id
+ERROR: Line 7: mismatch in header-id f1 and tail-id f2
 ERROR: compilation ended in error
 

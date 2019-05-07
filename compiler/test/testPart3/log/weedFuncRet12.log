@@ -1,16 +1,37 @@
+############################
+Actual output:
+--------------
+
+############################
+Expected output:
+----------------
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+   |--> Typechecking
+  |--> STARTING INTERNAL REPRESENTATION
+  |--> STARTING PRINTING INTERNAL REPRESENTATION
+  |--> STARTING LIVNESS ANALYSIS
+  |--> STARTING FINAL OUTPUT GENERATION
 format:
 .string	"%d\n"
 .data
 .align 8
-heap0:
+heap1:
 .space 1048576
-freeHeap1:
+freeHeap2:
 .space 8
-endHeap2:
+endHeap3:
 .space 8
-mainSPoint3:
+mainSPoint4:
 .space 8
-mainBPoint4:
+mainBPoint5:
 .space 8
 .text
 .globl main
@@ -23,11 +44,11 @@ main:
 	push %r14
 	push %r15
 	subq $40, %rsp
-	movq %rsp, mainSPoint3
-	movq %rbp, mainBPoint4
-	movq $heap0, freeHeap1
-	movq $heap0, endHeap2
-	addq $1048576, endHeap2
+	movq %rsp, mainSPoint4
+	movq %rbp, mainBPoint5
+	movq $heap1, freeHeap2
+	movq $heap1, endHeap3
+	addq $1048576, endHeap3
 	movq $1, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -55,7 +76,7 @@ mainend:
 
 
 
-f23:
+f28:
 	push %rbp
 	movq %rsp, %rbp
 	push %rbx
@@ -74,7 +95,7 @@ f23:
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi#resetting basepointer
 	cmp $1, %rbx
-	jne else5
+	jne else11
 	movq $9, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -96,9 +117,9 @@ f23:
 	pop %rbx
 	movq $3, %rdx
 	movq (%rdi,%rdx,8), %rax
-	jmp f23end
-	jmp endif5
-else5:
+	jmp f28end
+	jmp endif11
+else11:
 	movq $7, %rbx
 	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
@@ -112,7 +133,7 @@ else5:
 	movq $4, %rdx
 	movq %rbx, (%rdi,%rdx,8)
 	movq %rbp, %rdi#resetting basepointer
-endif5:
+endif11:
 	push %rbx
 	movq %rbp, %rbx
 	movq %rbx, %r8
@@ -121,8 +142,8 @@ endif5:
 	pop %rbx
 	movq $3, %rdx
 	movq (%rdi,%rdx,8), %rax
-	jmp f23end
-f23end:
+	jmp f28end
+f28end:
 	addq $56, %rsp
 	pop %r15
 	pop %r14
@@ -135,7 +156,7 @@ f23end:
 
 
 
-errorCleanup5:
-	movq mainSPoint3, %rsp
-	movq mainBPoint4, %rbp
+errorCleanup6:
+	movq mainSPoint4, %rsp
+	movq mainBPoint5, %rbp
 	jmp mainend
