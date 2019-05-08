@@ -30,7 +30,7 @@ extern const char* regNames[];
  *                          - OPTMZ (optimize)
  *                          - ASM (assembler code generation)
  */
-typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
+typedef enum {addI, incI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI, textI, commentI} INSTRkind;
 typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO,
@@ -205,6 +205,8 @@ OPERAND *IRmakeDeRefOPERAND(registers reg);
 INSTR* IRmakeMovINSTR(OPERAND *params);
 
 INSTR* IRmakeAddINSTR(OPERAND *params);
+
+INSTR* IRmakeIncINSTR(OPERAND *params);
 
 INSTR* IRmakeSubINSTR(OPERAND *params);
 

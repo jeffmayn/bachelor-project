@@ -61,15 +61,26 @@ int loopPatterns(INSTR* instrucktion){
 }
 
 int incPattern(INSTR *instr){
-	OPERAND *leftOP;
-	if(instr->instrKind == addI){
-		leftOP = instr->paramList;
-		if(leftOP->operandKind == constantO){
-			if(leftOP->val.constant == 1){
-				fprintf(stderr, "%s\n", "add: WE CAN REPLACE THIS SHIT!");
+
+	INSTR *replacement;
+	INSTR *instrTarget = instr->next;
+	int lookAhead = 0;
+	registers reg;
+	if(instrTarget != NULL){//we are not at the end.
+		if(instrTarget->instrKind == movI){
+			OPERAND *leftOP = instrTarget->paramList;
+			if(leftOP->operandKind == constantO){
+				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
+					if(instrTarget->next->next->instrKind == addI){
+						replacement = 
+					}
+				}
 			}
 		}
 	}
+
+
+
 	return 0;
 }
 

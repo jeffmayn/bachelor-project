@@ -4,6 +4,7 @@
 #include "internalASM.h"
 
 #define NRPATTERNS 2
+#define WINDOWSIZE 5
 
 int incPattern(INSTR* instr);
 int decPattern(INSTR* instr);
