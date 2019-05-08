@@ -29,12 +29,8 @@ TEMPORARY* IRcreateNextTemp(int offset){
  */
 TEMPORARY* IRcreateNextLocalTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
-  // char *str = Malloc(sizeof(char)*10);
-  // sprintf(str, "t%d\0", tempCounter);
-  // tmp->tempName = str;
   tmp->temporarykind = localT;
   tmp->tempId = tempIdVal;
-  //tempIdVal++; //only if we want to do liveness analysis on locals
   tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
@@ -48,7 +44,6 @@ TEMPORARY* IRcreateParamTemp(int offset){
   TEMPORARY* tmp = NEW(TEMPORARY);
   tmp->temporarykind = paramT;
   tmp->tempId = tempIdVal;
-  //tempIdVal++; //only if we want to do liveness analysis on params
   tmp->graphNodeId = -1;
   tmp->placement.offset = offset;
   return tmp;
@@ -138,13 +133,16 @@ int IRcreateInternalRep(bodyList *mainBody){
  */
 void IRruntimeErrorCleanupCode(){
   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainSPointLabel), IRmakeRegOPERAND(RSP))));
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeLabelOPERAND(mainBPointLabel), IRmakeRegOPERAND(RBP))));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    IRmakeLabelOPERAND(mainSPointLabel), IRmakeRegOPERAND(RSP))));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    IRmakeLabelOPERAND(mainBPointLabel), IRmakeRegOPERAND(RBP))));
   IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(mainEndLabel)));
 }
 
 /**
- *
+ * Initializes each function symbol by giving the function a label
+ * and each parameter an offset
  */
 int IRinitParams(SymbolTable *table, bodyListElm *element){
   int paramCount = 0;

@@ -513,10 +513,21 @@ typedef struct InstrTable {
 
 int Hash2(char *str);
 
+/**
+ * Creates and returns the instruction hash table
+ */
 InstrTable *initInstrHashTable();
 
+/**
+ * Puts label instruction int hash table
+ * Returns -1 if instruction is not a label
+ */
 int instrHashPutInstr(InstrTable *t, INSTR *instr);
 
+/**
+ * Returns the label instruction having the given label
+ * Returns NULL if the label was nut found in the given table
+ */
 INSTR *instrHashGetINSTR(InstrTable *t, char *label);
 
 

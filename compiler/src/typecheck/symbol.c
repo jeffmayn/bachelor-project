@@ -74,7 +74,7 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
     table[hashIndex] = newSym;
   } else {
     SYMBOL *temp = table[hashIndex];
-    
+
     while(temp != NULL){
       //temp = temp->next;
       if(!strcmp(name,temp->name)){
