@@ -1,6 +1,11 @@
 #include "internalASM.h"
 #include "memory.h"
 
+/*****************
+ * This file contains the implementaiton of temporary lists
+ * These lists are used as sets in the livneness analysis algorithm
+ * These lists are sorted on the temporaries ID's as key
+ *****************/
 
 /**
  * returns a new list
@@ -12,6 +17,10 @@ TempList *createList(){
   return list;
 }
 
+/**
+ * Creates a new tempList node with default values
+ * returns the new node
+ */
 TempListNode *createTempListNode(TEMPORARY *temp){
   TempListNode *node = NEW(TempListNode);
   node->temp = temp;
@@ -36,11 +45,11 @@ int addElement(TempList *list, TEMPORARY *temp){
     return -1;
   }
   TempListNode *node = createTempListNode(temp);
-  if(list->head == NULL){
+  if(list->head == NULL){ //list empty
     list->head = node;
     list->tail = node;
   }
-  else{
+  else{ //list not empty
     TempListNode *travNode = list->head;
     if(travNode->temp->tempId > temp->tempId){
       //insert first in list
@@ -77,6 +86,7 @@ int addElement(TempList *list, TEMPORARY *temp){
 /**
  * Finds the union of the two lists and puts it into the destination
  * returns 0 if no change where made. Otherwise 1 is returned.
+ * returns -1 if error occurred
  */
 int listUnion(TempList *src, TempList *dest){
   if(src == NULL){
@@ -89,14 +99,11 @@ int listUnion(TempList *src, TempList *dest){
   }
   int isChanged = 0;
   TempListNode *srcNode = src->head;
-  //TempListNode *destNode = dest->head;
-  while(srcNode != NULL){
+  while(srcNode != NULL){ //adds each node in source list to destination list
     isChanged += addElement(dest, srcNode->temp);
     srcNode = srcNode->next;
   }
-  if(isChanged){
-    return 1;
-  }
+  if(isChanged){ return 1; }
   return 0;
 }
 
@@ -107,7 +114,7 @@ int listUnion(TempList *src, TempList *dest){
 TempList *listDiff(TempList *minuend, TempList *subtrahend){
   TempList *diff = createList();
   if(minuend == NULL){
-    return diff;
+    return diff; //minuend is empty -> diff is empty
   }
   TempListNode *subNode = NULL;
   TempListNode *minNode = minuend->head;
@@ -116,7 +123,7 @@ TempList *listDiff(TempList *minuend, TempList *subtrahend){
   }
   while(minNode != NULL){
     if(subNode == NULL || minNode->temp->tempId < subNode->temp->tempId){
-      //element not in subtrahend: add to diff
+      //minuend element not in subtrahend: add to diff
       addElement(diff, minNode->temp);
       minNode = minNode->next;
     }
@@ -134,6 +141,7 @@ TempList *listDiff(TempList *minuend, TempList *subtrahend){
 /**
  * Frees a list
  * If the list is NULL, then it is trivially freed
+ * Always returns 0
  */
 int freeList(TempList *list){
   if(list == NULL){
@@ -149,37 +157,3 @@ int freeList(TempList *list){
   free(list);
   return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-// /**
-//  * Removes the element from the list
-//  * returns the same list as given
-//  */
-// TempList *removeElement(TempList *list, TEMPORARY *temp){
-//   if(list == NULL){
-//     fprintf(stderr, "INTERNAL ERROR in removeElement: no list given\n");
-//     return NULL;
-//   }
-//   if(temp == NULL){
-//     fprintf(stderr, "INTERNAL ERROR: Tried to remove the NULL pointer\n");
-//     return NULL;
-//   }
-//   TempListNode *travNode = list->head;
-//   while(tempNode != NULL){
-//     if(travNode->temp->tempId == temp->tempId){
-//       //TODO: remove node
-//     }
-//     if(travNode->temp->tempId > temp->tempId){
-//       return list
-//     }
-//   }
-// }

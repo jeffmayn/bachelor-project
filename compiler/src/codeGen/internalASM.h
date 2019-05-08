@@ -420,22 +420,29 @@ typedef struct GraphNode {
 GraphNode *graphNodes; //only used internally in graph
 int graphSize; //the number of nodes in the graph
 
-
+/**
+ * Creates size nodes of graph each containing temp from tempList
+ * returns -1 on error and 0 otherwise
+ */
 int IGcreateGraph(int size, TEMPORARY *tempList);
 
-/**
- * Creates a new graph node and returns its ID
-*/
-int IGmakeGraphNode(TEMPORARY *temp);
+// /**
+//  * Creates a new graph node and returns its ID
+// */
+// int IGmakeGraphNode(TEMPORARY *temp);
 
 /**
  * makes the neighbor a neighbor of node
+ * returns -1 if nodes does not exist
+ * returs 0 on success
  */
 int IGinsertNeighbor(int nodeID, int neighborID);
 
 /**
  * removes the link between the two nodes
  * However, the link is only removed from the node and not the neighbor
+ * returns -1 if nodes does not exist
+ * returs 0 on success
  */
 int IGremoveNeighbor(int nodeID, int neighborID);
 
@@ -448,23 +455,26 @@ int* IGgetNeighbors(int nodeID);
 
 
 // /**
-//  * Returns the graphNode represented by the given ID
-//  * If ID does not exists NULL is returned
+//  * returns true (1) if neighbor is adjacent to node
+//  * returns false (0) otherwise
 //  */
-// GraphNode* IGgetNodeFromID(int id);
+// int IGisNeighbor(int nodeID, int neighborID);
 
 /**
- * returns true (1) if neighbor is adjacent to node
- * returns false (0) otherwise
+ * Lowest degree node among all unmarked nodes
+ * returns -1 if there are no more such nodes
  */
-int IGisNeighbor(int nodeID, int neighborID);
-
 int IGlowestOutDegree();
 
+/**
+ * Highest degree node among all unmarked nodes
+ * returns -1 if there are no more such nodes
+ */
 int IGhighestOutDegree();
 
 /**
- * uses the graphNodes pointer as graph and colors all nodes
+ * Color all nodes of graph using coloering by simplfication
+ * colorering is fixed to use register R8-R15
  */
 int IGcolorGraph();
 
@@ -474,14 +484,14 @@ int IGcolorGraph();
 registers IGgetColor(int nodeID);
 
 /**
- * Prints the graph
- */
-int IGprintGraph();
-
-/**
  * Transfer colors from graph nodes to its temporaries
  */
 int IGTransferColors();
+
+/**
+ * Debug function: Prints the graph
+ */
+int IGprintGraph();
 
 
 
@@ -533,6 +543,12 @@ typedef struct TempListNode{
 TempList *createList();
 
 /**
+ * Creates a new tempList node with default values
+ * returns the new node
+ */
+TempListNode *createTempListNode(TEMPORARY *temp);
+
+/**
  * adds the temporary to the list
  * returns 0 if the element already were in the list
  * returns 1 if the element was added
@@ -549,6 +565,7 @@ TempList *removeElement(TempList *list, TEMPORARY *temp);
 /**
  * Finds the union of the two lists and puts it into the destination
  * returns 0 if no change where made. Otherwise 1 is returned.
+ * returns -1 if error occurred
  */
 int listUnion(TempList *src, TempList *dest);
 
@@ -558,6 +575,11 @@ int listUnion(TempList *src, TempList *dest);
  */
 TempList *listDiff(TempList *minuend, TempList *subtrahend);
 
+/**
+ * Frees a list
+ * If the list is NULL, then it is trivially freed
+ * Always returns 0
+ */
 int freeList(TempList *list);
 
 typedef struct LivenessInstructionArray{

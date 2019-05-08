@@ -5,9 +5,12 @@ typedef struct BITMAP {
   int size;
 } BITMAP;
 
+#define BITSPERINT 32
+
 /**
  * Creates a bitmap with size number of bits
  * All bits are reset from start (set to 0)
+ * returns the map created
  */
 BITMAP* bitMapMakeBitMap(int size);
 
@@ -31,20 +34,20 @@ int bitMapResetBit(BITMAP *map, int index);
  */
 int bitMapBitIsSet(BITMAP *map, int index);
 
-BITMAP* bitMapUnion(BITMAP *src, BITMAP *dest);
-
-/**
- * Calculates first minus second and returns a new map
- */
-BITMAP* bitMapDiff(BITMAP *first, BITMAP *second);
-
-int bitMapfree(BITMAP *map);
-
-/**
- * returns 1 if the maps are the same
- * returns 0 of the maps are not the same
-*/
-int bitMapIsEqual(BITMAP *m1, BITMAP *m2);
-
 int bitMap1Count(BITMAP *map);
+
+// BITMAP* bitMapUnion(BITMAP *src, BITMAP *dest);
+//
+// /**
+//  * Calculates first minus second and returns a new map
+//  */
+// BITMAP* bitMapDiff(BITMAP *first, BITMAP *second);
+//
+// int bitMapfree(BITMAP *map);
+//
+// /**
+//  * returns 1 if the maps are the same
+//  * returns 0 of the maps are not the same
+// */
+// int bitMapIsEqual(BITMAP *m1, BITMAP *m2);
 #endif

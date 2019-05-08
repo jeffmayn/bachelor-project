@@ -1,56 +1,56 @@
+
+#include "internalASM.h"
+#include "memory.h"
+
+LivenessInstructionArray *lia;
+
 /*
- * This file should implement liveness analysis
+ * Does liveness analysis
  */
- #include "internalASM.h"
- #include "memory.h"
+int liveness(){
+  int error = 0;
+  error = initLiveness();
+  if(error == -1){
+  fprintf(stderr, "INTERNAL ERROR: initLiveness\n");
+    return -1;
+  }
+  error = livenessTravIR(intermediateHead);
+  if(error == -1){
+   fprintf(stderr, "INTERNAL ERROR: livenessTravIR\n");
+   return -1;
+  }
+  error = livenessAnalysis();
+  if(error == -1){
+    fprintf(stderr, "INTERNAL ERROR: livenessAnalysis\n");
+    return -1;
+  }
 
- LivenessInstructionArray *lia;
+  error = buildInterferenceGraph();
+  if(error == -1){
+    fprintf(stderr, "INTERNAL ERROR: buildInterferenceGraph\n");
+    return -1;
+  }
 
- int liveness(){
-   int error = 0;
-   error = initLiveness();
-   if(error == -1){
-     fprintf(stderr, "INTERNAL ERROR: initLiveness\n");
-     return -1;
-   }
-   error = livenessTravIR(intermediateHead);
-   if(error == -1){
-     fprintf(stderr, "INTERNAL ERROR: livenessTravIR\n");
-     return -1;
-   }
-   error = livenessAnalysis();
-   if(error == -1){
-     fprintf(stderr, "INTERNAL ERROR: livenessAnalysis\n");
-     return -1;
-   }
+  error = IGcolorGraph();
+  if(error == -1){
+    fprintf(stderr, "INTERNAL ERROR: colorGraph\n");
+    return -1;
+  }
 
-   //printLIA();
+  error = IGTransferColors();
+  if(error == -1){
+    fprintf(stderr, "INTERNAL ERROR: TransferColors\n");
+    return -1;
+  }
+  return 0;
+}
 
-   error = buildInterferenceGraph();
-   if(error == -1){
-     fprintf(stderr, "INTERNAL ERROR: buildInterferenceGraph\n");
-     return -1;
-   }
-
-   //IGprintGraph();
-
-   error = IGcolorGraph();
-   if(error == -1){
-     fprintf(stderr, "INTERNAL ERROR: colorGraph\n");
-     return -1;
-   }
-
-   //IGprintGraph();
-
-   error = IGTransferColors();
-   if(error == -1){
-     fprintf(stderr, "INTERNAL ERROR: TransferColors\n");
-     return -1;
-   }
-   return 0;
- }
-
-
+/**
+ * Initializes liveness analysis
+ * Creates empty use, def, in and out sets for each instruction
+ * Sets each instruction to have zero successors
+ * Assumes all instructions to be non-move
+ */
 int initLiveness(){
   lia = Malloc(sizeof(LivenessInstructionArray)*intermediateInstrCount);
   for(int i=0; i<intermediateInstrCount; i++){
@@ -58,15 +58,17 @@ int initLiveness(){
     lia[i].def = createList(tempIdVal);
     lia[i].in = createList(tempIdVal);
     lia[i].out = createList(tempIdVal);
-    for(int j = 0; j<3; j++){  //carefull about limits
+    for(int j = 0; j<3; j++){
       lia[i].succ[j] = -1;
     }
     lia[i].isMove = 0;
-
   }
   return 0;
 }
 
+/**
+ * Analyzes each instruction
+ */
 int livenessTravIR(INSTR *instr){
   OPERAND* op;
   int index;
@@ -78,38 +80,34 @@ int livenessTravIR(INSTR *instr){
       case addI: //use both; define second
       case subI:
       case mulI:
-      //case divI:
       case andI:
       case orI:
       case xorI:
       case lshiftI:
       case rshiftI:
         if(op == NULL){
-          fprintf(stderr, "return -1 1\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
-          addElement(lia[index].use, op->val.temp);
+          addElement(lia[index].use, op->val.temp); //using first operand
         }
         if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
-          addElement(lia[index].use, op->val.temp);
+          addElement(lia[index].use, op->val.temp); //using operand if deref
         }
         op = op->next;
         if(op == NULL){
-          fprintf(stderr, "return -1 2\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
-          addElement(lia[index].use, op->val.temp);
+          addElement(lia[index].use, op->val.temp); //using and defining second operand
           addElement(lia[index].def, op->val.temp);
         }
         if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
-          addElement(lia[index].use, op->val.temp);
+          addElement(lia[index].use, op->val.temp); //onlu using operand if deref
         }
         break;
       case cmpI: //use both
         if(op == NULL){
-          fprintf(stderr, "return -1 3\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -120,7 +118,6 @@ int livenessTravIR(INSTR *instr){
         }
         op = op->next;
         if(op == NULL){
-          fprintf(stderr, "return -1 4\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -130,11 +127,9 @@ int livenessTravIR(INSTR *instr){
           addElement(lia[index].use, op->val.temp);
         }
         break;
-
       case movI: //use first; def second
         lia[index].isMove = 1;
         if(op == NULL){
-          fprintf(stderr, "return -1 5\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -145,7 +140,6 @@ int livenessTravIR(INSTR *instr){
         }
         op = op->next;
         if(op == NULL){
-          fprintf(stderr, "return -1 6\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -158,7 +152,6 @@ int livenessTravIR(INSTR *instr){
       case divI: //use one
       case pushI:
         if(op == NULL){
-          fprintf(stderr, "return -1 7\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -170,7 +163,6 @@ int livenessTravIR(INSTR *instr){
         break;
       case popI: //def one
         if(op == NULL){
-          fprintf(stderr, "return -1 8\n");
           return -1;
         }
         if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
@@ -183,13 +175,10 @@ int livenessTravIR(INSTR *instr){
       case jumpI: //primary succ is different
         jINSTR = instrHashGetINSTR(labelINSTRTable, instr->paramList->val.label);
         if(jINSTR == NULL){
-          fprintf(stderr, "Error occurred when getting instruction with label %s\n", instr->paramList->val.label);
+          fprintf(stderr, "INTERNAL ERROR: occurred when getting instruction with label %s\n", instr->paramList->val.label);
           return -1;
         }
         lia[index].succ[0] = jINSTR->id;
-        break;
-      case callI:
-        //dont think I have to do anything
         break;
       case jmplessI: //secondary succ is different
       case jmpgreatI:
@@ -204,6 +193,7 @@ int livenessTravIR(INSTR *instr){
 
         }
         lia[index].succ[1] = jINSTR->id;
+      case callI:
       case labelI:
       case retI:
       case textI:
@@ -212,17 +202,19 @@ int livenessTravIR(INSTR *instr){
     }
     if(lia[index].succ[0] == -1 && index < intermediateInstrCount-1){
       //standard successor is next instruction,
-      //unless we reached the end of program
+      //unless its already set or we reached the end of program
       lia[index].succ[0] = index+1;
     }
-    listUnion(lia[index].use, lia[index].in); //when we use its also liveIn
+    listUnion(lia[index].use, lia[index].in); //Everything we use is liveIN
     instr = instr->next;
   }
   return 0;
 }
 
 /**
- * Based on algorithm on page 221
+ * Finds liveIn and loveOut sets for all instructions
+ * Traverses instructions in reverse order as speedup heuristic
+ * Algorithm based on Appel, Modern Compiler Construction, page 221
  */
 int livenessAnalysis(){
   int isChanged;
@@ -230,23 +222,17 @@ int livenessAnalysis(){
   while(true){
     isChanged = 0;
     for(int n=intermediateInstrCount - 1; n>=0; n--){
-      //TODO add use somewhere else
+      //live in = use U (liveOut - def)
       TempList *diff = listDiff(lia[n].out, lia[n].def);
       res = listUnion(diff, lia[n].in);
       freeList(diff);
-      if(res == -1){
-        fprintf(stderr, "Some error occurred\n");
-        return -1;
-      }
+      if(res == -1){ return -1; }
       isChanged += res;
       for(int j=0; j<3; j++){
+        //liveOut = Union of liveIn of all successors
         if(lia[n].succ[j] != -1){
           res = listUnion(lia[lia[n].succ[j]].in, lia[n].out);
-          if(res == -1){
-            fprintf(stderr, "Some error occurred\n");
-            return -1;
-          }
-
+          if(res == -1){ return -1; }
           isChanged += res;
         }
       }
@@ -258,50 +244,43 @@ int livenessAnalysis(){
   return 0;
 }
 
-
+/**
+ * Builds the interfernce graph based on the liveness analysis
+ * Based on Appel, Modern Compiler Construction, page ????
+ */
 int buildInterferenceGraph(){
   TempListNode *defNode;
   TempListNode *liveNode;
+  //graph is build based on amount and list of temporaries
   int error = IGcreateGraph(tempIdVal, livenessTempList);
-  if(error == -1){
-    fprintf(stderr, "Error while building graph\n");
-    return -1;
-  }
+  if(error == -1){ return -1; }
   for(int n=0; n<intermediateInstrCount; n++){
-
     defNode = lia[n].def->head;
-    while(defNode != NULL){
-      //fprintf(stderr, "instr %d with liveOut %p\n", n, lia[n].out->head);
-      //fprintf(stderr, "defNode->temp->id %d, offset %d\n", defNode->temp->tempId, defNode->temp->placement.offset);
+    while(defNode != NULL){ //for every temporary defined
       liveNode = lia[n].out->head;
-      while(liveNode != NULL){
+      while(liveNode != NULL){ //for every temporary live out
         if((!lia[n].isMove) || defNode->temp != liveNode->temp){
-          //HUGE MISTAKE HERE OR small
-          int error;
+          //if not move or if livenode is not destination
+          //add interference edge in both directions
           error = IGinsertNeighbor(defNode->temp->graphNodeId, liveNode->temp->graphNodeId);
-          if(error == -1){
-            fprintf(stderr, "INTERNAL ERROR\n");
-            return 0;
-          }
+          if(error == -1){ return -1; }
           error = IGinsertNeighbor(liveNode->temp->graphNodeId, defNode->temp->graphNodeId);
-          if(error == -1){
-            fprintf(stderr, "INTERNAL ERROR\n");
-            return 0;
-          }
+          if(error == -1){ return -1; }
         }
         liveNode = liveNode->next;
       }
       defNode = defNode->next;
     }
   }
-  //fprintf(stderr, "UnsupportedOperationException: buildInterferenceGraph\n");
   return 0;
 }
 
 
 
 
-
+/**
+ * Debug funciton
+ */
 void printLIA(){
   for(int n = 0; n<intermediateInstrCount; n++){
     if(    (lia[n].use->head == NULL)

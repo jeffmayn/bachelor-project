@@ -6,6 +6,7 @@
 
 //TODO: remove sym-val
 //TODO: cleanup in IRtraexp
+//TODO: move hashfunction to utility folder
 /**
  * Creating next temporary in order
  * It gets an unique ID and associated integer value
