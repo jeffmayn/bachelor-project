@@ -3,7 +3,7 @@
 Return code error:
 ------------
 Got: 0
-Expected: 139
+Expected: 134
 
 ############################
 Other stuff:
@@ -14,6 +14,4 @@ Other stuff:
    |--> Symbol collection
    |--> Expression type collection
    |--> Typechecking
-Line 13: can only allocate variables
-Something weird here: pretend everything is fine
   |--> STARTING INTERNAL REPRESENTATION
