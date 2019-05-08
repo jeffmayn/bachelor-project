@@ -525,7 +525,8 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
   TEMPORARY *temp;
   SYMBOL *sym;
   TYPE *ty;
-  char *elseLabel, *endifLabel, *allocSuccLabel, *startwhileLabel, *endwhileLabel;
+  char *elseLabel, *endifLabel, *allocSuccLabel, *startwhileLabel, 
+        *endwhileLabel, *commentString;
   int error, size;
   switch(stmt->kind){
     case returnK:
@@ -572,7 +573,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       if(ty != sym->typePtr){
         //only when arrays are traversed
         if(ty->kind == idK){
@@ -625,7 +626,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX),IRmakeTemporaryOPERAND(temp))));
       size = 1; //size of pointer
@@ -692,7 +693,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       tempLocalCounter++;
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(temp))));
 
@@ -702,7 +703,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
         IRmakeTemporaryOPERAND(temp), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), op1)));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       return 0;
     case ifK:
       commentString = Calloc(45);
@@ -714,7 +715,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //find result of condition
       op1 = IRtravExp(t,stmt->val.ifthenelse.cond);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //check if condition is true
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
         IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
@@ -735,7 +736,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //get result of condtion
       op1 = IRtravExp(t,stmt->val.ifthenelse.cond);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1,IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //check if condition is true
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeTrueOPERAND(),IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(elseLabel))); //if not: goto else
@@ -854,7 +855,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
       }
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op,IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
 
       //check if array is null
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
@@ -866,7 +867,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
       //find result of index expression
       op1 = IRtravExp(t, var->val.varexp.exp);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
 
       //check if index is out of bounds for array
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
@@ -932,7 +933,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
       }
       //IRappendINSTR(IRmakeCommentINSTR(IRmakeCommentOPERAND("creating record dereferencing")));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
 
       //check if record is null
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
@@ -1001,13 +1002,13 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       //finds and saves result of left child
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
       //finds result of right child
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do the subtraction
       IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
@@ -1020,12 +1021,12 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
 
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do the addition
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
@@ -1039,7 +1040,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX),
         IRappendOPERAND(IRmakeTemporaryOPERAND(t1),
@@ -1048,7 +1049,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));//right op in t2 and rbx
 
@@ -1080,14 +1081,14 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
       //find right operand
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do the multiplication
       IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(
         IRmakeTemporaryOPERAND(t1),IRmakeRegOPERAND(RBX))));
@@ -1105,7 +1106,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
@@ -1117,7 +1118,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do and
       IRappendINSTR(IRmakeAndINSTR(IRappendOPERAND(//bitwise and, should only ever work on 0 or 1 so we should only ever get 0 or 1 back
         IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
@@ -1136,7 +1137,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));//right operand in t1
 
@@ -1148,7 +1149,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));//left operand in rbx
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do the or
       IRappendINSTR(IRmakeOrINSTR(IRappendOPERAND(
         IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
@@ -1171,14 +1172,14 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
       //find right operand
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do comparison
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
@@ -1199,13 +1200,13 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         IRmakeTrueOPERAND(),IRmakeTemporaryOPERAND(t1)))); //assuming true
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do comparison
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
@@ -1228,14 +1229,14 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do comparison
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
@@ -1258,14 +1259,14 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do comparison
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
@@ -1288,14 +1289,14 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do comparison
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
@@ -1319,11 +1320,11 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
 
       op2 = IRtravExp(t, exp->val.binOP.right);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       //do comparison
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
@@ -1398,7 +1399,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       //find result of the boolean term
       op = IRtravTerm(t, term->val.notTerm);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op, IRmakeRegOPERAND(RBX))));
-      IRresetBasePointer();
+      //IRresetBasePointer();
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //asume false: negation is true
         IRmakeTrueOPERAND(), IRmakeTemporaryOPERAND(temp))));
       IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
@@ -1556,7 +1557,7 @@ int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
       return -1;
     }
     IRappendINSTR(IRmakePushINSTR(op));
-    IRresetBasePointer();
+    //IRresetBasePointer();
     i++;
   }
   return i;
@@ -1680,6 +1681,12 @@ INSTR* IRmakeMovINSTR(OPERAND *params){
 INSTR* IRmakeAddINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = addI;
+  return instr;
+}
+
+INSTR* IRmakeIncINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = incI;
   return instr;
 }
 
@@ -1945,6 +1952,7 @@ OPERAND *IRsetStaticBase(int *nrJumps){
 }
 /**
  * Used to reset the basepointer from RDI to RBP
+ * BLAHBLAHBLAH DEN HER FUNKTION ER OVERFLØDIG!
  */
 int IRresetBasePointer(){
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(

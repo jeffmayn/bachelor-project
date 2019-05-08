@@ -5,7 +5,7 @@ const char* regNames[] = {"error: na", "%rax", "%rcx", "%rdx",\
                            "%rdi", "%r8", "%r9", "%r10", "%r11",\
                             "%r12", "%r13", "%r14", "%r15", "error: spill"};
 
-
+int BPRESET = 0;
 
 int IRtravInternalRep(INSTR *instr){
   int error = 0;
@@ -14,6 +14,10 @@ int IRtravInternalRep(INSTR *instr){
     if(error == -1){
       fprintf(stderr, "IRtravInternalRep: error\n");
       return -1;
+    }
+    if(BPRESET){
+      printf("\tmovq %rbp, %rdi\t\t#resetting basepointer\n");
+      BPRESET = 0;
     }
     instr = instr->next;
   }
@@ -89,10 +93,12 @@ int travTemporary(TEMPORARY *temp){
     case paramT:
       //printf("mov %d, %%rdx\n", temp->placement.offset);
       printf("(%%rdi,%%rdx,8)");
+      BPRESET = 1;
       break;
     case localT:
       //printf("mov -%d, %%rdx\n", temp->placement.offset);
       printf("(%%rdi,%%rdx,8)");
+      BPRESET = 1;
       break;
     case regT:
       printf("%s", regNames[temp->placement.reg]);

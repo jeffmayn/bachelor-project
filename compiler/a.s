@@ -30,7 +30,6 @@ main:
 	addq $1048576, endHeap3
 #line: 5 assign statement
 	movq $1, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
@@ -41,7 +40,7 @@ main:
 	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 #line: 7 assign statement
 	push %rbx
 	movq %rbp, %rbx
@@ -51,13 +50,11 @@ main:
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
 	movq $1, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	addq %rbx, %r8
 	movq %r8, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
@@ -68,7 +65,7 @@ main:
 	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 #line: 8 assign statement
 	push %rbx
 	movq %rbp, %rbx
@@ -78,13 +75,11 @@ main:
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
 	movq $2, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	addq %rbx, %r8
 	movq %r8, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
@@ -95,7 +90,7 @@ main:
 	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 #line: 9 assign statement
 	push %rbx
 	movq %rbp, %rbx
@@ -105,14 +100,12 @@ main:
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
 	movq $2, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	imulq %r8, %rbx
 	movq %rbx, %r8
 	movq %r8, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
@@ -123,7 +116,7 @@ main:
 	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 #line: 10 assign statement
 	push %rbx
 	movq %rbp, %rbx
@@ -133,10 +126,9 @@ main:
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8#first operand in t1
 	movq $2, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r9
 	push %rax
 	movq $3, %rax
@@ -149,7 +141,6 @@ main:
 	idivq %rbx
 	movq %rax, %r8
 	movq %r8, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
@@ -160,7 +151,7 @@ main:
 	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 #line: 11 assign statement
 	push %rbx
 	movq %rbp, %rbx
@@ -170,13 +161,11 @@ main:
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
 	movq $2, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	subq %rbx, %r8
 	movq %r8, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
@@ -187,7 +176,7 @@ main:
 	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 #line: 12 assign statement
 	push %rbx
 	movq %rbp, %rbx
@@ -197,13 +186,11 @@ main:
 	pop %rbx
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rbx
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
 	movq $1, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	subq %rbx, %r8
 	movq %r8, %rbx
-	movq %rbp, %rdi#resetting basepointer
 	movq %rbx, %r8
 	push %rbx
 	movq %rbp, %rbx
@@ -214,7 +201,7 @@ main:
 	movq %r8, %rbx
 	movq $-6, %rdx
 	movq %rbx, (%rdi,%rdx,8)
-	movq %rbp, %rdi#resetting basepointer
+	movq %rbp, %rdi		#resetting basepointer
 #line: 14 write statement
 	push %rbx
 	movq %rbp, %rbx
@@ -225,6 +212,7 @@ main:
 	push %rdi
 	movq $-6, %rdx
 	movq (%rdi,%rdx,8), %rsi
+	movq %rbp, %rdi		#resetting basepointer
 	movq $format, %rdi
 	movq $0, %rax
 	call printf
@@ -239,7 +227,7 @@ mainend:
 	pop %rbx
 	movq %rbp, %rsp
 	pop %rbp
-	ret
+	ret 
 
 
 

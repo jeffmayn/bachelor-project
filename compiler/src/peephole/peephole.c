@@ -72,7 +72,8 @@ int incPattern(INSTR *instr){
 			if(leftOP->operandKind == constantO){
 				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
 					if(instrTarget->next->next->instrKind == addI){
-						replacement = 
+
+						//replacement = IRmakeIncINSTR(IRmakeRegOPERAND());
 					}
 				}
 			}
