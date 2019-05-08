@@ -78,10 +78,6 @@ int main() {
     return -1;
   }
 
-  fprintf(stderr, "%s\n", "  |--> STARTING PRINTING INTERNAL REPRESENTATION");
-  //printINSTRnode(intermediateHead);
-
-
   fprintf(stderr, "%s\n", "  |--> STARTING LIVNESS ANALYSIS");
   error = 0;
   error = liveness();
@@ -97,6 +93,9 @@ int main() {
     fprintf(stderr, "ERROR: peephole optimization\n");
     return -1;
   }
+
+  //fprintf(stderr, "%s\n", "  |--> STARTING PRINTING INTERNAL REPRESENTATION");
+  //printINSTRnode(intermediateHead);
 
 
   fprintf(stderr, "%s\n", "  |--> STARTING FINAL OUTPUT GENERATION");

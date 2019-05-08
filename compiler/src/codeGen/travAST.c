@@ -1690,6 +1690,12 @@ INSTR* IRmakeIncINSTR(OPERAND *params){
   return instr;
 }
 
+INSTR* IRmakeDecINSTR(OPERAND *params){
+  INSTR* instr = IRmakeINSTR(params);
+  instr->instrKind = decI;
+  return instr;
+}
+
 INSTR* IRmakeSubINSTR(OPERAND *params){
   INSTR* instr = IRmakeINSTR(params);
   instr->instrKind = subI;
@@ -1940,14 +1946,14 @@ OPERAND *IRsetCalleeStaticLink(int nrJumps){
  */
 OPERAND *IRsetStaticBase(int *nrJumps){
   OPERAND *o1;
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX)));
+  //IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX)));
 
   o1 = IRsetCalleeStaticLink(*nrJumps);
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(o1, IRmakeRegOPERAND(RBX))));
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
     IRmakeRegOPERAND(RBX), IRmakeRegOPERAND(RDI))));
 
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RBX)));
+  //IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RBX)));
   return IRmakeRegOPERAND(RDI);
 }
 /**

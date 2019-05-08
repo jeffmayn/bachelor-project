@@ -154,6 +154,14 @@ int IRtravINSTR(INSTR *in){
       printf("\taddq ");
       error = IRtravOPERANDlist(in->paramList);
       break;
+    case incI:
+      printf("\tinc ");
+      error = IRtravOPERANDlist(in->paramList);
+      break;
+    case decI:
+      printf("\tdec ");
+      error = IRtravOPERANDlist(in->paramList);
+      break;
     case subI:
       printf("\tsubq ");
       error = IRtravOPERANDlist(in->paramList);

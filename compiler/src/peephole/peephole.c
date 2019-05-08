@@ -60,24 +60,30 @@ int loopPatterns(INSTR* instrucktion){
 	return 0;
 }
 
-int incPattern(INSTR *instr){
-
-	INSTR *replacement;
+int wastedMovq(INSTR* instr){
+	OPERAND *o1, *o2, *o3, *o4;
 	INSTR *instrTarget = instr->next;
-	int lookAhead = 0;
-	registers reg;
-	if(instrTarget != NULL){//we are not at the end.
+	INSTR *instrNext = instrTarget->next;
+	if(instrTarget != NULL){
 		if(instrTarget->instrKind == movI){
-			OPERAND *leftOP = instrTarget->paramList;
-			if(leftOP->operandKind == constantO){
-				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
-					if(instrTarget->next->next->instrKind == addI){
-
-						//replacement = IRmakeIncINSTR(IRmakeRegOPERAND());
+			if(instrNext->instrKind == movI){
+				o1 = instrTarget->paramList;
+				o2 = instrTarget->paramList->next;
+				o3 = instrNext->paramList;
+				o4 = instrNext->paramList->next;
+				if(o1->operandKind == registerO && o2->operandKind == registerO && o3->operandKind == registerO && o4->operandKind == registerO){
+					if(o1->val.reg == o4->val.reg){
+						if(o2->val.reg == o3->val.reg){
+							fprintf(stderr, "%s\n", "I found one!");
+						}
 					}
 				}
 			}
 		}
+
+
+
+
 	}
 
 
@@ -85,14 +91,58 @@ int incPattern(INSTR *instr){
 	return 0;
 }
 
-int decPattern(INSTR *instr){
-	OPERAND *leftOP;
-	if(instr->instrKind == subI){
-		leftOP = instr->paramList;
-		if(leftOP->operandKind == constantO){
-			if(leftOP->val.constant == 1){
-				fprintf(stderr, "%s\n", "sub: WE CAN REPLACE THIS SHIT!");
+/**
+ * look for a pattern where "addq $1, x" is used instead of "inc x"
+ */
+int incPattern(INSTR *instr){
+	OPERAND *leftOP, *temp;
+	INSTR *replacement;
+	INSTR *instrTarget = instr->next;
+	if(instrTarget != NULL){//we are not at the end.
+		if(instrTarget->instrKind == movI){
+			leftOP = instrTarget->paramList;
+			if(leftOP->operandKind == constantO){
+				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
+					if(leftOP->next->val.reg == RBX){
+						if(instrTarget->next->instrKind == addI){
+							temp = instrTarget->next->paramList->next;
+							replacement = IRmakeIncINSTR(temp);
+							replacement->next = instrTarget->next->next;
+							instr->next = replacement;
+						}
+					}
+				}
 			}
-		}	}
+		}
+	}
+
+	return 0;
+}
+
+/**
+ * look for a pattern where "subq $1, x" is used instead of "dec x"
+ */
+int decPattern(INSTR *instr){
+	OPERAND *leftOP, *temp;
+	INSTR *replacement;
+	INSTR *instrTarget = instr->next;
+	if(instrTarget != NULL){//we are not at the end.
+		if(instrTarget->instrKind == movI){
+			leftOP = instrTarget->paramList;
+			if(leftOP->operandKind == constantO){
+				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
+					if(leftOP->next->val.reg == RBX){
+						if(instrTarget->next->instrKind == subI){
+							temp = instrTarget->next->paramList->next;
+							replacement = IRmakeDecINSTR(temp);
+							replacement->next = instrTarget->next->next;
+							instr->next = replacement;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	return 0;
 }
