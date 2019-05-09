@@ -2,12 +2,10 @@
 #define __internalASM_h
 
 #include "tree.h"
-//#include "bitmap.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "symbol.h"
 #include "bitmap.h"
-//#include "typecheck.h" //this gives a cycle internalASM->typecheck->symbol->internalASM
 
 #define HASHSIZE2 517
 #define UNUSED_GRAPH_ID  0//use this when comparing if graphNodeId is unused
@@ -19,43 +17,32 @@
 #define DEREFNULLCODE 5
 
 extern const char* regNames[];
+/*kinds of assembler instrucktions we have*/
+typedef enum {addI, incI, decI, subI, mulI, divI, 
+              andI, orI, xorI, lshiftI, rshiftI,
+              cmpI, jumpI, jmplessI, jmpgreatI, 
+              jmpleI, jmpgeI, jmpeqI, jmpneqI, 
+              movI, labelI, pushI, popI, callI, 
+              retI, textI, commentI} INSTRkind;
 
-/**
- * NOTE TO SELF!
- * - create seperate .c files for each category of constructors
- * - dont do the same thing as in del3, that is: be smarter!
- * - Create map to map all ID's/variables to temporaries.
- * - funktioner bliver navngivet efter den fase de tilhører
- *                          - IR (internal representation)
- *                          - OPTMZ (optimize)
- *                          - ASM (assembler code generation)
- */
-typedef enum {addI, incI, decI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
-              cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
-              jmpneqI, movI, labelI, pushI, popI, callI, retI, textI, commentI} INSTRkind;
-typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO,
+/*kinds for operands for instrucktions*/
+typedef enum {constantO, temporaryO, heapAddrO, 
+              labelIDO, registerO, addrLabelO,
               textO, commentO, tempDeRefO, derefO} OPERANDkind;
+
+/*enumeration for registers*/
 typedef enum {NA, RAX, RCX, RDX, RBX, RSP, RBP, RSI, RDI,
               R8, R9, R10, R11, R12, R13, R14, R15, SPILL} registers;
+
+/*kinds for temporaries, to keep track of where they are placed*/
 typedef enum {actualTempT, paramT, localT, regT} TEMPORARYkind;
 
-typedef struct bodyListElm bodyListElm;
-typedef struct bodyList bodyList;
-
-
-extern const char *instrNames[];
-extern const char *regNames[];
-
 typedef struct TEMPORARY {
-  //char* tempName; //is this usefull?
-  //int tempNr; //WASTEOFSPACE //the number given to the temp by the tempcount
   TEMPORARYkind temporarykind;
   int tempId;
   int graphNodeId;
   struct TEMPORARY *next; //used for liveness
   union {
-    //heap vs. stack
-    //int address;
     int offset; //used by paramT og localT
     registers reg;
   } placement;
@@ -66,7 +53,6 @@ typedef struct OPERAND {
   struct OPERAND *next;
   union{
     int constant;
-    //int address; //offset
     char *label;
     TEMPORARY *temp;
     registers reg;
@@ -90,10 +76,17 @@ typedef struct CODEGENUTIL {
   } val;
 } CODEGENUTIL;
 
+/*global variables*/
+typedef struct bodyListElm bodyListElm;
+typedef struct bodyList bodyList;
+
+extern const char *instrNames[];
+extern const char *regNames[];
+
 int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
 INSTR* intermediateTail;
-int changeMade;
+int changeMade; //for peephole, if a change was made, run again.
 
 int tempLocalCounter; //the next temp and local offset in current scope
 int labelCounter; //the next label value
@@ -102,19 +95,15 @@ int tempIdVal; //used to give each temp a unique ID
 char* beginHeapLabel; //points to the beginning of the heap
 char* freeHeapLabel; //contains the next free heap space
 char* endHeapLabel; //contains the heapEndAddress
-char* mainSPointLabel;
+char* mainSPointLabel; //for error correction
 char* mainBPointLabel;
 
 char* mainEndLabel;
 char* errorCleanupLabel;
 
-
 int intermediateInstrCount;
 
 TEMPORARY *livenessTempList;
-
-
-
 
 TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
 
@@ -241,16 +230,13 @@ INSTR *IRmakeJumpINSTR(OPERAND *params);
 
 INSTR *IRmakeCmpINSTR(OPERAND *params);
 
-
-
-
 INSTR* IRmakeTextINSTR(OPERAND *params);
 
 INSTR* IRmakeCommentINSTR(OPERAND *params);
 
 INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
-//INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
 int IRinserINSTRhere(INSTR *prev, INSTR* new);
+
 //****Abstract scheme constructors****//
 int IRmakeFunctionScheme(FUNCTION *func);
 
@@ -272,64 +258,26 @@ int IRresetBasePointer();
 //Insert temporary name into symboltable for variables
 int IRtravDeclListScheme(DECL_LIST *decls);
 
-//int IRtravStmtList(STATEMENT *stmt);
-
-//int IRtravStmt(STATEMENT *stmt);
 /**
  * Associate varibles to a temporary and add to map
  * Associate functions to a label
 */
 int IRmakeDeclScheme(DECLARATION *decl);
 
-
-
 //##################Optimization#################//
-//Liveness analysis: find in og ud mængder
-//Data strukturer til at gemme use, def, og ud mængder?
-//skal kunne indeholde temporaries
-//Interferens graf: Metode på side 228-229
-//Lav register allokering: farvning ved simplificering: kapitel 11 (se kims noter)
-//Vi skal have en graf opbygget af grafknuder. Hver knude repræsentere en
-//temporary og indeholder også dets register eller addresse på stakken
-
-
-// BITMAP **IN;
-// BITMAP **OUT;
-// BITMAP **USE;
-// BITMAP **DEF;
-
-//Umiddelbart ikke nødvendigt
-// //used to map variables to temps
-// typedef struct {
-//     VarNode *table[HashSize]; //**table
-// } VarTempMap;
-//
-// typedef struct {
-//   SYMBOL *sym;
-//   char *tempName;
-//   varNode *next;
-// } VarNode;
-
-
+/*liveness - mostly*/
 //used within the TempLocMap
 typedef struct TempNode {
   char *name;
-  //int *number; //unique and in equivalence with the name
   registers reg; //the register to which this temp is assigned
-  //struct GraphNode *node; //to associate this temporary with a graphnode
   int graphNodeId; //id representing graph node associated to this temporary
   struct TempNode *next; //collision handling in TempLocMap
 } TempNode;
 
-
-//used to map temps to registers or adresses (locations)
-
+/*used to map temps to registers or adresses (locations)*/
 typedef struct TempLocMap {
   struct TempNode *table[HASHSIZE2];
 } TempLocMap;
-
-
-
 
 /******AST traversal and TempNodeMap setup*******/
 int IRtemporaryHash(char *str);
@@ -337,59 +285,6 @@ TempLocMap *IRinitTempLocMap();
 TempNode *IRputTempNode(TempLocMap *t, char *tempName);
 TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTable);
 int IRtraverseDeclerationList(DECL_LIST *declerations);
-
-//*****ALL of the below is in bitmap.h****/
-//Where should it be ??
-//Do liveness analyse
-// typedef struct BITMAP {
-//   uint *bits;
-//   int size;
-// } BITMAP;
-//
-//
-
-// /**
-//  * Creates a bitmap with size number of bits
-//  * All bits are reset from start (set to 0)
-//  */
-// BITMAP bitMapMakeBitMap(int size);
-//
-// /**
-//  * Sets the index'th bit of map
-//  * Returns: -1 if bit is out of bounds
-// */
-// int bitMapSetBit(BITMAP *map, int index);
-//
-// /**
-//  * resets the index'th bit of map
-//  * Returns: -1 if bit is out of bounds
-// */
-// int bitMapResetBit(BITMAP *map, int index);
-// //use UINT_MAX from limits.h to do the AND correctly
-// //alternatively use ~ to negate the string 00001000 to 11110111
-//
-// /**
-//  * returns 1 if the index'th bit is set and 0 otherwise
-//  * returns -1 at index out of bounds
-//  */
-// int bitMapBitIsSet(BITMAP *map, int index);
-//
-// BITMAP* bitMapUnion(BITMAP *src, BITMAP *dest);
-//
-// /**
-//  * Calculates first minus second and returns a new map
-//  */
-// BITMAP* bitMapDiff(BITMAP *first, BITMAP *second);
-//
-// int BitMapfree(BITMAP *map);
-//
-// /**
-//  * returns 1 if the maps are the same
-//  * returns 0 of the maps are not the same
-// */
-// int BitMapIsEqual(BITMAP *m1, BITMAP *m2);
-
-
 
 //#############LIVENESS ANALYSIS#################
 int liveness();
@@ -400,28 +295,16 @@ int buildInterferenceGraph();
 void printLIA();
 
 //####Interferens graph####//
-
-//IG: Interferens Graph
-//The graph is DIRECTED
-//TODO: Somebody make graph representation
-//We are using adjacency list representation
-//better for graph colering
 typedef struct GraphNode {
-  //enum with registers or addresses
-  //char *tempName; //unique
-  //char *tempNumber; //unique and in equivalence with tempName;
   int id; //used as an internal identifier
   registers reg;
-  //int color;
   BITMAP *neighbors; //this one should stay here
   int isMarked;
   int inDegree;
   int outDegree;
   TEMPORARY *temp;
-  //GraphNode *next //Only used within internal management of graph
 } GraphNode;
 
-//if we want to make another graph we would have to make a struct for these two
 GraphNode *graphNodes; //only used internally in graph
 int graphSize; //the number of nodes in the graph
 
@@ -430,11 +313,6 @@ int graphSize; //the number of nodes in the graph
  * returns -1 on error and 0 otherwise
  */
 int IGcreateGraph(int size, TEMPORARY *tempList);
-
-// /**
-//  * Creates a new graph node and returns its ID
-// */
-// int IGmakeGraphNode(TEMPORARY *temp);
 
 /**
  * makes the neighbor a neighbor of node
@@ -457,13 +335,6 @@ int IGremoveNeighbor(int nodeID, int neighborID);
  * NULL is returned if an error occurred
  */
 int* IGgetNeighbors(int nodeID);
-
-
-// /**
-//  * returns true (1) if neighbor is adjacent to node
-//  * returns false (0) otherwise
-//  */
-// int IGisNeighbor(int nodeID, int neighborID);
 
 /**
  * Lowest degree node among all unmarked nodes
@@ -498,19 +369,13 @@ int IGTransferColors();
  */
 int IGprintGraph();
 
-
-
-
-
 //#########label instruction hash table###############
 #define HASHSIZE2 517
-
 
 typedef struct InstrUnit {
   INSTR *instr;
   struct InstrUnit *next;
 } InstrUnit;
-
 
 typedef struct InstrTable {
     InstrUnit *table[HASHSIZE2]; //**table
@@ -535,13 +400,7 @@ int instrHashPutInstr(InstrTable *t, INSTR *instr);
  */
 INSTR *instrHashGetINSTR(InstrTable *t, char *label);
 
-
-
-
-
-
 //#######Sorted linked list containing temporaries###########
-
 typedef struct TempList{
   struct TempListNode *head;
   struct TempListNode *tail;
@@ -611,45 +470,11 @@ InstrTable *labelINSTRTable;
 LivenessInstructionArray *lia;
 
 
-
 //################### peephole Optimization ###############
 
 int peephole();
 int loopInternalRep();
 int loopPatterns(INSTR *instr);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //######################assembler generation############//
 
