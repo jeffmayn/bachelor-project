@@ -66,6 +66,7 @@ int loopPatterns(INSTR* instrucktion){
  * positions without it having any effect.
  * we use our liveness analysis to see if we can
  * remove both mov instructions.
+ * VIRKER IKKE LIGE NU!
  */
 int wastedMovq(INSTR* instr){
 	OPERAND *o1, *o2, *o3, *o4;
