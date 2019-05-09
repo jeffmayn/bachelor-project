@@ -167,12 +167,12 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
   }
   func = getSymbol(table, element->funcId);
   func->cgu = IRmakeNewCGU(); //save the label
-  func->cgu->val.funcLabel = IRmakeLabelINSTR(
+  func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(
     IRmakeLabelOPERAND(labelName));
 
   SYMBOL *sym;
   while(pSym != NULL){
-    //create scug for each parameter
+    //create cgu for each parameter
     //with associated offset
     sym = pSym->data;
     if(sym->cgu == NULL){
@@ -182,6 +182,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
     }
     pSym = pSym->next;
   }
+  func->cgu->val.funcInfo.paramCount = paramCount;
   return 0;
 }
 
@@ -197,7 +198,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   if(error == -1){
     return -1;
   }
-  IRappendINSTR(sym->cgu->val.funcLabel);
+  IRappendINSTR(sym->cgu->val.funcInfo.funcLabel);
 
   error = IRmakeCalleeProlog();
   if(error == -1){
@@ -206,10 +207,10 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
 
   INSTR * instrTempTail = intermediateTail;
   //create func end label
-  char* endLabelName = Malloc(strlen(sym->cgu->val.funcLabel->paramList->val.label)+4);
-  sprintf(endLabelName, "%s%s", sym->cgu->val.funcLabel->paramList->val.label, "end");
+  char* endLabelName = Malloc(strlen(sym->cgu->val.funcInfo.funcLabel->paramList->val.label)+4);
+  sprintf(endLabelName, "%s%s", sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "end");
   labelCounter++;
-  if(strcmp(sym->cgu->val.funcLabel->paramList->val.label, "main") == 0){
+  if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
     //Special stuff for beginning of main function
     mainEndLabel = endLabelName;
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
@@ -234,7 +235,7 @@ int IRtravBody(SymbolTable *table, bodyListElm *body){
   IRinserINSTRhere(instrTempTail, IRmakeSubINSTR(IRappendOPERAND(
     IRmakeConstantOPERAND(nrTempsAndLocals*8), IRmakeRegOPERAND(RSP))));
 
-  if(strcmp(sym->cgu->val.funcLabel->paramList->val.label, "main") == 0){
+  if(strcmp(sym->cgu->val.funcInfo.funcLabel->paramList->val.label, "main") == 0){
     //return 0 at end of main
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
       IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RAX))));
@@ -1334,13 +1335,13 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
         return NULL;
       }
       cgu = sym->cgu;
-      label = cgu->val.funcLabel;
+      label = cgu->val.funcInfo.funcLabel;
       staticLinkOP = IRsetCalleeStaticLink(*nrJumps);
       if(staticLinkOP == NULL){
         return NULL;
       }
       //build the stack
-      error = IRmakeFunctionCallScheme(t, label, term->val.idact.list, staticLinkOP);
+      error = IRmakeFunctionCallScheme(t, label, term->val.idact.list, staticLinkOP, sym->cgu->val.funcInfo.paramCount);
       if(error == -1){
         return NULL;
       }
@@ -1479,7 +1480,8 @@ int IRtravActList(SymbolTable *t, ACT_LIST *actlist){
   if(actlist == NULL){
     return 0;
   }
-  return IRtravExpListReverse(t, actlist->expList);
+  return IRtravExpList(t, actlist->expList, 0);
+  //return IRtravExpListReverse(t, actlist->expList);
 }
 
 /**
@@ -1487,17 +1489,21 @@ int IRtravActList(SymbolTable *t, ACT_LIST *actlist){
  * Traversing expression list
  * This is used to traverse arguments in function call
  */
-OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps){
+int IRtravExpList(SymbolTable *t, EXP_LIST *exps, int i){
   if(exps != NULL){
     OPERAND* op = IRtravExp(t, exps->exp);
     if(op == NULL){
       fprintf(stderr, "OPERAND IS NULL\n");
-      return NULL;
+      return -1;
     }
-    IRappendOPERAND(op, IRtravExpList(t, exps->expList));
-    return op;
+    TEMPORARY *temp = IRcreateNextTemp(tempLocalCounter);
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RSP), IRmakeTemporaryOPERAND(temp))));
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(i*8),IRmakeTemporaryOPERAND(temp))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op, IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTempDeRefOPERAND(temp))));
+    return IRtravExpList(t, exps->expList, i+1);
   }
-  return NULL;
+  return 0;
 }
 
 /**
@@ -1792,7 +1798,7 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramList, OPERAND* staticLinkOP){
+int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramList, OPERAND* staticLinkOP, int paramCount){
   if(labelINSTR->instrKind != labelI){
     fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme, no label\n");
     return -1;
@@ -1806,10 +1812,12 @@ int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramL
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R9)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R10)));
   IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R11)));
-  //Push arguments
-  int paramCount = IRtravActList(t, paramList);
-  if(paramCount == -1){
+  //Put arguments
+  IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(IRmakeConstantOPERAND(paramCount*8), IRmakeRegOPERAND(RSP))));
+  int error = IRtravActList(t, paramList);
+  if(error == -1){
     fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme\n");
+    return -1;
   }
   paramCount++; //static link included
   //push static link

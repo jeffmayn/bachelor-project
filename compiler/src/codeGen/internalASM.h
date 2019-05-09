@@ -85,7 +85,7 @@ typedef struct INSTR {
 typedef struct CODEGENUTIL {
   int size; //only relevant for records
   union {
-    INSTR *funcLabel;
+    struct {INSTR *funcLabel; int paramCount;} funcInfo;
     TEMPORARY *temp;
   } val;
 } CODEGENUTIL;
@@ -153,7 +153,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
 
 int IRtravActList(SymbolTable *t, ACT_LIST *actlist);
 
-OPERAND* IRtravExpList(SymbolTable *t, EXP_LIST *exps);
+int IRtravExpList(SymbolTable *t, EXP_LIST *exps, int i);
 
 int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps);
 
@@ -257,7 +257,7 @@ int IRmakeBodyScheme(BODY *body);
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramList, OPERAND* staticLinkOP);
+int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramList, OPERAND* staticLinkOP, int paramCount);
 OPERAND *IRsetCalleeStaticLink(int nrJumps);
 int IRmakeFunctionAssiScheme();
 OPERAND *IRsetStaticBase(int *nrJumps);
