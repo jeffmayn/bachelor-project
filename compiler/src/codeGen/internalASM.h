@@ -30,7 +30,7 @@ extern const char* regNames[];
  *                          - OPTMZ (optimize)
  *                          - ASM (assembler code generation)
  */
-typedef enum {addI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
+typedef enum {addI, incI, decI, subI, mulI, divI, andI, orI, xorI, lshiftI, rshiftI,
               cmpI, jumpI, jmplessI, jmpgreatI, jmpleI, jmpgeI, jmpeqI,
               jmpneqI, movI, labelI, pushI, popI, callI, retI, textI, commentI} INSTRkind;
 typedef enum {constantO, temporaryO, heapAddrO, labelIDO, registerO, addrLabelO,
@@ -93,6 +93,7 @@ typedef struct CODEGENUTIL {
 int regCount; //amount of multipurpose registers
 INSTR* intermediateHead;
 INSTR* intermediateTail;
+int changeMade;
 
 int tempLocalCounter; //the next temp and local offset in current scope
 int labelCounter; //the next label value
@@ -199,6 +200,10 @@ OPERAND *IRmakeDeRefOPERAND(registers reg);
 INSTR* IRmakeMovINSTR(OPERAND *params);
 
 INSTR* IRmakeAddINSTR(OPERAND *params);
+
+INSTR* IRmakeIncINSTR(OPERAND *params);
+
+INSTR* IRmakeDecINSTR(OPERAND *params);
 
 INSTR* IRmakeSubINSTR(OPERAND *params);
 
@@ -603,7 +608,15 @@ typedef struct LivenessInstructionArray{
 } LivenessInstructionArray;
 
 InstrTable *labelINSTRTable;
+LivenessInstructionArray *lia;
 
+
+
+//################### peephole Optimization ###############
+
+int peephole();
+int loopInternalRep();
+int loopPatterns(INSTR *instr);
 
 
 

@@ -2,7 +2,7 @@
 #include "internalASM.h"
 #include "memory.h"
 
-LivenessInstructionArray *lia;
+//LivenessInstructionArray *lia; //in internalASM.h now
 
 /*
  * Does liveness analysis
