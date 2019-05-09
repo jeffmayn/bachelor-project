@@ -3,11 +3,16 @@
 Return code error:
 ------------
 Got: 0
+<<<<<<< HEAD
 Expected: 139
+=======
+Expected: 127
+>>>>>>> jeffClean
 
 ############################
 Other stuff:
 ------------
+<<<<<<< HEAD
   |--> STARTING PARSING
   |--> STARTING 1ST WEEDER
   |--> STARTING TYPECHECK
@@ -15,3 +20,6 @@ Other stuff:
    |--> Expression type collection
    |--> Typechecking
   |--> STARTING INTERNAL REPRESENTATION
+=======
+./testSuite.sh: line 52: ../../build/compiler: No such file or directory
+>>>>>>> jeffClean
