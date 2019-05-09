@@ -1,122 +1,133 @@
-Erklær en varibel af simpel type
-Erklær en variabel af ikke-eksiterende type
-Erklær en navngivet simpel type og variabel af denne type
-Erklær en record variabel
-Erklær en record type og en variabel af denne type
-Erklær en array variabel
-Erklær en array type og en variabel af denne type
-erklær en circulær type (FORBUDT)
-Erklær indlejrede record typer
-Erklær circurlære record typer
-Erklær circulære array typer
-gendefiner typer i samme scope (FORBUDT)
-Gendefiner typer i forskellige scopes
+Erklær en varibel af simpel type                                      DeclVarSimple.kit
+Erklær en variabel af ikke-eksiterende type (FORBUDT)                 DeclVarNonExist.kit
+Erklær en navngivet simpel type og variabel af denne type             DeclVarTypeSimple.kit
+Erklær en navngivet simpel type baseret på en anden navngivet type    DeclTypeOutOfOrder.kit
+Erklær en record variabel                                             DeclVarRec.kit
+Erklær en record type og en variabel af denne type                    DeclVarTypeRec.kit
+Erklær en array variabel                                              DeclVarArr.kit
+Erklær en array type og en variabel af denne type                     DeclVarTypeArr.kit
+Erklær en circulær type (FORBUDT)                                     DeclCircType.kit
+Erklær indlejrede record typer                                        DeclNestRec.kit
+Erklær circurlære record typer                                        DeclCircRec.kit
+Erklær indlejrede array typer                                         DeclNestArr.kit
+Erklær circulære array typer                                          DeclCircArr.kit
+Generklær typer i samme scope (FORBUDT)                               DeclRedef.kit
+Gendefiner typer og varibler i forskellige scopes                     DeclRedefScopes.kit
+Erklær variabel af type, der er out of order erklæret                 DeclVarOutOfOrder.kit
+Erklær en kæde af simple typer                                        DeclTypeChain.kit
+Erklær en funktion (gjort i DeclRedefScopes.kit)
+*******Erklær et record field af en type der er en variabel (FORBUDT)       DeclFieldVarTypeFromVar.kit
 
 
-alloker anonym record variabel
-alloker anonym array variabel
-alloker navngivet record variabel
-alloker navngivet array variabel
-alloker record type (FORBUDT)
-alloker array type (FORBUDT)
-alloker integer variabel (FORBUDT)
-alloker boolean variabel (FORBUDT)
-Alloker record i array
-Alloker array i record
-Alloker indlejrede arrays (mindst 3 lag)
-Alloker indlejrede records (mindst 3 lag)
+alloker anonym record variabel                                AllocAnonRec.kit
+alloker anonym array variabel                                 AllocAnonArr.kit
+alloker navngivet record variabel                             AllocNamedRec.kit
+alloker navngivet array variabel                              AllocNamedArr.kit
+alloker record type (FORBUDT)                                 AllocRecType.kit
+alloker array type (FORBUDT)                                  AllocArrType.kit
+alloker integer variabel (FORBUDT)                            AllocInt.kit
+alloker boolean variabel (FORBUDT)                            AllocBool.kit
+Alloker record i array                                        AllocRecInArr.kit
+Alloker array i record                                        AllocArrInRec.kit
+Alloker indlejrede arrays (mindst 3 lag)                      AllocNestArr.kit
+Alloker indlejrede records (mindst 3 lag)                     AllocNestRec.kit
 
 
-Alloker en negativ array længde
-Alloker for meget plads
-Tilgå null-pointer
+Alloker en negativ array længde                               AllocArrNeg.kit
+Alloker for meget plads                                       AllocOutOfMem.kit
+
+Tilgå null-pointer                                            AccessNull.kit
 
 
-tildeling mellem elementer i arrays
-tildeling mellem arrays (både simple og navngivne typer)
-Tildeleing mellem arrays i arrays (både simple og navngivne typer)
-tildeling mellem elementer i records
-tildeling mellem records
-tildeling mellem records i records
+tildeling mellem elementer i arrays                                 AssiArrElem.kit
+tildeling mellem arrays (både simple og navngivne typer)            AssiArrs.kit
+Tildeleing mellem arrays i arrays (både simple og navngivne typer)  AssiArrNest.kit
+tildeling mellem elementer i records                                AssiRecElem.kit
+tildeling mellem records                                            AssiRecs.kit
+tildeling mellem records i records                                  AssiRecNest.kit
 Tildeling mellem typer der ikke er tilladt (FORBUDT)
 
-Tildeling af NULL til simpel type (FORBUDT)
-Tildeling af NULL til navngivet simpel type (FORBUDT)
-Tildeling af NULL til anonym record type
-Tildeomg af NULL til navngivet array type
+Tildeling af NULL til simpel type (FORBUDT)                         AssiNullSimple.kit
+Tildeling af NULL til navngivet simpel type (FORBUDT)               AssiNullNamedSimple.kit
+Tildeling af NULL til anonym record type                            AssiNullRec.kit
+Tildeomg af NULL til navngivet array type                           AssiNullNamedArr.kit
 
-Negativ array indeksering (FORBUDT)
-For stor array indeksering (FORBUDT)
-Tilgang til record element, der ikke findes (FORBUDT)
-Tilgang til record element der findes
-Tjek af typeækvivalens mellem indlejrede arrays.
+Negativ array indeksering (FORBUDT)                                 IndexArrNeg.kit
+For stor array indeksering (FORBUDT)                                IndexArrOutOfBounds.kit
+Tilgang til record element, der ikke findes (FORBUDT)               AccessNonExistField.kit
+Tilgang til record element der findes                               AccessField.kit
+Tjek af typeækvivalens mellem indlejrede arrays.                    ArrTypeEquiv.kit
 
 
 Test alle operatorer i tilladte og ikke tilladet sammenhænge
 eks.
-konstant + konstant
-konstant + variabel af simpel int type
-variabel + variabel af navngivet int type
-boolean varibel + int variabel (FORBUDT)
-NULL + variabel (FORBUDT)
+konstant + konstant                                                 PlusConst.kit
+konstant + variabel af simpel int type                              PlusVarSimple.kit
+variabel + variabel af navngivet int type                           PlusVarNamedSimple.kit
+boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
+NULL + variabel (FORBUDT)                                           PlusNull.kit
 +, -, *, /, <, >, <=, >=, ==, !=
 Tjek om vi har venstre-udledning
 Tjek division by zero-error. Både ved explicit 0 og gennem en variabel
+korslutning af AND og OR
 
 Løkker og if-sætninger
-if-sætning true
-if-sætning false
-if-sætning med boolsk variabel
-if-sætning med boolsk udtryk
-if-sætning med int variabel (eller bare et tal) (FORBUDT)
-if-then på samme måde
-Indlejrede if-sætninger
-Løkker på tjekks på samme måde
-Indlejrede løkker
-blandede indlejrede if-sætninger of løkker
-hav break i løkke
-hav continue i løkke
-have break uden for løkke (FORBUDT)
-hav continue uden for løkke (FORBUDT)
-Hav break i indlejrede løkker
-Hav continue i indlejrede løkker
+if-sætning true                                                     IfTrue.kit
+if-sætning false                                                    IfFalse.kit
+if-sætning med boolsk variabel                                      IfBoolVar.kit
+if-sætning med boolsk udtryk                                        IfBoolExpr.kit
+if-sætning med int variabel (eller bare et tal) (FORBUDT)           IfIntVar.kit
+if-then på samme måde                                               IfThen....
+Indlejrede if-sætninger                                             IfNest.kit
+Løkker på tjekks på samme måde                                      While....
+Indlejrede løkker                                                   WhileNest.kit
+blandede indlejrede if-sætninger of løkker                          WhileIfMix.kit
+hav break i løkke                                                   WhileBreak.kit
+hav continue i løkke                                                WhileCont.kit
+have break uden for løkke (FORBUDT)                                 WhileBreakOut.kit
+hav continue uden for løkke (FORBUDT)                               WhileContOut.kit
+Hav break i indlejrede løkker                                       WhileBreakNest.kit
+Hav continue i indlejrede løkker                                    WhileContNest.kit
 
 
-tjek om {} virker korrekt
+tjek om {} virker korrekt                                           StmtList.kit
 
-funktioner med forskellig start og end id (FORBUDT)
-funktion der tager og returnere simple typer
-funktion der tager og returnere navngivne simple typer
-funktion der tager og returner anonyme records
-funktion der tager og returnere arrays
-funktion der tager og returnere anonyme arrays
-Tjek at parametre evalueres fra venstre mod højre
-Funktionskald der ikke overholder parametertype-listen (testes for flere situationer herover) (FORBUDT)
-Funktionskald der ikke overholder retur typen (testes for flere situationer herover) (FORBUDT)
-Funktionskald som paramtere til funktion med typer overholdt
-Funktionskald med parametre til funktion med forkerte typer
-Gendefintion af funktion i eget scope (FORBUDT)
-gendefintion af funktion i andet scope
+funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
+funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
+funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
+funktion der tager og returner anonyme records                      FuncAnonRec.kit
+funktion der tager og returnere arrays                              FuncArr.kit
+funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
+Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit
+Funktionskald der ikke overholder parametertype-listen (testes for flere situationer herover) (FORBUDT)     FuncCallNonLegalParam.kit
+Funktionskald der ikke overholder retur typen (testes for flere situationer herover) (FORBUDT)              FuncCallNonLegalReturn.kit
+Funktionskald som paramtere til funktion med typer overholdt        FuncCallAsParam.kit
+Funktionskald med parametre til funktion med forkerte typer         FuncCallAsParamWrong.kit
+Gendefintion af funktion i eget scope (FORBUDT)                     FuncReDef.kit
+gendefintion af funktion i andet scope                              FuncReDefScope.kit
 
-returner konstant, der passer med retur-type
-return konstant der ikke passer med retur-type (FORBUDT)
-returner variabel der passer med simple retur type
-returner varibel der ikke passer med simpel retur type (FORBUDT)
-return variabel der passer med navngivet retur type
-return variabel der ikke passer med navngivet returtype (FORBUDT)
-returner record variabel der passer med anonym record type
-return record variabel der ikke passer med anonym record type (FORBUDT)
-return array variabel der passer med anonym array type
-returner array variabel der ikke passer med anonym array type (FORBUDT)
+returner konstant, der passer med retur-type                              RetConst.kit
+return konstant der ikke passer med retur-type (FORBUDT)                  RetConstWrong.kit
+returner variabel der passer med simple retur type                        RetVarSimple.kit
+returner varibel der ikke passer med simpel retur type (FORBUDT)          RetVarSimpleWrong.kit
+return variabel der passer med navngivet retur type                       RetVarNamed.kit
+return variabel der ikke passer med navngivet returtype (FORBUDT)         RetVarNamedWrong.kit
+returner record variabel der passer med anonym record type                RetAnonRec.kit
+return record variabel der ikke passer med anonym record type (FORBUDT)   RetAnonRecWrong.kit
+return array variabel der passer med anonym array type                    RetAnonArr.kit
+returner array variabel der ikke passer med anonym array type (FORBUDT)   RetAnonArrWrong.kit
 
-Funktion der tilgår global variabel
-Indlejrede funktioner der tilgår variabler i ydre scopes
+Funktion der tilgår global variabel                                           LinkGlobalVar.kit
+Indlejrede funktioner der tilgår variabler i ydre scopes                      LinkNestVar.kit
     Evt. også hvor funktionskald er en del af parameterlisten
-Funktioner der tilgår parametre i ydre scopes
-Funktioner der tilgår variabler fra scopes der ikke er tilgængelige (FORBUDT)
-Funktioner der tilgår parametre fra scopes der ikke er tilgængelige (FORBUDT)
+Funktioner der tilgår parametre i ydre scopes                                 LinkNestPar.kit
+Funktioner der tilgår variabler fra scopes der ikke er tilgængelige (FORBUDT) LinkNestVarWrong.kit
+Funktioner der tilgår parametre fra scopes der ikke er tilgængelige (FORBUDT) LinkNestParWrong.kit
 
 
-write simpel type
-write navngiven simpel type
-write kompleks type (FORBUDT)
+write simpel type                                                 WriteSimple.kit
+write navngiven simpel type                                       WriteNamed.kit
+write kompleks type (FORBUDT)                                     WriteComplexWrong.kit
+
+
+Parsertests?

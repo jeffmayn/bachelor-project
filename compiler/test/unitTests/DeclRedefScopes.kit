@@ -1,0 +1,23 @@
+#Gendefiner typer og variabler i forskellige scopes
+type A = int;
+var a:A;
+
+func f():int
+  func f():int
+    type A = bool;
+    var a:A;
+    return 0;
+  end f
+
+  type A = bool;
+  var a:A;
+  return 0;
+end f
+
+func f2():int
+  type A = bool;
+  var a:A;
+  return 0;
+end f2
+
+write 0;

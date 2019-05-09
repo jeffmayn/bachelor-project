@@ -1,0 +1,6 @@
+#Erklær cirkulære record typer
+type R = record of {x:int, y:S};
+type S = record of {a:bool, b:S, c:T};
+type T = record of {v:R};
+var h:R, i:S, j:T;
+write 0;
