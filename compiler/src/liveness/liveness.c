@@ -4,8 +4,6 @@
  #include "internalASM.h"
  #include "memory.h"
 
- LivenessInstructionArray *lia;
-
  int liveness(){
    int error = 0;
    error = initLiveness();

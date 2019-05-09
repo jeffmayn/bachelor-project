@@ -575,6 +575,7 @@ typedef struct LivenessInstructionArray{
 } LivenessInstructionArray;
 
 InstrTable *labelINSTRTable;
+LivenessInstructionArray *lia;
 
 
 
