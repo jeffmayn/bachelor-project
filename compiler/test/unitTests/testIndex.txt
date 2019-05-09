@@ -1,0 +1,122 @@
+Erklær en varibel af simpel type
+Erklær en variabel af ikke-eksiterende type
+Erklær en navngivet simpel type og variabel af denne type
+Erklær en record variabel
+Erklær en record type og en variabel af denne type
+Erklær en array variabel
+Erklær en array type og en variabel af denne type
+erklær en circulær type (FORBUDT)
+Erklær indlejrede record typer
+Erklær circurlære record typer
+Erklær circulære array typer
+gendefiner typer i samme scope (FORBUDT)
+Gendefiner typer i forskellige scopes
+
+
+alloker anonym record variabel
+alloker anonym array variabel
+alloker navngivet record variabel
+alloker navngivet array variabel
+alloker record type (FORBUDT)
+alloker array type (FORBUDT)
+alloker integer variabel (FORBUDT)
+alloker boolean variabel (FORBUDT)
+Alloker record i array
+Alloker array i record
+Alloker indlejrede arrays (mindst 3 lag)
+Alloker indlejrede records (mindst 3 lag)
+
+
+Alloker en negativ array længde
+Alloker for meget plads
+Tilgå null-pointer
+
+
+tildeling mellem elementer i arrays
+tildeling mellem arrays (både simple og navngivne typer)
+Tildeleing mellem arrays i arrays (både simple og navngivne typer)
+tildeling mellem elementer i records
+tildeling mellem records
+tildeling mellem records i records
+Tildeling mellem typer der ikke er tilladt (FORBUDT)
+
+Tildeling af NULL til simpel type (FORBUDT)
+Tildeling af NULL til navngivet simpel type (FORBUDT)
+Tildeling af NULL til anonym record type
+Tildeomg af NULL til navngivet array type
+
+Negativ array indeksering (FORBUDT)
+For stor array indeksering (FORBUDT)
+Tilgang til record element, der ikke findes (FORBUDT)
+Tilgang til record element der findes
+Tjek af typeækvivalens mellem indlejrede arrays.
+
+
+Test alle operatorer i tilladte og ikke tilladet sammenhænge
+eks.
+konstant + konstant
+konstant + variabel af simpel int type
+variabel + variabel af navngivet int type
+boolean varibel + int variabel (FORBUDT)
+NULL + variabel (FORBUDT)
++, -, *, /, <, >, <=, >=, ==, !=
+Tjek om vi har venstre-udledning
+Tjek division by zero-error. Både ved explicit 0 og gennem en variabel
+
+Løkker og if-sætninger
+if-sætning true
+if-sætning false
+if-sætning med boolsk variabel
+if-sætning med boolsk udtryk
+if-sætning med int variabel (eller bare et tal) (FORBUDT)
+if-then på samme måde
+Indlejrede if-sætninger
+Løkker på tjekks på samme måde
+Indlejrede løkker
+blandede indlejrede if-sætninger of løkker
+hav break i løkke
+hav continue i løkke
+have break uden for løkke (FORBUDT)
+hav continue uden for løkke (FORBUDT)
+Hav break i indlejrede løkker
+Hav continue i indlejrede løkker
+
+
+tjek om {} virker korrekt
+
+funktioner med forskellig start og end id (FORBUDT)
+funktion der tager og returnere simple typer
+funktion der tager og returnere navngivne simple typer
+funktion der tager og returner anonyme records
+funktion der tager og returnere arrays
+funktion der tager og returnere anonyme arrays
+Tjek at parametre evalueres fra venstre mod højre
+Funktionskald der ikke overholder parametertype-listen (testes for flere situationer herover) (FORBUDT)
+Funktionskald der ikke overholder retur typen (testes for flere situationer herover) (FORBUDT)
+Funktionskald som paramtere til funktion med typer overholdt
+Funktionskald med parametre til funktion med forkerte typer
+Gendefintion af funktion i eget scope (FORBUDT)
+gendefintion af funktion i andet scope
+
+returner konstant, der passer med retur-type
+return konstant der ikke passer med retur-type (FORBUDT)
+returner variabel der passer med simple retur type
+returner varibel der ikke passer med simpel retur type (FORBUDT)
+return variabel der passer med navngivet retur type
+return variabel der ikke passer med navngivet returtype (FORBUDT)
+returner record variabel der passer med anonym record type
+return record variabel der ikke passer med anonym record type (FORBUDT)
+return array variabel der passer med anonym array type
+returner array variabel der ikke passer med anonym array type (FORBUDT)
+
+Funktion der tilgår global variabel
+Indlejrede funktioner der tilgår variabler i ydre scopes
+    Evt. også hvor funktionskald er en del af parameterlisten
+Funktioner der tilgår parametre i ydre scopes
+Funktioner der tilgår variabler fra scopes der ikke er tilgængelige (FORBUDT)
+Funktioner der tilgår parametre fra scopes der ikke er tilgængelige (FORBUDT)
+
+
+write simpel type
+write navngiven simpel type
+write kompleks type (FORBUDT)
