@@ -61,12 +61,14 @@ Tjek af typeækvivalens mellem indlejrede arrays.                    ArrTypeEqui
 
 Test alle operatorer i tilladte og ikke tilladet sammenhænge
 eks.
-konstant + konstant                                                 PlusConst.kit
-konstant + variabel af simpel int type                              PlusVarSimple.kit
-variabel + variabel af navngivet int type                           PlusVarNamedSimple.kit
-boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
-NULL + variabel (FORBUDT)                                           PlusNull.kit
-+, -, *, /, <, >, <=, >=, ==, !=
+[done]  konstant + konstant                                                 PlusConst.kit
+[done]  konstant + variabel af simpel int type                              PlusVarSimple.kit
+[done]  variabel + variabel af navngivet int type                           PlusVarNamedSimple.kit
+[done]  boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
+[done]  NULL + variabel (FORBUDT)                                           PlusNull.kit
+[done]  +, -, *, /, <, >, <=, >=, ==, !=
+******** ge/geConst.kit --> problemer med liveness analysen
+******** great/greatConst.kit --> same ^^
 Tjek om vi har venstre-udledning
 Tjek division by zero-error. Både ved explicit 0 og gennem en variabel
 korslutning af AND og OR
