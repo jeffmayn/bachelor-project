@@ -135,13 +135,6 @@ int* IGgetNeighbors(int nodeID){
   return neighborIDs;
 }
 
-
-// /**
-//  * returns true (1) if neighbor is adjacent to node
-//  * returns false (0) otherwise
-//  */
-// int IGisNeighbor(int nodeID, int neighborID);
-
 /**
  * Lowest degree node among all unmarked nodes
  * returns -1 if there are no more such nodes

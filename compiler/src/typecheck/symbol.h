@@ -5,13 +5,6 @@
 typedef enum Symbolkind{typeS,funcS,varS} Symbolkind;
 typedef struct CODEGENUTIL CODEGENUTIL;
 
-
-/* SYMBOL will be extended later.
-   Function calls will take more parameters later.
-
-   Use scope when type is func as pointer to the scope of the function
-*/
-
 typedef struct SYMBOL {
   Symbolkind kind;
   enum Typekind typeVal; //this should be the enum from the TYPE struct
@@ -20,7 +13,7 @@ typedef struct SYMBOL {
   struct SymbolTable* scope; //only relevant for functions
   struct SymbolTable* content; //only relevant for records
   struct TYPE* typePtr;
-  char* typeId; //only relevant for user types. Containing the name of the type. Not yet in use
+  char* typeId; //only relevant for user types. Containing the name of the type.
   struct SymbolTable* defScope;
   bool visited;
   struct SYMBOL *next;
@@ -34,10 +27,9 @@ typedef struct ParamSymbol {
 } ParamSymbol;
 
 typedef struct SymbolTable {
-    SYMBOL *table[HashSize]; //**table
+    SYMBOL *table[HashSize];
     ParamSymbol *ParamHead; //List of parameters in order of first to last
     ParamSymbol *ParamTail;
-    //local count
     struct SymbolTable *next;
 } SymbolTable;
 

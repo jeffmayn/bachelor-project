@@ -68,6 +68,7 @@ int addElement(TempList *list, TEMPORARY *temp){
           travNode->next = node;
           node->prev = travNode;
           list->tail = node;
+          break;
         }
         if(travNode->next->temp->tempId > temp->tempId){
           //insert in middle of list
@@ -75,6 +76,7 @@ int addElement(TempList *list, TEMPORARY *temp){
           node->prev = travNode->next->prev;
           travNode->next->prev = node;
           travNode->next = node;
+          break;
         }
         travNode = travNode->next;
       }

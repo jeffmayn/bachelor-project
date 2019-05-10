@@ -10,10 +10,7 @@ void printINSTRnode(INSTR *instr){
   if(instr != NULL){
     fprintf(stderr, "Instr %d: %s\n", instr->id, instrNames[instr->instrKind]);
     printOPERANDs(instr->paramList);
-    //fprintf(stderr, "\t ||\n");
-    //fprintf(stderr, "_______________________________________\n");
     fprintf(stderr, "--------------------------------------------\n");
-    //fprintf(stderr, "\t \\/\n");
     printINSTRnode(instr->next);
   }
   else {
@@ -37,9 +34,6 @@ void printOPERANDnode(OPERAND *op){
     case temporaryO:
       printTEMPORARYnode(op->val.temp);
       break;
-    // case heapAddrO:
-    //   fprintf(stderr, "address: %d\n", op->val.address);
-    //   break;
     case labelIDO:
       fprintf(stderr, "label: %s\n", op->val.label);
       break;

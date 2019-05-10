@@ -5,7 +5,13 @@ const char* regNames[] = {"error: na", "%rax", "%rcx", "%rdx",\
                            "%rdi", "%r8", "%r9", "%r10", "%r11",\
                             "%r12", "%r13", "%r14", "%r15", "error: spill"};
 
+/**
+ * funktioner i dette program går over vores interne representation
+ * og skriver fra intern representation til assembler kode
+ * skriver til stdout. fejl bliver printet i stderr.
+ */
 
+int BPRESET = 0;
 
 int IRtravInternalRep(INSTR *instr){
   int error = 0;
@@ -14,6 +20,10 @@ int IRtravInternalRep(INSTR *instr){
     if(error == -1){
       fprintf(stderr, "IRtravInternalRep: error\n");
       return -1;
+    }
+    if(BPRESET){
+      printf("\tmovq %rbp, %rdi\t\t#resetting basepointer\n");
+      BPRESET = 0;
     }
     instr = instr->next;
   }
@@ -46,12 +56,7 @@ int IRtravPARAM(OPERAND *op){
       printf("$%d", op->val.constant);
       break;
     case temporaryO:
-      // TODO
-      //printf("t%d", op->val.temp->tempId);
       travTemporary(op->val.temp);
-      break;
-    case heapAddrO:
-      //printf("%x", op->val.address);
       break;
     case labelIDO:
       printf("%s", op->val.label);
@@ -75,24 +80,21 @@ int IRtravPARAM(OPERAND *op){
       break;
     case tempDeRefO:
       printf("(%%rcx)");
-      //travTemporary(op->val.temp);
   }
 }
 
 int travTemporary(TEMPORARY *temp){
   switch(temp->temporarykind){
     case actualTempT:
-      //printf("notPlaceYet ");
-      //printf("mov -%d, %%rdx\n", temp->placement.offset);
       printf("(%%rbp,%%rdx,8)");
       break;
     case paramT:
-      //printf("mov %d, %%rdx\n", temp->placement.offset);
       printf("(%%rdi,%%rdx,8)");
+      BPRESET = 1;
       break;
     case localT:
-      //printf("mov -%d, %%rdx\n", temp->placement.offset);
       printf("(%%rdi,%%rdx,8)");
+      BPRESET = 1;
       break;
     case regT:
       printf("%s", regNames[temp->placement.reg]);
@@ -124,15 +126,6 @@ int checkOffsetOperand(INSTR *in){
       else{
         printf("\tmovq (%%rbp,%%rdx,8), %%rcx\n");
       }
-      /*
-        cmp 0, %rcx
-    	  je deref%d
-    	  movq $5, %rax #deref NULL
-    	  jmp errorCleanup5
-      deref%d:
-      */
-      //TODO: %rdi is probably a bad choice
-      //TODO: compile to a.s
     }
     op = op->next;
   }
@@ -146,6 +139,14 @@ int IRtravINSTR(INSTR *in){
   switch(in->instrKind){
     case addI:
       printf("\taddq ");
+      error = IRtravOPERANDlist(in->paramList);
+      break;
+    case incI:
+      printf("\tinc ");
+      error = IRtravOPERANDlist(in->paramList);
+      break;
+    case decI:
+      printf("\tdec ");
       error = IRtravOPERANDlist(in->paramList);
       break;
     case subI:
