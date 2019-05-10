@@ -1,0 +1,19 @@
+(*funktioner med forskellige start og end id FORBUDT*)
+
+(*output:
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+ERROR: Line 3: mismatch in header-id notCool and tail-id atAll
+ERROR: compilation ended in error
+*)
+
+func notCool(x : int) : bool
+	
+	while(x > 1) do {
+		x = x + 1;
+	}
+	
+	return false;
+end atAll
+
+write notCool(100);

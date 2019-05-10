@@ -1,0 +1,28 @@
+(*test af funktion
+  tager of returnere navngivne simple typer
+  korrekt kitty program*)
+
+type myInt = int;
+type myBool = bool;
+
+func retInt (x : myInt) : myInt
+
+	x = x + 1;
+	return x;
+
+end retInt
+
+func retBool (boolean : myBool) : myBool
+
+	boolean = false;
+	return boolean;
+
+end retBool
+
+var x : myInt, y:myBool;
+
+x = 42;
+y = true;
+
+write retInt(x);
+write retBool(y);

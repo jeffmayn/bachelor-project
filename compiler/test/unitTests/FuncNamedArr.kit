@@ -1,0 +1,35 @@
+(*funktion der tager og returnere arrays
+  korrekt kitty program*)
+
+type myIntArray = array of int;
+
+func retNamedInt (x : myIntArray) : myIntArray
+	
+	var v : myIntArray, i : int;
+	i = 1;
+	allocate v of length 10;
+	while(i <= 10) do {
+		v[(i-1)] = x[(10-i)];
+		i = i + 1;
+	}
+	return v;
+end retNamedInt
+
+
+var q : myIntArray;
+var t : myIntArray;
+var i : int;
+
+i = 0;
+allocate q of length 10;
+while(i < 10) do {
+	q[i] = i;
+	i = i + 1;
+}
+
+t = retNamedInt(q);
+i = 0;
+while(i < |t|) do {
+	write t[i];
+	i = i + 1;
+}

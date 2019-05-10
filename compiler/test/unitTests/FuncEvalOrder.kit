@@ -1,0 +1,27 @@
+(*test af funktion
+  tester i hvilken rækkefølge vi evaluere funktionsparametre ved funktionskald
+  venstre mod højre = succes output: 1
+  højre mod venstre = fejl division by 0*)
+
+var globalInt : int;
+
+func multiplyBy10() : int
+
+	globalInt = globalInt * 10;
+	return globalInt;
+
+end multiplyBy10
+
+func decreseBy10() : int
+
+	globalInt = globalInt - 10;
+	return globalInt;
+
+end decreseBy10
+
+func divideThings(x : int, y : int) : int
+	return x / y;
+end divideThings
+
+globalInt = 10;
+write divideThings(multiplyBy10(), decreseBy10());

@@ -95,8 +95,8 @@ tjek om {} virker korrekt                                           StmtList.kit
 funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
 funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
 funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
-funktion der tager og returner anonyme records                      FuncAnonRec.kit
-funktion der tager og returnere arrays                              FuncArr.kit
+*****************funktion der tager og returner anonyme records     					FuncAnonRec.kit //segfault ikke godt
+funktion der tager og returnere arrays                              FuncNamedArr.kit
 funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
 Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit
 Funktionskald der ikke overholder parametertype-listen (testes for flere situationer herover) (FORBUDT)     FuncCallNonLegalParam.kit

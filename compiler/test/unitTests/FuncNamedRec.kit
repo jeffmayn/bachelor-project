@@ -1,0 +1,30 @@
+(*funktion test
+  tager og returnere navngivne records
+  korrekt kitty program*)
+
+type myVector = record of {x:int, y:int, z:int};
+
+func retNamedRec (vector : myVector) : myVector
+
+	var w : myVector;
+
+	allocate w;
+	w.x = vector.x;
+	w.y = vector.y;
+	w.z = vector.z;
+	return w;
+
+end retNamedRec
+
+var v:myVector, u:myVector;
+
+allocate v;
+v.x = 13;
+v.y = 3;
+v.z = 7;
+
+u = retNamedRec(v);
+
+write u.x;
+write u.y;
+write u.z;

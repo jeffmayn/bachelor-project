@@ -1,0 +1,29 @@
+(*test af funktionskald
+  ukorrekt kitty program
+  kopi af FuncNamedTypes.kit men der 
+  er lavet fejl i funktionskald*)
+
+type myInt = int;
+type myBool = bool;
+
+func retInt (x : myInt) : myInt
+
+	x = x + 1;
+	return x;
+
+end retInt
+
+func retBool (boolean : myBool) : myBool
+
+	boolean = false;
+	return boolean;
+
+end retBool
+
+var x : myInt, y:myBool;
+
+x = 42;
+y = true;
+
+write retInt(y);
+write retBool(x);
