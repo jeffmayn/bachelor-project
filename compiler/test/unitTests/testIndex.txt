@@ -67,10 +67,10 @@ eks.
 [done]  boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
 [done]  NULL + variabel (FORBUDT)                                           PlusNull.kit
 [done]  +, -, *, /, <, >, <=, >=, ==, !=
-******** ge/geConst.kit --> problemer med liveness analysen
-******** great/greatConst.kit --> same ^^
-Tjek om vi har venstre-udledning
-Tjek division by zero-error. Både ved explicit 0 og gennem en variabel
+******* ge/geConst.kit --> problemer med liveness analysen
+******* great/greatConst.kit --> same ^^
+[done]  Tjek om vi har venstre-udledning                                    LeftDerivation.kit
+[done]  Tjek division by zero-error. Både ved explicit 0 og gennem en variabel DivisionByZeroExplicit.kit / DivisionByZeroImplicit.kit
 korslutning af AND og OR
 
 Løkker og if-sætninger
