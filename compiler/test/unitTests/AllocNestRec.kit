@@ -1,0 +1,21 @@
+#Alloker indlejrede records (mindst 3 lag)
+type R = record of {x:record of {h:int, i: record of {a:bool, b:bool}, j:bool}, y:int};
+var r : record of {a:int, b:R};
+
+allocate r;
+r.a = 14;
+allocate r.b;
+allocate r.b.x;
+r.b.x.h = 20;
+allocate r.b.x.i;
+r.b.x.i.a = false;
+r.b.x.i.b = true;
+r.b.x.j = true;
+r.b.y = 532;
+
+write r.a;
+write r.b.x.h;
+write r.b.x.i.a;
+write r.b.x.i.b;
+write r.b.x.j;
+write r.b.y;

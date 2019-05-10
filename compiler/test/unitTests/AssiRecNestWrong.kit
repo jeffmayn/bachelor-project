@@ -1,0 +1,15 @@
+type R = record of {a:int, b:record of {c:bool, d:bool}};
+type R2 = record of {r:R, r2:R2};
+var x:R2;
+allocate x;
+allocate x.r;
+x.r.a = 7;
+allocate x.r.b;
+x.r.b.c = true;
+x.r.b.d = true;
+allocate x.r2;
+x.r2=x.r;
+if(x.r2.r.b.c && x.r2.r.b.d) then{
+  write x.r2.r.a;
+  write x.r.a;
+}

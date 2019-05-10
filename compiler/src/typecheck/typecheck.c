@@ -696,7 +696,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
       *sym = getRecordSymbol((*sym)->content, v->val.vardot.id);
       if(*sym == NULL){
         fprintf(stderr, "Unfortunately '%s' was not found insides '%s'\n", v->val.vardot.id, s->name);
-        return -1;
+        return errorK;
       }
       //sym should be updated already
       *type = (*sym)->typePtr;
