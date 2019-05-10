@@ -26,7 +26,7 @@ typedef enum {addI, incI, decI, subI, mulI, divI,
               retI, textI, commentI} INSTRkind;
 
 /*kinds for operands for instrucktions*/
-typedef enum {constantO, temporaryO, heapAddrO, 
+typedef enum {constantO, temporaryO, 
               labelIDO, registerO, addrLabelO,
               textO, commentO, tempDeRefO, derefO} OPERANDkind;
 
@@ -487,7 +487,5 @@ int IRtravPARAM(OPERAND *op);
 int IRtravINSTR(INSTR *in);
 
 int regMapping(registers reg);
-
-
 
 #endif

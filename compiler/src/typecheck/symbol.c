@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
+/**
+ * very basic hash
+ */
 int Hash(char *str){
   unsigned int sum = 0;
   for (unsigned int i = 0; i < strlen(str); i++){
@@ -15,6 +18,9 @@ int Hash(char *str){
   } return sum % HashSize;
 }
 
+/**
+ * creates symboltable
+ */
 SymbolTable *initSymbolTable(){
   SymbolTable* table = Malloc(sizeof(SymbolTable));
   memset(table->table, 0, sizeof(table->table));
@@ -24,12 +30,18 @@ SymbolTable *initSymbolTable(){
   return table;
 }
 
+/**
+ * creates new symboltable as "child" of *t
+ */
 SymbolTable *scopeSymbolTable(SymbolTable *t){
   SymbolTable* newt = initSymbolTable();
   newt->next = t;
   return newt;
 }
 
+/**
+ * used by putParam, creates symbol wrapper
+ */
 ParamSymbol *createParamSymbol(SYMBOL *sym){
   ParamSymbol *newParSym = NEW(ParamSymbol);
   newParSym->data = sym;
@@ -95,7 +107,11 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
   return newSym;
 }
 
-
+/**
+ * used to attatch parameters to functions.
+ * useful in codegeneration when we need to know if
+ * something is a parameter
+ */
 SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType){
   SYMBOL* s = putSymbol(t, name, value, kind, type, NULL, arrayType);
   if(s == NULL){
@@ -115,6 +131,9 @@ SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE
   return s;
 }
 
+/**
+ * used to find symbols in record, not allowed to jump scopes
+ */
 SYMBOL *getRecordSymbol(SymbolTable *t, char* name){
     int hashIndex = Hash(name);
     SYMBOL **table = t->table;
@@ -129,6 +148,9 @@ SYMBOL *getRecordSymbol(SymbolTable *t, char* name){
     return NULL;
 }
 
+/**
+ * returns closest symbol with name char *name
+ */
 SYMBOL *getSymbol(SymbolTable *t, char *name){
   int hashIndex = Hash(name);
   SYMBOL **table = t->table;
@@ -148,6 +170,11 @@ SYMBOL *getSymbol(SymbolTable *t, char *name){
   }
 }
 
+/**
+ * used by code generation, nr jumps
+ * is used to know how many static links we
+ * need to follow
+ */
 SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){
   int hashIndex = Hash(name);
 
@@ -171,7 +198,9 @@ SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){
     return NULL;
   }
 }
-
+/**
+ * debug function, prints symboltable
+ */
 void dumpSymbolTable(SymbolTable *t){
   if(t == NULL){
     return;
