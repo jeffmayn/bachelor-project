@@ -1,0 +1,47 @@
+(*kalder funktioner som parametre for funktion
+  korrekt kitty program*)
+
+func conditionalSumOfThings (x : int, y : int, z : int, c : bool) : int
+
+	var sum : int;
+	if (c) then {
+		sum = x + y + z;
+	}
+
+	return sum;
+
+end conditionalSumOfThings
+
+func pow (number : int, power : int) : int
+	
+	if (power > 1) then {
+		number = number * 2;
+		return pow(number, power-1);
+	}
+	return number;
+	
+end pow
+
+func remainder (divident : int, divisor : int) : int
+
+	while (divident >= divisor) do {
+		divident = divident - divisor;
+	}
+	return divident;
+
+end remainder
+
+func whileCondition () : bool
+
+	var x : int;
+	x = 100;
+	while (x > 2) do {
+		x = x - 1;
+	}
+	return true;
+
+end whileCondition
+write pow(2,4);
+write remainder(3500,600);
+write 1000;
+write conditionalSumOfThings(pow(2,4), remainder(3500, 600), 1000, whileCondition());

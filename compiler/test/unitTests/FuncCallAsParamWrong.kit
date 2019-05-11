@@ -1,0 +1,50 @@
+(*kalder funktioner som parametre for funktion med fejl i typer
+  ukorrekt kitty program*)
+
+func notCorrectTypes (x : bool, y : bool, z : bool, c : int) : int
+
+	if (x) then {
+		if (y) then {
+			if (z) then {
+				return 80082;
+			}
+		}
+	}
+
+	return 1337;
+
+end notCorrectTypes
+
+func pow (number : int, power : int) : int
+	
+	if (power > 1) then {
+		number = number * 2;
+		return pow(number, power-1);
+	}
+	return number;
+	
+end pow
+
+func remainder (divident : int, divisor : int) : int
+
+	while (divident >= divisor) do {
+		divident = divident - divisor;
+	}
+	return divident;
+
+end remainder
+
+func whileCondition () : bool
+
+	var x : int;
+	x = 100;
+	while (x > 2) do {
+		x = x - 1;
+	}
+	return true;
+
+end whileCondition
+write pow(2,4);
+write remainder(3500,600);
+write 1000;
+write notCorrectTypes(pow(2,4), remainder(3500, 600), 1000, whileCondition());

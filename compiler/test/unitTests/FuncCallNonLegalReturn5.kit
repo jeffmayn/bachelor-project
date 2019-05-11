@@ -1,0 +1,35 @@
+(*ukorrekt kitty, retur typer forkerte i funktion*)
+
+type myIntArray = array of int;
+type myBoolArray = array of bool;
+
+func retNamedInt (x : myIntArray) : myIntArray
+	
+	var v : myBoolArray, i : int;
+	i = 1;
+	allocate v of length 10;
+	while(i <= 10) do {
+		v[(i-1)] = true;
+		i = i + 1;
+	}
+	return v;
+end retNamedInt
+
+
+var q : myBoolArray;
+var t : myIntArray;
+var i : int;
+
+i = 0;
+allocate t of length 10;
+while(i < 10) do {
+	t[i] = i;
+	i = i + 1;
+}
+
+t = retNamedInt(t);
+i = 0;
+while(i < |t|) do {
+	write t[i];
+	i = i + 1;
+}

@@ -109,19 +109,19 @@ Hav continue i indlejrede løkker                                    WhileContNe
 
 tjek om {} virker korrekt                                           StmtList.kit
 
-[done]funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
-[done]funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
-[done]funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
-******funktion der tager og returner anonyme records     					FuncAnonRec.kit //segfault ikke godt
-[done]funktion der tager og returnere arrays                              FuncNamedArr.kit
-[done]funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
-[done]Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit
-[done]Funktionskald der ikke overholder parametertype-listen (testes for flere situationer herover) (FORBUDT)     FuncCallNonLegalParam.kit
-Funktionskald der ikke overholder retur typen (testes for flere situationer herover) (FORBUDT)              FuncCallNonLegalReturn.kit
-Funktionskald som paramtere til funktion med typer overholdt        FuncCallAsParam.kit
-Funktionskald med parametre til funktion med forkerte typer         FuncCallAsParamWrong.kit
-Gendefintion af funktion i eget scope (FORBUDT)                     FuncReDef.kit
-gendefintion af funktion i andet scope                              FuncReDefScope.kit
+[done] funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
+[done] funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
+[done] funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
+****** funktion der tager og returner anonyme records     				   FuncAnonRec.kit //segfault ikke godt
+[done] funktion der tager og returnere arrays                              FuncNamedArr.kit
+[done] funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
+[done] Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit
+[done] Funktionskald der ikke overholder parametertype-listen (testes for flere situationer herover) (FORBUDT)     FuncCallNonLegalParam.kit
+[done] Funktionskald der ikke overholder retur typen (testes for flere situationer herover) (FORBUDT)              FuncCallNonLegalReturn.kit
+[done] Funktionskald som paramtere til funktion med typer overholdt        FuncCallAsParam.kit
+[done] Funktionskald som parametre til funktion med forkerte typer         FuncCallAsParamWrong.kit
+[done] Gendefintion af funktion i eget scope (FORBUDT)                     FuncReDef.kit
+[done] gendefintion af funktion i andet scope                              FuncReDefScope.kit
 
 returner konstant, der passer med retur-type                              RetConst.kit
 return konstant der ikke passer med retur-type (FORBUDT)                  RetConstWrong.kit

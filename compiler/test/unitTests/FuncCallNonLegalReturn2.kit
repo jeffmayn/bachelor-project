@@ -1,0 +1,23 @@
+(*test af funktions return
+  ukorrekt kitty program, fejl i simple typer
+  kopi af FuncSimpleTypes.kit men der er lavet fejl
+  i funktions kald*)
+
+func retInt (x : int) : int
+
+	x = x + 1;
+	return x;
+
+end retInt
+
+func retBool (boolean : bool) : bool
+
+	boolean = true;
+	return boolean;
+
+end retBool
+
+var retbool : bool, retint : int;
+
+retint = retBool(false);
+retbool = retInt(1);

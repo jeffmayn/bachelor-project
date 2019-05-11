@@ -1,0 +1,17 @@
+(*redefiner funktion i andet scope
+  korrekt kitty program*)
+
+func redefineThis () : int
+
+	func redefineThis (x : int) : int
+		
+		return x;
+
+	end redefineThis
+
+	write redefineThis(12345);
+	return 56789;
+
+end redefineThis
+
+write redefineThis();

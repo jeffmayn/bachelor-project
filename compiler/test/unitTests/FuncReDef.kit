@@ -1,0 +1,19 @@
+(*gendefinition af funktion i eget scope
+  ukorrekt kitty program*)
+
+func iWasHereFirst () : bool
+
+	return true;
+
+end iWasHereFirst
+
+func iWasHereFirst () : bool
+
+	while(true) do {
+		return false;
+	}
+	return true;
+
+end iWasHereFirst
+
+write iWasHereFirst();

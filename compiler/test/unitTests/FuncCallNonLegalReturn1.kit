@@ -1,0 +1,21 @@
+(*test af funktions return
+  ukorrekt kitty program, fejl i simple typer
+  kopi af FuncSimpleTypes.kit men der er lavet fejl
+  i funktions kald*)
+
+func retInt (x : int) : int
+
+	x = x + 1;
+	return true;
+
+end retInt
+
+func retBool (boolean : bool) : bool
+
+	boolean = true;
+	return 2;
+
+end retBool
+
+write retBool(false);
+write retInt(1);
