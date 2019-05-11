@@ -76,16 +76,17 @@ Tjek forkert brug af type ækvivalente arrays (simple slut typer) (FORBUDT)   Ar
 
 Test alle operatorer i tilladte og ikke tilladet sammenhænge
 eks.
-konstant + konstant                                                 PlusConst.kit
-konstant + variabel af simpel int type                              PlusVarSimple.kit
-variabel + variabel af navngivet int type                           PlusVarNamedSimple.kit
-boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
-NULL + variabel (FORBUDT)                                           PlusNull.kit
-+, -, *, /, <, >, <=, >=, ==, !=
-Tjek om vi har venstre-udledning
-Tjek division by zero-error. Både ved explicit 0 og gennem en variabel
-Tjek for AND og OR
-kortslutning af AND og OR
+[done]  konstant + konstant                                                 PlusConst.kit
+[done]  konstant + variabel af simpel int type                              PlusVarSimple.kit
+[done]  variabel + variabel af navngivet int type                           PlusVarNamedSimple.kit
+[done]  boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
+[done]  NULL + variabel (FORBUDT)                                           PlusNull.kit
+[done]  +, -, *, /, <, >, <=, >=, ==, !=
+******* ge/geConst.kit --> problemer med liveness analysen
+******* great/greatConst.kit --> same ^^
+[done]  Tjek om vi har venstre-udledning                                    LeftDerivation.kit
+[done]  Tjek division by zero-error. Både ved explicit 0 og gennem en variabel DivisionByZeroExplicit.kit / DivisionByZeroImplicit.kit
+korslutning af AND og OR
 
 Løkker og if-sætninger
 if-sætning true                                                     IfTrue.kit
@@ -108,14 +109,14 @@ Hav continue i indlejrede løkker                                    WhileContNe
 
 tjek om {} virker korrekt                                           StmtList.kit
 
-funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
-funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
-funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
-*****************funktion der tager og returner anonyme records     					FuncAnonRec.kit //segfault ikke godt
-funktion der tager og returnere arrays                              FuncNamedArr.kit
-funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
-Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit
-Funktionskald der ikke overholder parametertype-listen (testes for flere situationer herover) (FORBUDT)     FuncCallNonLegalParam.kit
+[done]funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
+[done]funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
+[done]funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
+******funktion der tager og returner anonyme records     					FuncAnonRec.kit //segfault ikke godt
+[done]funktion der tager og returnere arrays                              FuncNamedArr.kit
+[done]funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
+[done]Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit
+[done]Funktionskald der ikke overholder parametertype-listen (testes for flere situationer herover) (FORBUDT)     FuncCallNonLegalParam.kit
 Funktionskald der ikke overholder retur typen (testes for flere situationer herover) (FORBUDT)              FuncCallNonLegalReturn.kit
 Funktionskald som paramtere til funktion med typer overholdt        FuncCallAsParam.kit
 Funktionskald med parametre til funktion med forkerte typer         FuncCallAsParamWrong.kit

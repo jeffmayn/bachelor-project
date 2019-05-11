@@ -1,0 +1,23 @@
+var x:int;
+var y:int;
+var b:bool;
+var a:int;
+
+func test1(a:int):int
+  b = false;
+  if(a < 17 && b) then{
+    write 666;
+  }
+  return a;
+end test1
+
+func test2(a:int):int
+  b = true;
+  if(a > 17 && b) then{
+    write 333;
+  }
+  return a;
+end test2
+
+y = test1(10);
+y = test2(20);
