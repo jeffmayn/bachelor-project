@@ -1,0 +1,20 @@
+#Alloker anonym array i record
+var r:record of {x:int, b: array of int};
+var i:int;
+allocate r;
+r.x = 1000;
+allocate r.b of length 10;
+i = 0;
+while(i < 10) do
+{
+  r.b[i] = i;
+  i = i + 1;
+}
+
+i = 0;
+while(i < 10) do
+{
+  write r.b[i];
+  i = i + 1;
+}
+write r.x;

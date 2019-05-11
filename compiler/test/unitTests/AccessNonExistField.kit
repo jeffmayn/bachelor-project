@@ -1,0 +1,6 @@
+#Tilgang til record element, der ikke findes (FORBUDT)
+var r:record of {a:int, b:bool, c:record of {x:int}};
+allocate r;
+allocate r.c;
+r.c.a = 7;
+write r.c.a;

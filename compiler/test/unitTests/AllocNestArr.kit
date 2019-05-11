@@ -1,0 +1,75 @@
+#Alloker indlejrede arrays (mindst 3 lag)
+var a: array of A;
+type A = array of array of int;
+var i:int, j:int, k:int;
+allocate a of length 3;
+i = 0;
+while(i < 3) do{
+  allocate a[i] of length (i+1);
+  i = i + 1;
+}
+
+i = 0;
+while(i < 3) do{
+  j = 0;
+  while(j <= i) do{
+    allocate a[i][j] of length (j+1);
+    j = j + 1;
+  }
+  i = i + 1;
+}
+(*
+i = 0;
+while(i < 3) do{
+  j = 0;
+  while(j <= i) do{
+    k = 0;
+    while(k <= j) do{
+      allocate a[i][j][k] of length (k+1);
+      k = k + 1;
+    }
+    j = j + 1;
+  }
+  i = i + 1;
+}
+*)
+
+i = 0;
+while(i < 3) do{
+  j = 0;
+  while(j <= i) do{
+    k = 0;
+    while(k <= j) do{
+      a[i][j][k] = 100*i+10*j+k;
+      k = k + 1;
+    }
+    j = j + 1;
+  }
+  i = i + 1;
+}
+
+write a[0][0][0];
+write a[1][0][0];
+write a[1][1][0];
+write a[1][1][1];
+write a[2][0][0];
+write a[2][1][0];
+write a[2][1][1];
+write a[2][2][0];
+write a[2][2][1];
+write a[2][2][2];
+write 10000;
+
+i = 0;
+while(i < 3) do{
+  j = 0;
+  while(j <= i) do{
+    k = 0;
+    while(k <= j) do{
+      write a[i][j][k];
+      k = k + 1;
+    }
+    j = j + 1;
+  }
+  i = i + 1;
+}

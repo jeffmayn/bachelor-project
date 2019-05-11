@@ -1,0 +1,7 @@
+type R =  record of {a:int, b:bool};
+var a:R;
+var b:R;
+allocate a;
+a.a = 65;
+b = a;
+write b.a;

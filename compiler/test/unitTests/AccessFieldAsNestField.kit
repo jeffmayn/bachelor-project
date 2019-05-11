@@ -1,0 +1,6 @@
+#Tilgå element record element som var det i en indlejret record (FORBUDT)
+var a:record of {x:record of {a:bool, b:array of int}, y:bool};
+allocate a;
+allocate a.x;
+a.x.y = false;
+write a.x.y;

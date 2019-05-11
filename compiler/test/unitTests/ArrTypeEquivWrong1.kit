@@ -1,0 +1,14 @@
+#Tjek forkert brug af type ækvivalente arrays (slut typer)
+var a: array of record of {b:bool};
+type arr = array of array of record of {b:bool};
+var b: arr;
+allocate a of length 2;
+allocate b of length 7;
+allocate b[1] of length 3;
+allocate b[1][1]; #b[1][1] er en record
+b[1][1].b = false;
+a[1]=b[1][1];
+b[1] = a;
+a[0].b = true;
+write a[1];
+write b[1][0];

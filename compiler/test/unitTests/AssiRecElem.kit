@@ -1,0 +1,13 @@
+var a: record of {x:int, y:int};
+type B = record of {a:int, b:bool};
+var b:B;
+allocate a;
+allocate b;
+b.b = false;
+b.a=65;
+a.x=b.a;
+a.y=a.x-4;
+write a.x;
+write a.y;
+write b.a;
+write b.b;

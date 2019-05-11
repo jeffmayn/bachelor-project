@@ -1,0 +1,15 @@
+#alloker navngivet record variabel
+var x:X;
+type X = record of {a:int , b:bool};
+type Y = record of {a:bool, b:int};
+var y:Y;
+allocate x;
+x.a = 7;
+allocate y;
+y.a = true;
+x.b = false;
+y.b = 0;
+write x.a;
+write x.b;
+write y.a;
+write y.b;

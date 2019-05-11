@@ -1,0 +1,75 @@
+#tildeling mellem elementer i arrays (simple typer)
+var a : array of A;
+var b : A;
+#var c : array of bool;
+var i:int, j:int, k:int;
+type A = array of array of int;
+allocate a of length 5;
+i = 0;
+while(i < 5) do{
+  allocate a[i]  of length 4;
+  j = 0;
+  while(j < 4) do{
+    allocate a[i][j] of length 3;
+    k = 0;
+    while(k < 3) do{
+      a[i][j][k] = i*100+j*10+k;
+      k = k + 1;
+    }
+    j = j + 1;
+  }
+  i = i + 1;
+}
+
+
+allocate b of length 3;
+i = 0;
+while(i < 3) do{
+  allocate b[i]  of length 2;
+  j = 0;
+  while(j < 2) do{
+    b[i][j] = i*10+j;
+    j = j + 1;
+  }
+  i = i + 1;
+}
+
+
+
+a[0][0][0] = b[1][0];
+a[2][1][1] = b[2][0];
+b[2][1] = a[4][1][1];
+b[2][0] = a[3][2][1];
+
+i = 0;
+while(i < 5) do{
+  j = 0;
+  while(j < 4) do{
+    k = 0;
+    while(k < 3) do{
+      write a[i][j][k];
+      k = k + 1;
+    }
+    j = j + 1;
+  }
+  i = i + 1;
+}
+
+
+i = 0;
+while(i < 3) do{
+  j = 0;
+  while(j < 2) do{
+    write b[i][j];
+    j = j + 1;
+  }
+  i = i + 1;
+}
+
+(*
+write a[0][0][0];
+write a[2][1][1];
+write b[2][1];
+write b[2][0];
+write 100000;
+*)

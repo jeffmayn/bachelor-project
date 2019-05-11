@@ -1,0 +1,15 @@
+#Alloker navngivet record i array
+var x: array of R;
+type R = record of {a:int, b:bool};
+allocate x of length 30;
+allocate x[0];
+allocate x[1];
+x[0].a = 0;
+x[1].a = 1;
+x[0].b = true;
+x[1].b = false;
+
+write x[0].a;
+write x[1].a;
+write x[0].b;
+write x[1].b;
