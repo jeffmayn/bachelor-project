@@ -1,0 +1,6 @@
+#Tilgang til record element der findes
+var r:record of {a:int, b:bool, c:record of {x:int}};
+allocate r;
+allocate r.c;
+r.c.x = 7;
+write r.c.x;

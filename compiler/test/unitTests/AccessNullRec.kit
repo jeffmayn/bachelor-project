@@ -1,0 +1,5 @@
+#Tilgå null-pointer record
+var r:record of {hej:bool};
+allocate r;
+r = null;
+r.hej = true;

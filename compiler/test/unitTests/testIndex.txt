@@ -60,14 +60,18 @@ Tildeling af NULL til navngivet simpel type (FORBUDT)               AssiNullName
 Tildeling af NULL til anonym record type                            AssiNullAnonRec.kit
 Tildeling af NULL til navngivet array type                          AssiNullNamedArr.kit
 
-Negativ array indeksering (FORBUDT)                                 IndexArrNeg.kit
-For stor array indeksering (FORBUDT)                                IndexArrOutOfBounds.kit
+Negativ array indeksering                                           IndexArrNeg.kit
+For stor array indeksering                                          IndexArrOutOfBounds.kit
 Tilgang til record element, der ikke findes (FORBUDT)               AccessNonExistField.kit
 Tilgang til record element der findes                               AccessField.kit
 Tilgå element uden for record som var det inde i recorden (FORBUDT) AccesVarAsField.kit
+Tilgå element record element som var det i en indlejret record (FORBUDT) AccessFieldAsNestField.kit
 Tilgå null-pointer record                                           AccessNullRec.kit
 Tilgå null-pointer array                                            AccessNullArr.kit
-Tjek af typeækvivalens mellem indlejrede arrays.                    ArrTypeEquiv.kit
+Tjek korrekt brug af typeækvivalens mellem indlejrede arrays                 ArrTypeEquiv.kit
+*****Tjek forkert brug af type ækvivalente arrays (slut typer)               ArrTypeEquivWrong1.kit
+Tjek forkert brug af type ækvivalente arrays (array typer) (FORBUDT)         ArrTypeEquivWrong2.kit
+Tjek forkert brug af type ækvivalente arrays (simple slut typer) (FORBUDT)   ArrTypeEquivWrong3.kit
 
 
 Test alle operatorer i tilladte og ikke tilladet sammenhænge

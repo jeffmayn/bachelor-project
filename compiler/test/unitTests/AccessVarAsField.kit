@@ -1,0 +1,9 @@
+#Tilgå element uden for record som var det inde i recorden (FORBUDT)
+var a:R;
+type R = record of {a:int, c:int};
+var b:int;
+allocate a;
+a.a = 7;
+a.c = 8;
+a.b = 4;
+write a.b;
