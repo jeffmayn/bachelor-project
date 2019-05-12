@@ -16,8 +16,11 @@ Gendefiner typer og varibler i forskellige scopes                     DeclRedefS
 Erklær variabel af type, der er out of order erklæret                 DeclVarOutOfOrder.kit
 Erklær en kæde af simple typer                                        DeclTypeChain.kit
 Erklær en funktion (gjort i DeclRedefScopes.kit)
-*******Erklær et record field af en type der er en variabel (FORBUDT)       DeclFieldVarTypeFromVar.kit
-type der er en funktion##
+Erklær et record field af en type der er en variabel (FORBUDT)        DeclFieldVarTypeFromVar.kit
+Erklær en variabel af en type der er en variabel (FORBUDT)            DeclVarTypeFromVar.kit
+##Erklær en variabel af en type der er en funktion (FORBUDT)
+##Erklær et record felt med en gyldig type, der dog deler navn med et andet felt i recorden
+
 
 alloker anonym record variabel                                AllocAnonRec.kit
 alloker anonym array variabel                                 AllocAnonArr.kit
@@ -25,16 +28,19 @@ alloker navngivet record variabel                             AllocNamedRec.kit
 alloker navngivet array variabel                              AllocNamedArr.kit
 alloker record type (FORBUDT)                                 AllocRecType.kit
 alloker array type (FORBUDT)                                  AllocArrType.kit
-******Alloker funktion (FORBUDT)                                    AllocFunc.kit
-******alloker integer variabel (FORBUDT)                            AllocInt.kit
-******alloker boolean variabel (FORBUDT)                            AllocBool.kit
+Alloker funktion (FORBUDT)                                    AllocFunc.kit
+Alloker type (FORBUDT)                                        AllocType.kit
+Alloker integer variabel (FORBUDT)                            AllocInt.kit
+Alloker boolean variabel (FORBUDT)                            AllocBool.kit
+Alloker anonym record som array (FORBUDT)                     AllocRecAsArr.kit
+Alloker navngivet array som record (FORBUDT)                  AllocArrAsRec.kit
 Alloker anonym record i array                                 AllocAnonRecInArr.kit
 Alloker navngivet record i array                              AllocNamedRecInArr.kit
 Alloker anonym array i record                                 AllocAnonArrInRec.kit
 Alloker navngivet array i record                              AllocNamedArrInRec.kit
 Alloker indlejrede arrays (mindst 3 lag)                      AllocNestArr.kit
 Alloker indlejrede records (mindst 3 lag)                     AllocNestRec.kit
-******Alloker array indeks, der ikke er at array som array (FORBUDT)  AllocNestArrWrong.kit
+Alloker array indeks, der ikke er et array, som array (FORBUDT)  AllocNestArrWrong.kit
 
 Alloker en negativ array længde                               AllocArrNeg.kit
 Alloker et array af længde 0 gennem variabel                  AllocArrZero.kit
@@ -42,10 +48,10 @@ Alloker for meget plads i en allokation                       AllocOutOfMemSingl
 Alloker for meget plads igennem flere allokationer            AllocOutOfMemMultiple.kit
 
 tildeling mellem elementer i arrays (simple typer)            AssiArrElem.kit
-*****Tildeling mellem elementer i arrays (record typer)            AssiArrRecElem.kit
+Tildeling mellem elementer i arrays (record typer)            AssiArrRecElem.kit
 Tildeling forkert mellem elementer i arrays (simple typer) (FORBUDT)    AssiArrElemSimpleWrong.kit
 tildeling mellem arrays (både simple)                               AssiArrs.kit
-*****Tildeling mellem Arrays (record typer)                              AssiArrsRec.kit
+Tildeling mellem Arrays (record typer)                              AssiArrsRec.kit
 Tildeleing mellem arrays i arrays (simple typer) (måske dækket andet sted)                    AssiArrNestSimple.kit
 Tildeleing mellem arrays i arrays (record typer) (måske dækket andet sted)                   AssiArrNestRec.kit
 tildeling mellem elementer i records                                AssiRecElem.kit
@@ -68,10 +74,10 @@ Tilgå element uden for record som var det inde i recorden (FORBUDT) AccesVarAsF
 Tilgå element record element som var det i en indlejret record (FORBUDT) AccessFieldAsNestField.kit
 Tilgå null-pointer record                                           AccessNullRec.kit
 Tilgå null-pointer array                                            AccessNullArr.kit
-Tjek korrekt brug af typeækvivalens mellem indlejrede arrays                 ArrTypeEquiv.kit
-*****Tjek forkert brug af type ækvivalente arrays (slut typer)               ArrTypeEquivWrong1.kit
-Tjek forkert brug af type ækvivalente arrays (array typer) (FORBUDT)         ArrTypeEquivWrong2.kit
-Tjek forkert brug af type ækvivalente arrays (simple slut typer) (FORBUDT)   ArrTypeEquivWrong3.kit
+Tjek korrekt brug af typeækvivalens mellem indlejrede arrays                ArrTypeEquiv.kit
+Tjek forkert brug af type ækvivalente arrays (slut typer)                   ArrTypeEquivWrong1.kit
+Tjek forkert brug af type ækvivalente arrays (array typer) (FORBUDT)        ArrTypeEquivWrong2.kit
+Tjek forkert brug af type ækvivalente arrays (simple slut typer) (FORBUDT)  ArrTypeEquivWrong3.kit
 
 
 Test alle operatorer i tilladte og ikke tilladet sammenhænge
@@ -112,7 +118,7 @@ tjek om {} virker korrekt                                           StmtList.kit
 [done] funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
 [done] funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
 [done] funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
-****** funktion der tager og returner anonyme records     				   FuncAnonRec.kit //segfault ikke godt
+[done] funktion der tager og returner anonyme records     				         FuncAnonRec.kit
 [done] funktion der tager og returnere arrays                              FuncNamedArr.kit
 [done] funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
 [done] Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit

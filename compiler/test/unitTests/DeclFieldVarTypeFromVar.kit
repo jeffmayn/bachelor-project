@@ -1,4 +1,7 @@
 #Erklær et record field af en type der er en variabel (FORBUDT)
 type t = record of {a:x,b:int};
 var x:t;
+allocate x;
+allocate x.a;
+#x.a = 7;
 write 0;
