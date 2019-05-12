@@ -1,92 +1,92 @@
-Erklær en varibel af simpel type                                      DeclVarSimple.kit
-Erklær en variabel af ikke-eksiterende type (FORBUDT)                 DeclVarNonExist.kit
-Erklær en navngivet simpel type og variabel af denne type             DeclVarTypeSimple.kit
-Erklær en navngivet simpel type baseret på en anden navngivet type    DeclTypeOutOfOrder.kit
-Erklær en record variabel                                             DeclVarRec.kit
-Erklær en record type og en variabel af denne type                    DeclVarTypeRec.kit
-Erklær en array variabel                                              DeclVarArr.kit
-Erklær en array type og en variabel af denne type                     DeclVarTypeArr.kit
-Erklær en circulær type (FORBUDT)                                     DeclCircType.kit
-Erklær indlejrede record typer                                        DeclNestRec.kit
-Erklær circurlære record typer                                        DeclCircRec.kit
-Erklær indlejrede array typer                                         DeclNestArr.kit
+[done] Erklær en varibel af simpel type                                      DeclVarSimple.kit
+[done] Erklær en variabel af ikke-eksiterende type (FORBUDT)                 DeclVarNonExist.kit
+[done] Erklær en navngivet simpel type og variabel af denne type             DeclVarTypeSimple.kit
+[done] Erklær en navngivet simpel type baseret på en anden navngivet type    DeclTypeOutOfOrder.kit
+[done] Erklær en record variabel                                             DeclVarRec.kit
+[done] Erklær en record type og en variabel af denne type                    DeclVarTypeRec.kit
+[done] Erklær en array variabel                                              DeclVarArr.kit
+[done] Erklær en array type og en variabel af denne type                     DeclVarTypeArr.kit
+[done] Erklær en circulær type (FORBUDT)                                     DeclCircType.kit
+[done] Erklær indlejrede record typer                                        DeclNestRec.kit
+[done] Erklær circurlære record typer                                        DeclCircRec.kit
+[done] Erklær indlejrede array typer                                         DeclNestArr.kit
 Erklær circulære array typer                                          DeclCircArr.kit
-Generklær typer i samme scope (FORBUDT)                               DeclRedef.kit
-Gendefiner typer og varibler i forskellige scopes                     DeclRedefScopes.kit
-Erklær variabel af type, der er out of order erklæret                 DeclVarOutOfOrder.kit
-Erklær en kæde af simple typer                                        DeclTypeChain.kit
-Erklær en funktion (gjort i DeclRedefScopes.kit)
-*******Erklær et record field af en type der er en variabel (FORBUDT)       DeclFieldVarTypeFromVar.kit
-type der er en funktion##
+[done] Generklær typer i samme scope (FORBUDT)                               DeclRedef.kit
+[done] Gendefiner typer og varibler i forskellige scopes                     DeclRedefScopes.kit
+[done] Erklær variabel af type, der er out of order erklæret                 DeclVarOutOfOrder.kit
+[done] Erklær en kæde af simple typer                                        DeclTypeChain.kit
+[done] Erklær en funktion (gjort i DeclRedefScopes.kit)
+****** Erklær et record field af en type der er en variabel (FORBUDT)       DeclFieldVarTypeFromVar.kit
+[done] type der er en funktion##
 
-alloker anonym record variabel                                AllocAnonRec.kit
-alloker anonym array variabel                                 AllocAnonArr.kit
-alloker navngivet record variabel                             AllocNamedRec.kit
-alloker navngivet array variabel                              AllocNamedArr.kit
-alloker record type (FORBUDT)                                 AllocRecType.kit
-alloker array type (FORBUDT)                                  AllocArrType.kit
-******Alloker funktion (FORBUDT)                                    AllocFunc.kit
-******alloker integer variabel (FORBUDT)                            AllocInt.kit
-******alloker boolean variabel (FORBUDT)                            AllocBool.kit
-Alloker anonym record i array                                 AllocAnonRecInArr.kit
-Alloker navngivet record i array                              AllocNamedRecInArr.kit
-Alloker anonym array i record                                 AllocAnonArrInRec.kit
-Alloker navngivet array i record                              AllocNamedArrInRec.kit
-Alloker indlejrede arrays (mindst 3 lag)                      AllocNestArr.kit
-Alloker indlejrede records (mindst 3 lag)                     AllocNestRec.kit
-******Alloker array indeks, der ikke er at array som array (FORBUDT)  AllocNestArrWrong.kit
+[done] alloker anonym record variabel                                AllocAnonRec.kit
+[done] alloker anonym array variabel                                 AllocAnonArr.kit
+[done] alloker navngivet record variabel                             AllocNamedRec.kit
+[done] alloker navngivet array variabel                              AllocNamedArr.kit
+[done] alloker record type (FORBUDT)                                 AllocRecType.kit
+[done] alloker array type (FORBUDT)                                  AllocArrType.kit
+****** Alloker funktion (FORBUDT)                                    AllocFunc.kit
+****** alloker integer variabel (FORBUDT)                            AllocInt.kit
+****** alloker boolean variabel (FORBUDT)                            AllocBool.kit
+[done] Alloker anonym record i array                                 AllocAnonRecInArr.kit
+[done] Alloker navngivet record i array                              AllocNamedRecInArr.kit
+[done] Alloker anonym array i record                                 AllocAnonArrInRec.kit
+[done] Alloker navngivet array i record                              AllocNamedArrInRec.kit
+[done] Alloker indlejrede arrays (mindst 3 lag)                      AllocNestArr.kit
+[done] Alloker indlejrede records (mindst 3 lag)                     AllocNestRec.kit
+****** Alloker array indeks, der ikke er at array som array (FORBUDT)  AllocNestArrWrong.kit
 
-Alloker en negativ array længde                               AllocArrNeg.kit
-Alloker et array af længde 0 gennem variabel                  AllocArrZero.kit
-Alloker for meget plads i en allokation                       AllocOutOfMemSingle.kit
-Alloker for meget plads igennem flere allokationer            AllocOutOfMemMultiple.kit
+[done] Alloker en negativ array længde                               AllocArrNeg.kit
+[done] Alloker et array af længde 0 gennem variabel                  AllocArrZero.kit
+[done] Alloker for meget plads i en allokation                       AllocOutOfMemSingle.kit
+[done] Alloker for meget plads igennem flere allokationer            AllocOutOfMemMultiple.kit
 
-tildeling mellem elementer i arrays (simple typer)            AssiArrElem.kit
-*****Tildeling mellem elementer i arrays (record typer)            AssiArrRecElem.kit
-Tildeling forkert mellem elementer i arrays (simple typer) (FORBUDT)    AssiArrElemSimpleWrong.kit
-tildeling mellem arrays (både simple)                               AssiArrs.kit
-*****Tildeling mellem Arrays (record typer)                              AssiArrsRec.kit
+[done] tildeling mellem elementer i arrays (simple typer)            AssiArrElem.kit
+***** Tildeling mellem elementer i arrays (record typer)            AssiArrRecElem.kit
+[done] Tildeling forkert mellem elementer i arrays (simple typer) (FORBUDT)    AssiArrElemSimpleWrong.kit
+[done] tildeling mellem arrays (både simple)                               AssiArrs.kit
+***** Tildeling mellem Arrays (record typer)                              AssiArrsRec.kit
 Tildeleing mellem arrays i arrays (simple typer) (måske dækket andet sted)                    AssiArrNestSimple.kit
 Tildeleing mellem arrays i arrays (record typer) (måske dækket andet sted)                   AssiArrNestRec.kit
-tildeling mellem elementer i records                                AssiRecElem.kit
-tildeling mellem anonyme records (FORBUDT)                          AssiAnonRecs.kit
-tildeling mellem navngivne records                                  AssiNamedRecs.kit
-tildeling mellem records i records                                  AssiRecNest.kit
-tildeling forkert mellem records i records (FORBUDT                 AssiRecNestWrong.kit
+[done] tildeling mellem elementer i records                                AssiRecElem.kit
+[done] tildeling mellem anonyme records (FORBUDT)                          AssiAnonRecs.kit
+[done] tildeling mellem navngivne records                                  AssiNamedRecs.kit
+[done] tildeling mellem records i records                                  AssiRecNest.kit
+[done] tildeling forkert mellem records i records (FORBUDT                 AssiRecNestWrong.kit
 Tildeling mellem typer der ikke er tilladt (FORBUDT)
 
-Tildeling af NULL til simpel type (FORBUDT)                         AssiNullSimple.kit
-Tildeling af NULL til navngivet simpel type (FORBUDT)               AssiNullNamedSimple.kit
-Tildeling af NULL til anonym record type                            AssiNullAnonRec.kit
-Tildeling af NULL til navngivet array type                          AssiNullNamedArr.kit
+[done] Tildeling af NULL til simpel type (FORBUDT)                         AssiNullSimple.kit
+[done] Tildeling af NULL til navngivet simpel type (FORBUDT)               AssiNullNamedSimple.kit
+[done] Tildeling af NULL til anonym record type                            AssiNullAnonRec.kit
+[done] Tildeling af NULL til navngivet array type                          AssiNullNamedArr.kit
 
 Negativ array indeksering                                           IndexArrNeg.kit
 For stor array indeksering                                          IndexArrOutOfBounds.kit
-Tilgang til record element, der ikke findes (FORBUDT)               AccessNonExistField.kit
-Tilgang til record element der findes                               AccessField.kit
-Tilgå element uden for record som var det inde i recorden (FORBUDT) AccesVarAsField.kit
-Tilgå element record element som var det i en indlejret record (FORBUDT) AccessFieldAsNestField.kit
-Tilgå null-pointer record                                           AccessNullRec.kit
-Tilgå null-pointer array                                            AccessNullArr.kit
-Tjek korrekt brug af typeækvivalens mellem indlejrede arrays                 ArrTypeEquiv.kit
-*****Tjek forkert brug af type ækvivalente arrays (slut typer)               ArrTypeEquivWrong1.kit
-Tjek forkert brug af type ækvivalente arrays (array typer) (FORBUDT)         ArrTypeEquivWrong2.kit
-Tjek forkert brug af type ækvivalente arrays (simple slut typer) (FORBUDT)   ArrTypeEquivWrong3.kit
+[done] Tilgang til record element, der ikke findes (FORBUDT)               AccessNonExistField.kit
+[done] Tilgang til record element der findes                               AccessField.kit
+[done] Tilgå element uden for record som var det inde i recorden (FORBUDT) AccesVarAsField.kit
+[done] Tilgå element record element som var det i en indlejret record (FORBUDT) AccessFieldAsNestField.kit
+[done] Tilgå null-pointer record                                           AccessNullRec.kit
+[done] Tilgå null-pointer array                                            AccessNullArr.kit
+[done] Tjek korrekt brug af typeækvivalens mellem indlejrede arrays                 ArrTypeEquiv.kit
+****** Tjek forkert brug af type ækvivalente arrays (slut typer)               ArrTypeEquivWrong1.kit
+[done] Tjek forkert brug af type ækvivalente arrays (array typer) (FORBUDT)         ArrTypeEquivWrong2.kit
+[done] Tjek forkert brug af type ækvivalente arrays (simple slut typer) (FORBUDT)   ArrTypeEquivWrong3.kit
 
 
 Test alle operatorer i tilladte og ikke tilladet sammenhænge
 eks.
-[done]  konstant + konstant                                                 PlusConst.kit
-[done]  konstant + variabel af simpel int type                              PlusVarSimple.kit
-[done]  variabel + variabel af navngivet int type                           PlusVarNamedSimple.kit
-[done]  boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
-[done]  NULL + variabel (FORBUDT)                                           PlusNull.kit
-[done]  +, -, *, /, <, >, <=, >=, ==, !=
-******* ge/geConst.kit --> problemer med liveness analysen
-******* great/greatConst.kit --> same ^^
-[done]  Tjek om vi har venstre-udledning                                    LeftDerivation.kit
-[done]  Tjek division by zero-error. Både ved explicit 0 og gennem en variabel DivisionByZeroExplicit.kit / DivisionByZeroImplicit.kit
-korslutning af AND og OR
+[done] konstant + konstant                                                 PlusConst.kit
+[done] konstant + variabel af simpel int type                              PlusVarSimple.kit
+[done] variabel + variabel af navngivet int type                           PlusVarNamedSimple.kit
+[done] boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
+[done] NULL + variabel (FORBUDT)                                           PlusNull.kit
+[done] +, -, *, /, <, >, <=, >=, ==, !=
+****** ge/geConst.kit --> problemer med liveness analysen
+****** great/greatConst.kit --> same ^^
+[done] Tjek om vi har venstre-udledning                                    LeftDerivation.kit
+[done] Tjek division by zero-error. Både ved explicit 0 og gennem en variabel DivisionByZeroExplicit.kit / DivisionByZeroImplicit.kit
+[done] korslutning af AND og OR
 
 Løkker og if-sætninger
 if-sætning true                                                     IfTrue.kit
@@ -105,7 +105,6 @@ have break uden for løkke (FORBUDT)                                 WhileBreakO
 hav continue uden for løkke (FORBUDT)                               WhileContOut.kit
 Hav break i indlejrede løkker                                       WhileBreakNest.kit
 Hav continue i indlejrede løkker                                    WhileContNest.kit
-
 
 tjek om {} virker korrekt                                           StmtList.kit
 
