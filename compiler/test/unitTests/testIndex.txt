@@ -122,6 +122,7 @@ tjek om {} virker korrekt                                           StmtList.kit
 [done] Gendefintion af funktion i eget scope (FORBUDT)                     FuncReDef.kit
 [done] gendefintion af funktion i andet scope                              FuncReDefScope.kit
 
+/*return-tests er måske dækket af funktions-tests ovenfor*/
 returner konstant, der passer med retur-type                              RetConst.kit
 return konstant der ikke passer med retur-type (FORBUDT)                  RetConstWrong.kit
 returner variabel der passer med simple retur type                        RetVarSimple.kit
