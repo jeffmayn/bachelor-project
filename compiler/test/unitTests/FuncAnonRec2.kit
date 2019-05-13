@@ -1,16 +1,16 @@
 (*test af funktion
-  funktion der tager of returnere anonyme records
+  funktion der returnere anonyme records
   burde ikke være muligt for os da vi ikke har
   strukturel eqvivalens
   SEGFAULT, ikke godt*)
 
-func retAnonRec (vector : record of {x:int, y:int, z:int}) : record of {x:int, y:int, z:int}
+func retAnonRec (vector : int) : record of {x:int, y:int, z:int}
 	var w : record of {x:int, y:int, z:int};
 
 	allocate w;
-	w.x = vector.x;
-	w.y = vector.y;
-	w.z = vector.z;
+	w.x = vector;
+	w.y = vector+1;
+	w.z = vector+2;
 	return w;
 
 end retAnonRec
@@ -23,7 +23,7 @@ v.x = 13;
 v.y = 3;
 v.z = 7;
 
-u = retAnonRec(v);
+u = retAnonRec(v.y);
 
 write u.x;
 write u.y;
