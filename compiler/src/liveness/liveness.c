@@ -25,17 +25,23 @@ int liveness(){
     return -1;
   }
 
+  //printLIA();
+
   error = buildInterferenceGraph();
   if(error == -1){
     fprintf(stderr, "INTERNAL ERROR: buildInterferenceGraph\n");
     return -1;
   }
 
+  //IGprintGraph();
+
   error = IGcolorGraph();
   if(error == -1){
     fprintf(stderr, "INTERNAL ERROR: colorGraph\n");
     return -1;
   }
+
+  //IGprintGraph();
 
   error = IGTransferColors();
   if(error == -1){

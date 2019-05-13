@@ -1,5 +1,5 @@
 #!/bin/bash
-for file in test/unitTests/FuncAnonRec.kit; do
+for file in test/unitTests/AccessFuncNotVar.kit; do
   echo "########" $file
   ./build/compiler < $file > a.s &&
   gcc -no-pie a.s &&

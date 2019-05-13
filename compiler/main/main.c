@@ -92,10 +92,10 @@ int main() {
     return -1;
   }
 
-/*
-  fprintf(stderr, "%s\n", "  |--> STARTING PRINTING INTERNAL REPRESENTATION");
-  printINSTRnode(intermediateHead);
-*/
+
+  // fprintf(stderr, "%s\n", "  |--> STARTING PRINTING INTERNAL REPRESENTATION");
+  // printINSTRnode(intermediateHead);
+
 
   fprintf(stderr, "%s\n", "  |--> STARTING FINAL OUTPUT GENERATION");
   IRtravInternalRep(intermediateHead);

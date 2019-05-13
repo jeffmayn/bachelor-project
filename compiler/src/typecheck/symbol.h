@@ -52,9 +52,9 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
 SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType);
 ParamSymbol *createParamSymbol(SYMBOL *sym);
 
-SYMBOL *getSymbol(SymbolTable *t, char *name);
+SYMBOL *getSymbol(SymbolTable *t, char *name, int getType);
 SYMBOL *getRecordSymbol(SymbolTable *t, char* name);
-SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps);
+SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int getType, int *nrJumps);
 
 void dumpSymbolTable(SymbolTable *t);
 

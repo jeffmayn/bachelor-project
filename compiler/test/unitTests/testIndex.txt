@@ -19,7 +19,7 @@ Erklær en funktion (gjort i DeclRedefScopes.kit)
 Erklær et record field af en type der er en variabel (FORBUDT)        DeclFieldVarTypeFromVar.kit
 Erklær en variabel af en type der er en variabel (FORBUDT)            DeclVarTypeFromVar.kit
 ##Erklær en variabel af en type der er en funktion (FORBUDT)
-##Erklær et record felt med en gyldig type, der dog deler navn med et andet felt i recorden
+Erklær et record felt med en gyldig type, der dog deler navn med et andet felt i recorden     DeclFieldTypeNameAsOtherField.kit
 
 
 alloker anonym record variabel                                AllocAnonRec.kit
@@ -74,6 +74,8 @@ Tilgå element uden for record som var det inde i recorden (FORBUDT) AccesVarAsF
 Tilgå element record element som var det i en indlejret record (FORBUDT) AccessFieldAsNestField.kit
 Tilgå null-pointer record                                           AccessNullRec.kit
 Tilgå null-pointer array                                            AccessNullArr.kit
+******Tilgå en funktion der deler navn med en variabel                    AccesFuncNotVar.kit
+
 Tjek korrekt brug af typeækvivalens mellem indlejrede arrays                ArrTypeEquiv.kit
 Tjek forkert brug af type ækvivalente arrays (slut typer)                   ArrTypeEquivWrong1.kit
 Tjek forkert brug af type ækvivalente arrays (array typer) (FORBUDT)        ArrTypeEquivWrong2.kit
@@ -88,11 +90,11 @@ eks.
 [done]  boolean varibel + int variabel (FORBUDT)                            PlusBool.kit
 [done]  NULL + variabel (FORBUDT)                                           PlusNull.kit
 [done]  +, -, *, /, <, >, <=, >=, ==, !=
-******* ge/geConst.kit --> problemer med liveness analysen
-******* great/greatConst.kit --> same ^^
+[done] ge/geConst.kit --> problemer med liveness analysen
+[done] great/greatConst.kit --> same ^^
 [done]  Tjek om vi har venstre-udledning                                    LeftDerivation.kit
 [done]  Tjek division by zero-error. Både ved explicit 0 og gennem en variabel DivisionByZeroExplicit.kit / DivisionByZeroImplicit.kit
-korslutning af AND og OR
+Kortslutning af AND og OR
 
 Løkker og if-sætninger
 if-sætning true                                                     IfTrue.kit
