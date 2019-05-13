@@ -103,8 +103,8 @@ Løkker og if-sætninger
 [done]  hav continue i løkke                                                WhileCont.kit
 [done]  have break uden for løkke (FORBUDT)                                 WhileBreakOut.kit
 [done]  hav continue uden for løkke (FORBUDT)                               WhileContOut.kit
-Hav break i indlejrede løkker                                       WhileBreakNest.kit
-Hav continue i indlejrede løkker                                    WhileContNest.kit
+[done]  Hav break i indlejrede løkker                                       WhileBreakNest.kit
+[done]  Hav continue i indlejrede løkker                                    WhileContNest.kit
 
 
 tjek om {} virker korrekt                                           StmtList.kit
