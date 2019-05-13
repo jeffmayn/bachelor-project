@@ -89,8 +89,8 @@ eks.
 korslutning af AND og OR
 
 Løkker og if-sætninger
-if-sætning true                                                     IfTrue.kit
-if-sætning false                                                    IfFalse.kit
+[done]  if-sætning true                                                     IfTrue.kit
+[done]  if-sætning false                                                    IfFalse.kit
 if-sætning med boolsk variabel                                      IfBoolVar.kit
 if-sætning med boolsk udtryk                                        IfBoolExpr.kit
 if-sætning med int variabel (eller bare et tal) (FORBUDT)           IfIntVar.kit
