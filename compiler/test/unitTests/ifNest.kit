@@ -1,11 +1,16 @@
 var x:int, y:int;
 var z:bool;
+var p:bool;
 z = true;
+p = false;
 x=2;
+y=19;
 
 if(z) then {
-  y = x;
-  x = x+7;
   write x;
+  if(x==2) then {
+    write x+1;
+  }
+} else {
   write y;
 }
