@@ -1,0 +1,12 @@
+(*accessing variables inside record*)
+
+var x : bool;
+type myInt = int;
+type myRec = record of {x : int, myInt : int};
+
+var q : myRec;
+
+q.x = 45;
+q.myInt = 53;
+
+write 342;
