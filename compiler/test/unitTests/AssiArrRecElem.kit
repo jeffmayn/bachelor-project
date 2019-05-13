@@ -1,4 +1,4 @@
-#tildeling mellem elementer i arrays (record typer)
+#Tildeling mellem elementer i arrays (record typer)
 var a : array of A;
 var b : A;
 var i:int, j:int, k:int;
@@ -13,7 +13,10 @@ write a[0][0].a*10+a[0][0].b;
 
 allocate b of length 7;
 b[3] = a[0][0];
+allocate a[1] of length 2;
+a[1][1] = b[3];
 write b[3].a*10+b[3].b;
+write a[1][1].a*10+a[1][1].b;
 
 
 

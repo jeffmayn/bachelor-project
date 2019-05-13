@@ -88,6 +88,7 @@ int idTypeTravBody(SymbolTable *t, BODY *body, bodyList *bList){
 */
 int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
   SYMBOL *sym;
+  int error;
   if(decls == NULL){ //no more declarations
     return 0;
   }
@@ -97,7 +98,7 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
   }
   switch (d->kind) {
     case listK: //variables
-      idTypeTravVDecls(t, d->val.list);
+      idTypeTravVDecls(t, d->val.list, 0);
     break;
     case funcK:
       ; //empty statement
@@ -114,40 +115,45 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
         VAR_DECL_LIST *vList = pList->vList;
-        while(vList != NULL){
-          VAR_TYPE *vty = vList->vType;
-          TYPE *ty = vty->type;
-          TYPE *prev = NULL;
-          while(ty->kind == arrayK){
-            prev = ty;
-            ty = ty->val.arrayType;
-          }
-
-          if(ty->kind == recordK){
-            char *name = Malloc(10);
-            sprintf(name, "$%d", anonymousRecordCounter);
-            anonymousRecordCounter++;
-            TYPE *newType = makeID(name);
-            newType->scope = t;
-            prev->val.arrayType = newType;
-            sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
-            if(sym == NULL){
-              fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, name);
-              return -1;
-            }
-            sym->content=scopeSymbolTable(t);
-            idTypeTravVDecls(sym->content, ty->val.vList);
-          }
-          putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type);
-          vList = vList->vList;
+        error = idTypeTravVDecls(child, vList, 1);
+        if(error == -1){
+          fprintf(stderr, "Line %d: error orcurred while collecting paramters of %s\n", vList->lineno, d->val.func->head->id);
+          return -1;
         }
+        // while(vList != NULL){
+        //   VAR_TYPE *vty = vList->vType;
+        //   TYPE *ty = vty->type;
+        //   TYPE *prev = NULL;
+        //   while(ty->kind == arrayK){
+        //     prev = ty;
+        //     ty = ty->val.arrayType;
+        //   }
+        //
+        //   if(ty->kind == recordK){
+        //     char *name = Malloc(10);
+        //     sprintf(name, "$%d", anonymousRecordCounter);
+        //     anonymousRecordCounter++;
+        //     TYPE *newType = makeID(name);
+        //     newType->scope = t;
+        //     prev->val.arrayType = newType;
+        //     sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
+        //     if(sym == NULL){
+        //       fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, name);
+        //       return -1;
+        //     }
+        //     sym->content=scopeSymbolTable(t);
+        //     idTypeTravVDecls(sym->content, ty->val.vList, 0);
+        //   }
+        //   putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type);
+        //   vList = vList->vList;
+        // }
       }
       //save body for statement traversal
       saveBody(bList, d->val.func->body, child, d->val.func->head->id, t);
       //recursively traverse on body of function
       idTypeTravBody(child,d->val.func->body, bList);
     break;
-    case idDeclK:
+    case idDeclK: //usetype
       sym = putSymbol(t, d->val.id.id, 0, typeS, d->val.id.type->kind, NULL, d->val.id.type);
       if(sym == NULL){
         fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, d->val.id.id);
@@ -157,9 +163,29 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
       if(d->val.id.type->kind == recordK){
         //put all variables of record vty->id
         sym->content = scopeSymbolTable(t);
-        int error123 =  idTypeTravVDecls(sym->content, d->val.id.type->val.vList);
+        int error123 =  idTypeTravVDecls(sym->content, d->val.id.type->val.vList, 0);
         if(error123 == -1){
           return -1;
+        }
+      }
+      else if(d->val.id.type->kind == arrayK){
+        //Copied from idTypeTravVDecls()
+        TYPE *ty = d->val.id.type;
+        TYPE *prev = NULL;
+        while(ty->kind == arrayK){
+          prev = ty;
+          ty = ty->val.arrayType;
+        }
+        if(ty->kind == recordK){
+          char *name = Malloc(10);
+          sprintf(name, "$%d", anonymousRecordCounter);
+          anonymousRecordCounter++;
+          TYPE *newType = makeID(name);
+          newType->scope = t;
+          prev->val.arrayType = newType;
+          sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
+          sym->content=scopeSymbolTable(t);
+          idTypeTravVDecls(sym->content, ty->val.vList, 0);
         }
       }
     break;
@@ -173,24 +199,34 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
   Traverses all variables defined by the same 'var' keyword
   Saves the variables in the symboltable t
 */
-int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
+int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls, int isParamList){
   if(vDecls == NULL){ //no variables
     return 0;
   }
   VAR_TYPE *vty = vDecls->vType;
   SYMBOL *sym = NULL;
   if(vty->type->kind == recordK){
-    sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type);
+    if(isParamList){
+      sym = putParam(t, vty->id, 0, varS, vty->type->kind, vty->type);
+    }
+    else{
+      sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type);
+    }
     //put all variables of record vty->id
     sym->content=scopeSymbolTable(t);
-    idTypeTravVDecls(sym->content, vty->type->val.vList);
+    idTypeTravVDecls(sym->content, vty->type->val.vList, 0);
   }
   else if(vty->type->kind == nullKK){
     fprintf(stderr, "Line %d: The type of symbol '%s' cannot be null\n", vty->lineno, vty->id);
     return -1;
   }
   else if(vty->type->kind == arrayK){
-    sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type);
+    if(isParamList){
+      sym = putParam(t, vty->id, 0, varS, vty->type->kind, vty->type);
+    }
+    else{
+      sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type);
+    }
     if(sym == NULL){
       return -1;
     }
@@ -209,17 +245,22 @@ int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
       prev->val.arrayType = newType;
       sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
       sym->content=scopeSymbolTable(t);
-      idTypeTravVDecls(sym->content, ty->val.vList);
+      idTypeTravVDecls(sym->content, ty->val.vList, 0);
     }
   }
-  else{
-    sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type);
+  else{ //int or bool
+    if(isParamList){
+      sym = putParam(t, vty->id, 0, varS, vty->type->kind, vty->type);
+    }
+    else{
+      sym = putSymbol(t, vty->id, 0, varS, vty->type->kind, NULL, vty->type);
+    }
   }
   if(sym == NULL){
     fprintf(stderr, "Line %d: The symbol '%s' already exist\n", vty->lineno, vty->id);
     return -1;
   }
-  return idTypeTravVDecls(t, vDecls->vList);
+  return idTypeTravVDecls(t, vDecls->vList, isParamList);
 }
 
 //**********************************PHASE 2*********************//
@@ -572,7 +613,11 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
 
       }
       if(s->kind == typeS){
-        fprintf(stderr, "Line %d: cannot use type %s as variable\n", v->lineno, s->name);
+        fprintf(stderr, "Line %d: cannot use type %s as a variable\n", v->lineno, s->name);
+        return errorK;
+      }
+      if(s->kind == funcS){
+        fprintf(stderr, "Line %d: cannot use function %s as a variable\n", v->lineno, s->name);
         return errorK;
       }
       *sym = s;
@@ -736,6 +781,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
   int error;
   Typekind tk;
   VARIABLE *var;
+  char *name;
   switch(s->kind){
     case returnK:
       ; //empty statement
@@ -776,14 +822,22 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         fprintf(stderr, "Line %d: Hopefully error is already printed\n", s->lineno);
         return -1;
       }
-      if(sym->typeVal == idK){
-        if(sym->typePtr->kind != idK){
-          fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
-          return -1;
-        }
+      name = sym->name;
+      if(type->kind == idK){
+        sym = recursiveSymbolRetrieval(sym->defScope, type->val.id, NULL);
+        type = sym->typePtr;
       }
+      if(type->kind != recordK){
+        fprintf(stderr, "Line %d: The (indexing of) variabel %s of type %d cannot be allocated as it is not a record\n", s->lineno, name, type->kind);
+        return -1;
+      }
+      // if(sym->typeVal == idK){
+      //   if(sym->typePtr->kind != idK){
+      //     fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
+      //     return -1;
+      //   }
+      // }
       return 0;
-      fprintf(stderr, "%s\n", "we should not get here at all !");
       break;
     case allocateLengthK:
       //check user type
@@ -793,16 +847,25 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         fprintf(stderr, "Line %d: Hopefully error is already printed\n", s->lineno);
         return -1;
       }
-      if(sym->typeVal == idK){
-        if(sym->typePtr->kind != idK){
-          fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
-          return -1;
-        }
+      name = sym->name;
+      if(type->kind == idK){
+        sym = recursiveSymbolRetrieval(sym->defScope, type->val.id, NULL);
+        type = sym->typePtr;
       }
-      if(sym->kind != varS){
-        fprintf(stderr,"Line %d: can only allocate variables\n", s->lineno);
-        fprintf(stderr, "Something weird here: pretend everything is fine\n");
+      if(type->kind != arrayK){
+        fprintf(stderr, "Line %d: The (indexing of) variabel %s of type %d cannot be length allocated as it is not an array\n", s->lineno, name, type->kind);
+        return -1;
       }
+      // if(sym->typeVal == idK){
+      //   if(sym->typePtr->kind != idK){
+      //     fprintf(stderr, "Line %d: Type %d does not coehere with type %d for symbol %s", s->lineno, sym->typeVal, sym->typePtr->kind, sym->name);
+      //     return -1;
+      //   }
+      // }
+      // if(sym->kind != varS){
+      //   fprintf(stderr,"Line %d: can only allocate variables\n", s->lineno);
+      //   fprintf(stderr, "Something weird here: pretend everything is fine\n");
+      // }
       tk = expOfType(s->val.allocatelength.exp);
       if(tk != intK){
         fprintf(stderr,"Line %d: Amount to be allocated is not a number\n", s->lineno);
@@ -1352,7 +1415,6 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
   TYPE *ty = vty->type;
     switch(tk){
       case arrayK:
-      ;
         while(tk == arrayK){
           ty = ty->val.arrayType;
           tk = ty->kind;
@@ -1384,8 +1446,21 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
             }
             break;
           case idK:
-            sym = recursiveSymbolRetrieval(t, ty->val.id, NULL);
+            //sym = recursiveSymbolRetrieval(t, ty->val.id, NULL);
+            //only go down one level
+            //we should go further down when the type of that level
+            //is itself investigated
+            sym = getSymbol(t, ty->val.id);
             if(sym == NULL){
+              fprintf(stderr, "Line %d: The symbol %s was not found\n", ty->lineno, ty->val.id);
+              return -1;
+            }
+            if(sym->kind == varS){
+              fprintf(stderr, "Line %d: The variable %s cannot have the variable %s as type\n", vty->lineno, vty->id, sym->name);
+              return -1;
+            }
+            if(sym->kind == funcK){
+              fprintf(stderr, "Line %d: The variable %s cannot have the function %s as type\n", vty->lineno, vty->id, sym->name);
               return -1;
             }
             break;

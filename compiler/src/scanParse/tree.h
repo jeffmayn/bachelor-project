@@ -1,11 +1,11 @@
 #ifndef __tree_h
 #define __tree_h
 typedef enum {false, true} bool;
-typedef enum Typekind {idK, intK, boolK, arrayK, 
+typedef enum Typekind {idK, intK, boolK, arrayK,
                         recordK, nullKK, errorK} Typekind;
 typedef enum DeclKind {idDeclK, funcK, listK} DeclKind;
 typedef enum StmtKind {returnK, writeK, allocateK, allocateLengthK,
-                       assiK, ifK, thenK, whileK, listStmtK, 
+                       assiK, ifK, thenK, whileK, listStmtK,
                        breakK, continueK} StmtKind;
 
 //TODO: This is a crazy hack as circular headerfile includes doesn't work
