@@ -16,17 +16,16 @@
 #define DEVISIONBYZERO 3
 #define DEREFNULLCODE 5
 
-extern const char* regNames[];
 /*kinds of assembler instrucktions we have*/
-typedef enum {addI, incI, decI, subI, mulI, divI, 
+typedef enum {addI, incI, decI, subI, mulI, divI,
               andI, orI, xorI, lshiftI, rshiftI,
-              cmpI, jumpI, jmplessI, jmpgreatI, 
-              jmpleI, jmpgeI, jmpeqI, jmpneqI, 
-              movI, labelI, pushI, popI, callI, 
+              cmpI, jumpI, jmplessI, jmpgreatI,
+              jmpleI, jmpgeI, jmpeqI, jmpneqI,
+              movI, labelI, pushI, popI, callI,
               retI, textI, commentI} INSTRkind;
 
 /*kinds for operands for instrucktions*/
-typedef enum {constantO, temporaryO, 
+typedef enum {constantO, temporaryO,
               labelIDO, registerO, addrLabelO,
               textO, commentO, tempDeRefO, derefO} OPERANDkind;
 

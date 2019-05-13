@@ -14,5 +14,5 @@ Other stuff:
   |--> STARTING TYPECHECK
    |--> Symbol collection
    |--> Expression type collection
-Line 15: ID w, not found
+Line 15: symbol 'w' was not found
 Error: Expression type collection did not complete

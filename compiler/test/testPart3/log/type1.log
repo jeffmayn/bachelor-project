@@ -16,6 +16,6 @@ Other stuff:
    |--> Expression type collection
    |--> Typechecking
 Line 11: The type 1 of the expression does not match the type 2 of the symbol f2
-Line 11: checkTypeTravStmt: return type error
-ERROR: Something went totally wring in f2, but we just skip to the next thing and prentend everything is fine. No we don't
+Line 11: The type of the return statement does not match the return type of 'f2'
+ERROR: in function f2
 ERROR: Expression type checking did not complete

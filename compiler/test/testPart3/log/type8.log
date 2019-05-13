@@ -14,6 +14,5 @@ Other stuff:
   |--> STARTING TYPECHECK
    |--> Symbol collection
    |--> Expression type collection
-Line 15: the index-expression have type 2, and does not cohere with type 1, expected here
-Line 15: Hopefully error is already printed
+Line 15: the index have boolean type, which is not integer
 Error: Expression type collection did not complete

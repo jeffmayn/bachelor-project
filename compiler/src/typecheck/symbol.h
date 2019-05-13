@@ -38,6 +38,8 @@ typedef struct SymbolList {
   struct SymbolList *next;
 } SymbolList;
 
+extern const char *symKindNames[];
+
 int Hash(char *str);
 
 SymbolTable *initSymbolTable();

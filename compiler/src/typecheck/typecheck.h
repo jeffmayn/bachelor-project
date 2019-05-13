@@ -29,6 +29,9 @@ typedef struct bodyList {
   bodyListElm *next;
 } bodyList;
 
+extern const char *typeNames[];
+
+
 int typeCheck(SymbolTable *table);
 
 /**
