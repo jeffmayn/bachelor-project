@@ -1,0 +1,13 @@
+#Tilgå en variabel i et andet scope, der deler navn med en function (FORBUDT)
+
+var g:int;
+func f():bool
+  func g():int
+    return 0;
+  end g
+  g = 11;
+  write g;
+  return true;
+end f
+
+write f();

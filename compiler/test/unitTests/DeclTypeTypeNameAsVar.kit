@@ -1,0 +1,12 @@
+#Erklær en type med en type i et andet scope, der deler navn med en variabel (FORBUDT)
+type A = int;
+
+func f():int
+  var A:bool;
+  type B = A;
+  var b:B;
+  b = 7;
+  return b;
+end f
+
+write f();

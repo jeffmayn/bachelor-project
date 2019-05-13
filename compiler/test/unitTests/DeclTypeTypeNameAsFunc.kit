@@ -1,0 +1,14 @@
+#Erklær en type med en type i et andet scope, der deler navn med en funktion (FORBUDT)
+type g = int;
+
+func f():int
+  func g():bool
+    return false;
+  end g
+  type B = g;
+  var b:B;
+  b = 7;
+  return b;
+end f
+
+write f();

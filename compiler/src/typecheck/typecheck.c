@@ -519,7 +519,7 @@ Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
       return (*type)->kind;
       break;
     case idTermK: //function call
-      sym = getSymbol(t, term->val.idact.id, 0);
+      sym = getSymbol(t, term->val.idact.id);
       if(sym == NULL){
         fprintf(stderr,"Line %d: idtermK: Symbol '%s' where not found\n", term->lineno, term->val.idact.id);
         return errorK;
@@ -606,7 +606,7 @@ Typekind expTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym, TYPE **type){
   int error;
   switch(v->kind){
     case idVarK:
-      s = getSymbol(t, v->val.id, 0);
+      s = getSymbol(t, v->val.id);
       if(s == NULL){
         fprintf(stderr,"Line %d: ID %s, not found\n", v->lineno, v->val.id);
         return errorK;
@@ -795,7 +795,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         return 0;
       }
       else{
-        sym = getSymbol(parentScope, funcId, 0);
+        sym = getSymbol(parentScope, funcId);
         if(sym == NULL){
           fprintf(stderr, "The surrounding function '%s' was not found", funcId);
           return -1;
@@ -967,7 +967,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
   TYPE *type;
   switch (v->kind) {
     case idVarK:
-      sym2 = getSymbol(t, v->val.id, 0);
+      sym2 = getSymbol(t, v->val.id);
       if(sym2 == NULL){
         fprintf(stderr, "Line %d: Symbol '%s' was not found\n",v->lineno, v->val.id);
         return NULL;
@@ -1052,7 +1052,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
   rename:expandUserType
 */
 SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms){
-  SYMBOL* sym = getSymbol(t, symbolID, 1);
+  SYMBOL* sym = getSymbol(t, symbolID);
   if(sym == NULL){
     fprintf(stderr, "Line %d: recursiveSymbolRetrieval: symbol id: %s not in scope\n", -1, symbolID);
     return NULL;
@@ -1354,7 +1354,7 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
       }
       PAR_DECL_LIST *pList = d->val.func->head->pList;
       if(pList != NULL){
-        sym = getSymbol(t, d->val.func->head->id, 0);
+        sym = getSymbol(t, d->val.func->head->id);
         if(sym == NULL){
           fprintf(stderr, "Line %d: The function %s was not found in current scope\n", d->val.func->head->lineno, d->val.func->head->id);
           return -1;
@@ -1368,7 +1368,7 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
         //TODO: is childScope the right scope?
         VAR_DECL_LIST *vList = pList->vList;
         while(vList != NULL){
-          sym = getSymbol(childScope, vList->vType->id, 0);
+          sym = getSymbol(childScope, vList->vType->id);
           if(sym == NULL){
             return -1;
           }
@@ -1419,7 +1419,7 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
     return 0;
   }
   VAR_TYPE *vty = vDecls->vType;
-  SYMBOL *sym = getSymbol(t, vty->id, 0);
+  SYMBOL *sym = getSymbol(t, vty->id);
   Typekind tk = vty->type->kind;
   TYPE *ty = vty->type;
     switch(tk){
@@ -1459,7 +1459,7 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
             //only go down one level
             //we should go further down when the type of that level
             //is itself investigated
-            sym = getSymbol(t, ty->val.id, 1);
+            sym = getSymbol(t, ty->val.id);
             if(sym == NULL){
               fprintf(stderr, "Line %d: The symbol %s was not found\n", ty->lineno, ty->val.id);
               return -1;

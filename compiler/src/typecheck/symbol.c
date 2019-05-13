@@ -151,12 +151,12 @@ SYMBOL *getRecordSymbol(SymbolTable *t, char* name){
 /**
  * returns closest symbol with name char *name
  */
-SYMBOL *getSymbol(SymbolTable *t, char *name, int getType){
+SYMBOL *getSymbol(SymbolTable *t, char *name){
   int hashIndex = Hash(name);
   SYMBOL **table = t->table;
   SYMBOL *temp = table[hashIndex];
   while(temp != NULL){
-    if((!getType || temp->kind == typeS) && !strcmp(temp->name, name)){
+    if(!strcmp(temp->name, name)){
       return temp;
     } else {
       temp = temp->next;
@@ -164,7 +164,7 @@ SYMBOL *getSymbol(SymbolTable *t, char *name, int getType){
   }
   //navigate to next hashtable if there is one
   if(t->next != NULL){
-    return getSymbol(t->next, name, getType);
+    return getSymbol(t->next, name);
   } else {
     return NULL;
   }
@@ -175,14 +175,14 @@ SYMBOL *getSymbol(SymbolTable *t, char *name, int getType){
  * is used to know how many static links we
  * need to follow
  */
-SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int getType, int *nrJumps){
+SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int *nrJumps){
   int hashIndex = Hash(name);
 
   //search in current table
   SYMBOL **table = t->table;
   SYMBOL *temp = table[hashIndex];
   while(temp != NULL){
-    if((!getType || temp->kind == typeS) && !strcmp(temp->name, name)){
+    if(!strcmp(temp->name, name)){
       return temp;
     } else {
       temp = temp->next;
@@ -193,7 +193,7 @@ SYMBOL *IRgetSymbol(SymbolTable *t, char *name, int getType, int *nrJumps){
     int intTemp = *nrJumps;
     intTemp = intTemp + 1;
     *nrJumps = intTemp;
-    return IRgetSymbol(t->next, name, getType, nrJumps);
+    return IRgetSymbol(t->next, name, nrJumps);
   } else {
     return NULL;
   }

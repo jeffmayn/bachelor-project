@@ -1,0 +1,11 @@
+#Tilgå en variabel i et andet scope, der deler navn med en type (FORBUDT)
+
+var a:int;
+func f():bool
+  type a = int;
+  a = 7;
+  write a;
+  return true;
+end f
+
+write f();

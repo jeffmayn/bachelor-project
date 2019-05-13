@@ -165,7 +165,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
     sprintf(labelName, "%s%d", element->funcId, labelCounter);
     labelCounter++;
   }
-  func = getSymbol(table, element->funcId, 0);
+  func = getSymbol(table, element->funcId);
   func->cgu = IRmakeNewCGU(); //save the label
   func->cgu->val.funcInfo.funcLabel = IRmakeLabelINSTR(
     IRmakeLabelOPERAND(labelName));
@@ -192,7 +192,7 @@ int IRinitParams(SymbolTable *table, bodyListElm *element){
  */
 int IRtravBody(SymbolTable *table, bodyListElm *body){
   int error = 0;
-  SYMBOL *sym = getSymbol(body->defScope, body->funcId, 0);
+  SYMBOL *sym = getSymbol(body->defScope, body->funcId);
   tempLocalCounter = 0; //number of temps and locals in current scope
   error = IRtravDeclList(table, body->body->vList); //find all local variables
   if(error == -1){
@@ -319,7 +319,7 @@ int IRtravDecl(SymbolTable *table, DECLARATION *decl){
   }
   switch(decl->kind){
     case idDeclK: //userdefined type
-      sym = getSymbol(table, decl->val.id.id, 1);
+      sym = getSymbol(table, decl->val.id.id);
       if(sym->cgu != NULL){
         return 0; //type already investigated
       }
@@ -390,7 +390,7 @@ int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int offset
  * returns incremented offset
  */
 int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
-  SYMBOL *sym = getSymbol(table, varType->id, 0);
+  SYMBOL *sym = getSymbol(table, varType->id);
   if(sym == NULL){
     fprintf(stderr, "INTERNAL ERROR: Line %s: IRtravVarType: no symbol found for %d\n", varType->id, varType->lineno);
     return -1;
@@ -816,7 +816,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
   char *nonNullDerefLabel2, *nonNullDerefLabel1, *indeksAllowedLabel, *indeksErrorLabel;
   switch (var->kind) {
     case idVarK: //Simple variable
-      *sym = IRgetSymbol(t, var->val.id, 0, nrJumps);
+      *sym = IRgetSymbol(t, var->val.id, nrJumps);
       if((*sym)->cgu == NULL){
         fprintf(stderr, "INTERNAL ERROR: IRtravVar: How do I know if %s is a parameter or local\n", (*sym)->name);
         return -1;
@@ -1324,7 +1324,7 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
       break;
     case idTermK: //function call
       //find function symbol
-      sym = IRgetSymbol(t, term->val.idact.id, 0, nrJumps);
+      sym = IRgetSymbol(t, term->val.idact.id, nrJumps);
       if(sym->cgu == NULL){
         fprintf(stderr, "%s\n", "INTERNAL ERROR: no cgu found: should be a mistake");
         return NULL;
