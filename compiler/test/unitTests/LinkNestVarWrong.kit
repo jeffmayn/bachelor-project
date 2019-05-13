@@ -1,0 +1,25 @@
+(*test af static link
+  ukorrekt kitty program
+  forsøger at tilgå variabler der ikke er tilgængelige gennem static link
+   - egentlig mest en test af symboltable?*)
+
+var returnDummy : int;
+
+func a () : int
+	func b () : int
+		var mine : int;
+		mine = 42;
+		return 0;
+	end b
+
+	func c () : int
+		returnDummy = b();
+		write mine;
+		return 0; 
+	end c
+
+	returnDummy = c();
+	return 0;
+end a
+
+write a();

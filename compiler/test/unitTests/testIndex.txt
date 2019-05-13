@@ -10,7 +10,7 @@
 [done] Erklær indlejrede record typer                                        DeclNestRec.kit
 [done] Erklær circurlære record typer                                        DeclCircRec.kit
 [done] Erklær indlejrede array typer                                         DeclNestArr.kit
-Erklær circulære array typer                                          DeclCircArr.kit
+[done] Erklær circulære array typer                                          DeclCircArr.kit
 [done] Generklær typer i samme scope (FORBUDT)                               DeclRedef.kit
 [done] Gendefiner typer og varibler i forskellige scopes                     DeclRedefScopes.kit
 [done] Erklær variabel af type, der er out of order erklæret                 DeclVarOutOfOrder.kit
@@ -60,8 +60,8 @@ Tildeling mellem typer der ikke er tilladt (FORBUDT)
 [done] Tildeling af NULL til anonym record type                            AssiNullAnonRec.kit
 [done] Tildeling af NULL til navngivet array type                          AssiNullNamedArr.kit
 
-Negativ array indeksering                                           IndexArrNeg.kit
-For stor array indeksering                                          IndexArrOutOfBounds.kit
+[done] Negativ array indeksering                                           IndexArrNeg.kit
+[done] For stor array indeksering                                          IndexArrOutOfBounds.kit
 [done] Tilgang til record element, der ikke findes (FORBUDT)               AccessNonExistField.kit
 [done] Tilgang til record element der findes                               AccessField.kit
 [done] Tilgå element uden for record som var det inde i recorden (FORBUDT) AccesVarAsField.kit
@@ -111,7 +111,7 @@ tjek om {} virker korrekt                                           StmtList.kit
 [done] funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
 [done] funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
 [done] funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
-****** funktion der tager og returner anonyme records     				   FuncAnonRec.kit //segfault ikke godt
+****** funktion der tager og returner anonyme records     				   FuncAnonRec.kit //segfault ikke godt !skil ad i to!
 [done] funktion der tager og returnere arrays                              FuncNamedArr.kit
 [done] funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
 [done] Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit
@@ -134,17 +134,17 @@ return record variabel der ikke passer med anonym record type (FORBUDT)   RetAno
 return array variabel der passer med anonym array type                    RetAnonArr.kit
 returner array variabel der ikke passer med anonym array type (FORBUDT)   RetAnonArrWrong.kit
 
-Funktion der tilgår global variabel                                           LinkGlobalVar.kit
-Indlejrede funktioner der tilgår variabler i ydre scopes                      LinkNestVar.kit
+[done] Funktion der tilgår global variabel                                           LinkGlobalVar.kit
+[done] Indlejrede funktioner der tilgår variabler i ydre scopes                      LinkNestVar.kit
     Evt. også hvor funktionskald er en del af parameterlisten
-Funktioner der tilgår parametre i ydre scopes                                 LinkNestPar.kit
-Funktioner der tilgår variabler fra scopes der ikke er tilgængelige (FORBUDT) LinkNestVarWrong.kit
-Funktioner der tilgår parametre fra scopes der ikke er tilgængelige (FORBUDT) LinkNestParWrong.kit
+[done] Funktioner der tilgår parametre i ydre scopes                                 LinkNestPar.kit
+[done] Funktioner der tilgår variabler fra scopes der ikke er tilgængelige (FORBUDT) LinkNestVarWrong.kit
+[done] Funktioner der tilgår parametre fra scopes der ikke er tilgængelige (FORBUDT) LinkNestParWrong.kit
 
 
-write simpel type                                                 WriteSimple.kit
-write navngiven simpel type                                       WriteNamed.kit
-write kompleks type (FORBUDT)                                     WriteComplexWrong.kit
+[done] write simpel type                                                 WriteSimple.kit
+[done] write navngiven simpel type                                       WriteNamed.kit
+[done] write kompleks type (FORBUDT)                                     WriteComplexWrong.kit
 
 
 Parsertests?

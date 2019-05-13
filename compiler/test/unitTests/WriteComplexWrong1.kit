@@ -1,0 +1,16 @@
+(*det er ikke tilladt at printe komplekse typer*)
+
+var x : record of {b : bool,
+					c : int,
+					q : int};
+
+allocate x;
+x.b = true;
+x.c = 1;
+x.q = x.c + 41;
+
+if(x.b) then {
+	write x.q;
+}
+
+write x;
