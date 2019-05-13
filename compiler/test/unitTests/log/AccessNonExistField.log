@@ -1,0 +1,17 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+Unfortunately 'a' was not found insides 'c'
+Error: Expression type collection did not complete

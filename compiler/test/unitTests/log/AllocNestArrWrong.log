@@ -1,0 +1,14 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+Syntax Error line 1 position 12 before array
+compilation ended in error
+

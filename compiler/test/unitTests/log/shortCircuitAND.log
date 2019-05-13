@@ -1,0 +1,337 @@
+############################
+Actual output:
+--------------
+333
+
+############################
+Expected output:
+----------------
+333
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+   |--> Typechecking
+  |--> STARTING INTERNAL REPRESENTATION
+  |--> STARTING LIVNESS ANALYSIS
+  |--> STARTING PEEPHOLE OPTIMIZATION
+  |--> STARTING FINAL OUTPUT GENERATION
+format:
+.string	"%d\n"
+.data
+.align 8
+heap1:
+.space 1048576
+freeHeap2:
+.space 8
+endHeap3:
+.space 8
+mainSPoint4:
+.space 8
+mainBPoint5:
+.space 8
+.text
+.globl main
+main:
+	push %rbp
+	movq %rsp, %rbp
+	push %rbx
+	push %r12
+	push %r13
+	push %r14
+	push %r15
+	subq $96, %rsp
+	movq %rsp, mainSPoint4
+	movq %rbp, mainBPoint5
+	movq $heap1, freeHeap2
+	movq $heap1, endHeap3
+	addq $1048576, endHeap3
+#line: 22 assign statement
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	push %rcx
+	push %rdx
+	push %rsi
+	push %rdi
+	push %r8
+	push %r9
+	push %r10
+	push %r11
+	subq $8, %rsp
+	movq %rsp, %r8
+	addq $0, %r8
+	movq $10, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+	movq %r9, %rbx
+	push %rbx
+	call test17
+	addq $16, %rsp#remove static link and parameters
+	pop %r11
+	pop %r10
+	pop %r9
+	pop %r8
+	pop %rdi
+	pop %rsi
+	pop %rdx
+	pop %rcx
+	movq %rax, %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq %r8, %rbx
+	movq $-7, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+#line: 23 assign statement
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	push %rcx
+	push %rdx
+	push %rsi
+	push %rdi
+	push %r8
+	push %r9
+	push %r10
+	push %r11
+	subq $8, %rsp
+	movq %rsp, %r8
+	addq $0, %r8
+	movq $20, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+	movq %r9, %rbx
+	push %rbx
+	call test28
+	addq $16, %rsp#remove static link and parameters
+	pop %r11
+	pop %r10
+	pop %r9
+	pop %r8
+	pop %rdi
+	pop %rsi
+	pop %rdx
+	pop %rcx
+	movq %rax, %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq %r8, %rbx
+	movq $-7, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+	movq $0, %rax
+mainend:
+	addq $96, %rsp
+	pop %r15
+	pop %r14
+	pop %r13
+	pop %r12
+	pop %rbx
+	movq %rbp, %rsp
+	pop %rbp
+	ret 
+
+
+
+test17:
+	push %rbp
+	movq %rsp, %rbp
+	push %rbx
+	push %r12
+	push %r13
+	push %r14
+	push %r15
+	subq $80, %rsp
+#line: 7 assign statement
+	movq $0, %rbx
+	movq %rbx, %r9
+	movq %rbp, %r8
+	addq $16, %r8
+	movq %r8, %rbx
+	movq (%rbx), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq %r9, %rbx
+	movq $-8, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+#line: 11 if then statement
+	movq $1, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $3, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	movq $17, %rbx
+	cmp %rbx, %r8
+	jl ge13
+	movq $0, %r9
+ge13:
+	movq %r9, %rbx
+	movq %rbx, %r9
+	cmp $0, %rbx
+	je lazyAnd12
+	movq %rbp, %r8
+	addq $16, %r8
+	movq %r8, %rbx
+	movq (%rbx), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-8, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	and %r9, %rbx
+lazyAnd12:
+	movq %rbx, %r9
+	movq %r9, %rbx
+	cmp $1, %rbx
+	jne endif11
+#line: 10 list statement statement
+#line: 9 write statement
+	push %rdi
+	movq $666, %rsi
+	movq $format, %rdi
+	movq $0, %rax
+	call printf
+	pop %rdi
+endif11:
+#line: 11 return statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $3, %rdx
+	movq (%rdi,%rdx,8), %rax
+	movq %rbp, %rdi		#resetting basepointer
+	jmp test17end
+test17end:
+	addq $80, %rsp
+	pop %r15
+	pop %r14
+	pop %r13
+	pop %r12
+	pop %rbx
+	movq %rbp, %rsp
+	pop %rbp
+	ret 
+
+
+
+test28:
+	push %rbp
+	movq %rsp, %rbp
+	push %rbx
+	push %r12
+	push %r13
+	push %r14
+	push %r15
+	subq $80, %rsp
+#line: 15 assign statement
+	movq $1, %rbx
+	movq %rbx, %r9
+	movq %rbp, %r8
+	addq $16, %r8
+	movq %r8, %rbx
+	movq (%rbx), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq %r9, %rbx
+	movq $-8, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+#line: 19 if then statement
+	movq $1, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $3, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	movq $17, %rbx
+	cmp %rbx, %r8
+	jg ge17
+	movq $0, %r9
+ge17:
+	movq %r9, %rbx
+	movq %rbx, %r9
+	cmp $0, %rbx
+	je lazyAnd16
+	movq %rbp, %r8
+	addq $16, %r8
+	movq %r8, %rbx
+	movq (%rbx), %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-8, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	and %r9, %rbx
+lazyAnd16:
+	movq %rbx, %r9
+	movq %r9, %rbx
+	cmp $1, %rbx
+	jne endif15
+#line: 18 list statement statement
+#line: 17 write statement
+	push %rdi
+	movq $333, %rsi
+	movq $format, %rdi
+	movq $0, %rax
+	call printf
+	pop %rdi
+endif15:
+#line: 19 return statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $3, %rdx
+	movq (%rdi,%rdx,8), %rax
+	movq %rbp, %rdi		#resetting basepointer
+	jmp test28end
+test28end:
+	addq $80, %rsp
+	pop %r15
+	pop %r14
+	pop %r13
+	pop %r12
+	pop %rbx
+	movq %rbp, %rsp
+	pop %rbp
+	ret 
+
+
+
+errorCleanup6:
+	movq mainSPoint4, %rsp
+	movq mainBPoint5, %rbp
+	jmp mainend

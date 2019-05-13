@@ -1,0 +1,17 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+Unfortunately 'y' was not found insides 'x'
+Error: Expression type collection did not complete

@@ -1,6 +1,6 @@
 #!/bin/bash
 #make clean -C ../ -s
-
+# ls *.kit > yoyo.dat && awk '{gsub(".kit", " 0");print}' yoyo.dat > returns.txt && rm yoyo.dat
 
 
 make -C ../
@@ -65,11 +65,9 @@ else
 
       # compare expected output to actual output
       invoke_cmp() {
-        if cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
-          printf "  |--> Test 2: ${GREEN}SUCCESS!${NC}\n"
-        else
-          printf "  |--> Test 2: ${RED}FAILED!${NC}\n"
-          echo "  |--> SEE LOGFILE: ${PWD##}/log/$1.log"
+        if ! cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
+          printf "[ ${RED}FAILED!${NC} ] $1: mismatch in output\n"
+      #    echo "SEE LOGFILE: ${PWD##}/log/$1.log"
           invoke_log $1
         fi
       }
@@ -84,40 +82,22 @@ else
             if ! [[ "$ret" =~ ^[0-9]+$ ]]
             then
               count=0
-              #echo Found file-name \"$ret\"
               filename=$ret
             else
               ((count=count+1))
-              file=$filename$count".kit" #its crazy but it works
-              #echo $file
-              printf " |--> File: $file \n"
+              file=$filename".kit" #its crazy but it works
               ../../build/compiler < "$file" >/dev/null 2>&1
               v=$?
+              u="tmp/expected/$filename.txt"
               #echo $v
-              if [ $v -eq $ret ]
+              if [ $v != $ret ]
               then
-                printf "  |--> Test 1: ${GREEN}SUCCESS!${NC}\n"
-              #  echo "  |--> Test 1: SUCCESS!"
-                if [ $v -eq 255 ]
-                then
-                  printf "  |--> Test 2: ${YELLOW}program is designed to fail!${NC}\n"
-                  #../../build/compiler < "$file" #>/dev/null 2>&1
-                  echo "  |--> SEE LOGFILE: ${PWD##}/log/$filename$count.log"
-                  echo ""
-                  invoke_log $filename$count $v $ret
-                else
-                  invoke_asm "$filename$count"
-                  echo ""
-                fi
-              else
-                printf "  |--> Test 1: ${RED}FAILED!${NC}\n"
-                #echo "  |--> Test 1: FAILED!"
-                printf "  |--> Test 2: ${YELLOW}not initialised!${NC}\n"
-                #../../build/compiler < "$file" #>/dev/null 2>&1
-                echo "  |--> SEE LOGFILE: ${PWD##}/log/$filename$count.log"
-                echo ""
-                invoke_log $filename$count $v $ret
-                #echo returned $v but expected $ret
+                printf "[ ${RED}FAILED!${NC} ] $filename: incorrect exit code ${YELLOW}[$v/$ret]${NC}\n"
+              elif ! [ $v -eq 255 ]
+              then
+                  if test -f "${u}"; then
+                    invoke_asm "$filename"
+                  fi
               fi
             fi
           done

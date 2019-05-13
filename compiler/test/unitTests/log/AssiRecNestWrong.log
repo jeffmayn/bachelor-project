@@ -1,0 +1,21 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+   |--> Typechecking
+Equal types 4 not valid
+Equal types 4 not valid
+Line 11: The two sides of the assignment does not have the same type
+ERROR: Something went totally wring in (null), but we just skip to the next thing and prentend everything is fine. No we don't
+ERROR: Expression type checking did not complete

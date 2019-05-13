@@ -1,0 +1,711 @@
+############################
+Actual output:
+--------------
+0
+1
+2
+3
+4
+5
+1
+0
+1
+0
+
+############################
+Expected output:
+----------------
+0
+1
+2
+3
+4
+5
+1
+0
+1
+0
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+   |--> Typechecking
+  |--> STARTING INTERNAL REPRESENTATION
+  |--> STARTING LIVNESS ANALYSIS
+  |--> STARTING PEEPHOLE OPTIMIZATION
+  |--> STARTING FINAL OUTPUT GENERATION
+format:
+.string	"%d\n"
+.data
+.align 8
+heap1:
+.space 1048576
+freeHeap2:
+.space 8
+endHeap3:
+.space 8
+mainSPoint4:
+.space 8
+mainBPoint5:
+.space 8
+.text
+.globl main
+main:
+	push %rbp
+	movq %rsp, %rbp
+	push %rbx
+	push %r12
+	push %r13
+	push %r14
+	push %r15
+	subq $488, %rsp
+	movq %rsp, mainSPoint4
+	movq %rbp, mainBPoint5
+	movq $heap1, freeHeap2
+	movq $heap1, endHeap3
+	addq $1048576, endHeap3
+#line: 8 allocate of length statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq freeHeap2, %rbx
+	movq $-6, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	movq $8, %rbx
+	cmp $0, %rbx
+	jg allocPos8
+	movq $4, %rax#negative allocation size
+	jmp errorCleanup6
+allocPos8:
+	addq $1, %rbx#making room for arraySize
+	imulq $8, %rbx
+	addq %rbx, freeHeap2
+	movq freeHeap2, %rbx
+	cmp endHeap3, %rbx
+	jl allocSucc9
+	movq $6, %rax#outofMemory
+	jmp errorCleanup6
+allocSucc9:
+	movq $8, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 9 assign statement
+	movq $0, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref12#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref12:
+	movq $0, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError11#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed10#not indexOutOfBounds
+indeksError11:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed10:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref13#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref13:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 10 assign statement
+	movq $1, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref16#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref16:
+	movq $1, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError15#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed14#not indexOutOfBounds
+indeksError15:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed14:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref17#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref17:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 11 assign statement
+	movq $2, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref20#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref20:
+	movq $2, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError19#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed18#not indexOutOfBounds
+indeksError19:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed18:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref21#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref21:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 12 allocate of length statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq freeHeap2, %rbx
+	movq $-7, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	movq $4, %rbx
+	cmp $0, %rbx
+	jg allocPos22
+	movq $4, %rax#negative allocation size
+	jmp errorCleanup6
+allocPos22:
+	addq $1, %rbx#making room for arraySize
+	imulq $8, %rbx
+	addq %rbx, freeHeap2
+	movq freeHeap2, %rbx
+	cmp endHeap3, %rbx
+	jl allocSucc23
+	movq $6, %rax#outofMemory
+	jmp errorCleanup6
+allocSucc23:
+	movq $4, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 13 assign statement
+	movq $1, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-7, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref26#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref26:
+	movq $0, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError25#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed24#not indexOutOfBounds
+indeksError25:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed24:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref27#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref27:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 14 assign statement
+	movq $1, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-7, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref30#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref30:
+	movq $2, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError29#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed28#not indexOutOfBounds
+indeksError29:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed28:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref31#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref31:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 15 assign statement
+	movq $3, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref34#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref34:
+	movq $3, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError33#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed32#not indexOutOfBounds
+indeksError33:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed32:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref35#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref35:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 16 assign statement
+	movq $0, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-7, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref38#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref38:
+	movq $1, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError37#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed36#not indexOutOfBounds
+indeksError37:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed36:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref39#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref39:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 17 assign statement
+	movq $4, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref42#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref42:
+	movq $4, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError41#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed40#not indexOutOfBounds
+indeksError41:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed40:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref43#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref43:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 18 assign statement
+	movq $0, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-7, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref46#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref46:
+	movq $3, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError45#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed44#not indexOutOfBounds
+indeksError45:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed44:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref47#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref47:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 19 assign statement
+	movq $5, %rbx
+	movq %rbx, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref50#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref50:
+	movq $5, %rbx
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError49#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed48#not indexOutOfBounds
+indeksError49:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed48:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref51#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref51:
+	movq %r9, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+#line: 21 assign statement
+	movq $0, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq %r8, %rbx
+	movq $-8, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+#line: 26 while statement
+while52:
+	movq $1, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-8, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	movq $6, %rbx
+	cmp %rbx, %r8
+	jl ge53
+	movq $0, %r9
+ge53:
+	movq %r9, %rbx
+	cmp $1, %rbx
+	jne endwhile52
+#line: 26 list statement statement
+#line: 24 write statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref56#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref56:
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq $-8, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError55#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed54#not indexOutOfBounds
+indeksError55:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed54:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref57#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref57:
+	push %rdi
+	movq %r8, %rcx
+	movq (%rcx), %rsi
+	movq $format, %rdi
+	movq $0, %rax
+	call printf
+	pop %rdi
+#line: 25 assign statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-8, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	inc %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq %r8, %rbx
+	movq $-8, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+	jmp while52
+endwhile52:
+#line: 27 assign statement
+	movq $0, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq %r8, %rbx
+	movq $-8, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+#line: 32 while statement
+while58:
+	movq $1, %r9
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-8, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	movq $4, %rbx
+	cmp %rbx, %r8
+	jl ge59
+	movq $0, %r9
+ge59:
+	movq %r9, %rbx
+	cmp $1, %rbx
+	jne endwhile58
+#line: 32 list statement statement
+#line: 30 write statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-7, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref62#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref62:
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq $-8, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %r8, %rcx
+	cmp (%rcx), %rbx
+	jge indeksError61#indexOutOfBounds
+	cmp $0, %rbx
+	jge indeksAllowed60#not indexOutOfBounds
+indeksError61:
+	movq $2, %rax#IndexOutOfBounds
+	jmp errorCleanup6
+indeksAllowed60:
+	addq $1, %rbx#moving past array-size-value
+	imulq $8, %rbx
+	addq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref63#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref63:
+	push %rdi
+	movq %r8, %rcx
+	movq (%rcx), %rsi
+	movq $format, %rdi
+	movq $0, %rax
+	call printf
+	pop %rdi
+#line: 31 assign statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-8, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	movq %rbx, %r8
+	inc %r8
+	movq %r8, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq %r8, %rbx
+	movq $-8, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+	jmp while58
+endwhile58:
+	movq $0, %rax
+mainend:
+	addq $488, %rsp
+	pop %r15
+	pop %r14
+	pop %r13
+	pop %r12
+	pop %rbx
+	movq %rbp, %rsp
+	pop %rbp
+	ret 
+
+
+
+errorCleanup6:
+	movq mainSPoint4, %rsp
+	movq mainBPoint5, %rbp
+	jmp mainend

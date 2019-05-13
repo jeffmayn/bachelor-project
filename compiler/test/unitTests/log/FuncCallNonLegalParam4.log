@@ -1,0 +1,18 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+Line 28: The type 2 of the expression does not match the type 1 of the symbol myInt
+Line 28: The type 2 of the argument, does not match expected type 0 of parameter
+Error: Expression type collection did not complete

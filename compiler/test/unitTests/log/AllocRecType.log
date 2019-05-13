@@ -1,0 +1,18 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+Line 4: cannot use type X as variable
+Line 4: Error happened while searching variable of allocate
+Error: Expression type collection did not complete

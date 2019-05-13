@@ -1,0 +1,631 @@
+############################
+Actual output:
+--------------
+7
+7
+
+############################
+Expected output:
+----------------
+7
+7
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+   |--> Typechecking
+  |--> STARTING INTERNAL REPRESENTATION
+  |--> STARTING LIVNESS ANALYSIS
+  |--> STARTING PEEPHOLE OPTIMIZATION
+  |--> STARTING FINAL OUTPUT GENERATION
+format:
+.string	"%d\n"
+.data
+.align 8
+heap1:
+.space 1048576
+freeHeap2:
+.space 8
+endHeap3:
+.space 8
+mainSPoint4:
+.space 8
+mainBPoint5:
+.space 8
+.text
+.globl main
+main:
+	push %rbp
+	movq %rsp, %rbp
+	push %rbx
+	push %r12
+	push %r13
+	push %r14
+	push %r15
+	subq $376, %rsp
+	movq %rsp, mainSPoint4
+	movq %rbp, mainBPoint5
+	movq $heap1, freeHeap2
+	movq $heap1, endHeap3
+	addq $1048576, endHeap3
+#line: 4 allocate statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq freeHeap2, %rbx
+	movq $-6, %rdx
+	movq %rbx, (%rdi,%rdx,8)
+	movq %rbp, %rdi		#resetting basepointer
+	addq $16, freeHeap2
+	movq freeHeap2, %rbx
+	cmp endHeap3, %rbx
+	jl allocSucc8
+	movq $6, %rax#outofMemory
+	jmp errorCleanup6
+allocSucc8:
+#line: 5 allocate statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref9#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref9:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref10#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref10:
+	movq freeHeap2, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+	addq $16, freeHeap2
+	movq freeHeap2, %rbx
+	cmp endHeap3, %rbx
+	jl allocSucc11
+	movq $6, %rax#outofMemory
+	jmp errorCleanup6
+allocSucc11:
+#line: 6 assign statement
+	movq $7, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref14#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref14:
+	addq $0, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref15#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref15:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref12#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref12:
+	addq $0, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref13#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref13:
+	movq %r8, %rbx
+	movq %r9, %rcx
+	movq %rbx, (%rcx)
+#line: 7 allocate statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref18#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref18:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref19#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref19:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref16#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref16:
+	addq $8, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref17#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref17:
+	movq freeHeap2, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+	addq $16, freeHeap2
+	movq freeHeap2, %rbx
+	cmp endHeap3, %rbx
+	jl allocSucc20
+	movq $6, %rax#outofMemory
+	jmp errorCleanup6
+allocSucc20:
+#line: 8 assign statement
+	movq $1, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref25#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref25:
+	addq $0, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref26#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref26:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref23#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref23:
+	addq $8, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref24#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref24:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref21#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref21:
+	addq $0, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref22#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref22:
+	movq %r8, %rbx
+	movq %r9, %rcx
+	movq %rbx, (%rcx)
+#line: 9 assign statement
+	movq $1, %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref31#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref31:
+	addq $0, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref32#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref32:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref29#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref29:
+	addq $8, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref30#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref30:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref27#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref27:
+	addq $8, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref28#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref28:
+	movq %r8, %rbx
+	movq %r9, %rcx
+	movq %rbx, (%rcx)
+#line: 10 allocate statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref33#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref33:
+	addq $8, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref34#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref34:
+	movq freeHeap2, %rbx
+	movq %r8, %rcx
+	movq %rbx, (%rcx)
+	addq $16, freeHeap2
+	movq freeHeap2, %rbx
+	cmp endHeap3, %rbx
+	jl allocSucc35
+	movq $6, %rax#outofMemory
+	jmp errorCleanup6
+allocSucc35:
+#line: 11 assign statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref36#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref36:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref37#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref37:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	movq %rbx, %r8
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref40#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref40:
+	addq $8, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref41#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref41:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref38#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref38:
+	addq $0, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref39#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref39:
+	movq %r8, %rbx
+	movq %r9, %rcx
+	movq %rbx, (%rcx)
+#line: 16 if then statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref50#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref50:
+	addq $8, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref51#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref51:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref48#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref48:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref49#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref49:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref46#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref46:
+	addq $8, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref47#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref47:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref44#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref44:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref45#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref45:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	movq %rbx, %r8
+	cmp $0, %rbx
+	je lazyAnd43
+	movq %rbp, %rbx
+	movq %rbx, %r9
+	movq %r9, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref58#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref58:
+	addq $8, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref59#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref59:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref56#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref56:
+	addq $0, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref57#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref57:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref54#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref54:
+	addq $8, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref55#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref55:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref52#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref52:
+	addq $8, %rbx
+	movq %rbx, %r9
+	cmp $0, %r9
+	jne nonNullDeref53#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref53:
+	movq %r9, %rcx
+	movq (%rcx), %rbx
+	and %r8, %rbx
+lazyAnd43:
+	movq %rbx, %r8
+	movq %r8, %rbx
+	cmp $1, %rbx
+	jne endif42
+#line: 15 list statement statement
+#line: 13 write statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref64#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref64:
+	addq $8, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref65#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref65:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref62#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref62:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref63#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref63:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref60#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref60:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref61#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref61:
+	push %rdi
+	movq %r8, %rcx
+	movq (%rcx), %rsi
+	movq $format, %rdi
+	movq $0, %rax
+	call printf
+	pop %rdi
+#line: 14 write statement
+	movq %rbp, %rbx
+	movq %rbx, %r8
+	movq %r8, %rbx
+	movq %rbx, %rdi
+	movq $-6, %rdx
+	movq (%rdi,%rdx,8), %rbx
+	movq %rbp, %rdi		#resetting basepointer
+	cmp $0, %rbx
+	jne nonNullDeref68#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref68:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref69#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref69:
+	movq %r8, %rcx
+	movq (%rcx), %rbx
+	cmp $0, %rbx
+	jne nonNullDeref66#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref66:
+	addq $0, %rbx
+	movq %rbx, %r8
+	cmp $0, %r8
+	jne nonNullDeref67#not NULL
+	movq $5, %rax
+	jmp errorCleanup6
+nonNullDeref67:
+	push %rdi
+	movq %r8, %rcx
+	movq (%rcx), %rsi
+	movq $format, %rdi
+	movq $0, %rax
+	call printf
+	pop %rdi
+endif42:
+	movq $0, %rax
+mainend:
+	addq $376, %rsp
+	pop %r15
+	pop %r14
+	pop %r13
+	pop %r12
+	pop %rbx
+	movq %rbp, %rsp
+	pop %rbp
+	ret 
+
+
+
+errorCleanup6:
+	movq mainSPoint4, %rsp
+	movq mainBPoint5, %rbp
+	jmp mainend

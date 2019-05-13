@@ -1,0 +1,19 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+   |--> Typechecking
+Line -1: recursiveSymbolRetrieval: symbol id: hej not in scope
+ERROR: Something went totally wring in (null), but we just skip to the next thing and prentend everything is fine. No we don't
+ERROR: Expression type checking did not complete

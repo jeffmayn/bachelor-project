@@ -1,0 +1,17 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+putSymbol(): SYMBOL name: A alredy in table
+Line 3: The symbol 'A' already exists
+Error: Symbol collection did not complete

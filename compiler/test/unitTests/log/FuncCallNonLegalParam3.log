@@ -1,0 +1,18 @@
+
+############################
+Return code error:
+------------
+Got: 0
+Expected: 255
+
+############################
+Other stuff:
+------------
+  |--> STARTING PARSING
+  |--> STARTING 1ST WEEDER
+  |--> STARTING TYPECHECK
+   |--> Symbol collection
+   |--> Expression type collection
+Line 20: The type 1 of the expression does not match the type 2 of the symbol boolean
+Line 20: The type 1 of the argument, does not match expected type 2 of parameter
+Error: Expression type collection did not complete
