@@ -40,6 +40,12 @@ int typeCheck(SymbolTable *table){
   while(bElm != NULL){
     error = expTypeFinder(bElm->scope, bElm->body);
     if(error == -1){
+      if(bElm->funcId == NULL){
+        fprintf(stderr, "ERROR in main scope\n");
+      }
+      else{
+        fprintf(stderr, "ERROR in function %s\n", bElm->funcId);
+      }
       break;
     }
     bElm = getBody(bodies);
@@ -56,7 +62,12 @@ int typeCheck(SymbolTable *table){
   while(bElm != NULL){
     error = checkTypes(bElm->scope, bElm->body, bElm->funcId);
     if(error == -1){
-      fprintf(stderr, "ERROR: in function %s\n", bElm->funcId);
+      if(bElm->funcId == NULL){
+        fprintf(stderr, "ERROR in main scope\n");
+      }
+      else{
+        fprintf(stderr, "ERROR in function %s\n", bElm->funcId);
+      }
       break;
     }
     bElm = getBody(bodies);
@@ -728,7 +739,7 @@ int expTypeTravExps(SymbolTable *t, EXP_LIST *eList, ParamSymbol* pSym){
       SYMBOL *param = pSym->data;
       error = cmpTypeSymExp(t, param, eList->exp);
       if(error == -1){
-        fprintf(stderr, "Line %d: The type %s of the argument, does not match expected type %s of parameter\n", eList->lineno, typeNames[eList->exp->typekind], typeNames[param->typeVal]);
+        fprintf(stderr, "Line %d: The %s type of the argument, does not match expected %s type of parameter\n", eList->lineno, typeNames[eList->exp->typekind], typeNames[param->typeVal]);
         return -1;
       }
       return expTypeTravExps(t, eList->expList, pSym->next);
@@ -1048,12 +1059,12 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
 SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms){
   SYMBOL* sym = getSymbol(t, symbolID);
   if(sym == NULL){
-    fprintf(stderr, "Line %d: recursiveSymbolRetrieval: symbol id: %s not in scope\n", -1, symbolID);
+    fprintf(stderr, "The symbol '%s' is not in scope\n", symbolID);
     return NULL;
   }
   if(knownSyms != NULL){
     if(sym->kind != typeS){
-      fprintf(stderr, "Line %d: The id with kind %d is not a type\n", sym->typePtr->lineno, sym->kind);
+      fprintf(stderr, "Line %d: The %s '%s' is not a type\n", sym->typePtr->lineno, symKindNames[sym->kind], sym->name);
       return NULL;
     }
   }
@@ -1061,7 +1072,7 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *kno
   SymbolList *nextSym = knownSyms;
   while(nextSym != NULL){
     if(sym == nextSym->symbol){
-      fprintf(stderr, "Circular typedefinition for symbol '%s'\n", sym->name);
+      fprintf(stderr, "Line %d: Circular typedefinition for symbol '%s'\n", sym->typePtr->lineno, sym->name);
       return NULL;
     }
     nextSym = nextSym->next;
@@ -1084,7 +1095,7 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *kno
       }
       sym = recursiveSymbolRetrieval(sym->typePtr->scope, sym->typePtr->val.id, knownSyms);
     } else {
-      fprintf(stderr, "Line %d: COMPILEERROR: typePtr of symbol not idK\n", -1);
+      fprintf(stderr, "INTERNAL ERROR: typePtr of symbol not idK\n");
       return NULL;
     }
   }
@@ -1095,12 +1106,12 @@ Typekind expOfType(EXP *exp){
   if(exp->typekind == idK){
     TYPE *type = exp->type;
     if(type->kind != idK){
-      fprintf(stderr, "Line %d: Expression of type '%d' does not match its type of type '%d'\n", exp->lineno, idK, type->kind);
+      fprintf(stderr, "INTENRAL ERROR: Line %d: Expression of type '%d' does not match its type of type '%d'\n", exp->lineno, idK, type->kind);
       return errorK;
     }
     SYMBOL *sym = recursiveSymbolRetrieval(type->scope, type->val.id, NULL);
     if(sym == NULL){
-      fprintf(stderr, "Line %d: Error happened while expanding the type of '%s'\n", exp->lineno, type->val.id);
+      fprintf(stderr, "Line %d: Could not expand the type of '%s'\n", exp->lineno, type->val.id);
       return -1;
     }
     return sym->typeVal;
@@ -1111,11 +1122,11 @@ Typekind expOfType(EXP *exp){
 
 int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
   if(exp == NULL){
-    fprintf(stderr, "No expression given\n");
+    fprintf(stderr, "INTERNAL ERROR: No expression given\n");
     return -1;
   }
   if(sym == NULL){
-    fprintf(stderr, "No symbol given\n");
+    fprintf(stderr, "INTERNAL ERROR: No symbol given\n");
     return -1;
   }
   if(sym->typeVal == idK){                              //sym->name
@@ -1132,13 +1143,13 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
   if(exp->typekind == arrayK || exp->typekind == recordK || exp->typekind == idK){
     return cmpTypeSymTy(t, sym, exp->type);
   }
-  fprintf(stderr, "Line %d: The type %d of the expression does not match the type %d of the symbol %s\n", exp->lineno, exp->typekind, sym->typeVal, sym->name);
+  fprintf(stderr, "Line %d: The %s type of the expression does not match the %s type of the symbol %s\n", exp->lineno, typeNames[exp->typekind], typeNames[sym->typeVal], sym->name);
   return -1;
 }
 
 int cmpTypeTyExp(SymbolTable *t, TYPE *ty, EXP *exp){
   if(exp == NULL){
-    fprintf(stderr, "No expression given\n");
+    fprintf(stderr, "INTERNAL ERROR: No expression given\n");
     return -1;
   }
   if(ty->kind == idK){
@@ -1154,7 +1165,7 @@ int cmpTypeTyExp(SymbolTable *t, TYPE *ty, EXP *exp){
   if(exp->typekind == arrayK || exp->typekind == recordK || exp->typekind == idK){
     return cmpTypeTyTy(t, ty, exp->type);
   }
-  fprintf(stderr, "Line %d: The type %d of the expression does not match the type %d\n", exp->lineno, exp->typekind, ty->kind);
+  fprintf(stderr, "Line %d: The %s type of the expression does not match the expected %s type\n", exp->lineno, typeNames[exp->typekind], typeNames[ty->kind]);
   return -1;
 }
 
@@ -1166,7 +1177,7 @@ int cmpTypekind(Typekind tk1, Typekind tk2){
       case idK:
       case nullKK:
       case arrayK:
-        fprintf(stderr, "Equal types %d not valid\n",  tk1);
+        //fprintf(stderr, "Equal types %d not valid\n",  tk1);
         return -1;
       case intK:
       case boolK:
@@ -1183,12 +1194,13 @@ int cmpTypekind(Typekind tk1, Typekind tk2){
 }
 
 int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
+  int error;
   if(ty1 == NULL){
-    fprintf(stderr, "Missing first type\n");
+    fprintf(stderr, "INTERNAL ERROR: Missing first type\n");
     return -1;
   }
   if(ty2 == NULL){
-    fprintf(stderr, "Missing second type\n");
+    fprintf(stderr, "INTERNAL ERROR: Missing second type\n");
     return -1;
   }
   if(ty1 == ty2){
@@ -1201,26 +1213,26 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
   if(tk1 == idK){
     sym1 = recursiveSymbolRetrieval(ty1->scope, ty1->val.id, NULL);
     if(sym1 == NULL){
-      fprintf(stderr, "The symbol '%s' was not found\n", ty1->val.id);
+      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", ty1->lineno, ty1->val.id);
       return -1;
     }
     return cmpTypeSymTy(t, sym1, ty2);
 
     tk1 = sym1->typeVal;
     if(tk1 != sym1->typePtr->kind){
-      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym1->name);
+      fprintf(stderr, "INTERNAL ERROR: Types of symbol '%s' and its type doesn't match\n", sym1->name);
       return -1;
     }
   }
   if(tk2 == idK){
     sym2 = recursiveSymbolRetrieval(ty2->scope, ty2->val.id, NULL);
     if(sym2 == NULL){
-      fprintf(stderr, "The symbol '%s' was not found\n", ty2->val.id);
+      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", ty2->lineno, ty2->val.id);
       return -1;
     }
     tk2 = sym2->typeVal;
     if(tk2 != sym2->typePtr->kind){
-      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym2->name);
+      fprintf(stderr, "INTERNAL ERROR: Types of symbol '%s' and its type doesn't match\n", sym2->name);
       return -1;
     }
     return cmpTypeSymTy(t, sym2, ty1);
@@ -1228,43 +1240,50 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
   if(tk1 == tk2 && tk1 == arrayK){
     return cmpTypeTyTy(t,ty1->val.arrayType, ty2->val.arrayType);
   }
-  return cmpTypekind(tk1,tk2);
+  error = cmpTypekind(tk1,tk2);
+  if(error == -1){
+    fprintf(stderr, "The two types %s declared on line %d and %s declared on line %d does not match\n", typeNames[tk1], ty1->lineno, typeNames[tk2], ty2->lineno);
+  }
+  return error;
 }
 
 
 int cmpTypeSymTy(SymbolTable *t, SYMBOL *sym, TYPE *ty){
+  int error;
+  SYMBOL *temp = NULL;
   if(sym == NULL){
-    fprintf(stderr, "Missing symbol\n");
+    fprintf(stderr, "INTERNAL ERROR: Missing symbol\n");
     return -1;
   }
   if(ty == NULL){
-    fprintf(stderr, "Missing type\n");
+    fprintf(stderr, "INTERNAL ERROR: Missing type\n");
     return -1;
   }
   Typekind tk1 = sym->typeVal;
   Typekind tk2 = ty->kind;
   SYMBOL *sym2 = NULL;
   if(tk1 == idK){                                 //sym->name
+    temp = sym;
     sym = recursiveSymbolRetrieval(sym->defScope, sym->typePtr->val.id, NULL);
     if(sym == NULL){
-      fprintf(stderr, "The symbol '%s' was not found\n", sym->name);
+      fprintf(stderr, "Line %d: The type %s of the symbol '%s' was not found\n", temp->typePtr->lineno, sym->typePtr->val.id, temp->name);
       return -1;
     }
     tk1 = sym->typeVal;
     if(tk1 != sym->typePtr->kind){
-      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym->name);
+      fprintf(stderr, "INTERNAL ERROR: Types of symbol '%s' and its type doesn't match\n", sym->name);
       return -1;
     }
   }
   if(tk2 == idK){
     sym2 = recursiveSymbolRetrieval(ty->scope, ty->val.id, NULL);
     if(sym2 == NULL){
-      fprintf(stderr, "The symbol '%s' was not found\n", ty->val.id);
+      fprintf(stderr, "Line %d: The symbol '%s' was not found\n", ty->lineno, ty->val.id);
       return -1;
     }
     tk2 = sym2->typeVal;
     if(tk2 != sym2->typePtr->kind){
-      fprintf(stderr, "Types of symbol '%s' and its type doesn't match\n", sym2->name);
+      fprintf(stderr, "INTERNAL ERROR: Types of symbol '%s' and its type doesn't match\n", sym2->name);
       return -1;
     }
     return cmpTypeSymSym(t, sym, sym2);
@@ -1272,48 +1291,54 @@ int cmpTypeSymTy(SymbolTable *t, SYMBOL *sym, TYPE *ty){
   if(tk1 == tk2 && tk1 == arrayK){
     return cmpTypeTyTy(t,sym->typePtr, ty);
   }
-  return cmpTypekind(tk1,tk2);
+  error = cmpTypekind(tk1,tk2);
+  if(error == -1){
+    fprintf(stderr, "The type %s of %s '%s' declared on line %d and the type %s declared on line %d does not match\n", typeNames[tk1], symKindNames[sym->kind], sym->name, sym->typePtr->lineno, typeNames[tk2], ty->lineno);
+  }
+  return error;
 }
 
 
 int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
+  int error;
+  SYMBOL *temp;
   if(sym1 == NULL){
-    fprintf(stderr, "Missing symbol 1\n");
+    fprintf(stderr, "INTERNAL ERROR: Missing symbol 1\n");
     return -1;
   }
   if(sym2 == NULL){
-    fprintf(stderr, "Missing symbol 2\n");
+    fprintf(stderr, "INTERNAL ERROR: Missing symbol 2\n");
     return -1;
   }
-  char* name1 = sym1->name;
-  char* name2 = sym2->name;
   if(sym1->typeVal == idK){                               //sym1->name
+    temp = sym1;
     sym1 = recursiveSymbolRetrieval(sym1->typePtr->scope, sym1->typePtr->val.id, NULL);
     if(sym1 == NULL){
-      fprintf(stderr, "Couldn't expand type for symbol %s\n", name1);
+      fprintf(stderr, "Line %d: Couldn't expand type %s for symbol '%s'\n", temp->typePtr->lineno, temp->typePtr->val.id, temp->name);
       return -1;
     }
   }
   if(sym2->typeVal == idK){                               //sym2->name
+    temp = sym2;
     sym2 = recursiveSymbolRetrieval(sym2->typePtr->scope, sym2->typePtr->val.id, NULL);
     if(sym2 == NULL){
-      fprintf(stderr, "Couldn't expand type for symbol %s\n", name2);
+      fprintf(stderr, "Line %d: Couldn't expand type %s for symbol '%s'\n", temp->typePtr->lineno, temp->typePtr->val.id, temp->name);
       return -1;
     }
   }
   Typekind tk1 = sym1->typeVal;
   Typekind tk2 = sym2->typeVal;
   if(tk1 == nullKK){
-    fprintf(stderr, "Symbol '%s' has disallowed null type\n", name1);
+    fprintf(stderr, "Symbol '%s' has disallowed null type\n", sym1->name);
     return -1;
   }
   if(tk2 == nullKK){
-    fprintf(stderr, "Symbol '%s' has disallowed null type\n", name2);
+    fprintf(stderr, "Symbol '%s' has disallowed null type\n", sym2->name);
     return -1;
   }
   if(tk1 == tk2 && tk1 == recordK){
     if(sym1->content != sym2->content){
-      fprintf(stderr, "The two symbols %s and %s does not have same record type\n", name1, name2);
+      fprintf(stderr, "The two symbols '%s' and '%s' does not have same record type\n", sym1->name, sym2->name);
       return -1;
     }
     return 0;
@@ -1322,6 +1347,10 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
     return cmpTypeTyTy(t,sym1->typePtr, sym2->typePtr);
   }
   return cmpTypekind(tk1, tk2);
+  if(error == -1){
+    fprintf(stderr, "The type %s of '%s' and %s of '%s' does not match\n", typeNames[tk1], sym1->name, typeNames[tk2], sym2->name);
+  }
+  return error;
 }
 
 int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
@@ -1350,12 +1379,12 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
       if(pList != NULL){
         sym = getSymbol(t, d->val.func->head->id);
         if(sym == NULL){
-          fprintf(stderr, "Line %d: The function %s was not found in current scope\n", d->val.func->head->lineno, d->val.func->head->id);
+          fprintf(stderr, "Line %d: The function '%s' was not found in current scope\n", d->val.func->head->lineno, d->val.func->head->id);
           return -1;
         }
         SymbolTable *childScope = sym->scope;
         if(childScope == NULL){
-          fprintf(stderr, "Line %d: The function %s does not seem to define a scope\n", d->val.func->head->lineno, d->val.func->head->id);
+          fprintf(stderr, "Line %d: The function '%s' does not seem to define a scope\n", d->val.func->head->lineno, d->val.func->head->id);
           return -1;
         }
         //checking that types of all parameters exists
@@ -1455,16 +1484,11 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
             //is itself investigated
             sym = getSymbol(t, ty->val.id);
             if(sym == NULL){
-              fprintf(stderr, "Line %d: The symbol %s was not found\n", ty->lineno, ty->val.id);
+              fprintf(stderr, "Line %d: The symbol '%s' was not found\n", ty->lineno, ty->val.id);
               return -1;
             }
-            if(sym->kind == varS){
-              fprintf(stderr, "Line %d: The variable %s cannot have the variable %s as type\n", vty->lineno, vty->id, sym->name);
-              return -1;
-            }
-            if(sym->kind == funcK){
-              fprintf(stderr, "Line %d: The variable %s cannot have the function %s as type\n", vty->lineno, vty->id, sym->name);
-              return -1;
+            if(sym->kind != typeS){
+              fprintf(stderr, "Line %d: The variable %s cannot have the %s '%s' as type\n", vty->lineno, vty->id, symKindNames[sym->kind], sym->name);
             }
             break;
       }
