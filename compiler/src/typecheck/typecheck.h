@@ -96,11 +96,13 @@ int cmpTypeSymTy(SymbolTable *t, SYMBOL *sym, TYPE *ty);
 
 int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2);
 
-SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms);
+SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, 
+  SymbolList *knownSyms);
 
 bodyList* initBodyList();
 
-void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId, SymbolTable* defScope);
+void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId, 
+  SymbolTable* defScope);
 
 bodyListElm* getBody(bodyList *list);
 
