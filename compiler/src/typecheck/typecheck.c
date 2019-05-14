@@ -1599,6 +1599,7 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
               fprintf(stderr, "Line %d: The variable %s cannot have the \
 %s '%s' as type\n", vty->lineno, vty->id,
                 symKindNames[sym->kind], sym->name);
+              return -1;
             }
             break;
       }
