@@ -26,7 +26,8 @@ int IGcreateGraph(int size, TEMPORARY *tempList){
   graphNodes = Malloc(sizeof(GraphNode)*size);
   for(int i = 0; i < size; i++){
     if(temp==NULL){
-      fprintf(stderr, "INTERNAL ERROR in createGraph: to few temporaries given\n");
+      fprintf(stderr, "INTERNAL ERROR: \
+        in createGraph: to few temporaries given\n");
       return -1;
     }
     //i is the same as graphSize
@@ -55,7 +56,8 @@ int IGinsertNeighbor(int nodeID, int neighborID){
     return -1;
   }
   if(neighborID >= graphSize){
-    fprintf(stderr, "IGinsertNeighbor: nodeIdD %d does not exists\n", neighborID);
+    fprintf(stderr, "IGinsertNeighbor: nodeIdD %d does not exists\n", 
+      neighborID);
     return -1;
   }
   if(!bitMapBitIsSet(graphNodes[nodeID].neighbors, neighborID)){
@@ -78,7 +80,8 @@ int IGremoveNeighbor(int nodeID, int neighborID){
     return -1;
   }
   if(neighborID >= graphSize){
-    fprintf(stderr, "IGinsertNeighbor: nodeIdD %d does not exists\n", neighborID);
+    fprintf(stderr, "IGinsertNeighbor: nodeIdD %d does not exists\n", 
+      neighborID);
     return -1;
   }
   if(bitMapBitIsSet(graphNodes[nodeID].neighbors, neighborID)){
@@ -102,7 +105,10 @@ int* IGgetNeighbors(int nodeID){
   BITMAP *neighbors = graphNodes[nodeID].neighbors;
   int neighborCount = bitMap1Count(neighbors);
   if(neighborCount != graphNodes[nodeID].outDegree){ //double check
-    fprintf(stderr, "INTERNAL ERROR in IGgetNeighbors: outdegree %d does not match number of neighbors %d for node %d\n", graphNodes[nodeID].outDegree, neighborCount, nodeID);
+    fprintf(stderr, "INTERNAL ERROR: \
+      in IGgetNeighbors: outdegree %d does not match number \
+      of neighbors %d for node %d\n", 
+      graphNodes[nodeID].outDegree, neighborCount, nodeID);
     return NULL;
   }
   neighborCount = graphNodes[nodeID].outDegree;
@@ -216,7 +222,8 @@ int IGcolorGraph(){
   while(i != -1){ //as long as we have elements on the stack
     int *neighbors = IGgetNeighbors(i);
     int colorFound = 1; //asume color is found
-    for(registers reg = (registers)R8; reg < (registers) R15; reg = (registers) (reg+1)){
+    for(registers reg = (registers)R8; 
+      reg < (registers) R15; reg = (registers) (reg+1)){
       colorFound = 1;
       for(int j = 1; j<=neighbors[0]; j++){ //for each color
         if(graphNodes[neighbors[j]].reg == reg){  //check if any neighbor have this color
@@ -256,7 +263,8 @@ int IGTransferColors(){
     node = graphNodes[i];
     color = node.reg;
     if(color == NA){
-      fprintf(stderr, "INTERNAL ERROR: found NA color while transfering to tempts\n");
+      fprintf(stderr, "INTERNAL ERROR: \
+        found NA color while transfering to tempts\n");
       return -1;
     }
     if(color != SPILL){ //if temporary were not spilled

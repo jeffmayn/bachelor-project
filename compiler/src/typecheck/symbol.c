@@ -56,7 +56,8 @@ ParamSymbol *createParamSymbol(SYMBOL *sym){
  * return NULL* if the name is already in the table
  * return SYMBOL* to the new symbol on success
  */
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope, TYPE* arrayType){
+SYMBOL *putSymbol(SymbolTable *t, char *name, int value, 
+                int kind, int type, SymbolTable *scope, TYPE* arrayType){
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
   newSym->kind = kind;
   newSym->typeVal = type;
@@ -112,7 +113,8 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
  * useful in codegeneration when we need to know if
  * something is a parameter
  */
-SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType){
+SYMBOL *putParam(SymbolTable *t, char *name, int value, 
+                          int kind, int type, TYPE* arrayType){
   SYMBOL* s = putSymbol(t, name, value, kind, type, NULL, arrayType);
   if(s == NULL){
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);

@@ -10,7 +10,8 @@ int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern,
 												decPattern,
 												wastedMovq};
 
-//when introducing a new pattern remember it needs to change the next, not the current
+//when introducing a new pattern remember it needs to change the next, 
+												//not the current
 
 /**
  * called from main, runs peephole optimization.
@@ -62,12 +63,12 @@ int loopPatterns(INSTR* instrucktion){
 }
 
 /**
- * looks for patterns where we move stuff between two
- * positions without it having any effect.
- * we use our liveness analysis to see if we can
- * remove both mov instructions.
- * VIRKER IKKE LIGE NU!
- */
+	looks for patterns where we move stuff between two
+	positions without it having any effect.
+	we use our liveness analysis to see if we can
+	remove both mov instructions.
+	DOES NOT WORK
+	*/
 int wastedMovq(INSTR* instr){
 	OPERAND *o1, *o2, *o3, *o4;
 	INSTR *instrTarget = instr->next;
@@ -166,7 +167,8 @@ int incPattern(INSTR *instr){
 		if(instrTarget->instrKind == movI){
 			leftOP = instrTarget->paramList;
 			if(leftOP->operandKind == constantO){
-				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
+				if(leftOP->val.constant == 1 && 
+					leftOP->next->operandKind == registerO){
 					if(leftOP->next->val.reg == RBX){
 						if(instrTarget->next->instrKind == addI){
 							if(instrTarget->next->paramList->operandKind == registerO){
@@ -199,7 +201,8 @@ int decPattern(INSTR *instr){
 		if(instrTarget->instrKind == movI){
 			leftOP = instrTarget->paramList;
 			if(leftOP->operandKind == constantO){
-				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
+				if(leftOP->val.constant == 1 && 
+					leftOP->next->operandKind == registerO){
 					if(leftOP->next->val.reg == RBX){
 						if(instrTarget->next->instrKind == subI){
 							if(instrTarget->next->paramList->operandKind == registerO){

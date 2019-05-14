@@ -104,7 +104,8 @@ int intermediateInstrCount;
 
 TEMPORARY *livenessTempList;
 
-TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
+//used to test whether content of user-record has already been traversed
+TEMPORARY *dummyTemp; 
 
 int RUNTIMECHECK;
 
@@ -124,19 +125,23 @@ int IRinitParams(SymbolTable *table, bodyListElm *element);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
 
-int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, char* funcEndLabel, char* startLabel, char* endLabel);
+int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, 
+                    char* funcEndLabel, char* startLabel, char* endLabel);
 
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
 
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int offset); //, int calledFromParDeclList removed
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset); //, int isParam removed
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, 
+                        int offset); //, int calledFromParDeclList removed
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset);
 
-int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startLabel, char* endLabel);
+int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, 
+                                      char* startLabel, char* endLabel);
 
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
 
-int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, OPERAND **op);
+int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, 
+                                              TYPE **ty, OPERAND **op);
 
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 
@@ -235,7 +240,8 @@ INSTR* IRmakeTextINSTR(OPERAND *params);
 
 INSTR* IRmakeCommentINSTR(OPERAND *params);
 
-INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
+//appends instruction to the end of global list
+INSTR* IRappendINSTR(INSTR *newINSTR);
 int IRinserINSTRhere(INSTR *prev, INSTR* new);
 
 //****Abstract scheme constructors****//
@@ -249,7 +255,8 @@ int IRmakeBodyScheme(BODY *body);
  * The Second paramater is the list of parameters to this function
  *  - This list may be arbitrarily long
  */
-int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramList, OPERAND* staticLinkOP, int paramCount);
+int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, 
+                  ACT_LIST *paramList, OPERAND* staticLinkOP, int paramCount);
 OPERAND *IRsetCalleeStaticLink(int nrJumps);
 int IRmakeFunctionAssiScheme();
 OPERAND *IRsetStaticBase(int *nrJumps);
@@ -284,7 +291,8 @@ typedef struct TempLocMap {
 int IRtemporaryHash(char *str);
 TempLocMap *IRinitTempLocMap();
 TempNode *IRputTempNode(TempLocMap *t, char *tempName);
-TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTable);
+TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, 
+                                SymbolTable *mainSymbolTable);
 int IRtraverseDeclerationList(DECL_LIST *declerations);
 
 //#############LIVENESS ANALYSIS#################

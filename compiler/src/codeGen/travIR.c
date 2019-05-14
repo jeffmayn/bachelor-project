@@ -114,7 +114,8 @@ int checkOffsetOperand(INSTR *in){
       if(op->val.temp->temporarykind == paramT){
         printf("\tmovq $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
       }
-      else if(op->val.temp->temporarykind == localT || op->val.temp->temporarykind == actualTempT){
+      else if(op->val.temp->temporarykind == localT || 
+                      op->val.temp->temporarykind == actualTempT){
         printf("\tmovq $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
       }
     }
