@@ -4,47 +4,7 @@
 #include "typecheck.h"
 #include <string.h>
 
-/**
- * Creating next temporary in order
- * It gets an unique ID and associated integer value
- */
-TEMPORARY* IRcreateNextTemp(int offset){
-  TEMPORARY* tmp = NEW(TEMPORARY);
-  tmp->temporarykind = actualTempT;
-  tmp->tempId = tempIdVal;
-  tempIdVal++;
-  tmp->graphNodeId = -1;
-  tmp->placement.offset = offset;
-  tmp->next = livenessTempList;
-  livenessTempList = tmp;
-  return tmp;
-}
 
-/**
- * Creates new local-variabel temp
- * The offset is the distance above the basepointer
- */
-TEMPORARY* IRcreateNextLocalTemp(int offset){
-  TEMPORARY* tmp = NEW(TEMPORARY);
-  tmp->temporarykind = localT;
-  tmp->tempId = tempIdVal;
-  tmp->graphNodeId = -1;
-  tmp->placement.offset = offset;
-  return tmp;
-}
-
-/**
- * Creates new param-variabel temp
- * The offset is the distance below the basepointer
- */
-TEMPORARY* IRcreateParamTemp(int offset){
-  TEMPORARY* tmp = NEW(TEMPORARY);
-  tmp->temporarykind = paramT;
-  tmp->tempId = tempIdVal;
-  tmp->graphNodeId = -1;
-  tmp->placement.offset = offset;
-  return tmp;
-}
 
 //****AST TRAVERSE functions*****//
 /**
@@ -282,15 +242,6 @@ int IRmakeCalleeEpilog(){
   return 0;
 }
 
-
-
-CODEGENUTIL *IRmakeNewCGU(){
-  CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
-  memset(newCGU, 0, sizeof(CODEGENUTIL));
-  newCGU->size = -1;
-  return newCGU;
-}
-
 /**
  * only traverse the declerations immediately available
  * do not dive into functions etc.
@@ -459,52 +410,6 @@ int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset){
     }
   }
   return offset;
-}
-
-/**
-* finds the size of the given symbol
-* Assumes that declarations of all user types
-* have been traversed and its sizes found
-* returns -1 on error
-*/
-int findVarSymSize(SYMBOL *sym){
-  Typekind tk;
-  int size;
-  SYMBOL *sym2;
-  if(sym->cgu->size == -1){
-    tk = sym->typeVal;
-    switch(tk){
-      case idK:
-        sym2 = recursiveSymbolRetrieval(sym->defScope, sym->typePtr->val.id, 0);
-        if(sym2->cgu->size == -1){
-          fprintf(stderr, "INTERNAL ERROR: The size of %s \
-            has not been specified\n", sym->name);
-          return -1;
-        }
-        sym->cgu->size = sym2->cgu->size;
-        break;
-      case intK:
-      case boolK:
-      case arrayK:
-        sym->cgu->size = 1;
-        break;
-      case recordK:
-        size = IRtravVarDeclList(sym->content, sym->typePtr->val.vList, 0);
-        if(size == -1){
-          fprintf(stderr, "Hopefully error is already printed\n");
-          return -1;
-        }
-        sym->cgu->size = size;
-        break;
-      case errorK:
-        fprintf(stderr, "INTERNAL ERROR: findVarSymSize\n");
-        return -1;
-      case nullKK:
-        fprintf(stderr, "%s\n", "INTERNAL ERROR: findVarSymSize nullKK error");
-        return -1;
-    }
-  }
-  return sym->cgu->size;
 }
 
 /**
@@ -1574,6 +1479,62 @@ OPERAND* IRtravTerm(SymbolTable *t, TERM *term){
 }
 
 /**
+ * Makes a function call
+ * The first parameter is the instruction giving the label to where to jump
+ * The Second paramater is the list of parameters to this function
+ *  - This list may be arbitrarily long
+ */
+int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR,
+              ACT_LIST *paramList, OPERAND* staticLinkOP, int paramCount){
+  if(labelINSTR->instrKind != labelI){
+    fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme, no label\n");
+    return -1;
+  }
+  //Caller save registers
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RCX)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RDX)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RSI)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RDI)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R8)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R9)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R10)));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R11)));
+  //Put arguments
+  IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(
+    IRmakeConstantOPERAND(paramCount*8), IRmakeRegOPERAND(RSP))));
+  int error = IRtravActList(t, paramList);
+  if(error == -1){
+    fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme\n");
+    return -1;
+  }
+  paramCount++; //static link included
+  //push static link
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    staticLinkOP, IRmakeRegOPERAND(RBX))));
+  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX))); //Static link field
+  //do the actual call
+  IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
+
+  //remove static link and parameters
+  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+    IRmakeConstantOPERAND(paramCount*8),
+    IRappendOPERAND(IRmakeRegOPERAND(RSP),
+    IRmakeCommentOPERAND("remove static link and parameters")))));
+
+
+  //caller save registers
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R11)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R10)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R9)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R8)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RDI)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RSI)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RDX)));
+  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RCX)));
+  return 0;
+}
+
+/**
  * Traversing actionlist
  * This is used to traverse arguments in function call
  */
@@ -1611,30 +1572,209 @@ int IRtravExpList(SymbolTable *t, EXP_LIST *exps, int i){
 }
 
 /**
- * NOT USED
- * Traversing expression list in reverse order
- * This is used to traverse arguments in function call
- * returns the number of arguments traversed
+ * creates code to find the static link
+ * of the function we are about to call
+ * based on the number of scopes jumped (parameter)
+ * returns the operand giving the value of the static link
+ * put it in rbx !!!(this may change later)!!!
  */
-int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
-  int i=0;
-  OPERAND *op;
-  if(exps != NULL){
-    //go to end of list
-    i = IRtravExpListReverse(t, exps->expList);
-    if(i==-1){
-      return -1;
+OPERAND *IRsetCalleeStaticLink(int nrJumps){
+  TEMPORARY *t1, *t2;
+  OPERAND *o2;
+  if(nrJumps == 0){//we are accessing a function in our own scope
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeRegOPERAND(RBP),
+      IRmakeRegOPERAND(RBX))));
+  } else {
+    t1 = IRcreateNextTemp(tempLocalCounter);
+    tempLocalCounter++;
+    //find static link based on base-pointer
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeRegOPERAND(RBP), IRmakeTemporaryOPERAND(t1))));
+    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+      IRmakeConstantOPERAND(16), IRmakeTemporaryOPERAND(t1))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
+      IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+
+    while((nrJumps-1) > 0){
+      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+      IRmakeConstantOPERAND(16), IRmakeTemporaryOPERAND(t1))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
+      IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+
+      nrJumps = nrJumps-1;
     }
-    //find result of i'th argument
-    op = IRtravExp(t, exps->exp);
-    if(op == NULL){
-      return -1;
-    }
-    IRappendINSTR(IRmakePushINSTR(op));
-    i++;
+    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
   }
-  return i;
+  t2 = IRcreateNextTemp(tempLocalCounter);
+  tempLocalCounter++;
+  o2 = IRmakeTemporaryOPERAND(t2);
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    IRmakeRegOPERAND(RBX), o2)));
+  return IRmakeTemporaryOPERAND(t2);
 }
+
+/**
+ * Follow the static link nrJumps times and
+ * put the result into RDI
+ * returns register operand representing RDI
+ */
+OPERAND *IRsetStaticBase(int *nrJumps){
+  OPERAND *o1;
+
+  o1 = IRsetCalleeStaticLink(*nrJumps);
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(o1, IRmakeRegOPERAND(RBX))));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    IRmakeRegOPERAND(RBX), IRmakeRegOPERAND(RDI))));
+
+  return IRmakeRegOPERAND(RDI);
+}
+/**
+ * NOT USED
+ * Used to reset the basepointer from RDI to RBP
+ * BLAHBLAHBLAH DEN HER FUNKTION ER OVERFLØDIG!
+ */
+int IRresetBasePointer(){
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    IRmakeRegOPERAND(RBP),
+    IRappendOPERAND(
+      IRmakeRegOPERAND(RDI),
+      IRmakeCommentOPERAND("resetting basepointer")
+      ))));
+  return 0;
+}
+
+// /**
+//  * NOT USED
+//  * Traversing expression list in reverse order
+//  * This is used to traverse arguments in function call
+//  * returns the number of arguments traversed
+//  */
+// int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
+//   int i=0;
+//   OPERAND *op;
+//   if(exps != NULL){
+//     //go to end of list
+//     i = IRtravExpListReverse(t, exps->expList);
+//     if(i==-1){
+//       return -1;
+//     }
+//     //find result of i'th argument
+//     op = IRtravExp(t, exps->exp);
+//     if(op == NULL){
+//       return -1;
+//     }
+//     IRappendINSTR(IRmakePushINSTR(op));
+//     i++;
+//   }
+//   return i;
+// }
+
+/**
+* finds the size of the given symbol
+* Assumes that declarations of all user types
+* have been traversed and its sizes found
+* returns -1 on error
+*/
+int findVarSymSize(SYMBOL *sym){
+  Typekind tk;
+  int size;
+  SYMBOL *sym2;
+  if(sym->cgu->size == -1){
+    tk = sym->typeVal;
+    switch(tk){
+      case idK:
+        sym2 = recursiveSymbolRetrieval(sym->defScope, sym->typePtr->val.id, 0);
+        if(sym2->cgu->size == -1){
+          fprintf(stderr, "INTERNAL ERROR: The size of %s \
+            has not been specified\n", sym->name);
+          return -1;
+        }
+        sym->cgu->size = sym2->cgu->size;
+        break;
+      case intK:
+      case boolK:
+      case arrayK:
+        sym->cgu->size = 1;
+        break;
+      case recordK:
+        size = IRtravVarDeclList(sym->content, sym->typePtr->val.vList, 0);
+        if(size == -1){
+          fprintf(stderr, "Hopefully error is already printed\n");
+          return -1;
+        }
+        sym->cgu->size = size;
+        break;
+      case errorK:
+        fprintf(stderr, "INTERNAL ERROR: findVarSymSize\n");
+        return -1;
+      case nullKK:
+        fprintf(stderr, "%s\n", "INTERNAL ERROR: findVarSymSize nullKK error");
+        return -1;
+    }
+  }
+  return sym->cgu->size;
+}
+
+CODEGENUTIL *IRmakeNewCGU(){
+  CODEGENUTIL *newCGU = NEW(CODEGENUTIL);
+  memset(newCGU, 0, sizeof(CODEGENUTIL));
+  newCGU->size = -1;
+  return newCGU;
+}
+
+//****TEMPORARY constructors*****//
+/**
+ * Creating next temporary in order
+ * It gets an unique ID and associated integer value
+ */
+TEMPORARY* IRcreateNextTemp(int offset){
+  TEMPORARY* tmp = NEW(TEMPORARY);
+  tmp->temporarykind = actualTempT;
+  tmp->tempId = tempIdVal;
+  tempIdVal++;
+  tmp->graphNodeId = -1;
+  tmp->placement.offset = offset;
+  tmp->next = livenessTempList;
+  livenessTempList = tmp;
+  return tmp;
+}
+
+/**
+ * Creates new local-variabel temp
+ * The offset is the distance above the basepointer
+ */
+TEMPORARY* IRcreateNextLocalTemp(int offset){
+  TEMPORARY* tmp = NEW(TEMPORARY);
+  tmp->temporarykind = localT;
+  tmp->tempId = tempIdVal;
+  tmp->graphNodeId = -1;
+  tmp->placement.offset = offset;
+  return tmp;
+}
+
+/**
+ * Creates new param-variabel temp
+ * The offset is the distance below the basepointer
+ */
+TEMPORARY* IRcreateParamTemp(int offset){
+  TEMPORARY* tmp = NEW(TEMPORARY);
+  tmp->temporarykind = paramT;
+  tmp->tempId = tempIdVal;
+  tmp->graphNodeId = -1;
+  tmp->placement.offset = offset;
+  return tmp;
+}
+
 
 
 //****OPERAND constructors*****//
@@ -1907,142 +2047,3 @@ INSTR* IRappendINSTR(INSTR *newINSTR){
  intermediateInstrCount++;
  return newINSTR;
 }
-
-/**
- * Makes a function call
- * The first parameter is the instruction giving the label to where to jump
- * The Second paramater is the list of parameters to this function
- *  - This list may be arbitrarily long
- */
-int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR,
-              ACT_LIST *paramList, OPERAND* staticLinkOP, int paramCount){
-  if(labelINSTR->instrKind != labelI){
-    fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme, no label\n");
-    return -1;
-  }
-  //Caller save registers
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RCX)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RDX)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RSI)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RDI)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R8)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R9)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R10)));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(R11)));
-  //Put arguments
-  IRappendINSTR(IRmakeSubINSTR(IRappendOPERAND(
-    IRmakeConstantOPERAND(paramCount*8), IRmakeRegOPERAND(RSP))));
-  int error = IRtravActList(t, paramList);
-  if(error == -1){
-    fprintf(stderr, "INTERNAL ERROR: IRmakeFunctionCallScheme\n");
-    return -1;
-  }
-  paramCount++; //static link included
-  //push static link
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    staticLinkOP, IRmakeRegOPERAND(RBX))));
-  IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RBX))); //Static link field
-  //do the actual call
-  IRappendINSTR(IRmakeCallINSTR(labelINSTR->paramList));
-
-  //remove static link and parameters
-  IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
-    IRmakeConstantOPERAND(paramCount*8),
-    IRappendOPERAND(IRmakeRegOPERAND(RSP),
-    IRmakeCommentOPERAND("remove static link and parameters")))));
-
-
-  //caller save registers
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R11)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R10)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R9)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(R8)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RDI)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RSI)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RDX)));
-  IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RCX)));
-  return 0;
-}
-
-/**
- * creates code to find the static link
- * of the function we are about to call
- * based on the number of scopes jumped (parameter)
- * returns the operand giving the value of the static link
- * put it in rbx !!!(this may change later)!!!
- */
-OPERAND *IRsetCalleeStaticLink(int nrJumps){
-  TEMPORARY *t1, *t2;
-  OPERAND *o2;
-  if(nrJumps == 0){//we are accessing a function in our own scope
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeRegOPERAND(RBP),
-      IRmakeRegOPERAND(RBX))));
-  } else {
-    t1 = IRcreateNextTemp(tempLocalCounter);
-    tempLocalCounter++;
-    //find static link based on base-pointer
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeRegOPERAND(RBP), IRmakeTemporaryOPERAND(t1))));
-    IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
-      IRmakeConstantOPERAND(16), IRmakeTemporaryOPERAND(t1))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
-      IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-
-    while((nrJumps-1) > 0){
-      IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
-      IRmakeConstantOPERAND(16), IRmakeTemporaryOPERAND(t1))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
-      IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-
-      nrJumps = nrJumps-1;
-    }
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
-  }
-  t2 = IRcreateNextTemp(tempLocalCounter);
-  tempLocalCounter++;
-  o2 = IRmakeTemporaryOPERAND(t2);
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    IRmakeRegOPERAND(RBX), o2)));
-  return IRmakeTemporaryOPERAND(t2);
-}
-
-/**
- * Follow the static link nrJumps times and
- * put the result into RDI
- * returns register operand representing RDI
- */
-OPERAND *IRsetStaticBase(int *nrJumps){
-  OPERAND *o1;
-
-  o1 = IRsetCalleeStaticLink(*nrJumps);
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(o1, IRmakeRegOPERAND(RBX))));
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    IRmakeRegOPERAND(RBX), IRmakeRegOPERAND(RDI))));
-
-  return IRmakeRegOPERAND(RDI);
-}
-/**
- * NOT USED
- * Used to reset the basepointer from RDI to RBP
- * BLAHBLAHBLAH DEN HER FUNKTION ER OVERFLØDIG!
- */
-int IRresetBasePointer(){
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    IRmakeRegOPERAND(RBP),
-    IRappendOPERAND(
-      IRmakeRegOPERAND(RDI),
-      IRmakeCommentOPERAND("resetting basepointer")
-      ))));
-  return 0;
-}
-//2002 lines before cleanup

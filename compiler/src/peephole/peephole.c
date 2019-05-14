@@ -7,10 +7,10 @@
 
 /*list of function pointers to patterns I DO NOT KNOW IF THIS WORKS!*/
 int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern,
-												decPattern,
-												wastedMovq};
+												decPattern};
+												//,wastedMovq};
 
-//when introducing a new pattern remember it needs to change the next, 
+//when introducing a new pattern remember it needs to change the next,
 												//not the current
 
 /**
@@ -73,7 +73,6 @@ int wastedMovq(INSTR* instr){
 	OPERAND *o1, *o2, *o3, *o4;
 	INSTR *instrTarget = instr->next;
 	INSTR *instrNext;
-	INSTR *replacement;
 	TempListNode * TLN;
 	registers r1, r2, r3, r4;
 	int index, wastemp, doit;
@@ -167,7 +166,7 @@ int incPattern(INSTR *instr){
 		if(instrTarget->instrKind == movI){
 			leftOP = instrTarget->paramList;
 			if(leftOP->operandKind == constantO){
-				if(leftOP->val.constant == 1 && 
+				if(leftOP->val.constant == 1 &&
 					leftOP->next->operandKind == registerO){
 					if(leftOP->next->val.reg == RBX){
 						if(instrTarget->next->instrKind == addI){
@@ -201,7 +200,7 @@ int decPattern(INSTR *instr){
 		if(instrTarget->instrKind == movI){
 			leftOP = instrTarget->paramList;
 			if(leftOP->operandKind == constantO){
-				if(leftOP->val.constant == 1 && 
+				if(leftOP->val.constant == 1 &&
 					leftOP->next->operandKind == registerO){
 					if(leftOP->next->val.reg == RBX){
 						if(instrTarget->next->instrKind == subI){
