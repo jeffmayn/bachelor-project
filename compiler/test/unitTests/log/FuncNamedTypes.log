@@ -192,6 +192,7 @@ retInt7:
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
+	movq $1, %rbx
 	inc %r8
 	movq %r8, %rbx
 	movq %rbx, %r8

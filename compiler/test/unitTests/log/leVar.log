@@ -58,9 +58,9 @@ main:
 	movq %rbx, %r8
 	movq $12, %rbx
 	cmp %rbx, %r8
-	jl ge8
+	jl cmp8
 	movq $0, %r9
-ge8:
+cmp8:
 	movq %r9, %rbx
 	movq %rbx, %r8
 	movq %rbp, %rbx

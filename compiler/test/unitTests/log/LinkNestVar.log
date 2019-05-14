@@ -274,9 +274,9 @@ b8:
 	movq %rbx, %r8
 	movq $1, %rbx
 	cmp %rbx, %r8
-	jg ge14
+	jg cmp14
 	movq $0, %r9
-ge14:
+cmp14:
 	movq %r9, %rbx
 	cmp $1, %rbx
 	jne else13
@@ -306,6 +306,7 @@ ge14:
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
+	movq $1, %rbx
 	dec %r8
 	movq %rsp, %r9
 	addq $0, %r9

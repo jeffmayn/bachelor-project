@@ -92,9 +92,9 @@ main:
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi		#resetting basepointer
 	cmp %rbx, %r8
-	jge ge8
+	jge cmp8
 	movq $0, %r9
-ge8:
+cmp8:
 	push %rdi
 	movq %r9, %rsi
 	movq $format, %rdi

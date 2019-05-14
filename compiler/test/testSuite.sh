@@ -5,6 +5,7 @@
 
 make -C ../
 yo=$?
+count=0
 #echo $v
 if ! [ $yo -eq 0 ]
 then
@@ -34,16 +35,19 @@ else
       echo "Test 2 compare output of program with expected output."
       printf "\n\n"
 
-
+      invoke_success(){
+        echo SUCCESS
+      }
       # compile files to assembly and produce output files
       invoke_asm() {
         ../../build/compiler < $1.kit > tmp/$1.s 2>/dev/null
         gcc -no-pie -m64 tmp/$1.s -o tmp/$1.dat
         ./tmp/$1.dat > tmp/output/$1.txt
         echo ret $? >> tmp/output/$1.txt
+
         rm tmp/*.dat
         rm tmp/*.s
-        invoke_cmp $1
+        invoke_cmp $1 $2
       }
 
       # if an test fails, a log is generated
@@ -68,8 +72,12 @@ else
       invoke_cmp() {
         if ! cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
           printf "[ ${RED}FAILED!${NC} ] $1: mismatch in output\n"
+          ((count=count-1))
+          echo -ne "failed: $2\r"
       #    echo "SEE LOGFILE: ${PWD##}/log/$1.log"
           invoke_log $1
+        else
+          echo -ne "> tests was successful: $2\r"
         fi
       }
 
@@ -82,10 +90,11 @@ else
           do
             if ! [[ "$ret" =~ ^[0-9]+$ ]]
             then
-              count=0
+
               filename=$ret
             else
-              ((count=count+1))
+((count=count+1))
+
               file=$filename".kit" #its crazy but it works
               ../../build/compiler < "$file" >/dev/null 2>&1
               v=$?
@@ -97,7 +106,8 @@ else
               elif ! [ $v -eq 255 ]
               then
                   if test -f "${u}"; then
-                    invoke_asm "$filename"
+                    #((count=count+1))
+                    invoke_asm $filename $count
                   fi
               fi
             fi

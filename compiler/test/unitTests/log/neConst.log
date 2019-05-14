@@ -53,16 +53,16 @@ main:
 	movq $heap1, endHeap3
 	addq $1048576, endHeap3
 #line: 1 write statement
-	movq $1, %r8
+	movq $1, %r9
 	movq $22, %rbx
-	movq %rbx, %r9
+	movq %rbx, %r8
 	movq $12, %rbx
-	cmp %rbx, %r9
-	jne eq8
-	movq $0, %r8
-eq8:
+	cmp %rbx, %r8
+	jne cmp8
+	movq $0, %r9
+cmp8:
 	push %rdi
-	movq %r8, %rsi
+	movq %r9, %rsi
 	movq $format, %rdi
 	movq $0, %rax
 	call printf

@@ -106,7 +106,7 @@ main:
 	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
 	cmp $0, %rbx
-	je lazyAnd10
+	je lazy10
 	movq $1, %r10
 	movq %rbp, %rbx
 	movq %rbx, %r9
@@ -118,17 +118,17 @@ main:
 	movq %rbx, %r9
 	movq $2, %rbx
 	cmp %rbx, %r9
-	jl ge11
+	jl cmp11
 	movq $0, %r10
-ge11:
+cmp11:
 	movq %r10, %rbx
 	and %r8, %rbx
-lazyAnd10:
+lazy10:
 	movq %rbx, %r8
 	movq %r8, %rbx
 	movq %rbx, %r8
 	cmp $1, %rbx
-	je ge9
+	je lazy9
 	movq %rbp, %rbx
 	movq %rbx, %r9
 	movq %r9, %rbx
@@ -137,7 +137,7 @@ lazyAnd10:
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi		#resetting basepointer
 	or %r8, %rbx
-ge9:
+lazy9:
 	movq %rbx, %r8
 	movq %r8, %rbx
 	cmp $1, %rbx

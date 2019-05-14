@@ -53,7 +53,7 @@ DeclCircArr 0
 DeclCircRec 0
 DeclCircType 255
 DeclFieldTypeNameAsOtherField 255
-DeclFieldVarTypeFromVar 0
+DeclFieldVarTypeFromVar 255
 DeclNestArr 0
 DeclNestRec 0
 DeclRedef 255
@@ -68,8 +68,8 @@ DeclVarOutOfOrder 0
 DeclVarRec 0
 DeclVarSimple 0
 DeclVarTypeArr 0
-DeclVarTypeFromVar 0
-DeclVarTypeNameAsFunc 0
+DeclVarTypeFromVar 255
+DeclVarTypeNameAsFunc 255
 DeclVarTypeNameAsVar 255
 DeclVarTypeRec 0
 DeclVarTypeSimple 0

@@ -46,7 +46,7 @@ main:
 	push %r13
 	push %r14
 	push %r15
-	subq $120, %rsp
+	subq $128, %rsp
 	movq %rsp, mainSPoint4
 	movq %rbp, mainBPoint5
 	movq $heap1, freeHeap2
@@ -63,6 +63,7 @@ main:
 	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
 	movq $8, %rbx
+	movq %rbx, %r9
 	cmp $0, %rbx
 	jg allocPos8
 	movq $4, %rax#negative allocation size
@@ -77,7 +78,7 @@ allocPos8:
 	movq $6, %rax#outofMemory
 	jmp errorCleanup6
 allocSucc9:
-	movq $8, %rbx
+	movq %r9, %rbx
 	movq %r8, %rcx
 	movq %rbx, (%rcx)
 #line: 5 assign statement
@@ -198,7 +199,7 @@ nonNullDeref17:
 	pop %rdi
 	movq $0, %rax
 mainend:
-	addq $120, %rsp
+	addq $128, %rsp
 	pop %r15
 	pop %r14
 	pop %r13
