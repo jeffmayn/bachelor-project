@@ -40,6 +40,7 @@ else
         ../../build/compiler < $1.kit > tmp/$1.s 2>/dev/null
         gcc -no-pie -m64 tmp/$1.s -o tmp/$1.dat
         ./tmp/$1.dat > tmp/output/$1.txt
+        echo ret $? >> tmp/output/$1.txt
         rm tmp/*.dat
         rm tmp/*.s
         invoke_cmp $1

@@ -1,5 +1,0 @@
-neBool
-neConst
-neNull
-neVarNamedSimple
-neVarSimple

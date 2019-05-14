@@ -11,6 +11,7 @@ Actual output:
 0
 1
 0
+ret 0
 
 ############################
 Expected output:

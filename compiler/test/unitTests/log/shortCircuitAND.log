@@ -2,6 +2,7 @@
 Actual output:
 --------------
 333
+ret 0
 
 ############################
 Expected output:

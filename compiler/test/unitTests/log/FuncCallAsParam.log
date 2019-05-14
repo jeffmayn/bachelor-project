@@ -5,6 +5,7 @@ Actual output:
 500
 1000
 1516
+ret 0
 
 ############################
 Expected output:

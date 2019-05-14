@@ -1,5 +1,0 @@
-MultBool
-MultConst
-MultNull
-MultVarNamedSimple
-MultVarSimple

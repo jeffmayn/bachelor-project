@@ -51,6 +51,7 @@ Actual output:
 24
 -1
 25
+ret 6
 
 ############################
 Expected output:

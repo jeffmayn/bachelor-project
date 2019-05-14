@@ -7,6 +7,7 @@ Actual output:
 1
 1
 532
+ret 0
 
 ############################
 Expected output:

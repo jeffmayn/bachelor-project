@@ -1,5 +1,0 @@
-MinusBool
-MinusConst
-MinusNull
-MinusVarNamedSimple
-MinusVarSimple

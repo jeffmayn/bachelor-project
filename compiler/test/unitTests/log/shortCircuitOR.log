@@ -3,6 +3,7 @@ Actual output:
 --------------
 666
 333
+ret 0
 
 ############################
 Expected output:

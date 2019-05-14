@@ -34,6 +34,7 @@ Actual output:
 665
 9
 665
+ret 0
 
 ############################
 Expected output:

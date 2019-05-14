@@ -3,6 +3,7 @@ Actual output:
 --------------
 9
 2
+ret 0
 
 ############################
 Expected output:
