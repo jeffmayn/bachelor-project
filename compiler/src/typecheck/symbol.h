@@ -13,7 +13,6 @@ typedef struct SYMBOL {
   Symbolkind kind;
   enum Typekind typeVal; //this should be the enum from the TYPE struct
   char *name;
-  int value; //never used, at all, always 0. we used it when we first created the symboltable - sorry
   struct SymbolTable* scope; //only relevant for functions
   struct SymbolTable* content; //only relevant for records
   struct TYPE* typePtr;
@@ -47,7 +46,7 @@ typedef struct SymbolTable {
 
 /**
   solves a similar problem to ParamSymbol
-  used in typechecking to be sure we do not visit the 
+  used in typechecking to be sure we do not visit the
   same symbol twice when looking for a typedefinition
   helps us detect type definition cycles.
   */
@@ -64,13 +63,13 @@ SymbolTable *initSymbolTable();
 
 SymbolTable *scopeSymbolTable(SymbolTable *t);
 
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, 
+SYMBOL *putSymbol(SymbolTable *t, char *name, int kind,
   int type, SymbolTable *scope, TYPE* arrayType);
 
 /**
  * Add a parameter to the scop given by SymbolTable
 */
-SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, 
+SYMBOL *putParam(SymbolTable *t, char *name, int kind,
   int type, TYPE* arrayType);
 ParamSymbol *createParamSymbol(SYMBOL *sym);
 
