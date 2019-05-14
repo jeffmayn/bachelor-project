@@ -1,0 +1,38 @@
+(*test af static link
+  indlejrede funktioner recursive kald mm. tilgår variabler gennem
+  static link*)
+
+var printValue : int, returnDummy : int;
+
+func a () : int
+
+	var printValue : int;
+	func b (x : int) : int
+
+		printValue = printValue * 10;
+		write printValue;
+
+		if(x > 1) then {
+			returnDummy = b(x-1);
+		} else {
+			returnDummy = c();
+			return 0;
+		}
+		return 0;
+
+	end b
+	printValue = 42;
+	returnDummy = b(5);
+	return 0;
+
+end a
+
+func c () : int
+	
+	write printValue;
+	return 0;
+
+end c
+
+printValue = 1337;
+returnDummy = a();

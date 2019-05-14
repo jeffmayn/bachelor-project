@@ -1,0 +1,15 @@
+(*test af static link
+  simpel funktion tilgår global variabel*)
+
+var globalVar : int, returnDummy : int;
+
+func accessGlobalVar () : int
+	
+	write globalVar;
+	return 0;
+
+end accessGlobalVar
+
+globalVar = 1337;
+
+returnDummy = accessGlobalVar();

@@ -1,0 +1,38 @@
+(*test af static link og parametre
+  funktion tilgår parametre fra anden funktion
+  korrekt kitty program*)
+
+var returnDummy : int;
+
+func shareThis (myParam : int, myBool : bool) : int
+
+	func withMe () : int
+
+		write myParam;
+		return 0;
+
+	end withMe
+
+	func recShare (x : int) : int
+
+		if(x > 1) then {
+			returnDummy = recShare(x-1);
+		} else {
+			write myBool;
+		}
+		return 0;
+
+	end recShare
+
+	if(!myBool) then {
+		myBool = true;
+		myParam = myParam + 1;
+	}
+
+	returnDummy = withMe();
+	returnDummy = recShare(5);
+	return 0;
+
+end shareThis
+
+returnDummy = shareThis(41, false);

@@ -1,0 +1,12 @@
+(*det er ikke tilladt at printe komplekse typer*)
+
+var x : array of int;
+var i : int;
+
+allocate x of length 10;
+i = 0;
+while(i < 10) do {
+	x[i] = i+i*5/(i-7)+i;
+}
+write x;
+

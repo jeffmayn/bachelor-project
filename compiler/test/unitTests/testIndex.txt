@@ -61,11 +61,11 @@ tildeling mellem arrays (både simple)                               AssiArrs.ki
 Tildeling mellem Arrays (record typer)                              AssiArrsRec.kit
 Tildeleing mellem arrays i arrays (simple typer) (måske dækket andet sted)                    AssiArrNestSimple.kit
 Tildeleing mellem arrays i arrays (record typer) (måske dækket andet sted)                   AssiArrNestRec.kit
-tildeling mellem elementer i records                                AssiRecElem.kit
-tildeling mellem anonyme records (FORBUDT)                          AssiAnonRecs.kit
-tildeling mellem navngivne records                                  AssiNamedRecs.kit
-tildeling mellem records i records                                  AssiRecNest.kit
-tildeling forkert mellem records i records (FORBUDT                 AssiRecNestWrong.kit
+[done] tildeling mellem elementer i records                                AssiRecElem.kit
+[done] tildeling mellem anonyme records (FORBUDT)                          AssiAnonRecs.kit
+[done] tildeling mellem navngivne records                                  AssiNamedRecs.kit
+[done] tildeling mellem records i records                                  AssiRecNest.kit
+[done] tildeling forkert mellem records i records (FORBUDT                 AssiRecNestWrong.kit
 Tildeling mellem typer der ikke er tilladt (FORBUDT)
 
 Tildeling af NULL til simpel type (FORBUDT)                         AssiNullSimple.kit
@@ -120,13 +120,12 @@ hav continue uden for løkke (FORBUDT)                               WhileContOu
 Hav break i indlejrede løkker                                       WhileBreakNest.kit
 Hav continue i indlejrede løkker                                    WhileContNest.kit
 
-
 tjek om {} virker korrekt                                           StmtList.kit
 
 [done] funktioner med forskellig start og end id (FORBUDT)                 FuncIdCheck.kit
 [done] funktion der tager og returnere simple typer                        FuncSimpleTypes.kit
 [done] funktion der tager og returnere navngivne simple typer              FuncNamedTypes.kit
-[done] funktion der tager og returner anonyme records     				         FuncAnonRec.kit
+[done] funktion der tager og returner anonyme records     				   FuncAnonRec.kit
 [done] funktion der tager og returnere arrays                              FuncNamedArr.kit
 [done] funktion der tager og returnere anonyme arrays                      FuncAnonArr.kit
 [done] Tjek at parametre evalueres fra venstre mod højre                   FuncEvalOrder.kit
@@ -137,6 +136,7 @@ tjek om {} virker korrekt                                           StmtList.kit
 [done] Gendefintion af funktion i eget scope (FORBUDT)                     FuncReDef.kit
 [done] gendefintion af funktion i andet scope                              FuncReDefScope.kit
 
+/*return-tests er dækket af funktions-tests ovenfor*/
 returner konstant, der passer med retur-type                              RetConst.kit
 return konstant der ikke passer med retur-type (FORBUDT)                  RetConstWrong.kit
 returner variabel der passer med simple retur type                        RetVarSimple.kit
@@ -148,17 +148,17 @@ return record variabel der ikke passer med anonym record type (FORBUDT)   RetAno
 return array variabel der passer med anonym array type                    RetAnonArr.kit
 returner array variabel der ikke passer med anonym array type (FORBUDT)   RetAnonArrWrong.kit
 
-Funktion der tilgår global variabel                                           LinkGlobalVar.kit
-Indlejrede funktioner der tilgår variabler i ydre scopes                      LinkNestVar.kit
+[done] Funktion der tilgår global variabel                                           LinkGlobalVar.kit
+[done] Indlejrede funktioner der tilgår variabler i ydre scopes                      LinkNestVar.kit
     Evt. også hvor funktionskald er en del af parameterlisten
-Funktioner der tilgår parametre i ydre scopes                                 LinkNestPar.kit
-Funktioner der tilgår variabler fra scopes der ikke er tilgængelige (FORBUDT) LinkNestVarWrong.kit
-Funktioner der tilgår parametre fra scopes der ikke er tilgængelige (FORBUDT) LinkNestParWrong.kit
+[done] Funktioner der tilgår parametre i ydre scopes                                 LinkNestPar.kit
+[done] Funktioner der tilgår variabler fra scopes der ikke er tilgængelige (FORBUDT) LinkNestVarWrong.kit
+[done] Funktioner der tilgår parametre fra scopes der ikke er tilgængelige (FORBUDT) LinkNestParWrong.kit
 
 
-write simpel type                                                 WriteSimple.kit
-write navngiven simpel type                                       WriteNamed.kit
-write kompleks type (FORBUDT)                                     WriteComplexWrong.kit
+[done] write simpel type                                                 WriteSimple.kit
+[done] write navngiven simpel type                                       WriteNamed.kit
+[done] write kompleks type (FORBUDT)                                     WriteComplexWrong.kit
 
 
 Parsertests?

@@ -1,0 +1,9 @@
+(*dekleration af cirkulære arrays
+  teknisk set korrekt kitty program, men der virker ikke til at være nogen grund til at det er tilladt*)
+
+type OnePlusOne = array of Two;
+type Two = array of OnePlusOne;
+var x : OnePlusOne;
+
+allocate x of length 10;
+write 0;
