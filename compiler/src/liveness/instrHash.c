@@ -47,7 +47,8 @@ int instrHashPutInstr(InstrTable *t, INSTR *instr){
     InstrUnit *temp = table[hashIndex];
     while(temp != NULL){
       if(temp->instr == instr){ //name is already in this table
-        fprintf(stderr, "INTERNAL ERROR: instrHashPutInstr(): Somehow the instruction was already inserted\n");
+        fprintf(stderr, "INTERNAL ERROR: \
+          instrHashPutInstr(): Somehow the instruction was already inserted\n");
         return -1;
       }
       if(temp->next == NULL){

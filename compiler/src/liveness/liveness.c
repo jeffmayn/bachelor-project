@@ -94,21 +94,25 @@ int livenessTravIR(INSTR *instr){
         if(op == NULL){
           return -1;
         }
-        if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp); //using first operand
         }
-        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp); //using operand if deref
         }
         op = op->next;
         if(op == NULL){
           return -1;
         }
-        if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp); //using and defining second operand
           addElement(lia[index].def, op->val.temp);
         }
-        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp); //onlu using operand if deref
         }
         break;
@@ -116,20 +120,24 @@ int livenessTravIR(INSTR *instr){
         if(op == NULL){
           return -1;
         }
-        if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
-        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
         op = op->next;
         if(op == NULL){
           return -1;
         }
-        if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
-        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
         break;
@@ -138,20 +146,24 @@ int livenessTravIR(INSTR *instr){
         if(op == NULL){
           return -1;
         }
-        if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
-        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
         op = op->next;
         if(op == NULL){
           return -1;
         }
-        if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].def, op->val.temp);
         }
-        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
         break;
@@ -160,10 +172,12 @@ int livenessTravIR(INSTR *instr){
         if(op == NULL){
           return -1;
         }
-        if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
-        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
         break;
@@ -171,17 +185,36 @@ int livenessTravIR(INSTR *instr){
         if(op == NULL){
           return -1;
         }
-        if(op->operandKind == temporaryO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].def, op->val.temp);
         }
-        if(op->operandKind == tempDeRefO && op->val.temp->temporarykind == actualTempT){
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
+        }
+        break;
+      case incI:
+      case decI: //use and define one
+        if(op == NULL){
+          return -1;
+        }
+        if(op->operandKind == temporaryO &&
+          op->val.temp->temporarykind == actualTempT){
+          addElement(lia[index].use, op->val.temp);
+          addElement(lia[index].def, op->val.temp);
+        }
+        if(op->operandKind == tempDeRefO &&
+          op->val.temp->temporarykind == actualTempT){
           addElement(lia[index].use, op->val.temp);
         }
         break;
       case jumpI: //primary succ is different
         jINSTR = instrHashGetINSTR(labelINSTRTable, instr->paramList->val.label);
         if(jINSTR == NULL){
-          fprintf(stderr, "INTERNAL ERROR: occurred when getting instruction with label %s\n", instr->paramList->val.label);
+          fprintf(stderr, "INTERNAL ERROR: \
+            occurred when getting instruction with label %s\n",
+            instr->paramList->val.label);
           return -1;
         }
         lia[index].succ[0] = jINSTR->id;
@@ -268,9 +301,11 @@ int buildInterferenceGraph(){
         if((!lia[n].isMove) || defNode->temp != liveNode->temp){
           //if not move or if livenode is not destination
           //add interference edge in both directions
-          error = IGinsertNeighbor(defNode->temp->graphNodeId, liveNode->temp->graphNodeId);
+          error = IGinsertNeighbor(defNode->temp->graphNodeId,
+            liveNode->temp->graphNodeId);
           if(error == -1){ return -1; }
-          error = IGinsertNeighbor(liveNode->temp->graphNodeId, defNode->temp->graphNodeId);
+          error = IGinsertNeighbor(liveNode->temp->graphNodeId,
+            defNode->temp->graphNodeId);
           if(error == -1){ return -1; }
         }
         liveNode = liveNode->next;

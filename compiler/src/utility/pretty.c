@@ -259,6 +259,12 @@ void pSTMT(STATEMENT *s){
       indent();
       fprintf(stderr,"}");
       break;
+    case breakK:
+      fprintf(stderr, "break");
+      break;
+    case continueK:
+      fprintf(stderr, "continue");
+      break;
   }
   fprintf(stderr,"\n");
 }

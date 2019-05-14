@@ -95,7 +95,8 @@ typedef struct STATEMENT {
     struct VARIABLE *allocate;
     struct {struct VARIABLE *var; struct EXP *exp;} allocatelength;
     struct {struct VARIABLE *var; struct EXP *exp;} assign;
-    struct {struct EXP *cond; struct STATEMENT *thenbody; struct STATEMENT *elsebody;} ifthenelse;
+    struct {struct EXP *cond; struct STATEMENT *thenbody; 
+      struct STATEMENT *elsebody;} ifthenelse;
     struct {struct EXP *cond; struct STATEMENT *body;} while_;
     struct STATEMENT_LIST *list;
   } val;
@@ -125,7 +126,8 @@ typedef struct EXP {
 
 typedef struct TERM {
   int lineno;
-  enum {varK, idTermK, expTermK, notTermK, expCardK, numK, trueK, falseK, nullK} kind;
+  enum {varK, idTermK, expTermK, notTermK, expCardK, numK, trueK, 
+    falseK, nullK} kind;
   union {
     struct {char *id; struct ACT_LIST *list;} idact;
     struct VARIABLE *var; //changed from char*

@@ -22,7 +22,7 @@ int IRtravInternalRep(INSTR *instr){
       return -1;
     }
     if(BPRESET){
-      printf("\tmovq %rbp, %rdi\t\t#resetting basepointer\n");
+      printf("\tmovq %%rbp, %%rdi\t\t#resetting basepointer\n");
       BPRESET = 0;
     }
     instr = instr->next;
@@ -80,7 +80,9 @@ int IRtravPARAM(OPERAND *op){
       break;
     case tempDeRefO:
       printf("(%%rcx)");
+      break;
   }
+  return 0;
 }
 
 int travTemporary(TEMPORARY *temp){
@@ -114,7 +116,8 @@ int checkOffsetOperand(INSTR *in){
       if(op->val.temp->temporarykind == paramT){
         printf("\tmovq $%d, %%rdx\n", (op->val.temp->placement.offset+3)); //return og static link
       }
-      else if(op->val.temp->temporarykind == localT || op->val.temp->temporarykind == actualTempT){
+      else if(op->val.temp->temporarykind == localT ||
+                      op->val.temp->temporarykind == actualTempT){
         printf("\tmovq $-%d, %%rdx\n", (op->val.temp->placement.offset+6)); //callee save
       }
     }
@@ -132,120 +135,133 @@ int checkOffsetOperand(INSTR *in){
   return 0;
 }
 
+const char* instrNames2[] = {"\taddq ", "\tinc ", "\tdec ", "\tsubq ","\timulq ",
+                            "\tidivq ", "\tand ", "\tor ", "\txor ", "\tshl ",
+                            "\tshr ", "\tcmp ", "\tjmp ", "\tjl ", "\tjg ",
+                            "\tjle ", "\tjge ", "\tje ", "\tjne ", "\tmovq ",
+                            "", "\tpush ", "\tpop ", "\tcall ", "\tret ", "", ""};
 
 int IRtravINSTR(INSTR *in){
   int error = 0;
   checkOffsetOperand(in);
-  switch(in->instrKind){
-    case addI:
-      printf("\taddq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case incI:
-      printf("\tinc ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case decI:
-      printf("\tdec ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case subI:
-      printf("\tsubq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case mulI:
-      printf("\timulq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case divI:
-      printf("\tidivq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case andI:
-      printf("\tand ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case orI:
-      printf("\tor ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case xorI:
-      printf("\txor ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case lshiftI:
-      printf("\tshl ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case rshiftI:
-      printf("\tshr ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case cmpI:
-      printf("\tcmp ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jumpI:
-      printf("\tjmp ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmplessI:
-      printf("\tjl ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpgreatI:
-      printf("\tjg ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpleI:
-      printf("\tjle ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpgeI:
-      printf("\tjge ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpeqI:
-      printf("\tje ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case jmpneqI:
-      printf("\tjne ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case movI:
-      printf("\tmovq ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case labelI:
-      //printf("label ");
-      error = IRtravOPERANDlist(in->paramList);
-      printf(":");
-      break;
-    case pushI:
-      printf("\tpush ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case popI:
-      printf("\tpop ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case callI:
-      printf("\tcall ");
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case retI:
-      printf("\tret ");
-      error = IRtravOPERANDlist(in->paramList);
-      printf("\n\n\n");
-      break;
-    case textI:
-      error = IRtravOPERANDlist(in->paramList);
-      break;
-    case commentI:
-      error = IRtravOPERANDlist(in->paramList);
-      break;
+  printf("%s", instrNames2[in->instrKind]);
+  error = IRtravOPERANDlist(in->paramList);
+  if(in->instrKind == labelI){
+    printf(":");
   }
+  if(in->instrKind == retI){
+    printf("\n\n\n");
+  }
+  // switch(in->instrKind){
+  //   case addI:
+  //     printf("\taddq ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case incI:
+  //     printf("\tinc ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case decI:
+  //     printf("\tdec ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case subI:
+  //     printf("\tsubq ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case mulI:
+  //     printf("\timulq ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case divI:
+  //     printf("\tidivq ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case andI:
+  //     printf("\tand ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case orI:
+  //     printf("\tor ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case xorI:
+  //     printf("\txor ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case lshiftI:
+  //     printf("\tshl ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case rshiftI:
+  //     printf("\tshr ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case cmpI:
+  //     printf("\tcmp ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case jumpI:
+  //     printf("\tjmp ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case jmplessI:
+  //     printf("\tjl ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case jmpgreatI:
+  //     printf("\tjg ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case jmpleI:
+  //     printf("\tjle ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case jmpgeI:
+  //     printf("\tjge ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case jmpeqI:
+  //     printf("\tje ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case jmpneqI:
+  //     printf("\tjne ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case movI:
+  //     printf("\tmovq ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case labelI:
+  //     //printf("label ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     printf(":");
+  //     break;
+  //   case pushI:
+  //     printf("\tpush ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case popI:
+  //     printf("\tpop ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case callI:
+  //     printf("\tcall ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case retI:
+  //     printf("\tret ");
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     printf("\n\n\n");
+  //     break;
+  //   case textI:
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  //   case commentI:
+  //     error = IRtravOPERANDlist(in->paramList);
+  //     break;
+  // }
   printf("\n");
   return error;
 }

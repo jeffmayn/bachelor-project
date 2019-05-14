@@ -29,7 +29,8 @@ int weeder1(BODY *body){
 int weederTraverseBody(BODY *body, char *name){
   int ret = weederTravStmtList(body->sList);
   if(ret == -1){
-    fprintf(stderr, "ERROR: Some path in function %s does not reach a return statement\n", name);
+    fprintf(stderr, "ERROR: Some path in function %s does not reach a \
+      return statement\n", name);
     return -1;
   }
   return weederTraverseDECL(body->vList);
@@ -60,7 +61,8 @@ int weederTravFunction(FUNCTION *f){
   if ((strcmp (f->head->id, f->tail->id))==0 ){
     retVal = 0;
   } else {
-    fprintf(stderr, "ERROR: Line %d: mismatch in header-id %s and tail-id %s\n", f->head->lineno, f->head->id, f->tail->id);
+    fprintf(stderr, "ERROR: Line %d: mismatch in header-id %s and tail-id %s\n",
+     f->head->lineno, f->head->id, f->tail->id);
     return -1;
   }
   return weederTraverseBody(f->body, f->head->id);
@@ -75,7 +77,8 @@ int weederTravStmtList(STATEMENT_LIST *stmtList){
   if(stmtList != NULL){
     if(weederTravStmt(stmtList->statement) == 0){
       if(stmtList->statementList != NULL){
-        fprintf(stderr, "Warning! Line %d: Unreachable statement after return\n", stmtList->statementList->lineno);
+        fprintf(stderr, "Warning! Line %d: Unreachable statement after \
+          return\n", stmtList->statementList->lineno);
       }
       return 0;
     }
@@ -134,7 +137,8 @@ int weederTravMainStmt(STATEMENT *s){
   //int blah = 0;
   switch(s->kind){
     case returnK:
-      fprintf(stderr, "ERROR: Line %d: return statemenet found i main scope\n", s->lineno);
+      fprintf(stderr, "ERROR: Line %d: return statemenet found i main \
+        scope\n", s->lineno);
       return -1;
       break;
     case ifK:

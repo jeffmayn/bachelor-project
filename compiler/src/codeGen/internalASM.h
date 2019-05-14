@@ -104,53 +104,67 @@ int intermediateInstrCount;
 
 TEMPORARY *livenessTempList;
 
-TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
+//used to test whether content of user-record has already been traversed
+TEMPORARY *dummyTemp;
 
-//should return the next tempID;
-TEMPORARY* IRcreateNextTemp();
-CODEGENUTIL *IRmakeNewCGU();
+int RUNTIMECHECK;
+
 
 int IRcreateInternalRep(bodyList *mainBody);
+
+int IRinitParams(SymbolTable *table, bodyListElm *element);
+
+void IRruntimeErrorCleanupCode();
 
 int IRtravBody(SymbolTable *table, bodyListElm *body);
 int IRmakeCalleeProlog();
 int IRmakeCalleeEpilog();
 
-int travTemporary(TEMPORARY *temp);
-
-int IRinitParams(SymbolTable *table, bodyListElm *element);
-
-int IRtravDecl(SymbolTable *table, DECLARATION *decl);
-
-int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements, char* funcEndLabel, char* startLabel, char* endLabel);
 
 int IRtravDeclList(SymbolTable *table, DECL_LIST *declerations);
-
 int IRtravDecl(SymbolTable *table, DECLARATION *decl);
-int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList, int offset); //, int calledFromParDeclList removed
-int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset); //, int isParam removed
+int IRtravVarDeclList(SymbolTable *table, VAR_DECL_LIST *varDeclList,
+                        int offset); //, int calledFromParDeclList removed
+int IRtravVarType(SymbolTable *table, VAR_TYPE *varType, int offset);
 
-int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startLabel, char* endLabel);
+int IRtravStmtList(SymbolTable *table, STATEMENT_LIST *statements,
+                    char* funcEndLabel, char* startLabel, char* endLabel);
+
+int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel,
+                                      char* startLabel, char* endLabel);
 
 OPERAND* IRtravVar(SymbolTable *t, VARIABLE *var);
 
-int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, OPERAND **op);
+int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym,
+                                              TYPE **ty, OPERAND **op);
 
 OPERAND* IRtravExp(SymbolTable *t, EXP *exp);
 
 OPERAND* IRtravTerm(SymbolTable *t, TERM *term);
 
+int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR,
+                  ACT_LIST *paramList, OPERAND* staticLinkOP, int paramCount);
+
 int IRtravActList(SymbolTable *t, ACT_LIST *actlist);
 
 int IRtravExpList(SymbolTable *t, EXP_LIST *exps, int i);
 
-int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps);
-
-
-
-void IRruntimeErrorCleanupCode();
+OPERAND *IRsetCalleeStaticLink(int nrJumps);
+OPERAND *IRsetStaticBase(int *nrJumps);
+int IRresetBasePointer();
 
 int findVarSymSize(SYMBOL *sym);
+
+
+CODEGENUTIL* IRmakeNewCGU();
+
+//****TEMPORARY constructors*****//
+TEMPORARY* IRcreateNextTemp();
+TEMPORARY* IRcreateNextLocalTemp(int offset);
+TEMPORARY* IRcreateParamTemp(int offset);
+
+
+
 //****Paramter constructors*****//
 OPERAND *IRmakeConstantOPERAND(int conVal);
 
@@ -233,57 +247,11 @@ INSTR* IRmakeTextINSTR(OPERAND *params);
 
 INSTR* IRmakeCommentINSTR(OPERAND *params);
 
-INSTR* IRappendINSTR(INSTR *newINSTR);//appends instruction to the end of global list
+//appends instruction to the end of global list
+INSTR* IRappendINSTR(INSTR *newINSTR);
 int IRinserINSTRhere(INSTR *prev, INSTR* new);
 
-//****Abstract scheme constructors****//
-int IRmakeFunctionScheme(FUNCTION *func);
 
-int IRmakeBodyScheme(BODY *body);
-
-/**
- * Makes a function call
- * The first parameter is the instruction giving the label to where to jump
- * The Second paramater is the list of parameters to this function
- *  - This list may be arbitrarily long
- */
-int IRmakeFunctionCallScheme(SymbolTable *t, INSTR *labelINSTR, ACT_LIST *paramList, OPERAND* staticLinkOP, int paramCount);
-OPERAND *IRsetCalleeStaticLink(int nrJumps);
-int IRmakeFunctionAssiScheme();
-OPERAND *IRsetStaticBase(int *nrJumps);
-int IRresetBasePointer();
-
-
-//Insert temporary name into symboltable for variables
-int IRtravDeclListScheme(DECL_LIST *decls);
-
-/**
- * Associate varibles to a temporary and add to map
- * Associate functions to a label
-*/
-int IRmakeDeclScheme(DECLARATION *decl);
-
-//##################Optimization#################//
-/*liveness - mostly*/
-//used within the TempLocMap
-typedef struct TempNode {
-  char *name;
-  registers reg; //the register to which this temp is assigned
-  int graphNodeId; //id representing graph node associated to this temporary
-  struct TempNode *next; //collision handling in TempLocMap
-} TempNode;
-
-/*used to map temps to registers or adresses (locations)*/
-typedef struct TempLocMap {
-  struct TempNode *table[HASHSIZE2];
-} TempLocMap;
-
-/******AST traversal and TempNodeMap setup*******/
-int IRtemporaryHash(char *str);
-TempLocMap *IRinitTempLocMap();
-TempNode *IRputTempNode(TempLocMap *t, char *tempName);
-TempLocMap* IRsetupTemporaries(bodyListElm *bodyList, SymbolTable *mainSymbolTable);
-int IRtraverseDeclerationList(DECL_LIST *declerations);
 
 //#############LIVENESS ANALYSIS#################
 int liveness();
@@ -480,6 +448,9 @@ int loopPatterns(INSTR *instr);
 int IRtravInternalRep(INSTR *instr);
 
 int ASMinternalNodeToString();
+
+int travTemporary(TEMPORARY *temp);
+
 
 int IRtravPARAM(OPERAND *op);
 

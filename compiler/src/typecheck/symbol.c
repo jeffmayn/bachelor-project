@@ -56,11 +56,11 @@ ParamSymbol *createParamSymbol(SYMBOL *sym){
  * return NULL* if the name is already in the table
  * return SYMBOL* to the new symbol on success
  */
-SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, SymbolTable *scope, TYPE* arrayType){
+SYMBOL *putSymbol(SymbolTable *t, char *name,
+                int kind, int type, SymbolTable *scope, TYPE* arrayType){
   SYMBOL *newSym = Malloc(sizeof(SYMBOL));
   newSym->kind = kind;
   newSym->typeVal = type;
-  newSym->value = value;
   newSym->name = Malloc(strlen(name)+1);
   memcpy(newSym->name, name, strlen(name)+1);
   newSym->scope = scope;
@@ -112,8 +112,9 @@ SYMBOL *putSymbol(SymbolTable *t, char *name, int value, int kind, int type, Sym
  * useful in codegeneration when we need to know if
  * something is a parameter
  */
-SYMBOL *putParam(SymbolTable *t, char *name, int value, int kind, int type, TYPE* arrayType){
-  SYMBOL* s = putSymbol(t, name, value, kind, type, NULL, arrayType);
+SYMBOL *putParam(SymbolTable *t, char *name,
+                          int kind, int type, TYPE* arrayType){
+  SYMBOL* s = putSymbol(t, name, kind, type, NULL, arrayType);
   if(s == NULL){
     fprintf(stderr, "putParam(): The id: %s already exists\n", name);
     return NULL;
@@ -222,10 +223,10 @@ void dumpSymbolTable(SymbolTable *t){
   for(int i=0; i<HashSize; i++){
     if(table[i]!=NULL){
       SYMBOL *elm = table[i];
-      fprintf(stderr,"%9d %-15s %-10d", i, elm->name, elm->value);
+      fprintf(stderr,"%9d %-15s %-10d", i, elm->name, 0);
       elm = elm->next;
       while(elm != NULL){
-        fprintf(stderr," -> (%s,%d)",elm->name,elm->value);
+        fprintf(stderr," -> (%s,%d)",elm->name, 0);
         elm = elm->next;
       }
       fprintf(stderr,"\n");

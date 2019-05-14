@@ -6,11 +6,12 @@
 #include <string.h>
 
 /*list of function pointers to patterns I DO NOT KNOW IF THIS WORKS!*/
-int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern, 
-												decPattern,
-												wastedMovq};
+int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern,
+												decPattern};
+												//,wastedMovq};
 
-//when introducing a new pattern remember it needs to change the next, not the current
+//when introducing a new pattern remember it needs to change the next,
+												//not the current
 
 /**
  * called from main, runs peephole optimization.
@@ -25,7 +26,7 @@ int peephole(){
 			fprintf(stderr, "%s\n", "peephole error halt");
 			return -1;
 		}
-		
+
 	}
 	return 0;
 }
@@ -62,17 +63,16 @@ int loopPatterns(INSTR* instrucktion){
 }
 
 /**
- * looks for patterns where we move stuff between two
- * positions without it having any effect.
- * we use our liveness analysis to see if we can
- * remove both mov instructions.
- * VIRKER IKKE LIGE NU!
- */
+	looks for patterns where we move stuff between two
+	positions without it having any effect.
+	we use our liveness analysis to see if we can
+	remove both mov instructions.
+	DOES NOT WORK
+	*/
 int wastedMovq(INSTR* instr){
 	OPERAND *o1, *o2, *o3, *o4;
 	INSTR *instrTarget = instr->next;
 	INSTR *instrNext;
-	INSTR *replacement;
 	TempListNode * TLN;
 	registers r1, r2, r3, r4;
 	int index, wastemp, doit;
@@ -166,14 +166,19 @@ int incPattern(INSTR *instr){
 		if(instrTarget->instrKind == movI){
 			leftOP = instrTarget->paramList;
 			if(leftOP->operandKind == constantO){
-				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
+				if(leftOP->val.constant == 1 &&
+					leftOP->next->operandKind == registerO){
 					if(leftOP->next->val.reg == RBX){
 						if(instrTarget->next->instrKind == addI){
-							temp = instrTarget->next->paramList->next;
-							replacement = IRmakeIncINSTR(temp);
-							replacement->next = instrTarget->next->next;
-							instr->next = replacement;
-							changeMade = 1;
+							if(instrTarget->next->paramList->operandKind == registerO){
+								if(instrTarget->next->paramList->val.reg == RBX){
+									temp = instrTarget->next->paramList->next;
+									replacement = IRmakeIncINSTR(temp);
+									replacement->next = instrTarget->next->next;
+									instrTarget->next = replacement;
+									changeMade = 1;
+								}
+							}
 						}
 					}
 				}
@@ -195,14 +200,19 @@ int decPattern(INSTR *instr){
 		if(instrTarget->instrKind == movI){
 			leftOP = instrTarget->paramList;
 			if(leftOP->operandKind == constantO){
-				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
+				if(leftOP->val.constant == 1 &&
+					leftOP->next->operandKind == registerO){
 					if(leftOP->next->val.reg == RBX){
 						if(instrTarget->next->instrKind == subI){
-							temp = instrTarget->next->paramList->next;
-							replacement = IRmakeDecINSTR(temp);
-							replacement->next = instrTarget->next->next;
-							instr->next = replacement;
-							changeMade = 1;
+							if(instrTarget->next->paramList->operandKind == registerO){
+								if(instrTarget->next->paramList->val.reg == RBX){
+									temp = instrTarget->next->paramList->next;
+									replacement = IRmakeDecINSTR(temp);
+									replacement->next = instrTarget->next->next;
+									instrTarget->next = replacement;
+									changeMade = 1;
+								}
+							}
 						}
 					}
 				}
