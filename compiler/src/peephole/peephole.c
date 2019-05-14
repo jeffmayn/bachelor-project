@@ -6,7 +6,7 @@
 #include <string.h>
 
 /*list of function pointers to patterns I DO NOT KNOW IF THIS WORKS!*/
-int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern, 
+int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern,
 												decPattern,
 												wastedMovq};
 
@@ -25,7 +25,7 @@ int peephole(){
 			fprintf(stderr, "%s\n", "peephole error halt");
 			return -1;
 		}
-		
+
 	}
 	return 0;
 }
@@ -169,11 +169,15 @@ int incPattern(INSTR *instr){
 				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
 					if(leftOP->next->val.reg == RBX){
 						if(instrTarget->next->instrKind == addI){
-							temp = instrTarget->next->paramList->next;
-							replacement = IRmakeIncINSTR(temp);
-							replacement->next = instrTarget->next->next;
-							instr->next = replacement;
-							changeMade = 1;
+							if(instrTarget->next->paramList->operandKind == registerO){
+								if(instrTarget->next->paramList->val.reg == RBX){
+									temp = instrTarget->next->paramList->next;
+									replacement = IRmakeIncINSTR(temp);
+									replacement->next = instrTarget->next->next;
+									instrTarget->next = replacement;
+									changeMade = 1;
+								}
+							}
 						}
 					}
 				}
@@ -198,11 +202,15 @@ int decPattern(INSTR *instr){
 				if(leftOP->val.constant == 1 && leftOP->next->operandKind == registerO){
 					if(leftOP->next->val.reg == RBX){
 						if(instrTarget->next->instrKind == subI){
-							temp = instrTarget->next->paramList->next;
-							replacement = IRmakeDecINSTR(temp);
-							replacement->next = instrTarget->next->next;
-							instr->next = replacement;
-							changeMade = 1;
+							if(instrTarget->next->paramList->operandKind == registerO){
+								if(instrTarget->next->paramList->val.reg == RBX){
+									temp = instrTarget->next->paramList->next;
+									replacement = IRmakeDecINSTR(temp);
+									replacement->next = instrTarget->next->next;
+									instrTarget->next = replacement;
+									changeMade = 1;
+								}
+							}
 						}
 					}
 				}

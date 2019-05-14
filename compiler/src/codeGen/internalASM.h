@@ -106,6 +106,8 @@ TEMPORARY *livenessTempList;
 
 TEMPORARY *dummyTemp; //used to test whether content of user-record has already been traversed
 
+int RUNTIMECHECK;
+
 //should return the next tempID;
 TEMPORARY* IRcreateNextTemp();
 CODEGENUTIL *IRmakeNewCGU();
