@@ -58,8 +58,6 @@ Other stuff:
    |--> Symbol collection
    |--> Expression type collection
    |--> Typechecking
-Line 16: can only allocate variables
-Something weird here: pretend everything is fine
   |--> STARTING INTERNAL REPRESENTATION
   |--> STARTING LIVNESS ANALYSIS
   |--> STARTING PEEPHOLE OPTIMIZATION

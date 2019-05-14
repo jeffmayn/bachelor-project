@@ -525,7 +525,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
   TEMPORARY *temp;
   SYMBOL *sym;
   TYPE *ty;
-  char *elseLabel, *endifLabel, *allocSuccLabel, *startwhileLabel, 
+  char *elseLabel, *endifLabel, *allocSuccLabel, *startwhileLabel,
         *endwhileLabel, *commentString;
   int error, size;
   switch(stmt->kind){
@@ -935,7 +935,7 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
         *ty = (*sym)->typePtr;
       }
       //find the symbol representing field of the record
-      *sym = getSymbol((*sym)->content, var->val.vardot.id);
+      *sym = getRecordSymbol((*sym)->content, var->val.vardot.id);
       *ty = (*sym)->typePtr;
       t1 = IRcreateNextTemp(tempLocalCounter);
       tempLocalCounter++;

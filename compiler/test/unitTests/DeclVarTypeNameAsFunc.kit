@@ -1,0 +1,11 @@
+#Erklær en variabel af en type i andet scope der er en gendefineret som funktion (FORBUDT)
+type a = int;
+type g = bool;
+func f(b:int):bool
+  func g():int
+    return 0;
+  end g
+  var a:g;
+  return false;
+end f
+write f(2);

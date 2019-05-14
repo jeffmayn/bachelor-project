@@ -82,8 +82,6 @@ Other stuff:
    |--> Symbol collection
    |--> Expression type collection
    |--> Typechecking
-Equal types 3 not valid
-Equal types 3 not valid
   |--> STARTING INTERNAL REPRESENTATION
   |--> STARTING LIVNESS ANALYSIS
   |--> STARTING PEEPHOLE OPTIMIZATION

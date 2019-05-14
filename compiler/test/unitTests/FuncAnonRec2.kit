@@ -1,0 +1,29 @@
+(*test af funktion
+  funktion der returnere anonyme records
+  burde ikke være muligt for os da vi ikke har
+  strukturel eqvivalens*)
+
+func retAnonRec (vector : int) : record of {x:int, y:int, z:int}
+	var w : record of {x:int, y:int, z:int};
+
+	allocate w;
+	w.x = vector;
+	w.y = vector+1;
+	w.z = vector+2;
+	return w;
+
+end retAnonRec
+
+var v : record of {x:int, y:int, z:int};
+var u : record of {x:int, y:int, z:int};
+
+allocate v;
+v.x = 13;
+v.y = 3;
+v.z = 7;
+
+u = retAnonRec(v.y);
+
+write u.x;
+write u.y;
+write u.z;

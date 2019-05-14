@@ -29,6 +29,9 @@ typedef struct bodyList {
   bodyListElm *next;
 } bodyList;
 
+extern const char *typeNames[];
+
+
 int typeCheck(SymbolTable *table);
 
 /**
@@ -43,7 +46,7 @@ int idTypeTravBody(SymbolTable *t, BODY* node, bodyList *bList);
 
 int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList);
 
-int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls);
+int idTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls, int isParamList);
 
 /**
  * Finds the types of expressions

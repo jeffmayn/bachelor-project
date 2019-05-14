@@ -1,0 +1,9 @@
+#Erklær et record felt med en gyldig type, der dog deler navn med et andet felt i recorden (FORBUDT)
+var a : record of {a:x, x:int};
+type x = bool;
+write 0;
+allocate a;
+a.a = true;
+a.x = 7;
+write a.x;
+write a.a;
