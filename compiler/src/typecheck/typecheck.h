@@ -1,19 +1,15 @@
 #ifndef __typecheck_h
 #define __typecheck_h
 #include "symbol.h"
-/*
-Whenever a function definition (with deklarations)
-then insert a new scope.
-For each deklaration in scope, insert ID.
-Should vars, functions and types be differentiated
 
-For variables and types, we have a typefield
-What about funktions. Is the typefield the return type?
-Parameters defined in new scope?
-
-Værdien i en variable? Den skal vel ikke bruges endnu
-*/
-
+/**
+  bodyList and bodyListElm
+  keeps track of all the function bodies.
+  we want to traverse them breadth first when we reach
+  code generation.
+  when we reach a new function decleration during typecheck
+  we add it to the list.
+  */
 typedef struct bodyListElm {
   BODY *body;
   SymbolTable *scope;
@@ -109,9 +105,5 @@ void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId, Symb
 bodyListElm* getBody(bodyList *list);
 
 void resetbodyListIndex(bodyList *list);
-
-
-
-
 
 #endif

@@ -100,7 +100,9 @@ int idTypeTravBody(SymbolTable *t, BODY *body, bodyList *bList){
 }
 
 /**
-  traverse declarations for collecting ids
+  Part of phase 1, collect all ID's for variables, functions 
+  and types. We collect without doing a lot of typechecking, 
+  this is to achieve out-of-order-declerations.
 */
 int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
   SYMBOL *sym;
@@ -136,33 +138,6 @@ int idTypeTravDecls(SymbolTable *t, DECL_LIST *decls, bodyList *bList){
           fprintf(stderr, "Line %d: error orcurred while collecting parameters of %s\n", vList->lineno, d->val.func->head->id);
           return -1;
         }
-        // while(vList != NULL){
-        //   VAR_TYPE *vty = vList->vType;
-        //   TYPE *ty = vty->type;
-        //   TYPE *prev = NULL;
-        //   while(ty->kind == arrayK){
-        //     prev = ty;
-        //     ty = ty->val.arrayType;
-        //   }
-        //
-        //   if(ty->kind == recordK){
-        //     char *name = Malloc(10);
-        //     sprintf(name, "$%d", anonymousRecordCounter);
-        //     anonymousRecordCounter++;
-        //     TYPE *newType = makeID(name);
-        //     newType->scope = t;
-        //     prev->val.arrayType = newType;
-        //     sym = putSymbol(t, name, 0, typeS, ty->kind, NULL, ty);
-        //     if(sym == NULL){
-        //       fprintf(stderr, "Line %d: The symbol '%s' already exists\n", d->lineno, name);
-        //       return -1;
-        //     }
-        //     sym->content=scopeSymbolTable(t);
-        //     idTypeTravVDecls(sym->content, ty->val.vList, 0);
-        //   }
-        //   putParam(child, vList->vType->id, 0, varS, vList->vType->type->kind, vList->vType->type);
-        //   vList = vList->vList;
-        // }
       }
       //save body for statement traversal
       saveBody(bList, d->val.func->body, child, d->val.func->head->id, t);
@@ -351,14 +326,14 @@ int expTypeTravStmt(SymbolTable *t, STATEMENT *s){
         return expTypeTravExp(t, s->val.assign.exp);
       }
       break;
-    case ifK:
+    case ifK: //if then statement
       i = expTypeTravExp(t, s->val.ifthenelse.cond);
       if(i == 0){
         return expTypeTravStmt(t, s->val.ifthenelse.thenbody);
       }
       return i;
       break;
-    case thenK:
+    case thenK: //if then else statement
       i = expTypeTravExp(t, s->val.ifthenelse.cond);
       if(i == 0){
         i = expTypeTravStmt(t, s->val.ifthenelse.thenbody);
@@ -515,6 +490,9 @@ int expTypeTravExp(SymbolTable *t, EXP *exp){
   return -1;
 }
 
+/**
+  traverse the term structure
+*/
 Typekind expTypeTravTerm(SymbolTable *t, TERM *term, TYPE **type){
   Typekind ty;
   SYMBOL *sym;
@@ -783,7 +761,7 @@ int checkTypeTravStmts(SymbolTable *t, STATEMENT_LIST *sList, char* funcId){
 }
 
 /**
- * Checks types of a given statement
+ * Checks types of a given statement returns -1 on error 0 otherwise
  */
 int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
   SYMBOL *sym;
@@ -812,8 +790,6 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
           fprintf(stderr, "Line %d: The surrounding function '%s' was not found", s->lineno, funcId);
           return -1;
         }
-        //TODO: what if symbol is not a function?
-        //maybe it is checked elsewhere
         error = cmpTypeSymExp(t, sym, s->val.return_);
         if(error){
           fprintf(stderr, "Line %d: The type of the return statement does not match the return type of '%s'\n", s->lineno, sym->name);
@@ -898,7 +874,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         return -1;
       }
       return 0;
-    case ifK:
+    case ifK://if then statement
       //check if the expression is bool
       tk = expOfType(s->val.ifthenelse.cond);
       if(tk != boolK){
@@ -910,7 +886,7 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
         return -1;
       }
       return 0;
-    case thenK:
+    case thenK://if then else statement
       //check if the expression is bool
       tk = expOfType(s->val.ifthenelse.cond);
       if(tk != boolK){
@@ -952,16 +928,20 @@ int checkTypeTravStmt(SymbolTable *t, STATEMENT *s, char* funcId){
       return 0;
     case breakK:
     case continueK:
-      if(whileLoopCounter >= 1){
+      if(whileLoopCounter >= 1){//we are inside a whileloop and this is allowed.
         return 0;
       } else { //check is already made in phase 2
-        fprintf(stderr, "Line %d: break or continue not allowed outside loops\n", s->lineno);
+        fprintf(stderr, "Line %d: (break, continue) not allowed outside loops\n", s->lineno);
         return -1;
       }
   }
   return 0;
 }
 
+/**
+  given a variable decide which action to take based on the kind of variable.
+  Make type-checking on variables
+*/
 TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
   SYMBOL *sym2;
   TYPE *type;
@@ -1010,7 +990,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
         return NULL;
       }
       return type->val.arrayType;
-    case dotK:
+    case dotK://record '.' dot
       ;
       SYMBOL* newSym = NULL;
       //searching recursively
@@ -1054,7 +1034,7 @@ TYPE* checkTypeTravVar(SymbolTable *t, VARIABLE *v, SYMBOL **sym){
 
 /**
   This function expands the user type until a simple type is found.
-  rename:expandUserType
+  maybe rename:expandUserType
 */
 SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *knownSyms){
   SYMBOL* sym = getSymbol(t, symbolID);
@@ -1102,6 +1082,9 @@ SYMBOL* recursiveSymbolRetrieval(SymbolTable *t, char* symbolID, SymbolList *kno
   return sym;
 }
 
+/**
+  control the type of the expression and it's content
+*/
 Typekind expOfType(EXP *exp){
   if(exp->typekind == idK){
     TYPE *type = exp->type;
@@ -1120,6 +1103,9 @@ Typekind expOfType(EXP *exp){
     return exp->typekind;
 }
 
+/**
+  compares the type of a symbol and an expression
+*/
 int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
   if(exp == NULL){
     fprintf(stderr, "INTERNAL ERROR: No expression given\n");
@@ -1147,6 +1133,9 @@ int cmpTypeSymExp(SymbolTable *t, SYMBOL *sym, EXP *exp){
   return -1;
 }
 
+/**
+  compare type and type of expression
+*/
 int cmpTypeTyExp(SymbolTable *t, TYPE *ty, EXP *exp){
   if(exp == NULL){
     fprintf(stderr, "INTERNAL ERROR: No expression given\n");
@@ -1169,6 +1158,9 @@ int cmpTypeTyExp(SymbolTable *t, TYPE *ty, EXP *exp){
   return -1;
 }
 
+/**
+  compares two typekinds
+*/
 int cmpTypekind(Typekind tk1, Typekind tk2){
   if(tk1 == tk2){
     switch(tk1){
@@ -1193,6 +1185,9 @@ int cmpTypekind(Typekind tk1, Typekind tk2){
   return -1;
 }
 
+/**
+  compares two TYPE structures
+*/
 int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
   int error;
   if(ty1 == NULL){
@@ -1247,7 +1242,9 @@ int cmpTypeTyTy(SymbolTable *t, TYPE *ty1, TYPE *ty2){
   return error;
 }
 
-
+/**
+  compare SYMBOL and TYPE
+  */
 int cmpTypeSymTy(SymbolTable *t, SYMBOL *sym, TYPE *ty){
   int error;
   SYMBOL *temp = NULL;
@@ -1298,7 +1295,9 @@ int cmpTypeSymTy(SymbolTable *t, SYMBOL *sym, TYPE *ty){
   return error;
 }
 
-
+/**
+  compares the TYPE's of two symbols
+  */
 int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   int error;
   SYMBOL *temp;
@@ -1353,6 +1352,9 @@ int cmpTypeSymSym(SymbolTable *t, SYMBOL *sym1, SYMBOL *sym2){
   return error;
 }
 
+/**
+  traverse declerations and do typechecking
+  */
 int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
   SYMBOL *sym;
   if(decls == NULL){ //no more declarations
@@ -1407,9 +1409,9 @@ int checkTypeTravDecls(SymbolTable *t, DECL_LIST *decls){
     break;
     case idDeclK: //userdefined types
       /*
-       * visited bruges til at stoppe os fra at lave uendelig loop
-       * ved brugerdefinerede typer der indeholder andre bruger definerede
-       * typer
+       visited bruges til at stoppe os fra at lave uendelig loop
+       ved brugerdefinerede typer der indeholder andre bruger definerede
+       typer
        */
       sym = recursiveSymbolRetrieval(t, d->val.id.id, NULL);
       if(sym == NULL){
@@ -1496,6 +1498,9 @@ int checkTypeTravVDecls(SymbolTable *t, VAR_DECL_LIST *vDecls){
     return checkTypeTravVDecls(t, vDecls->vList);
 }
 
+/**
+  creates a bodyList
+  */
 bodyList* initBodyList(){
   bodyList* l = Malloc(sizeof(BODY));
   l->head = NULL;
@@ -1504,6 +1509,9 @@ bodyList* initBodyList(){
   return l;
 }
 
+/**
+  adds the body element to the list of bodies.
+  */
 void saveBody(bodyList *list, BODY *body, SymbolTable* scope, char* funcId, SymbolTable* defScope){
   bodyListElm *ble = Malloc(sizeof(bodyListElm));
   ble->next = NULL;
@@ -1533,6 +1541,9 @@ bodyListElm* getBody(bodyList *list){
   return NULL;
 }
 
+/**
+  resets the bodylist head to the beginning of the list.
+  */
 void resetbodyListIndex(bodyList *list){
   list->next = list->head;
 }
