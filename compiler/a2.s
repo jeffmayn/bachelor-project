@@ -74,8 +74,7 @@ main:
 	movq (%rdi,%rdx,8), %rbx
 	movq %rbp, %rdi		#resetting basepointer
 	movq %rbx, %r8
-	movq $1, %rbx
-	addq $1, %rbx#moving past array-size-value
+	inc %rbx#moving past array-size-value
 	imulq $8, %rbx
 	addq %rbx, %r8
 	movq %r9, %rbx

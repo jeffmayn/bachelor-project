@@ -592,21 +592,23 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       }
       //expand heap
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(IRmakeConstantOPERAND(size*8),IRmakeLabelOPERAND(freeHeapLabel))));
-      //check if out of memory
-      allocSuccLabel = Malloc(10);
-      sprintf(allocSuccLabel, "allocSucc%d", labelCounter);
-      labelCounter++;
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeLabelOPERAND(endHeapLabel), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(allocSuccLabel))); //not out of memory
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(OUTOFMEMORYCODE),
-        IRappendOPERAND(IRmakeRegOPERAND(RAX),
-        IRmakeCommentOPERAND("outofMemory")))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(allocSuccLabel)));
+      if(RUNTIMECHECK){
+        //check if out of memory
+        allocSuccLabel = Malloc(10);
+        sprintf(allocSuccLabel, "allocSucc%d", labelCounter);
+        labelCounter++;
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(endHeapLabel), IRmakeRegOPERAND(RBX))));
+        IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(allocSuccLabel))); //not out of memory
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(OUTOFMEMORYCODE),
+          IRappendOPERAND(IRmakeRegOPERAND(RAX),
+          IRmakeCommentOPERAND("outofMemory")))));
+        IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(allocSuccLabel)));
+      }
       return 0;
     case allocateLengthK:
       commentString = Calloc(45);
@@ -631,20 +633,21 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //find result of allocation size expression
       op2 = IRtravExp(t,stmt->val.allocatelength.exp);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2,IRmakeRegOPERAND(RBX))));
-      //postive allocation size check
-      char *allocPosLabel = Malloc(10);
-      sprintf(allocPosLabel, "allocPos%d", labelCounter);
-      labelCounter++;
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeJgINSTR(IRmakeLabelOPERAND(allocPosLabel)));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(NONPOSITIVEALLOCCODE),
-        IRappendOPERAND(IRmakeRegOPERAND(RAX),
-        IRmakeCommentOPERAND("negative allocation size")))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(allocPosLabel)));
-
+      if(RUNTIMECHECK){
+        //postive allocation size check
+        char *allocPosLabel = Malloc(10);
+        sprintf(allocPosLabel, "allocPos%d", labelCounter);
+        labelCounter++;
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));
+        IRappendINSTR(IRmakeJgINSTR(IRmakeLabelOPERAND(allocPosLabel)));
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(NONPOSITIVEALLOCCODE),
+          IRappendOPERAND(IRmakeRegOPERAND(RAX),
+          IRmakeCommentOPERAND("negative allocation size")))));
+        IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(allocPosLabel)));
+      }
       //find total size of array
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
         IRmakeConstantOPERAND(1),
@@ -655,23 +658,23 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel, char* startL
       //allocate the array
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX),IRmakeLabelOPERAND(freeHeapLabel))));
-
-      //out of memory check
-      allocSuccLabel = Malloc(10);
-      sprintf(allocSuccLabel, "allocSucc%d", labelCounter);
-      labelCounter++;
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeLabelOPERAND(endHeapLabel), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(allocSuccLabel))); //not out of memory
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(OUTOFMEMORYCODE),
-        IRappendOPERAND(IRmakeRegOPERAND(RAX),
-        IRmakeCommentOPERAND("outofMemory")))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(allocSuccLabel)));
-
+      if(RUNTIMECHECK){
+        //out of memory check
+        allocSuccLabel = Malloc(10);
+        sprintf(allocSuccLabel, "allocSucc%d", labelCounter);
+        labelCounter++;
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(endHeapLabel), IRmakeRegOPERAND(RBX))));
+        IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(allocSuccLabel))); //not out of memory
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(OUTOFMEMORYCODE),
+          IRappendOPERAND(IRmakeRegOPERAND(RAX),
+          IRmakeCommentOPERAND("outofMemory")))));
+        IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(allocSuccLabel)));
+      }
       //TODO: what if op2 is a variable (base pointer)?
       //putting arraySize into first indeks of array
       op3 = NEW(OPERAND);
@@ -847,36 +850,43 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
         return -1;
       }
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op,IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-      //check if array is null
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
-      IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(IRmakeLabelOPERAND(nonNullDerefLabel1), IRmakeCommentOPERAND("not NULL"))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel1)));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+      if(RUNTIMECHECK){
+        //check if array is null
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
+        IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(nonNullDerefLabel1), IRmakeCommentOPERAND("not NULL"))));
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
+        IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel1)));
+      }
 
       //find result of index expression
       op1 = IRtravExp(t, var->val.varexp.exp);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-      //check if index is out of bounds for array
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeTempDeRefOPERAND(t1),IRmakeRegOPERAND(RBX)))); //too large check
-      IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(
-        IRmakeLabelOPERAND(indeksErrorLabel),
-        IRmakeCommentOPERAND("indexOutOfBounds"))));
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(0),IRmakeRegOPERAND(RBX)))); //positive check
-      IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(
-        IRmakeLabelOPERAND(indeksAllowedLabel),
-        IRmakeCommentOPERAND("not indexOutOfBounds"))));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(indeksErrorLabel)));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(INDEXOUTOFBOUNDSCODE),
-        IRappendOPERAND(IRmakeRegOPERAND(RAX),
-        IRmakeCommentOPERAND("IndexOutOfBounds")))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(indeksAllowedLabel)));
-
+      if(RUNTIMECHECK){
+        //check if index is out of bounds for array
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeTempDeRefOPERAND(t1),IRmakeRegOPERAND(RBX)))); //too large check
+        IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(indeksErrorLabel),
+          IRmakeCommentOPERAND("indexOutOfBounds"))));
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(0),IRmakeRegOPERAND(RBX)))); //positive check
+        IRappendINSTR(IRmakeJgeINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(indeksAllowedLabel),
+          IRmakeCommentOPERAND("not indexOutOfBounds"))));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(indeksErrorLabel)));
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(INDEXOUTOFBOUNDSCODE),
+          IRappendOPERAND(IRmakeRegOPERAND(RAX),
+          IRmakeCommentOPERAND("IndexOutOfBounds")))));
+        IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(indeksAllowedLabel)));
+      }
       //find the actual offset and address
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
         IRmakeConstantOPERAND(1),
@@ -886,17 +896,17 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
         IRmakeConstantOPERAND(8), IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-
-      //check if array index is null
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
-      IRappendINSTR(IRmakeJneINSTR(
-        IRappendOPERAND(IRmakeLabelOPERAND(nonNullDerefLabel2), IRmakeCommentOPERAND("not NULL"))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel2)));
-
+      if(RUNTIMECHECK){
+        //check if array index is null
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
+        IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(nonNullDerefLabel2), IRmakeCommentOPERAND("not NULL"))));
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
+        IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel2)));
+      }
 
       *op = IRmakeTempDeRefOPERAND(t1); //operand found
       //updating type (and symbol if necessay)
@@ -919,16 +929,17 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
         return -1;
       }
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(*op, IRmakeRegOPERAND(RBX))));
-      //check if record is null
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeNullOPERAND(),IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(
-        IRmakeLabelOPERAND(nonNullDerefLabel1), IRmakeCommentOPERAND("not NULL"))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel1)));
-
+      if(RUNTIMECHECK){
+        //check if record is null
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeNullOPERAND(),IRmakeRegOPERAND(RBX))));
+        IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(nonNullDerefLabel1), IRmakeCommentOPERAND("not NULL"))));
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
+        IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel1)));
+      }
       //update symbol if necessary
       if((*ty)->kind == idK){
         *sym = recursiveSymbolRetrieval((*sym)->defScope, (*ty)->val.id, NULL);
@@ -948,17 +959,17 @@ int IRtravVarRecursive(SymbolTable *t, VARIABLE *var, SYMBOL **sym, TYPE **ty, O
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX),
         IRmakeTemporaryOPERAND(t1))));
-
-      //check if deref variable (field) is NULL
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
-      IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(
-        IRmakeLabelOPERAND(nonNullDerefLabel2), IRmakeCommentOPERAND("not NULL"))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
-      IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel2)));
-
+      if(RUNTIMECHECK){
+        //check if deref variable (field) is NULL
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeNullOPERAND(),IRmakeTemporaryOPERAND(t1))));
+        IRappendINSTR(IRmakeJneINSTR(IRappendOPERAND(
+          IRmakeLabelOPERAND(nonNullDerefLabel2), IRmakeCommentOPERAND("not NULL"))));
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(DEREFNULLCODE), IRmakeRegOPERAND(RAX))));
+        IRappendINSTR(IRmakeJumpINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(nonNullDerefLabel2)));
+      }
       *op = IRmakeTempDeRefOPERAND(t1);
       return 0;
     default:
@@ -1030,15 +1041,16 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         op2, IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));//right op in t2 and rbx
-
-      // check divsion by zero
-      IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RAX)));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(DEVISIONBYZERO), IRmakeRegOPERAND(RAX))));
-      IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-        IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));//cmp right op with 0
-      IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
-      IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RAX)));
+      if(RUNTIMECHECK){
+        // check divsion by zero
+        IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RAX)));
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(DEVISIONBYZERO), IRmakeRegOPERAND(RAX))));
+        IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
+          IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));//cmp right op with 0
+        IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
+        IRappendINSTR(IRmakePopINSTR(IRmakeRegOPERAND(RAX)));
+      }
       //get ready for the division
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeTemporaryOPERAND(t2), IRmakeRegOPERAND(RBX))));
