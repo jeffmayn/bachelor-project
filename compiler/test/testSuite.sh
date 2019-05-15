@@ -96,6 +96,7 @@ else
 ((count=count+1))
 
               file=$filename".kit" #its crazy but it works
+              #echo $file
               ../../build/compiler < "$file" >/dev/null 2>&1
               v=$?
               u="tmp/expected/$filename.txt"
