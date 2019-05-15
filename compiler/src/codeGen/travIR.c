@@ -135,7 +135,7 @@ int checkOffsetOperand(INSTR *in){
   return 0;
 }
 
-const char* instrNames2[] = {"\taddq ", "\tinc ", "\tdec ", "\tsubq ","\timulq ",
+const char* instrNames2[] = {"\taddq ", "\tincq ", "\tdecq ", "\tsubq ","\timulq ",
                             "\tidivq ", "\tand ", "\tor ", "\txor ", "\tshl ",
                             "\tshr ", "\tcmp ", "\tjmp ", "\tjl ", "\tjg ",
                             "\tjle ", "\tjge ", "\tje ", "\tjne ", "\tmovq ",
