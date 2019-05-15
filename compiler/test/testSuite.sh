@@ -19,7 +19,7 @@ else
     rm tmp/output/*.txt &>/dev/null
   }
 
-  if [ $1 == "clean" ]
+  if [ "$1" == "clean" ]
   then
     printf "The cleansing has begun!\n"
 
@@ -31,8 +31,6 @@ else
       GREEN='\033[0;32m'
       NC='\033[0m' # No Color
       printf "<<<<<< STARTING TEST SUITE >>>>>>\n"
-      echo "Test 1 is checking for correct return value of program."
-      echo "Test 2 compare output of program with expected output."
       printf "\n\n"
 
       invoke_success(){
