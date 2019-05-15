@@ -104,6 +104,7 @@ else
               if [ $v != $ret ]
               then
                 printf "[ ${RED}FAILED!${NC} ] $filename: incorrect exit code ${YELLOW}[$v/$ret]${NC}\n"
+                ((count=count-1))
               elif ! [ $v -eq 255 ]
               then
                   if test -f "${u}"; then
