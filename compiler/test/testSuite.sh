@@ -83,6 +83,7 @@ else
 
       # invoke_tests
       invoke_tests () {
+        if test -f "returns.txt"; then
         echo "######## RUNNING TEST-FOLDER: ${PWD##*/} ########"
         while read line
         do
@@ -116,6 +117,7 @@ else
           done
         done < returns.txt
         echo ""
+      fi
       }
 
       #run tests in all subfolders
