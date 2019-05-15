@@ -385,7 +385,9 @@ typedef struct TempListNode{
 TempList *createList();
 
 /**
- * Creates a new tempList node with default values
+ * Creates a new tempList node with default valuesif(o2->val.temp == o3->val.temp ){
+												instrTarget->next = instrNext->next;
+											}
  * returns the new node
  */
 TempListNode *createTempListNode(TEMPORARY *temp);

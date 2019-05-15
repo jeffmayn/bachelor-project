@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "ERROR: liveness analysis\n");
     return -1;
   }
-
+/*
   fprintf(stderr, "%s\n", "  |--> STARTING PEEPHOLE OPTIMIZATION");
   error = 0;
   error = peephole();
@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "ERROR: peephole optimization\n");
     return -1;
   }
-
+*/
   if(DEBUGASM){
     fprintf(stderr, "%s\n", "  |--> STARTING PRINTING INTERNAL REPRESENTATION");
     printINSTRnode(intermediateHead);

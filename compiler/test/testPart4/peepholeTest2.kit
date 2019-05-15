@@ -1,0 +1,58 @@
+(*small test for peephole we have patterns add and sub 1*)
+
+var x: int;
+var y:int;
+var b:bool;
+
+
+func realFib(tal:int):int
+  if(tal == 0) then
+    return 0;
+  if(tal == 1) then
+    return 1;
+  return realFib(tal-1) + realFib(tal-2);
+end realFib
+
+
+func fib(n:int):int
+  #return fib(n+1)+fib(n+2);
+  #n=n+1;
+  var x:int;
+  x = f(n,n+10)+f(n+2,n+3);
+  return x;
+end fib
+
+func f(a:int, b:int):int
+  return a-b;
+end f
+
+x = 1;
+
+x = x + 1;
+x = x + 2;
+x = x * 2;
+x = x / 2;
+x = x - 2;
+x = x - 1;
+
+write x;
+
+
+#var x:int;
+
+#x = 3;
+#x = 42+4;
+#x = x + x;
+#y = x;
+#write x;
+#y=f(3,4);
+#write y;
+y=fib(4);
+write y;
+#b = false;
+if(true) then
+  b = true;
+else
+  b = false;
+write b;
+write realFib(20);

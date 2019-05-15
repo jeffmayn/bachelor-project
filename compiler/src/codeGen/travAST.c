@@ -1586,40 +1586,40 @@ OPERAND *IRsetCalleeStaticLink(int nrJumps){
       IRmakeRegOPERAND(RBP),
       IRmakeRegOPERAND(RBX))));
   } else {
-    t1 = IRcreateNextTemp(tempLocalCounter);
-    tempLocalCounter++;
+    // t1 = IRcreateNextTemp(tempLocalCounter);
+    // tempLocalCounter++;
     //find static link based on base-pointer
+    // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    //   IRmakeRegOPERAND(RBP), IRmakeTemporaryOPERAND(t1))));
+    // IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
+    //   IRmakeConstantOPERAND(16), IRmakeTemporaryOPERAND(t1))));
+    // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    //   IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
+    // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
+    //   IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
+    // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+    //   IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeRegOPERAND(RBP), IRmakeTemporaryOPERAND(t1))));
+      IRmakeRegOPERAND(RBP), IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
-      IRmakeConstantOPERAND(16), IRmakeTemporaryOPERAND(t1))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
+      IRmakeConstantOPERAND(16), IRmakeRegOPERAND(RBX))));
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
       IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
     while((nrJumps-1) > 0){
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
-      IRmakeConstantOPERAND(16), IRmakeTemporaryOPERAND(t1))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
-      IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+        IRmakeConstantOPERAND(16), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
+        IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
 
       nrJumps = nrJumps-1;
     }
-    IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-      IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
   }
   t2 = IRcreateNextTemp(tempLocalCounter);
   tempLocalCounter++;
-  o2 = IRmakeTemporaryOPERAND(t2);
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    IRmakeRegOPERAND(RBX), o2)));
+    IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
   return IRmakeTemporaryOPERAND(t2);
 }
 
@@ -1632,26 +1632,25 @@ OPERAND *IRsetStaticBase(int *nrJumps){
   OPERAND *o1;
 
   o1 = IRsetCalleeStaticLink(*nrJumps);
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(o1, IRmakeRegOPERAND(RBX))));
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    IRmakeRegOPERAND(RBX), IRmakeRegOPERAND(RDI))));
+  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(o1, IRmakeRegOPERAND(RDI))));
+  //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeRegOPERAND(RDI))));
 
   return IRmakeRegOPERAND(RDI);
 }
-/**
- * NOT USED
- * Used to reset the basepointer from RDI to RBP
- * BLAHBLAHBLAH DEN HER FUNKTION ER OVERFLØDIG!
- */
-int IRresetBasePointer(){
-  IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    IRmakeRegOPERAND(RBP),
-    IRappendOPERAND(
-      IRmakeRegOPERAND(RDI),
-      IRmakeCommentOPERAND("resetting basepointer")
-      ))));
-  return 0;
-}
+// /**
+//  * NOT USED
+//  * Used to reset the basepointer from RDI to RBP
+//  * BLAHBLAHBLAH DEN HER FUNKTION ER OVERFLØDIG!
+//  */
+// int IRresetBasePointer(){
+//   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+//     IRmakeRegOPERAND(RBP),
+//     IRappendOPERAND(
+//       IRmakeRegOPERAND(RDI),
+//       IRmakeCommentOPERAND("resetting basepointer")
+//       ))));
+//   return 0;
+// }
 
 // /**
 //  * NOT USED

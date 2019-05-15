@@ -7,8 +7,8 @@
 
 /*list of function pointers to patterns I DO NOT KNOW IF THIS WORKS!*/
 int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern,
-												decPattern};
-												//,wastedMovq};
+												decPattern
+												,wastedMovq2};
 
 //when introducing a new pattern remember it needs to change the next,
 												//not the current
@@ -60,6 +60,71 @@ int loopPatterns(INSTR* instrucktion){
 		currentPattern++;
 	}
 	return error;
+}
+
+
+int wastedMovq2(INSTR* instr){
+	OPERAND *o1, *o2, *o3, *o4;
+	INSTR *instrTarget = instr->next;
+	INSTR *instrNext;
+	TempList *outList;
+	TempListNode *liveNode;
+	if(instrTarget != NULL){
+		if(instrTarget->instrKind == movI){
+			instrNext = instrTarget->next;
+			if(instrNext != NULL){
+				if(instrNext->instrKind == movI){
+					o1 = instrTarget->paramList;
+					o2 = instrTarget->paramList->next;
+					o3 = instrNext->paramList;
+					o4 = instrNext->paramList->next;
+					if(o1->operandKind == registerO){
+						if(o2->operandKind == temporaryO){
+							if(o3->operandKind == temporaryO){
+								if(o4->operandKind == registerO){
+									if(o1->val.reg == RBX){
+										if(o4->val.reg == RBX){
+											outList = lia[instrNext->id].out;
+											liveNode = outList->head;
+											if(o2->val.temp == o3->val.temp ){
+												instrTarget->next = instrNext->next; //remove second move
+
+												while(liveNode != NULL){
+													if(liveNode->temp == o2->val.temp){
+														return 0; //temporary is still live out
+													}
+													liveNode = liveNode->next;
+												}
+												instr->next = instrTarget->next; //remove first move
+											}
+											else if(o2->val.temp->temporarykind == regT){
+												if(o3->val.temp->temporarykind == regT){
+													if(o2->val.temp->placement.reg == o3->val.temp->placement.reg){
+														instrTarget->next = instrNext->next; //remove second move
+
+														while(liveNode != NULL){
+															if(liveNode->temp->temporarykind == regT){
+																if(liveNode->temp->placement.reg == o2->val.temp->placement.reg){
+																		return 0; //temporary is still live out
+																}
+															}
+															liveNode=liveNode->next;
+														}
+														instr->next = instrTarget->next; //remove first move
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return 0;
 }
 
 /**
