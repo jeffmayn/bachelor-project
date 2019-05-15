@@ -7,8 +7,12 @@
 
 /*list of function pointers to patterns I DO NOT KNOW IF THIS WORKS!*/
 int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern,
-												decPattern
-												,wastedMovq2};
+												decPattern,
+												wastedMovq2,
+												wastedMovqSeq,
+												addZero,
+												addOne,
+												moveToSelf};
 
 //when introducing a new pattern remember it needs to change the next,
 												//not the current
@@ -88,7 +92,7 @@ int wastedMovq2(INSTR* instr){
 											liveNode = outList->head;
 											if(o2->val.temp == o3->val.temp ){
 												instrTarget->next = instrNext->next; //remove second move
-
+												changeMade = 1;
 												while(liveNode != NULL){
 													if(liveNode->temp == o2->val.temp){
 														return 0; //temporary is still live out
@@ -101,7 +105,7 @@ int wastedMovq2(INSTR* instr){
 												if(o3->val.temp->temporarykind == regT){
 													if(o2->val.temp->placement.reg == o3->val.temp->placement.reg){
 														instrTarget->next = instrNext->next; //remove second move
-
+														changeMade = 1;
 														while(liveNode != NULL){
 															if(liveNode->temp->temporarykind == regT){
 																if(liveNode->temp->placement.reg == o2->val.temp->placement.reg){
@@ -127,98 +131,243 @@ int wastedMovq2(INSTR* instr){
 	return 0;
 }
 
-/**
-	looks for patterns where we move stuff between two
-	positions without it having any effect.
-	we use our liveness analysis to see if we can
-	remove both mov instructions.
-	DOES NOT WORK
-	*/
-int wastedMovq(INSTR* instr){
+
+int wastedMovqSeq(INSTR* instr){
+	//return 0;
 	OPERAND *o1, *o2, *o3, *o4;
+	registers r2, r3;
 	INSTR *instrTarget = instr->next;
 	INSTR *instrNext;
-	TempListNode * TLN;
-	registers r1, r2, r3, r4;
-	int index, wastemp, doit;
+	TempList *outList;
+	TempListNode *liveNode;
 	if(instrTarget != NULL){
-		wastemp = 0;
-		doit = 1;
-		instrNext = instrTarget->next;
-		if(instrNext != NULL){
-			if(instrTarget->instrKind == movI){
+		if(instrTarget->instrKind == movI){
+			instrNext = instrTarget->next;
+			if(instrNext != NULL){
 				if(instrNext->instrKind == movI){
 					o1 = instrTarget->paramList;
 					o2 = instrTarget->paramList->next;
 					o3 = instrNext->paramList;
 					o4 = instrNext->paramList->next;
-					if(o1->operandKind == registerO){
-						r1 = o1->val.reg;
-					} else if(o1->operandKind == temporaryO){
-						if(o1->val.temp->temporarykind == regT){
-							r1 = o1->val.temp->placement.reg;
+					if(o1->operandKind == registerO //ensure at least one operand to be register
+						|| (o1->operandKind == temporaryO && o1->val.temp->temporarykind == regT)
+						|| o4->operandKind == registerO
+						|| (o4->operandKind == temporaryO && o4->val.temp->temporarykind == regT)) {
+						r2=NA;
+						r3=NA;
+						if(o2->operandKind == registerO){
+							r2 = o2->val.reg;
 						}
-					} else {
-						return 0;
-					}
-
-					if(o2->operandKind == registerO){
-						r2 = o2->val.reg;
-					} else if(o2->operandKind == temporaryO){
-						if(o2->val.temp->temporarykind == regT){
-							r2 = o2->val.temp->placement.reg;
-							wastemp = 1;
+						else if(o2->operandKind == temporaryO){
+							outList = lia[instrNext->id].out;
+							liveNode = outList->head;
+							while(liveNode != NULL){
+								if(liveNode->temp == o2->val.temp){
+									return 0; //temporary is still live out
+								}
+								liveNode = liveNode->next;
+							}
+							if(o2->val.temp->temporarykind == regT){
+								r2 = o2->val.temp->placement.reg;
+							}
 						}
-					} else {
-						return 0;
-					}
-					if(o3->operandKind == registerO){
-						r3 = o3->val.reg;
-					} else if(o3->operandKind == temporaryO){
-						if(o3->val.temp->temporarykind == regT){
+						// else if(o2->operandKind == temporaryO && o2->val.temp->temporarykind == regT){
+						// 	r2 = o2->val.temp->placement.reg;
+						// }
+						if(o3->operandKind == registerO){
+							r3 = o3->val.reg;
+						}
+						else if(o3->operandKind == temporaryO && o3->val.temp->temporarykind == regT){
 							r3 = o3->val.temp->placement.reg;
 						}
-					} else {
-						return 0;
-					}
-					if(o4->operandKind == registerO){
-						r4 = o4->val.reg;
-					} else if(o4->operandKind == temporaryO){
-						if(o4->val.temp->temporarykind == regT){
-							r4 = o4->val.temp->placement.reg;
-						}
-					} else {
-						return 0;
-					}
-					if(r1 == r4){
-						if(r2 == r3){
-							//use liveness to check if o2 is liveout in instrNext
-							if(wastemp == 1){
-								index = instrNext->id;
-								TLN = lia[index].out->head;
-								while(TLN != NULL){
-									if(o2->val.temp->tempId == TLN->temp->tempId){
-										doit = 0;
-									}
-									TLN = TLN->next;
-								}
-							}
-							if(doit){
-								instr->next = instrNext->next;
-							} else {
+						if(o2->operandKind == temporaryO && o3->operandKind == temporaryO){
+							if(o2->val.temp == o3->val.temp){
+								//combine the two moves
+								instrTarget->paramList->next = o4;
 								instrTarget->next = instrNext->next;
+								changeMade = 1;
 							}
+						}
+						else if(r2 != NA && r2 == r3){
+							//combine the two moves
+							instrTarget->paramList->next = o4;
+							instrTarget->next = instrNext->next;
 							changeMade = 1;
 						}
 					}
 				}
 			}
-
 		}
-
 	}
 	return 0;
 }
+
+int addZero(INSTR *instr){
+	INSTR *instrTarget = instr->next;
+	INSTR *instrNext;
+	OPERAND *op;
+	if(instrTarget != NULL){
+		if(instrTarget->instrKind == addI || instrTarget->instrKind == subI){
+			op = instrTarget->paramList;
+			if(op->operandKind == constantO){
+				if(op->val.constant == 0){
+					//fprintf(stderr, "removed add/sub 0 instr %d\n", instrTarget->id);
+					instr->next = instrTarget->next;
+					changeMade = 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+int addOne(INSTR *instr){
+	INSTR *instrTarget = instr->next;
+	INSTR *replacement;
+	OPERAND *op1, *op2;
+	if(instrTarget != NULL){
+		if(instrTarget->instrKind == addI || instrTarget->instrKind == subI){
+			op1 = instrTarget->paramList;
+			op2 = instrTarget->paramList->next;
+			if(op1->operandKind == constantO){
+				if(op1->val.constant == 1){
+					//fprintf(stderr, "increment replaced add 1 instr %d\n", instrTarget->id);
+					replacement = IRmakeIncINSTR(op2);
+					replacement->next = instrTarget->next;
+					instr->next = replacement;
+					changeMade = 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+
+int moveToSelf(INSTR *instr){
+	INSTR *instrTarget = instr->next;
+	OPERAND *op1, *op2;
+	registers r1, r2;
+	if(instrTarget != NULL){
+		if(instrTarget->instrKind == movI){
+			op1 = instrTarget->paramList;
+			op2 = instrTarget->paramList->next;
+			r1 = NA;
+			r2 = NA;
+			if(op1->operandKind == registerO){
+				r1 = op1->val.reg;
+			}
+			else if(op1->operandKind == temporaryO && op1->val.temp->temporarykind == regT){
+				r1 = op1->val.temp->placement.reg;
+			}
+			if(op2->operandKind == registerO){
+				r2 = op2->val.reg;
+			}
+			else if(op2->operandKind == temporaryO && op2->val.temp->temporarykind == regT){
+				r2 = op2->val.temp->placement.reg;
+			}
+			if(r1 != NA && r1==r2){
+				instr->next = instrTarget->next;
+				//fprintf(stderr, "Removed move to self instruction %d\n", instrTarget->id);
+				changeMade = 1;
+			}
+		}
+	}
+	return 0;
+}
+
+// /**
+// 	looks for patterns where we move stuff between two
+// 	positions without it having any effect.
+// 	we use our liveness analysis to see if we can
+// 	remove both mov instructions.
+// 	DOES NOT WORK
+// 	*/
+// int wastedMovq(INSTR* instr){
+// 	OPERAND *o1, *o2, *o3, *o4;
+// 	INSTR *instrTarget = instr->next;
+// 	INSTR *instrNext;
+// 	TempListNode * TLN;
+// 	registers r1, r2, r3, r4;
+// 	int index, wastemp, doit;
+// 	if(instrTarget != NULL){
+// 		wastemp = 0;
+// 		doit = 1;
+// 		instrNext = instrTarget->next;
+// 		if(instrNext != NULL){
+// 			if(instrTarget->instrKind == movI){
+// 				if(instrNext->instrKind == movI){
+// 					o1 = instrTarget->paramList;
+// 					o2 = instrTarget->paramList->next;
+// 					o3 = instrNext->paramList;
+// 					o4 = instrNext->paramList->next;
+// 					if(o1->operandKind == registerO){
+// 						r1 = o1->val.reg;
+// 					} else if(o1->operandKind == temporaryO){
+// 						if(o1->val.temp->temporarykind == regT){
+// 							r1 = o1->val.temp->placement.reg;
+// 						}
+// 					} else {
+// 						return 0;
+// 					}
+//
+// 					if(o2->operandKind == registerO){
+// 						r2 = o2->val.reg;
+// 					} else if(o2->operandKind == temporaryO){
+// 						if(o2->val.temp->temporarykind == regT){
+// 							r2 = o2->val.temp->placement.reg;
+// 							wastemp = 1;
+// 						}
+// 					} else {
+// 						return 0;
+// 					}
+// 					if(o3->operandKind == registerO){
+// 						r3 = o3->val.reg;
+// 					} else if(o3->operandKind == temporaryO){
+// 						if(o3->val.temp->temporarykind == regT){
+// 							r3 = o3->val.temp->placement.reg;
+// 						}
+// 					} else {
+// 						return 0;
+// 					}
+// 					if(o4->operandKind == registerO){
+// 						r4 = o4->val.reg;
+// 					} else if(o4->operandKind == temporaryO){
+// 						if(o4->val.temp->temporarykind == regT){
+// 							r4 = o4->val.temp->placement.reg;
+// 						}
+// 					} else {
+// 						return 0;
+// 					}
+// 					if(r1 == r4){
+// 						if(r2 == r3){
+// 							//use liveness to check if o2 is liveout in instrNext
+// 							if(wastemp == 1){
+// 								index = instrNext->id;
+// 								TLN = lia[index].out->head;
+// 								while(TLN != NULL){
+// 									if(o2->val.temp->tempId == TLN->temp->tempId){
+// 										doit = 0;
+// 									}
+// 									TLN = TLN->next;
+// 								}
+// 							}
+// 							if(doit){
+// 								instr->next = instrNext->next;
+// 							} else {
+// 								instrTarget->next = instrNext->next;
+// 							}
+// 							changeMade = 1;
+// 						}
+// 					}
+// 				}
+// 			}
+//
+// 		}
+//
+// 	}
+// 	return 0;
+// }
 
 /**
  * look for a pattern where "addq $1, x" is used instead of "inc x"
@@ -240,7 +389,8 @@ int incPattern(INSTR *instr){
 									temp = instrTarget->next->paramList->next;
 									replacement = IRmakeIncINSTR(temp);
 									replacement->next = instrTarget->next->next;
-									instrTarget->next = replacement;
+									//instrTarget->next = replacement;
+									instr->next = replacement;
 									changeMade = 1;
 								}
 							}
@@ -274,7 +424,8 @@ int decPattern(INSTR *instr){
 									temp = instrTarget->next->paramList->next;
 									replacement = IRmakeDecINSTR(temp);
 									replacement->next = instrTarget->next->next;
-									instrTarget->next = replacement;
+									//instrTarget->next = replacement;
+									instr->next = replacement;
 									changeMade = 1;
 								}
 							}

@@ -549,9 +549,12 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel,
       //saving the allocation in the found operand
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeLabelOPERAND(freeHeapLabel), IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX),IRmakeTemporaryOPERAND(temp))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //ensure freehep is in rbx
+        IRmakeTemporaryOPERAND(temp), IRmakeRegOPERAND(RBX))));
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX),op1)));
+
       size = 1; //size of pointer
       //find result of allocation size expression
       op2 = IRtravExp(t,stmt->val.allocatelength.exp);
@@ -562,6 +565,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel,
         char *allocPosLabel = Malloc(10);
         sprintf(allocPosLabel, "allocPos%d", labelCounter);
         labelCounter++;
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTemporaryOPERAND(temp2),IRmakeRegOPERAND(RBX))));
         IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
           IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));
         IRappendINSTR(IRmakeJgINSTR(IRmakeLabelOPERAND(allocPosLabel)));
@@ -573,6 +577,7 @@ int IRtravStmt(SymbolTable *t, STATEMENT *stmt, char* funcEndLabel,
         IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(allocPosLabel)));
       }
       //find total size of array
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeTemporaryOPERAND(temp2),IRmakeRegOPERAND(RBX))));
       IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
         IRmakeConstantOPERAND(1),
         IRappendOPERAND(IRmakeRegOPERAND(RBX),
@@ -999,6 +1004,8 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         IRappendINSTR(IRmakePushINSTR(IRmakeRegOPERAND(RAX)));
         IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
           IRmakeConstantOPERAND(DEVISIONBYZERO), IRmakeRegOPERAND(RAX))));
+        IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+          IRmakeTemporaryOPERAND(t2), IRmakeRegOPERAND(RBX))));
         IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
           IRmakeConstantOPERAND(0), IRmakeRegOPERAND(RBX))));//cmp right op with 0
         IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(errorCleanupLabel)));
@@ -1048,8 +1055,8 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       op1 = IRtravExp(t, exp->val.binOP.left);
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         op1, IRmakeRegOPERAND(RBX))));
-      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-        IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
+      // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+      //   IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
       if(exp->kind == andK){
       //lazy and: first operand is false we just return false.
@@ -1061,6 +1068,8 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
           IRmakeTrueOPERAND(), IRmakeRegOPERAND(RBX))));
       }
+      IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
+        IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
       IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(lazyLabel)));
 
       op2 = IRtravExp(t, exp->val.binOP.right);

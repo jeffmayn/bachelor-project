@@ -3,7 +3,7 @@
 var x: int;
 var y:int;
 var b:bool;
-
+var a: array of record of {v:int};
 
 func realFib(tal:int):int
   if(tal == 0) then
@@ -56,3 +56,9 @@ else
   b = false;
 write b;
 write realFib(20);
+
+
+allocate a of length 2;
+allocate a[0];
+a[0].v=7;
+write a[0].v;
