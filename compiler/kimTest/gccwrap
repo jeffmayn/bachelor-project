@@ -1,3 +1,0 @@
-#!/bin/bash
-
-gcc -no-pie -m64 -o /tmp/$1-a.out /tmp/$1-assemblerfile.s
