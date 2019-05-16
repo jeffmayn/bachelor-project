@@ -1388,8 +1388,7 @@ int IRtravExpList(SymbolTable *t, EXP_LIST *exps, int i){
  * put it in rbx !!!(this may change later)!!!
  */
 OPERAND *IRsetCalleeStaticLink(int nrJumps){
-  TEMPORARY *t1, *t2;
-  OPERAND *o2;
+  TEMPORARY *t2;
   if(nrJumps == 0){//we are accessing a function in our own scope
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
       IRmakeRegOPERAND(RBP),

@@ -9,7 +9,7 @@ extern int charpos;
 
 #define NCP (charpos+=yyleng) /*Next Character Position*/
 /*<INITIAL>"||" { NCP; return tOR;}*/
-
+void yyerror();
 int nestedcomments = 0;
 int insideABS = 0;
 int freshEXP = 0;
@@ -40,7 +40,7 @@ int secondOR = 0;
 <INITIAL>"{"    { NCP; return tLCURL;}
 <INITIAL>"}"    { NCP; return tRCURL;}
 <INITIAL>"|"    { NCP; 	if(secondOR == 1) {	
-							secondOR == 0;
+							secondOR = 0;
 							return tOR;
 						} else if (freshEXP == 1){
 							insideABS++;

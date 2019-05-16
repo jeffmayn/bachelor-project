@@ -543,8 +543,8 @@ extern int lineno;
 extern int charpos;
 
 #define NCP (charpos+=yyleng) /*Next Character Position*/
-/*<INITIAL>" || " { NCP; return tOR;}*/
-
+/*<INITIAL>"||" { NCP; return tOR;}*/
+void yyerror();
 int nestedcomments = 0;
 int insideABS = 0;
 int freshEXP = 0;
@@ -923,7 +923,7 @@ case 19:
 YY_RULE_SETUP
 #line 42 "src/scanParse/flex.l"
 { NCP; 	if(secondOR == 1) {	
-							secondOR == 0;
+							secondOR = 0;
 							return tOR;
 						} else if (freshEXP == 1){
 							insideABS++;

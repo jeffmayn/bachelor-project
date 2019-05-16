@@ -71,7 +71,7 @@ extern int lineno;
 extern int charpos;
 extern char *yytext;
 extern BODY *theexpression; //the root of AST
-extern SYNTAX_ERROR;
+extern int SYNTAX_ERROR;
 
 void yyerror() {
   fprintf(stderr, "Syntax Error line %d position %d before %s\n",

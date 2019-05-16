@@ -213,7 +213,6 @@ int wastedMovqSeq(INSTR* instr){
 	*/
 int addZero(INSTR *instr){
 	INSTR *instrTarget = instr->next;
-	INSTR *instrNext;
 	OPERAND *op;
 	if(instrTarget != NULL){
 		if(instrTarget->instrKind == addI || instrTarget->instrKind == subI){
