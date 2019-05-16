@@ -159,7 +159,7 @@ exp : exp tPLUS exp {$$ = makeEXPplus($1,$3);}
     | exp tLESS exp {$$ = makeEXPless($1,$3);}
     | exp tGREAT exp {$$ = makeEXPgreat($1,$3);}
     | exp tAND exp {$$ = makeEXPand($1,$3);}
-    | exp tOR exp {$$ = makeEXPor($1,$3);}
+    | exp tOR tOR exp {$$ = makeEXPor($1,$4);}
     | term {$$ = makeEXPterm($1);}
 
 term : var {$$ = makeTERMvar($1);}
