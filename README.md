@@ -20,8 +20,7 @@ Oversætteren kan køres med følgende flag
 -dBODY (printer det abstrakte syntakstræ for programmet, genereret under oversættelsen, med typer)  
 -dASM (printer den interne repræsentation af det genererede assemblerprogram)  
 -noRUNCHECK (oversætter programmet uden at indsætte runtimecheck)  
--noLIVENESS (oversætter programmet uden at udføre liveness analyse på temporaries, således at de alle lægges på stakken)  
--noPEEPHOLE (oversætter programmet uden at udføre kighulsoptimering)  
+-noOPTIMIZE (oversætter programmet uden at udføre liveness analyse og peephole optimering)  
 
 Alle flag kan bruges i den kombination der ønskes.
 
@@ -40,3 +39,15 @@ make cleanParser
 make clean  
 ```
 efterfulgt af de før beskrevne kommandoer
+
+Egne Tests  
+Der medfølger et udkast til en test suite som ligger i mappen test.  
+Det kan køres ved at stå i mappen test og køre kommandoen:  
+```
+./testSuite.sh
+```  
+Det crasher en gang imellem så vi anbefaler man køre  
+```
+./testSuite.sh clean
+```  
+efter hver kørsel.
