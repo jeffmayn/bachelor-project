@@ -1,0 +1,643 @@
+==16552== Memcheck, a memory error detector
+==16552== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==16552== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==16552== Command: ./testSuite.sh
+==16552== 
+make: Entering directory '/home/jegyl16/Desktop/bachelor-project/compiler'
+make: 'build/compiler' is up to date.
+make: Leaving directory '/home/jegyl16/Desktop/bachelor-project/compiler'
+c]104[!p[?3;4l[4l>./testSuite.sh: line 22: [: ==: unary operator expected
+<<<<<< STARTING TEST SUITE >>>>>>
+Test 1 is checking for correct return value of program.
+Test 2 compare output of program with expected output.
+
+
+==16552== Conditional jump or move depends on uninitialised value(s)
+==16552==    at 0x53F9E77: __wcsnlen_avx2 (strlen-avx2.S:261)
+==16552==    by 0x5327EC1: wcsrtombs (wcsrtombs.c:104)
+==16552==    by 0x1A75F3: ??? (in /bin/bash)
+==16552==    by 0x1A8596: glob_filename (in /bin/bash)
+==16552==    by 0x1A882C: glob_filename (in /bin/bash)
+==16552==    by 0x17805D: shell_glob_filename (in /bin/bash)
+==16552==    by 0x1733E3: ??? (in /bin/bash)
+==16552==    by 0x14EC52: execute_command_internal (in /bin/bash)
+==16552==    by 0x14DED7: execute_command_internal (in /bin/bash)
+==16552==    by 0x150A08: ??? (in /bin/bash)
+==16552==    by 0x136207: ??? (in /bin/bash)
+==16552==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16552== 
+==16565== Conditional jump or move depends on uninitialised value(s)
+==16565==    at 0x53F9617: __wmemchr_avx2 (memchr-avx2.S:282)
+==16565==    by 0x1AA447: ??? (in /bin/bash)
+==16565==    by 0x13748D: ??? (in /bin/bash)
+==16565==    by 0x16DCBF: ??? (in /bin/bash)
+==16565==    by 0x16E5CE: ??? (in /bin/bash)
+==16565==    by 0x16F705: ??? (in /bin/bash)
+==16565==    by 0x1707DD: ??? (in /bin/bash)
+==16565==    by 0x172B7A: ??? (in /bin/bash)
+==16565==    by 0x135A9A: ??? (in /bin/bash)
+==16565==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16565==    by 0x14FB81: execute_command (in /bin/bash)
+==16565==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16565== 
+==16565== Conditional jump or move depends on uninitialised value(s)
+==16565==    at 0x5291408: internal_utf8_loop (loop.c:298)
+==16565==    by 0x5291408: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16565==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16565==    by 0x137622: ??? (in /bin/bash)
+==16565==    by 0x16DCBF: ??? (in /bin/bash)
+==16565==    by 0x16E5CE: ??? (in /bin/bash)
+==16565==    by 0x16F705: ??? (in /bin/bash)
+==16565==    by 0x1707DD: ??? (in /bin/bash)
+==16565==    by 0x172B7A: ??? (in /bin/bash)
+==16565==    by 0x135A9A: ??? (in /bin/bash)
+==16565==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16565==    by 0x14FB81: execute_command (in /bin/bash)
+==16565==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16565== 
+==16565== Conditional jump or move depends on uninitialised value(s)
+==16565==    at 0x5291411: internal_utf8_loop (loop.c:303)
+==16565==    by 0x5291411: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16565==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16565==    by 0x137622: ??? (in /bin/bash)
+==16565==    by 0x16DCBF: ??? (in /bin/bash)
+==16565==    by 0x16E5CE: ??? (in /bin/bash)
+==16565==    by 0x16F705: ??? (in /bin/bash)
+==16565==    by 0x1707DD: ??? (in /bin/bash)
+==16565==    by 0x172B7A: ??? (in /bin/bash)
+==16565==    by 0x135A9A: ??? (in /bin/bash)
+==16565==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16565==    by 0x14FB81: execute_command (in /bin/bash)
+==16565==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16565== 
+==16565== Conditional jump or move depends on uninitialised value(s)
+==16565==    at 0x5291458: internal_utf8_loop (loop.c:298)
+==16565==    by 0x5291458: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16565==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16565==    by 0x137622: ??? (in /bin/bash)
+==16565==    by 0x16DCBF: ??? (in /bin/bash)
+==16565==    by 0x16E5CE: ??? (in /bin/bash)
+==16565==    by 0x16F705: ??? (in /bin/bash)
+==16565==    by 0x1707DD: ??? (in /bin/bash)
+==16565==    by 0x172B7A: ??? (in /bin/bash)
+==16565==    by 0x135A9A: ??? (in /bin/bash)
+==16565==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16565==    by 0x14FB81: execute_command (in /bin/bash)
+==16565==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16565== 
+######## RUNNING TEST-FOLDER: oldTests ########
+./testSuite.sh: line 85: returns.txt: No such file or directory
+
+==16565== 
+==16565== HEAP SUMMARY:
+==16565==     in use at exit: 90,955 bytes in 3,010 blocks
+==16565==   total heap usage: 4,515 allocs, 1,505 frees, 206,966 bytes allocated
+==16565== 
+==16565== 12 bytes in 1 blocks are definitely lost in loss record 136 of 1,037
+==16565==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16565==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16565==    by 0x18898A: set_default_locale (in /bin/bash)
+==16565==    by 0x137E66: main (in /bin/bash)
+==16565== 
+==16565== 30 bytes in 1 blocks are definitely lost in loss record 365 of 1,037
+==16565==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16565==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16565==    by 0x14DA19: execute_command_internal (in /bin/bash)
+==16565==    by 0x14FB81: execute_command (in /bin/bash)
+==16565==    by 0x14ECA0: execute_command_internal (in /bin/bash)
+==16565==    by 0x14DED7: execute_command_internal (in /bin/bash)
+==16565==    by 0x150A08: ??? (in /bin/bash)
+==16565==    by 0x136207: ??? (in /bin/bash)
+==16565==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16565==    by 0x14DF9B: execute_command_internal (in /bin/bash)
+==16565==    by 0x14FB81: execute_command (in /bin/bash)
+==16565==    by 0x14E5FA: execute_command_internal (in /bin/bash)
+==16565== 
+==16565== LEAK SUMMARY:
+==16565==    definitely lost: 42 bytes in 2 blocks
+==16565==    indirectly lost: 0 bytes in 0 blocks
+==16565==      possibly lost: 0 bytes in 0 blocks
+==16565==    still reachable: 90,913 bytes in 3,008 blocks
+==16565==         suppressed: 0 bytes in 0 blocks
+==16565== Reachable blocks (those to which a pointer was found) are not shown.
+==16565== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==16565== 
+==16565== For counts of detected and suppressed errors, rerun with: -v
+==16565== Use --track-origins=yes to see where uninitialised values come from
+==16565== ERROR SUMMARY: 23 errors from 7 contexts (suppressed: 0 from 0)
+==16566== Conditional jump or move depends on uninitialised value(s)
+==16566==    at 0x53F9617: __wmemchr_avx2 (memchr-avx2.S:282)
+==16566==    by 0x1AA447: ??? (in /bin/bash)
+==16566==    by 0x13748D: ??? (in /bin/bash)
+==16566==    by 0x16DCBF: ??? (in /bin/bash)
+==16566==    by 0x16E5CE: ??? (in /bin/bash)
+==16566==    by 0x16F705: ??? (in /bin/bash)
+==16566==    by 0x1707DD: ??? (in /bin/bash)
+==16566==    by 0x172B7A: ??? (in /bin/bash)
+==16566==    by 0x135A9A: ??? (in /bin/bash)
+==16566==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16566==    by 0x14FB81: execute_command (in /bin/bash)
+==16566==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16566== 
+==16566== Conditional jump or move depends on uninitialised value(s)
+==16566==    at 0x5291408: internal_utf8_loop (loop.c:298)
+==16566==    by 0x5291408: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16566==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16566==    by 0x137622: ??? (in /bin/bash)
+==16566==    by 0x16DCBF: ??? (in /bin/bash)
+==16566==    by 0x16E5CE: ??? (in /bin/bash)
+==16566==    by 0x16F705: ??? (in /bin/bash)
+==16566==    by 0x1707DD: ??? (in /bin/bash)
+==16566==    by 0x172B7A: ??? (in /bin/bash)
+==16566==    by 0x135A9A: ??? (in /bin/bash)
+==16566==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16566==    by 0x14FB81: execute_command (in /bin/bash)
+==16566==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16566== 
+==16566== Conditional jump or move depends on uninitialised value(s)
+==16566==    at 0x5291411: internal_utf8_loop (loop.c:303)
+==16566==    by 0x5291411: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16566==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16566==    by 0x137622: ??? (in /bin/bash)
+==16566==    by 0x16DCBF: ??? (in /bin/bash)
+==16566==    by 0x16E5CE: ??? (in /bin/bash)
+==16566==    by 0x16F705: ??? (in /bin/bash)
+==16566==    by 0x1707DD: ??? (in /bin/bash)
+==16566==    by 0x172B7A: ??? (in /bin/bash)
+==16566==    by 0x135A9A: ??? (in /bin/bash)
+==16566==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16566==    by 0x14FB81: execute_command (in /bin/bash)
+==16566==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16566== 
+==16566== Conditional jump or move depends on uninitialised value(s)
+==16566==    at 0x5291458: internal_utf8_loop (loop.c:298)
+==16566==    by 0x5291458: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16566==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16566==    by 0x137622: ??? (in /bin/bash)
+==16566==    by 0x16DCBF: ??? (in /bin/bash)
+==16566==    by 0x16E5CE: ??? (in /bin/bash)
+==16566==    by 0x16F705: ??? (in /bin/bash)
+==16566==    by 0x1707DD: ??? (in /bin/bash)
+==16566==    by 0x172B7A: ??? (in /bin/bash)
+==16566==    by 0x135A9A: ??? (in /bin/bash)
+==16566==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16566==    by 0x14FB81: execute_command (in /bin/bash)
+==16566==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16566== 
+######## RUNNING TEST-FOLDER: systemTest ########
+./testSuite.sh: line 85: returns.txt: No such file or directory
+
+==16566== 
+==16566== HEAP SUMMARY:
+==16566==     in use at exit: 90,963 bytes in 3,010 blocks
+==16566==   total heap usage: 4,524 allocs, 1,514 frees, 207,301 bytes allocated
+==16566== 
+==16566== 12 bytes in 1 blocks are definitely lost in loss record 135 of 1,037
+==16566==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16566==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16566==    by 0x18898A: set_default_locale (in /bin/bash)
+==16566==    by 0x137E66: main (in /bin/bash)
+==16566== 
+==16566== 30 bytes in 1 blocks are definitely lost in loss record 365 of 1,037
+==16566==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16566==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16566==    by 0x14DA19: execute_command_internal (in /bin/bash)
+==16566==    by 0x14FB81: execute_command (in /bin/bash)
+==16566==    by 0x14ECA0: execute_command_internal (in /bin/bash)
+==16566==    by 0x14DED7: execute_command_internal (in /bin/bash)
+==16566==    by 0x150A08: ??? (in /bin/bash)
+==16566==    by 0x136207: ??? (in /bin/bash)
+==16566==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16566==    by 0x14DF9B: execute_command_internal (in /bin/bash)
+==16566==    by 0x14FB81: execute_command (in /bin/bash)
+==16566==    by 0x14E5FA: execute_command_internal (in /bin/bash)
+==16566== 
+==16566== LEAK SUMMARY:
+==16566==    definitely lost: 42 bytes in 2 blocks
+==16566==    indirectly lost: 0 bytes in 0 blocks
+==16566==      possibly lost: 0 bytes in 0 blocks
+==16566==    still reachable: 90,921 bytes in 3,008 blocks
+==16566==         suppressed: 0 bytes in 0 blocks
+==16566== Reachable blocks (those to which a pointer was found) are not shown.
+==16566== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==16566== 
+==16566== For counts of detected and suppressed errors, rerun with: -v
+==16566== Use --track-origins=yes to see where uninitialised values come from
+==16566== ERROR SUMMARY: 29 errors from 7 contexts (suppressed: 0 from 0)
+==16568== Conditional jump or move depends on uninitialised value(s)
+==16568==    at 0x53F9617: __wmemchr_avx2 (memchr-avx2.S:282)
+==16568==    by 0x1AA447: ??? (in /bin/bash)
+==16568==    by 0x13748D: ??? (in /bin/bash)
+==16568==    by 0x16DCBF: ??? (in /bin/bash)
+==16568==    by 0x16E5CE: ??? (in /bin/bash)
+==16568==    by 0x16F705: ??? (in /bin/bash)
+==16568==    by 0x1707DD: ??? (in /bin/bash)
+==16568==    by 0x172B7A: ??? (in /bin/bash)
+==16568==    by 0x135A9A: ??? (in /bin/bash)
+==16568==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16568==    by 0x14FB81: execute_command (in /bin/bash)
+==16568==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16568== 
+==16568== Conditional jump or move depends on uninitialised value(s)
+==16568==    at 0x5291408: internal_utf8_loop (loop.c:298)
+==16568==    by 0x5291408: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16568==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16568==    by 0x137622: ??? (in /bin/bash)
+==16568==    by 0x16DCBF: ??? (in /bin/bash)
+==16568==    by 0x16E5CE: ??? (in /bin/bash)
+==16568==    by 0x16F705: ??? (in /bin/bash)
+==16568==    by 0x1707DD: ??? (in /bin/bash)
+==16568==    by 0x172B7A: ??? (in /bin/bash)
+==16568==    by 0x135A9A: ??? (in /bin/bash)
+==16568==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16568==    by 0x14FB81: execute_command (in /bin/bash)
+==16568==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16568== 
+==16568== Conditional jump or move depends on uninitialised value(s)
+==16568==    at 0x5291411: internal_utf8_loop (loop.c:303)
+==16568==    by 0x5291411: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16568==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16568==    by 0x137622: ??? (in /bin/bash)
+==16568==    by 0x16DCBF: ??? (in /bin/bash)
+==16568==    by 0x16E5CE: ??? (in /bin/bash)
+==16568==    by 0x16F705: ??? (in /bin/bash)
+==16568==    by 0x1707DD: ??? (in /bin/bash)
+==16568==    by 0x172B7A: ??? (in /bin/bash)
+==16568==    by 0x135A9A: ??? (in /bin/bash)
+==16568==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16568==    by 0x14FB81: execute_command (in /bin/bash)
+==16568==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16568== 
+==16568== Conditional jump or move depends on uninitialised value(s)
+==16568==    at 0x5291458: internal_utf8_loop (loop.c:298)
+==16568==    by 0x5291458: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16568==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16568==    by 0x137622: ??? (in /bin/bash)
+==16568==    by 0x16DCBF: ??? (in /bin/bash)
+==16568==    by 0x16E5CE: ??? (in /bin/bash)
+==16568==    by 0x16F705: ??? (in /bin/bash)
+==16568==    by 0x1707DD: ??? (in /bin/bash)
+==16568==    by 0x172B7A: ??? (in /bin/bash)
+==16568==    by 0x135A9A: ??? (in /bin/bash)
+==16568==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16568==    by 0x14FB81: execute_command (in /bin/bash)
+==16568==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16568== 
+######## RUNNING TEST-FOLDER: testFolder ########
+./testSuite.sh: line 85: returns.txt: No such file or directory
+
+==16568== 
+==16568== HEAP SUMMARY:
+==16568==     in use at exit: 90,963 bytes in 3,010 blocks
+==16568==   total heap usage: 4,533 allocs, 1,523 frees, 207,552 bytes allocated
+==16568== 
+==16568== 12 bytes in 1 blocks are definitely lost in loss record 135 of 1,037
+==16568==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16568==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16568==    by 0x18898A: set_default_locale (in /bin/bash)
+==16568==    by 0x137E66: main (in /bin/bash)
+==16568== 
+==16568== 30 bytes in 1 blocks are definitely lost in loss record 365 of 1,037
+==16568==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16568==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16568==    by 0x14DA19: execute_command_internal (in /bin/bash)
+==16568==    by 0x14FB81: execute_command (in /bin/bash)
+==16568==    by 0x14ECA0: execute_command_internal (in /bin/bash)
+==16568==    by 0x14DED7: execute_command_internal (in /bin/bash)
+==16568==    by 0x150A08: ??? (in /bin/bash)
+==16568==    by 0x136207: ??? (in /bin/bash)
+==16568==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16568==    by 0x14DF9B: execute_command_internal (in /bin/bash)
+==16568==    by 0x14FB81: execute_command (in /bin/bash)
+==16568==    by 0x14E5FA: execute_command_internal (in /bin/bash)
+==16568== 
+==16568== LEAK SUMMARY:
+==16568==    definitely lost: 42 bytes in 2 blocks
+==16568==    indirectly lost: 0 bytes in 0 blocks
+==16568==      possibly lost: 0 bytes in 0 blocks
+==16568==    still reachable: 90,921 bytes in 3,008 blocks
+==16568==         suppressed: 0 bytes in 0 blocks
+==16568== Reachable blocks (those to which a pointer was found) are not shown.
+==16568== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==16568== 
+==16568== For counts of detected and suppressed errors, rerun with: -v
+==16568== Use --track-origins=yes to see where uninitialised values come from
+==16568== ERROR SUMMARY: 29 errors from 7 contexts (suppressed: 0 from 0)
+==16570== Conditional jump or move depends on uninitialised value(s)
+==16570==    at 0x53F9617: __wmemchr_avx2 (memchr-avx2.S:282)
+==16570==    by 0x1AA447: ??? (in /bin/bash)
+==16570==    by 0x13748D: ??? (in /bin/bash)
+==16570==    by 0x16DCBF: ??? (in /bin/bash)
+==16570==    by 0x16E5CE: ??? (in /bin/bash)
+==16570==    by 0x16F705: ??? (in /bin/bash)
+==16570==    by 0x1707DD: ??? (in /bin/bash)
+==16570==    by 0x172B7A: ??? (in /bin/bash)
+==16570==    by 0x135A9A: ??? (in /bin/bash)
+==16570==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16570==    by 0x14FB81: execute_command (in /bin/bash)
+==16570==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16570== 
+==16570== Conditional jump or move depends on uninitialised value(s)
+==16570==    at 0x5291408: internal_utf8_loop (loop.c:298)
+==16570==    by 0x5291408: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16570==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16570==    by 0x137622: ??? (in /bin/bash)
+==16570==    by 0x16DCBF: ??? (in /bin/bash)
+==16570==    by 0x16E5CE: ??? (in /bin/bash)
+==16570==    by 0x16F705: ??? (in /bin/bash)
+==16570==    by 0x1707DD: ??? (in /bin/bash)
+==16570==    by 0x172B7A: ??? (in /bin/bash)
+==16570==    by 0x135A9A: ??? (in /bin/bash)
+==16570==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16570==    by 0x14FB81: execute_command (in /bin/bash)
+==16570==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16570== 
+==16570== Conditional jump or move depends on uninitialised value(s)
+==16570==    at 0x5291411: internal_utf8_loop (loop.c:303)
+==16570==    by 0x5291411: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16570==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16570==    by 0x137622: ??? (in /bin/bash)
+==16570==    by 0x16DCBF: ??? (in /bin/bash)
+==16570==    by 0x16E5CE: ??? (in /bin/bash)
+==16570==    by 0x16F705: ??? (in /bin/bash)
+==16570==    by 0x1707DD: ??? (in /bin/bash)
+==16570==    by 0x172B7A: ??? (in /bin/bash)
+==16570==    by 0x135A9A: ??? (in /bin/bash)
+==16570==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16570==    by 0x14FB81: execute_command (in /bin/bash)
+==16570==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16570== 
+==16570== Conditional jump or move depends on uninitialised value(s)
+==16570==    at 0x5291458: internal_utf8_loop (loop.c:298)
+==16570==    by 0x5291458: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16570==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16570==    by 0x137622: ??? (in /bin/bash)
+==16570==    by 0x16DCBF: ??? (in /bin/bash)
+==16570==    by 0x16E5CE: ??? (in /bin/bash)
+==16570==    by 0x16F705: ??? (in /bin/bash)
+==16570==    by 0x1707DD: ??? (in /bin/bash)
+==16570==    by 0x172B7A: ??? (in /bin/bash)
+==16570==    by 0x135A9A: ??? (in /bin/bash)
+==16570==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16570==    by 0x14FB81: execute_command (in /bin/bash)
+==16570==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16570== 
+######## RUNNING TEST-FOLDER: testPart3 ########
+./testSuite.sh: line 85: returns.txt: No such file or directory
+
+==16570== 
+==16570== HEAP SUMMARY:
+==16570==     in use at exit: 90,959 bytes in 3,010 blocks
+==16570==   total heap usage: 4,542 allocs, 1,532 frees, 207,760 bytes allocated
+==16570== 
+==16570== 12 bytes in 1 blocks are definitely lost in loss record 135 of 1,037
+==16570==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16570==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16570==    by 0x18898A: set_default_locale (in /bin/bash)
+==16570==    by 0x137E66: main (in /bin/bash)
+==16570== 
+==16570== 30 bytes in 1 blocks are definitely lost in loss record 365 of 1,037
+==16570==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16570==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16570==    by 0x14DA19: execute_command_internal (in /bin/bash)
+==16570==    by 0x14FB81: execute_command (in /bin/bash)
+==16570==    by 0x14ECA0: execute_command_internal (in /bin/bash)
+==16570==    by 0x14DED7: execute_command_internal (in /bin/bash)
+==16570==    by 0x150A08: ??? (in /bin/bash)
+==16570==    by 0x136207: ??? (in /bin/bash)
+==16570==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16570==    by 0x14DF9B: execute_command_internal (in /bin/bash)
+==16570==    by 0x14FB81: execute_command (in /bin/bash)
+==16570==    by 0x14E5FA: execute_command_internal (in /bin/bash)
+==16570== 
+==16570== LEAK SUMMARY:
+==16570==    definitely lost: 42 bytes in 2 blocks
+==16570==    indirectly lost: 0 bytes in 0 blocks
+==16570==      possibly lost: 0 bytes in 0 blocks
+==16570==    still reachable: 90,917 bytes in 3,008 blocks
+==16570==         suppressed: 0 bytes in 0 blocks
+==16570== Reachable blocks (those to which a pointer was found) are not shown.
+==16570== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==16570== 
+==16570== For counts of detected and suppressed errors, rerun with: -v
+==16570== Use --track-origins=yes to see where uninitialised values come from
+==16570== ERROR SUMMARY: 26 errors from 7 contexts (suppressed: 0 from 0)
+==16571== Conditional jump or move depends on uninitialised value(s)
+==16571==    at 0x53F9617: __wmemchr_avx2 (memchr-avx2.S:282)
+==16571==    by 0x1AA447: ??? (in /bin/bash)
+==16571==    by 0x13748D: ??? (in /bin/bash)
+==16571==    by 0x16DCBF: ??? (in /bin/bash)
+==16571==    by 0x16E5CE: ??? (in /bin/bash)
+==16571==    by 0x16F705: ??? (in /bin/bash)
+==16571==    by 0x1707DD: ??? (in /bin/bash)
+==16571==    by 0x172B7A: ??? (in /bin/bash)
+==16571==    by 0x135A9A: ??? (in /bin/bash)
+==16571==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16571==    by 0x14FB81: execute_command (in /bin/bash)
+==16571==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16571== 
+==16571== Conditional jump or move depends on uninitialised value(s)
+==16571==    at 0x5291408: internal_utf8_loop (loop.c:298)
+==16571==    by 0x5291408: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16571==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16571==    by 0x137622: ??? (in /bin/bash)
+==16571==    by 0x16DCBF: ??? (in /bin/bash)
+==16571==    by 0x16E5CE: ??? (in /bin/bash)
+==16571==    by 0x16F705: ??? (in /bin/bash)
+==16571==    by 0x1707DD: ??? (in /bin/bash)
+==16571==    by 0x172B7A: ??? (in /bin/bash)
+==16571==    by 0x135A9A: ??? (in /bin/bash)
+==16571==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16571==    by 0x14FB81: execute_command (in /bin/bash)
+==16571==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16571== 
+==16571== Conditional jump or move depends on uninitialised value(s)
+==16571==    at 0x5291411: internal_utf8_loop (loop.c:303)
+==16571==    by 0x5291411: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16571==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16571==    by 0x137622: ??? (in /bin/bash)
+==16571==    by 0x16DCBF: ??? (in /bin/bash)
+==16571==    by 0x16E5CE: ??? (in /bin/bash)
+==16571==    by 0x16F705: ??? (in /bin/bash)
+==16571==    by 0x1707DD: ??? (in /bin/bash)
+==16571==    by 0x172B7A: ??? (in /bin/bash)
+==16571==    by 0x135A9A: ??? (in /bin/bash)
+==16571==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16571==    by 0x14FB81: execute_command (in /bin/bash)
+==16571==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16571== 
+==16571== Conditional jump or move depends on uninitialised value(s)
+==16571==    at 0x5291458: internal_utf8_loop (loop.c:298)
+==16571==    by 0x5291458: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16571==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16571==    by 0x137622: ??? (in /bin/bash)
+==16571==    by 0x16DCBF: ??? (in /bin/bash)
+==16571==    by 0x16E5CE: ??? (in /bin/bash)
+==16571==    by 0x16F705: ??? (in /bin/bash)
+==16571==    by 0x1707DD: ??? (in /bin/bash)
+==16571==    by 0x172B7A: ??? (in /bin/bash)
+==16571==    by 0x135A9A: ??? (in /bin/bash)
+==16571==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16571==    by 0x14FB81: execute_command (in /bin/bash)
+==16571==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16571== 
+######## RUNNING TEST-FOLDER: testPart4 ########
+> tests was successful: 1> tests was successful: 2> tests was successful: 3> tests was successful: 4> tests was successful: 5> tests was successful: 8> tests was successful: 9> tests was successful: 10> tests was successful: 11> tests was successful: 12> tests was successful: 13> tests was successful: 14> tests was successful: 15> tests was successful: 16> tests was successful: 17> tests was successful: 18> tests was successful: 19> tests was successful: 21
+==16571== 
+==16571== HEAP SUMMARY:
+==16571==     in use at exit: 97,488 bytes in 3,248 blocks
+==16571==   total heap usage: 28,102 allocs, 24,854 frees, 2,097,620 bytes allocated
+==16571== 
+==16571== 12 bytes in 1 blocks are definitely lost in loss record 149 of 1,130
+==16571==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16571==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16571==    by 0x18898A: set_default_locale (in /bin/bash)
+==16571==    by 0x137E66: main (in /bin/bash)
+==16571== 
+==16571== 30 bytes in 1 blocks are definitely lost in loss record 389 of 1,130
+==16571==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16571==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16571==    by 0x14DA19: execute_command_internal (in /bin/bash)
+==16571==    by 0x14FB81: execute_command (in /bin/bash)
+==16571==    by 0x14ECA0: execute_command_internal (in /bin/bash)
+==16571==    by 0x14DED7: execute_command_internal (in /bin/bash)
+==16571==    by 0x150A08: ??? (in /bin/bash)
+==16571==    by 0x136207: ??? (in /bin/bash)
+==16571==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16571==    by 0x14DF9B: execute_command_internal (in /bin/bash)
+==16571==    by 0x14FB81: execute_command (in /bin/bash)
+==16571==    by 0x14E5FA: execute_command_internal (in /bin/bash)
+==16571== 
+==16571== LEAK SUMMARY:
+==16571==    definitely lost: 42 bytes in 2 blocks
+==16571==    indirectly lost: 0 bytes in 0 blocks
+==16571==      possibly lost: 0 bytes in 0 blocks
+==16571==    still reachable: 97,446 bytes in 3,246 blocks
+==16571==         suppressed: 0 bytes in 0 blocks
+==16571== Reachable blocks (those to which a pointer was found) are not shown.
+==16571== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==16571== 
+==16571== For counts of detected and suppressed errors, rerun with: -v
+==16571== Use --track-origins=yes to see where uninitialised values come from
+==16571== ERROR SUMMARY: 55 errors from 7 contexts (suppressed: 0 from 0)
+==16791== Conditional jump or move depends on uninitialised value(s)
+==16791==    at 0x53F9617: __wmemchr_avx2 (memchr-avx2.S:282)
+==16791==    by 0x1AA447: ??? (in /bin/bash)
+==16791==    by 0x13748D: ??? (in /bin/bash)
+==16791==    by 0x16DCBF: ??? (in /bin/bash)
+==16791==    by 0x16E5CE: ??? (in /bin/bash)
+==16791==    by 0x16F705: ??? (in /bin/bash)
+==16791==    by 0x1707DD: ??? (in /bin/bash)
+==16791==    by 0x172B7A: ??? (in /bin/bash)
+==16791==    by 0x135A9A: ??? (in /bin/bash)
+==16791==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16791==    by 0x14FB81: execute_command (in /bin/bash)
+==16791==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16791== 
+==16791== Conditional jump or move depends on uninitialised value(s)
+==16791==    at 0x5291408: internal_utf8_loop (loop.c:298)
+==16791==    by 0x5291408: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16791==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16791==    by 0x137622: ??? (in /bin/bash)
+==16791==    by 0x16DCBF: ??? (in /bin/bash)
+==16791==    by 0x16E5CE: ??? (in /bin/bash)
+==16791==    by 0x16F705: ??? (in /bin/bash)
+==16791==    by 0x1707DD: ??? (in /bin/bash)
+==16791==    by 0x172B7A: ??? (in /bin/bash)
+==16791==    by 0x135A9A: ??? (in /bin/bash)
+==16791==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16791==    by 0x14FB81: execute_command (in /bin/bash)
+==16791==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16791== 
+==16791== Conditional jump or move depends on uninitialised value(s)
+==16791==    at 0x5291411: internal_utf8_loop (loop.c:303)
+==16791==    by 0x5291411: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16791==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16791==    by 0x137622: ??? (in /bin/bash)
+==16791==    by 0x16DCBF: ??? (in /bin/bash)
+==16791==    by 0x16E5CE: ??? (in /bin/bash)
+==16791==    by 0x16F705: ??? (in /bin/bash)
+==16791==    by 0x1707DD: ??? (in /bin/bash)
+==16791==    by 0x172B7A: ??? (in /bin/bash)
+==16791==    by 0x135A9A: ??? (in /bin/bash)
+==16791==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16791==    by 0x14FB81: execute_command (in /bin/bash)
+==16791==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16791== 
+==16791== Conditional jump or move depends on uninitialised value(s)
+==16791==    at 0x5291458: internal_utf8_loop (loop.c:298)
+==16791==    by 0x5291458: __gconv_transform_internal_utf8 (skeleton.c:609)
+==16791==    by 0x5327EF4: wcsrtombs (wcsrtombs.c:110)
+==16791==    by 0x137622: ??? (in /bin/bash)
+==16791==    by 0x16DCBF: ??? (in /bin/bash)
+==16791==    by 0x16E5CE: ??? (in /bin/bash)
+==16791==    by 0x16F705: ??? (in /bin/bash)
+==16791==    by 0x1707DD: ??? (in /bin/bash)
+==16791==    by 0x172B7A: ??? (in /bin/bash)
+==16791==    by 0x135A9A: ??? (in /bin/bash)
+==16791==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16791==    by 0x14FB81: execute_command (in /bin/bash)
+==16791==    by 0x14DF66: execute_command_internal (in /bin/bash)
+==16791== 
+######## RUNNING TEST-FOLDER: unitTests ########
+> tests was successful: 1> tests was successful: 6> tests was successful: 7> tests was successful: 11> tests was successful: 12> tests was successful: 13> tests was successful: 14> tests was successful: 16> tests was successful: 18> tests was successful: 22> tests was successful: 23> tests was successful: 24> tests was successful: 25> tests was successful: 26> tests was successful: 28> tests was successful: 29> tests was successful: 30> tests was successful: 34> tests was successful: 41> tests was successful: 42> tests was successful: 43> tests was successful: 44> tests was successful: 45> tests was successful: 46> tests was successful: 49> tests was successful: 50> tests was successful: 52> tests was successful: 53> tests was successful: 57> tests was successful: 58> tests was successful: 61> tests was successful: 62> tests was successful: 65> tests was successful: 67> tests was successful: 68> tests was successful: 69> tests was successful: 70> tests was successful: 74> tests was successful: 75> tests was successful: 77> tests was successful: 78> tests was successful: 79> tests was successful: 81> tests was successful: 82> tests was successful: 84> tests was successful: 86> tests was successful: 87> tests was successful: 88> tests was successful: 91> tests was successful: 107> tests was successful: 111> tests was successful: 113> tests was successful: 114> tests was successful: 116> tests was successful: 118> tests was successful: 119> tests was successful: 120> tests was successful: 122> tests was successful: 124> tests was successful: 125> tests was successful: 126> tests was successful: 127> tests was successful: 128> tests was successful: 129> tests was successful: 131> tests was successful: 132> tests was successful: 133> tests was successful: 134> tests was successful: 135> tests was successful: 136> tests was successful: 137> tests was successful: 139> tests was successful: 140> tests was successful: 143> tests was successful: 145> tests was successful: 146> tests was successful: 147> tests was successful: 148> tests was successful: 149> tests was successful: 150> tests was successful: 151> tests was successful: 153> tests was successful: 156> tests was successful: 158> tests was successful: 159> tests was successful: 161> tests was successful: 163> tests was successful: 164> tests was successful: 166> tests was successful: 168> tests was successful: 169> tests was successful: 175> tests was successful: 176> tests was successful: 177> tests was successful: 178> tests was successful: 180> tests was successful: 181> tests was successful: 183> tests was successful: 184> tests was successful: 185> tests was successful: 186> tests was successful: 192
+==16791== 
+==16791== HEAP SUMMARY:
+==16791==     in use at exit: 97,264 bytes in 3,248 blocks
+==16791==   total heap usage: 173,142 allocs, 169,894 frees, 12,761,758 bytes allocated
+==16791== 
+==16791== 12 bytes in 1 blocks are definitely lost in loss record 150 of 1,134
+==16791==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16791==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16791==    by 0x18898A: set_default_locale (in /bin/bash)
+==16791==    by 0x137E66: main (in /bin/bash)
+==16791== 
+==16791== 30 bytes in 1 blocks are definitely lost in loss record 389 of 1,134
+==16791==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16791==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16791==    by 0x14DA19: execute_command_internal (in /bin/bash)
+==16791==    by 0x14FB81: execute_command (in /bin/bash)
+==16791==    by 0x14ECA0: execute_command_internal (in /bin/bash)
+==16791==    by 0x14DED7: execute_command_internal (in /bin/bash)
+==16791==    by 0x150A08: ??? (in /bin/bash)
+==16791==    by 0x136207: ??? (in /bin/bash)
+==16791==    by 0x14E067: execute_command_internal (in /bin/bash)
+==16791==    by 0x14DF9B: execute_command_internal (in /bin/bash)
+==16791==    by 0x14FB81: execute_command (in /bin/bash)
+==16791==    by 0x14E5FA: execute_command_internal (in /bin/bash)
+==16791== 
+==16791== LEAK SUMMARY:
+==16791==    definitely lost: 42 bytes in 2 blocks
+==16791==    indirectly lost: 0 bytes in 0 blocks
+==16791==      possibly lost: 0 bytes in 0 blocks
+==16791==    still reachable: 97,222 bytes in 3,246 blocks
+==16791==         suppressed: 0 bytes in 0 blocks
+==16791== Reachable blocks (those to which a pointer was found) are not shown.
+==16791== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==16791== 
+==16791== For counts of detected and suppressed errors, rerun with: -v
+==16791== Use --track-origins=yes to see where uninitialised values come from
+==16791== ERROR SUMMARY: 168 errors from 7 contexts (suppressed: 0 from 0)
+==16552== 
+==16552== HEAP SUMMARY:
+==16552==     in use at exit: 78,364 bytes in 2,259 blocks
+==16552==   total heap usage: 4,060 allocs, 1,801 frees, 192,925 bytes allocated
+==16552== 
+==16552== 12 bytes in 1 blocks are definitely lost in loss record 125 of 907
+==16552==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16552==    by 0x18EF2D: xmalloc (in /bin/bash)
+==16552==    by 0x18898A: set_default_locale (in /bin/bash)
+==16552==    by 0x137E66: main (in /bin/bash)
+==16552== 
+==16552== LEAK SUMMARY:
+==16552==    definitely lost: 12 bytes in 1 blocks
+==16552==    indirectly lost: 0 bytes in 0 blocks
+==16552==      possibly lost: 0 bytes in 0 blocks
+==16552==    still reachable: 78,352 bytes in 2,258 blocks
+==16552==         suppressed: 0 bytes in 0 blocks
+==16552== Reachable blocks (those to which a pointer was found) are not shown.
+==16552== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==16552== 
+==16552== For counts of detected and suppressed errors, rerun with: -v
+==16552== Use --track-origins=yes to see where uninitialised values come from
+==16552== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)

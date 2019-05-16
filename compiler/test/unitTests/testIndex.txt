@@ -103,22 +103,22 @@ eks.
 Kortslutning af AND og OR
 
 Løkker og if-sætninger
-if-sætning true                                                     IfTrue.kit
-if-sætning false                                                    IfFalse.kit
-if-sætning med boolsk variabel                                      IfBoolVar.kit
-if-sætning med boolsk udtryk                                        IfBoolExpr.kit
-if-sætning med int variabel (eller bare et tal) (FORBUDT)           IfIntVar.kit
-if-then på samme måde                                               IfThen....
-Indlejrede if-sætninger                                             IfNest.kit
-Løkker på tjekks på samme måde                                      While....
-Indlejrede løkker                                                   WhileNest.kit
-blandede indlejrede if-sætninger of løkker                          WhileIfMix.kit
-hav break i løkke                                                   WhileBreak.kit
-hav continue i løkke                                                WhileCont.kit
-have break uden for løkke (FORBUDT)                                 WhileBreakOut.kit
-hav continue uden for løkke (FORBUDT)                               WhileContOut.kit
-Hav break i indlejrede løkker                                       WhileBreakNest.kit
-Hav continue i indlejrede løkker                                    WhileContNest.kit
+[done]  if-sætning true                                                     IfTrue.kit
+[done]  if-sætning false                                                    IfFalse.kit
+[done]  if-sætning med boolsk variabel                                      IfBoolVar.kit
+[done]  if-sætning med boolsk udtryk                                        IfBoolExpr.kit
+[done]  if-sætning med int variabel (eller bare et tal) (FORBUDT)           IfIntVar.kit
+[done]  if-then på samme måde                                               IfThen....
+[done]  Indlejrede if-sætninger                                             IfNest.kit
+[done]  Løkker på tjekks på samme måde                                      While....
+[done]  Indlejrede løkker                                                   WhileNest.kit
+[done]  blandede indlejrede if-sætninger of løkker                          WhileIfMix.kit
+[done]  hav break i løkke                                                   WhileBreak.kit
+[done]  hav continue i løkke                                                WhileCont.kit
+[done]  have break uden for løkke (FORBUDT)                                 WhileBreakOut.kit
+[done]  hav continue uden for løkke (FORBUDT)                               WhileContOut.kit
+[done]  Hav break i indlejrede løkker                                       WhileBreakNest.kit
+[done]  Hav continue i indlejrede løkker                                    WhileContNest.kit
 
 tjek om {} virker korrekt                                           StmtList.kit
 

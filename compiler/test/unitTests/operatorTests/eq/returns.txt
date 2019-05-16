@@ -1,5 +1,0 @@
-eqBool
-eqConst
-eqNull
-eqVarNamedSimple
-eqVarSimple

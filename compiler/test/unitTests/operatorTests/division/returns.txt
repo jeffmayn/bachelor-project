@@ -1,5 +1,0 @@
-divBool 255
-divConst
-divNull
-divVarNamedSimple
-divVarSimple

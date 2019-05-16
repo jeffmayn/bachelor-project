@@ -6,7 +6,8 @@ SRC_DIR_MAIN ?= main src
 
 BUILD_DIR ?= build
 
-SRC_MAIN := $(shell find $(SRC_DIR_MAIN) -name *.c & find $(SRC_DIR_MAIN) -name .y & find $(SRC_DIR_MAIN) -name .l)
+SRC_MAIN := $(shell find $(SRC_DIR_MAIN) -name *.c)
+#& find $(SRC_DIR_MAIN) -name .y & find $(SRC_DIR_MAIN) -name .l
 #SRC_TEST :=
 
 OBJ_MAIN := $(SRC_MAIN:%=$(BUILD_DIR)/%.o)
@@ -22,8 +23,8 @@ INC_DIR_MAIN := $(shell find $(SRC_DIR_MAIN) -type d)#finds all subfolders in in
 INC_FLAGS_MAIN := $(addprefix -I,$(INC_DIR_MAIN))
 #INC_FLAGS_TEST :=$(addprefix -I,$(INC_DIR_TEST))
 
-CFLAGS ?= -MMD -MP -std=c11 -Wall -Wextra -pedantic -g -lfl
-
+CFLAGS ?= -std=c11 -Wall -Wextra -pedantic
+#-MMD -MP -lfl -g
 $(BUILD_DIR)/$(TARGET_MAIN): $(OBJ_MAIN)
 	$(GCC) $(OBJ_MAIN) -o $@ $(LDFLAGS)
 

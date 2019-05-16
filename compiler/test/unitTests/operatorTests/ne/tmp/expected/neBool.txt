@@ -1,7 +1,0 @@
-var a:int;
-var b:bool;
-var c:int;
-
-a = 12;
-b = true;
-c = (a == b);

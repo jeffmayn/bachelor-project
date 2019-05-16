@@ -313,7 +313,7 @@ int expTypeTravStmt(SymbolTable *t, STATEMENT *s){
       Typekind tk = expTypeTravVar(t, s->val.allocate, &sym, &type);
       if(tk == errorK){
         fprintf(stderr, "Line %d: Error happened while searching variable \
-          of allocate\n", s->lineno);
+of allocate\n", s->lineno);
         return -1;
       }
       return 0;

@@ -1,0 +1,21 @@
+var x:int, y:int;
+var z:bool;
+var p:bool;
+z = true;
+p = true;
+x=10;
+y = 0;
+
+while z do{
+  while p do {
+    write x;
+    x = x - 1;
+    if (x < 1) then {
+      p = false;
+    }
+  }
+  if (x < 1) then {
+    z = false;
+    write y;
+  }
+}

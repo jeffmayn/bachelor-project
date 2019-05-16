@@ -30,7 +30,7 @@ int weederTraverseBody(BODY *body, char *name){
   int ret = weederTravStmtList(body->sList);
   if(ret == -1){
     fprintf(stderr, "ERROR: Some path in function %s does not reach a \
-      return statement\n", name);
+return statement\n", name);
     return -1;
   }
   return weederTraverseDECL(body->vList);
@@ -78,7 +78,7 @@ int weederTravStmtList(STATEMENT_LIST *stmtList){
     if(weederTravStmt(stmtList->statement) == 0){
       if(stmtList->statementList != NULL){
         fprintf(stderr, "Warning! Line %d: Unreachable statement after \
-          return\n", stmtList->statementList->lineno);
+return\n", stmtList->statementList->lineno);
       }
       return 0;
     }
@@ -138,7 +138,7 @@ int weederTravMainStmt(STATEMENT *s){
   switch(s->kind){
     case returnK:
       fprintf(stderr, "ERROR: Line %d: return statemenet found i main \
-        scope\n", s->lineno);
+scope\n", s->lineno);
       return -1;
       break;
     case ifK:

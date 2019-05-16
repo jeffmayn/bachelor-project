@@ -1,0 +1,127 @@
+(* korrekt? kitty-program, her testes et stort program
+   med alle typer af funktionalitet. Programmet skal returnere 0 *)
+
+type String = array of int;
+type ListNode = record of {
+  data : int,
+  name : String,
+  next : ListNode,
+  prev : ListNode,
+  other : array of int
+};
+
+type List = record of {
+  head : ListNode,
+  tail : ListNode,
+  size : int
+};
+
+var x:int, y:int, empty:bool, list:List, nodes:array of ListNode;
+var i:int;
+var node:ListNode;
+var dummyNode:ListNode;
+var dummyInt:int;
+var wuhuuuuuuu:int;
+
+var r : record of {
+  a : int,
+  b : bool
+};
+
+func f(thisNameIsDefinitelyUnique:int):int
+  return thisNameIsDefinitelyUnique;
+end f
+
+func add(l:List, n:ListNode) : int
+  if(l.head == null)
+  then{
+    l.head = n;
+    l.tail = n;
+    empty = false;
+  }
+  else{
+    n.next = l.head;
+    n.next.prev = n;
+    n.prev = null;
+    l.head = n;
+  }
+  return 0;
+end add
+
+func removeLast(l:List) : ListNode
+  var n:ListNode;
+  if(l == null || l.tail == null)
+    then {
+      write 121;
+      return null;
+    }
+  else{
+    n = l.tail;
+    l.tail = n.prev;
+    n.next = null;
+    n.prev = null;
+    if(l.tail == null)
+    then {
+      l.head = null;
+      empty = true;
+    }
+    else{
+      l.tail.next = null;
+    }
+    return n;
+  }
+end removeLast
+
+func noArgs(): int
+  return 0;
+end noArgs
+
+(*statement list*)
+allocate r;
+r.a = 7;
+r.b = false;
+
+allocate list;
+allocate nodes of length 42;
+i = 0;
+while(i < 42) do{
+  allocate nodes[i];
+  nodes[i].data = i;
+  i = i+1;
+}
+i = 0;
+while(i < 42)
+do{
+  dummyInt = add(list,nodes[i]);
+  i = i + 1;
+}
+
+i = 0;
+while(i < 42) do{
+  node = removeLast(list);
+  write node.data;
+  i = i+1;
+}
+
+if(node == nodes[42-1])
+then
+  write true;
+
+i=0;
+if(!empty)
+  then {dummyNode = removeLast(list);
+write dummyNode.data;}
+
+#x = add();
+#x = add(list, x);
+#x = add(list);
+#x = add(list, nodes[i], i);
+x = add(list, nodes[i]);
+write x;
+x = noArgs();
+write x;
+#x = noArgs(x);
+
+x = f(3);
+
+#return 0;

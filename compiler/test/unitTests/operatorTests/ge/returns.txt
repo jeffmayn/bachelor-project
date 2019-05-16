@@ -1,6 +1,0 @@
-geBool
-geConst
-geNull
-geVar
-geVarNamedSimple
-geVarSimple

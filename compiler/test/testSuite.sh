@@ -1,10 +1,11 @@
 #!/bin/bash
 #make clean -C ../ -s
-
+# ls *.kit > yoyo.dat && awk '{gsub(".kit", " 0");print}' yoyo.dat > returns.txt && rm yoyo.dat
 
 
 make -C ../
 yo=$?
+count=0
 #echo $v
 if ! [ $yo -eq 0 ]
 then
@@ -18,7 +19,7 @@ else
     rm tmp/output/*.txt &>/dev/null
   }
 
-  if [ $1 == "clean" ]
+  if [ "$1" == "clean" ]
   then
     printf "The cleansing has begun!\n"
 
@@ -30,19 +31,21 @@ else
       GREEN='\033[0;32m'
       NC='\033[0m' # No Color
       printf "<<<<<< STARTING TEST SUITE >>>>>>\n"
-      echo "Test 1 is checking for correct return value of program."
-      echo "Test 2 compare output of program with expected output."
       printf "\n\n"
 
-
+      invoke_success(){
+        echo SUCCESS
+      }
       # compile files to assembly and produce output files
       invoke_asm() {
         ../../build/compiler < $1.kit > tmp/$1.s 2>/dev/null
         gcc -no-pie -m64 tmp/$1.s -o tmp/$1.dat
         ./tmp/$1.dat > tmp/output/$1.txt
+        echo ret $? >> tmp/output/$1.txt
+
         rm tmp/*.dat
         rm tmp/*.s
-        invoke_cmp $1
+        invoke_cmp $1 $2
       }
 
       # if an test fails, a log is generated
@@ -65,17 +68,20 @@ else
 
       # compare expected output to actual output
       invoke_cmp() {
-        if cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
-          printf "  |--> Test 2: ${GREEN}SUCCESS!${NC}\n"
-        else
-          printf "  |--> Test 2: ${RED}FAILED!${NC}\n"
-          echo "  |--> SEE LOGFILE: ${PWD##}/log/$1.log"
+        if ! cmp -s "tmp/output/$1.txt" "tmp/expected/$1.txt" ; then
+          printf "[ ${RED}FAILED!${NC} ] $1: mismatch in output\n"
+          ((count=count-1))
+          echo -ne "failed: $2\r"
+      #    echo "SEE LOGFILE: ${PWD##}/log/$1.log"
           invoke_log $1
+        else
+          echo -ne "> tests was successful: $2\r"
         fi
       }
 
       # invoke_tests
       invoke_tests () {
+        if test -f "returns.txt"; then
         echo "######## RUNNING TEST-FOLDER: ${PWD##*/} ########"
         while read line
         do
@@ -83,46 +89,33 @@ else
           do
             if ! [[ "$ret" =~ ^[0-9]+$ ]]
             then
-              count=0
-              #echo Found file-name \"$ret\"
+
               filename=$ret
             else
-              ((count=count+1))
-              file=$filename$count".kit" #its crazy but it works
+((count=count+1))
+
+              file=$filename".kit" #its crazy but it works
               #echo $file
-              printf " |--> File: $file \n"
               ../../build/compiler < "$file" >/dev/null 2>&1
               v=$?
+              u="tmp/expected/$filename.txt"
               #echo $v
-              if [ $v -eq $ret ]
+              if [ $v != $ret ]
               then
-                printf "  |--> Test 1: ${GREEN}SUCCESS!${NC}\n"
-              #  echo "  |--> Test 1: SUCCESS!"
-                if [ $v -eq 255 ]
-                then
-                  printf "  |--> Test 2: ${YELLOW}program is designed to fail!${NC}\n"
-                  #../../build/compiler < "$file" #>/dev/null 2>&1
-                  echo "  |--> SEE LOGFILE: ${PWD##}/log/$filename$count.log"
-                  echo ""
-                  invoke_log $filename$count $v $ret
-                else
-                  invoke_asm "$filename$count"
-                  echo ""
-                fi
-              else
-                printf "  |--> Test 1: ${RED}FAILED!${NC}\n"
-                #echo "  |--> Test 1: FAILED!"
-                printf "  |--> Test 2: ${YELLOW}not initialised!${NC}\n"
-                #../../build/compiler < "$file" #>/dev/null 2>&1
-                echo "  |--> SEE LOGFILE: ${PWD##}/log/$filename$count.log"
-                echo ""
-                invoke_log $filename$count $v $ret
-                #echo returned $v but expected $ret
+                printf "[ ${RED}FAILED!${NC} ] $filename: incorrect exit code ${YELLOW}[$v/$ret]${NC}\n"
+                ((count=count-1))
+              elif ! [ $v -eq 255 ]
+              then
+                  if test -f "${u}"; then
+                    #((count=count+1))
+                    invoke_asm $filename $count
+                  fi
               fi
             fi
           done
         done < returns.txt
         echo ""
+      fi
       }
 
       #run tests in all subfolders
