@@ -9,7 +9,6 @@
 int incPattern(INSTR* instr);
 int decPattern(INSTR* instr);
 int wastedMovq(INSTR* instr);
-int wastedMovq2(INSTR* instr);
 int wastedMovqSeq(INSTR* instr);
 int addZero(INSTR *instr);
 int addOne(INSTR *instr);

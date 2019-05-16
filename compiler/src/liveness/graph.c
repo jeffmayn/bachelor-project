@@ -223,7 +223,7 @@ int IGcolorGraph(){
     int *neighbors = IGgetNeighbors(i);
     int colorFound = 1; //asume color is found
     for(registers reg = (registers)R8; 
-      reg < (registers) R15; reg = (registers) (reg+1)){
+      reg <= (registers) R15; reg = (registers) (reg+1)){
       colorFound = 1;
       for(int j = 1; j<=neighbors[0]; j++){ //for each color
         if(graphNodes[neighbors[j]].reg == reg){  //check if any neighbor have this color

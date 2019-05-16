@@ -961,25 +961,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
 
       //return result
       return IRmakeTemporaryOPERAND(t1);
-    // case plusK:
-    //   //same as for minus
-    //   t1 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //
-    //   op1 = IRtravExp(t, exp->val.binOP.left);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op1, IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //
-    //   op2 = IRtravExp(t, exp->val.binOP.right);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op2, IRmakeRegOPERAND(RBX))));
-    //   //do the addition
-    //   IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //
-    //   return IRmakeTemporaryOPERAND(t1);
+  
     case divK:
       t1 = IRcreateNextTemp(tempLocalCounter); //first operand container
       tempLocalCounter++;
@@ -1024,26 +1006,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RAX), IRmakeTemporaryOPERAND(t1))));
       return IRmakeTemporaryOPERAND(t1);
-    // case timesK:
-    //   t1 = IRcreateNextTemp(tempLocalCounter); //left operand container
-    //   tempLocalCounter++;
-    //   //find left operand
-    //   op1 = IRtravExp(t, exp->val.binOP.left);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op1, IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //   //find right operand
-    //   op2 = IRtravExp(t, exp->val.binOP.right);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op2, IRmakeRegOPERAND(RBX))));
-    //   //do the multiplication
-    //   IRappendINSTR(IRmakeMulINSTR(IRappendOPERAND(
-    //     IRmakeTemporaryOPERAND(t1),IRmakeRegOPERAND(RBX))));
-    //   //return result
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //   return IRmakeTemporaryOPERAND(t1);
+    
     case andK:
     case orK:
       t1 = IRcreateNextTemp(tempLocalCounter);
@@ -1088,36 +1051,7 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
       IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
         IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
       return IRmakeTemporaryOPERAND(t1);
-    // case orK:
-    //   t1 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   char *lazyOrLabel = Malloc(10);
-    //   sprintf(lazyOrLabel, "ge%d", labelCounter);
-    //   labelCounter++;
-    //   //find right operand
-    //   op1 = IRtravExp(t, exp->val.binOP.left);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op1, IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));//right operand in t1
-    //
-    //   //lazy or: if first operand is true we just return true.
-    //   IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-    //     IRmakeTrueOPERAND(), IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(lazyOrLabel)));
-    //
-    //   //find right operand
-    //   op2 = IRtravExp(t, exp->val.binOP.right);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op2, IRmakeRegOPERAND(RBX))));//left operand in rbx
-    //   //do the or
-    //   IRappendINSTR(IRmakeOrINSTR(IRappendOPERAND(
-    //     IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
-    //   //return the result
-    //   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(lazyOrLabel)));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //   return IRmakeTemporaryOPERAND(t1);
+    
     case leK:
     case eqK:
     case geK:
@@ -1173,140 +1107,6 @@ OPERAND* IRtravExp(SymbolTable *t, EXP *exp){
         IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t2)))); //turned out to be false
       IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(cmpLabel)));
       return IRmakeTemporaryOPERAND(t2);
-    // case eqK:
-    //   t1 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   t2 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   char *eqLabel = Malloc(10);
-    //   sprintf(eqLabel, "eq%d", labelCounter);
-    //   labelCounter++;
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeTrueOPERAND(),IRmakeTemporaryOPERAND(t1)))); //assuming true
-    //   op1 = IRtravExp(t, exp->val.binOP.left);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
-    //
-    //   op2 = IRtravExp(t, exp->val.binOP.right);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
-    //   //do comparison
-    //   IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
-    //   IRappendINSTR(IRmakeJeINSTR(IRmakeLabelOPERAND(eqLabel))); //if true, skip next
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t1)))); //turned out to be false
-    //   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(eqLabel)));
-    //   return IRmakeTemporaryOPERAND(t1);
-    // case geK:
-    //   t1 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   t2 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   char *geLabel = Malloc(10);
-    //   sprintf(geLabel, "ge%d", labelCounter);
-    //   labelCounter++;
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeTrueOPERAND(), IRmakeTemporaryOPERAND(t2)))); //assuming true
-    //
-    //   op1 = IRtravExp(t, exp->val.binOP.left);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op1, IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //
-    //   op2 = IRtravExp(t, exp->val.binOP.right);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op2, IRmakeRegOPERAND(RBX))));
-    //   //do comparison
-    //   IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //   IRappendINSTR(IRmakeJgeINSTR(IRmakeLabelOPERAND(geLabel))); //if true, skip next
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t2)))); //turned out to be false
-    //   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(geLabel)));
-    //   return IRmakeTemporaryOPERAND(t2);
-    // case greatK:
-    //   t1 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   t2 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   char *greatLabel = Malloc(10);
-    //   sprintf(greatLabel, "ge%d", labelCounter);
-    //   labelCounter++;
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeTrueOPERAND(), IRmakeTemporaryOPERAND(t2)))); //assuming true
-    //
-    //   op1 = IRtravExp(t, exp->val.binOP.left);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op1, IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //
-    //   op2 = IRtravExp(t, exp->val.binOP.right);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op2, IRmakeRegOPERAND(RBX))));
-    //   //do comparison
-    //   IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //   IRappendINSTR(IRmakeJgINSTR(IRmakeLabelOPERAND(greatLabel))); //if true, skip next
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t2)))); //turned out to be false
-    //   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(greatLabel)));
-    //   return IRmakeTemporaryOPERAND(t2);
-    // case lessK:
-    //   t1 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   t2 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   char *lessLabel = Malloc(10);
-    //   sprintf(lessLabel, "ge%d", labelCounter);
-    //   labelCounter++;
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeTrueOPERAND(), IRmakeTemporaryOPERAND(t2)))); //assuming true
-    //
-    //   op1 = IRtravExp(t, exp->val.binOP.left);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op1, IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //
-    //   op2 = IRtravExp(t, exp->val.binOP.right);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     op2, IRmakeRegOPERAND(RBX))));
-    //   //do comparison
-    //   IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
-    //   IRappendINSTR(IRmakeJlINSTR(IRmakeLabelOPERAND(lessLabel))); //if true, skip next
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t2)))); //turned out to be false
-    //   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(lessLabel)));
-    //   return IRmakeTemporaryOPERAND(t2);
-    // case neK:
-    //   t1 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   t2 = IRcreateNextTemp(tempLocalCounter);
-    //   tempLocalCounter++;
-    //   char *neLabel = Malloc(10);
-    //   sprintf(neLabel, "eq%d", labelCounter);
-    //   labelCounter++;
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeTrueOPERAND(),IRmakeTemporaryOPERAND(t1)))); //assuming true
-    //
-    //   op1 = IRtravExp(t, exp->val.binOP.left);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op1, IRmakeRegOPERAND(RBX))));
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
-    //   op2 = IRtravExp(t, exp->val.binOP.right);
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(op2, IRmakeRegOPERAND(RBX))));
-    //   //do comparison
-    //   IRappendINSTR(IRmakeCmpINSTR(IRappendOPERAND(
-    //     IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t2))));
-    //   IRappendINSTR(IRmakeJneINSTR(IRmakeLabelOPERAND(neLabel))); //if true, skip next
-    //   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //     IRmakeFalseOPERAND(),IRmakeTemporaryOPERAND(t1)))); //turned out to be false
-    //   IRappendINSTR(IRmakeLabelINSTR(IRmakeLabelOPERAND(neLabel)));
-    //   return IRmakeTemporaryOPERAND(t1);
     default:
       fprintf(stderr, "INTENRAL ERROR\n");
       return NULL;
@@ -1595,19 +1395,6 @@ OPERAND *IRsetCalleeStaticLink(int nrJumps){
       IRmakeRegOPERAND(RBP),
       IRmakeRegOPERAND(RBX))));
   } else {
-    // t1 = IRcreateNextTemp(tempLocalCounter);
-    // tempLocalCounter++;
-    //find static link based on base-pointer
-    // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //   IRmakeRegOPERAND(RBP), IRmakeTemporaryOPERAND(t1))));
-    // IRappendINSTR(IRmakeAddINSTR(IRappendOPERAND(
-    //   IRmakeConstantOPERAND(16), IRmakeTemporaryOPERAND(t1))));
-    // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //   IRmakeTemporaryOPERAND(t1), IRmakeRegOPERAND(RBX))));
-    // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND( //find what static link points to
-    //   IRmakeDeRefOPERAND(RBX), IRmakeRegOPERAND(RBX))));
-    // IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-    //   IRmakeRegOPERAND(RBX), IRmakeTemporaryOPERAND(t1))));
 
     IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
       IRmakeRegOPERAND(RBP), IRmakeRegOPERAND(RBX))));
@@ -1642,50 +1429,8 @@ OPERAND *IRsetStaticBase(int *nrJumps){
 
   o1 = IRsetCalleeStaticLink(*nrJumps);
   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(o1, IRmakeRegOPERAND(RDI))));
-  //IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(IRmakeRegOPERAND(RBX), IRmakeRegOPERAND(RDI))));
-
   return IRmakeRegOPERAND(RDI);
 }
-// /**
-//  * NOT USED
-//  * Used to reset the basepointer from RDI to RBP
-//  * BLAHBLAHBLAH DEN HER FUNKTION ER OVERFLØDIG!
-//  */
-// int IRresetBasePointer(){
-//   IRappendINSTR(IRmakeMovINSTR(IRappendOPERAND(
-//     IRmakeRegOPERAND(RBP),
-//     IRappendOPERAND(
-//       IRmakeRegOPERAND(RDI),
-//       IRmakeCommentOPERAND("resetting basepointer")
-//       ))));
-//   return 0;
-// }
-
-// /**
-//  * NOT USED
-//  * Traversing expression list in reverse order
-//  * This is used to traverse arguments in function call
-//  * returns the number of arguments traversed
-//  */
-// int IRtravExpListReverse(SymbolTable *t, EXP_LIST *exps){
-//   int i=0;
-//   OPERAND *op;
-//   if(exps != NULL){
-//     //go to end of list
-//     i = IRtravExpListReverse(t, exps->expList);
-//     if(i==-1){
-//       return -1;
-//     }
-//     //find result of i'th argument
-//     op = IRtravExp(t, exps->exp);
-//     if(op == NULL){
-//       return -1;
-//     }
-//     IRappendINSTR(IRmakePushINSTR(op));
-//     i++;
-//   }
-//   return i;
-// }
 
 /**
 * finds the size of the given symbol
@@ -1885,7 +1630,7 @@ OPERAND *IRappendOPERAND(OPERAND *tail, OPERAND *next){
   tail->next = next;
   return tail;
 }
-
+/* instruction constructors */
 INSTR* IRmakeINSTR(OPERAND *params){
   INSTR* ins = NEW(INSTR);
   ins->paramList = params;

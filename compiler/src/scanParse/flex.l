@@ -8,7 +8,7 @@ extern int lineno;
 extern int charpos;
 
 #define NCP (charpos+=yyleng) /*Next Character Position*/
-/*<INITIAL>" || " { NCP; return tOR;}*/
+/*<INITIAL>"||" { NCP; return tOR;}*/
 
 int nestedcomments = 0;
 int insideABS = 0;

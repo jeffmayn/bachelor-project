@@ -5,17 +5,14 @@
 #include "typecheck.h"
 #include <string.h>
 
-/*list of function pointers to patterns I DO NOT KNOW IF THIS WORKS!*/
+/* list of function pointers to patterns */
 int (*func_list[NRPATTERNS])(INSTR* instr) = {	incPattern,
 												decPattern,
-												wastedMovq2,
+												wastedMovq,
 												wastedMovqSeq,
 												addZero,
 												addOne,
 												moveToSelf};
-
-//when introducing a new pattern remember it needs to change the next,
-												//not the current
 
 /**
  * called from main, runs peephole optimization.
@@ -55,6 +52,7 @@ int loopInternalRep(){
 	return 0;
 }
 
+/*loop over all patterns*/
 int loopPatterns(INSTR* instrucktion){
 	int error = 0;
 	int currentPattern = 0;
@@ -66,8 +64,13 @@ int loopPatterns(INSTR* instrucktion){
 	return error;
 }
 
-
-int wastedMovq2(INSTR* instr){
+/**
+	looks for pattern 	"movq %rbx, x
+						 movq x, %rbx"
+	always removes second move, checks with liveness
+	if first move can be removed as well.
+	*/
+int wastedMovq(INSTR* instr){
 	OPERAND *o1, *o2, *o3, *o4;
 	INSTR *instrTarget = instr->next;
 	INSTR *instrNext;
@@ -131,7 +134,11 @@ int wastedMovq2(INSTR* instr){
 	return 0;
 }
 
-
+/**
+	collapses a sequence of moves into a single move
+	when possible. Checks with liveness to ensure
+	nothing is lost. rbx is almost never liveout. *fingers crossed*
+	*/
 int wastedMovqSeq(INSTR* instr){
 	//return 0;
 	OPERAND *o1, *o2, *o3, *o4;
@@ -171,9 +178,7 @@ int wastedMovqSeq(INSTR* instr){
 								r2 = o2->val.temp->placement.reg;
 							}
 						}
-						// else if(o2->operandKind == temporaryO && o2->val.temp->temporarykind == regT){
-						// 	r2 = o2->val.temp->placement.reg;
-						// }
+	
 						if(o3->operandKind == registerO){
 							r3 = o3->val.reg;
 						}
@@ -202,6 +207,10 @@ int wastedMovqSeq(INSTR* instr){
 	return 0;
 }
 
+/**
+	looks for pattern "addq $0, x"
+	and remove it
+	*/
 int addZero(INSTR *instr){
 	INSTR *instrTarget = instr->next;
 	INSTR *instrNext;
@@ -211,7 +220,6 @@ int addZero(INSTR *instr){
 			op = instrTarget->paramList;
 			if(op->operandKind == constantO){
 				if(op->val.constant == 0){
-					//fprintf(stderr, "removed add/sub 0 instr %d\n", instrTarget->id);
 					instr->next = instrTarget->next;
 					changeMade = 1;
 				}
@@ -221,6 +229,10 @@ int addZero(INSTR *instr){
 	return 0;
 }
 
+/**
+	looks for pattern "addq $1, x"
+	replace it with "incq x"
+	*/
 int addOne(INSTR *instr){
 	INSTR *instrTarget = instr->next;
 	INSTR *replacement;
@@ -231,7 +243,6 @@ int addOne(INSTR *instr){
 			op2 = instrTarget->paramList->next;
 			if(op1->operandKind == constantO){
 				if(op1->val.constant == 1){
-					//fprintf(stderr, "increment replaced add 1 instr %d\n", instrTarget->id);
 					replacement = IRmakeIncINSTR(op2);
 					replacement->next = instrTarget->next;
 					instr->next = replacement;
@@ -243,7 +254,9 @@ int addOne(INSTR *instr){
 	return 0;
 }
 
-
+/**
+	looks for pattern "movq %x, %x" and removes it.
+	*/
 int moveToSelf(INSTR *instr){
 	INSTR *instrTarget = instr->next;
 	OPERAND *op1, *op2;
@@ -268,7 +281,6 @@ int moveToSelf(INSTR *instr){
 			}
 			if(r1 != NA && r1==r2){
 				instr->next = instrTarget->next;
-				//fprintf(stderr, "Removed move to self instruction %d\n", instrTarget->id);
 				changeMade = 1;
 			}
 		}
@@ -276,101 +288,11 @@ int moveToSelf(INSTR *instr){
 	return 0;
 }
 
-// /**
-// 	looks for patterns where we move stuff between two
-// 	positions without it having any effect.
-// 	we use our liveness analysis to see if we can
-// 	remove both mov instructions.
-// 	DOES NOT WORK
-// 	*/
-// int wastedMovq(INSTR* instr){
-// 	OPERAND *o1, *o2, *o3, *o4;
-// 	INSTR *instrTarget = instr->next;
-// 	INSTR *instrNext;
-// 	TempListNode * TLN;
-// 	registers r1, r2, r3, r4;
-// 	int index, wastemp, doit;
-// 	if(instrTarget != NULL){
-// 		wastemp = 0;
-// 		doit = 1;
-// 		instrNext = instrTarget->next;
-// 		if(instrNext != NULL){
-// 			if(instrTarget->instrKind == movI){
-// 				if(instrNext->instrKind == movI){
-// 					o1 = instrTarget->paramList;
-// 					o2 = instrTarget->paramList->next;
-// 					o3 = instrNext->paramList;
-// 					o4 = instrNext->paramList->next;
-// 					if(o1->operandKind == registerO){
-// 						r1 = o1->val.reg;
-// 					} else if(o1->operandKind == temporaryO){
-// 						if(o1->val.temp->temporarykind == regT){
-// 							r1 = o1->val.temp->placement.reg;
-// 						}
-// 					} else {
-// 						return 0;
-// 					}
-//
-// 					if(o2->operandKind == registerO){
-// 						r2 = o2->val.reg;
-// 					} else if(o2->operandKind == temporaryO){
-// 						if(o2->val.temp->temporarykind == regT){
-// 							r2 = o2->val.temp->placement.reg;
-// 							wastemp = 1;
-// 						}
-// 					} else {
-// 						return 0;
-// 					}
-// 					if(o3->operandKind == registerO){
-// 						r3 = o3->val.reg;
-// 					} else if(o3->operandKind == temporaryO){
-// 						if(o3->val.temp->temporarykind == regT){
-// 							r3 = o3->val.temp->placement.reg;
-// 						}
-// 					} else {
-// 						return 0;
-// 					}
-// 					if(o4->operandKind == registerO){
-// 						r4 = o4->val.reg;
-// 					} else if(o4->operandKind == temporaryO){
-// 						if(o4->val.temp->temporarykind == regT){
-// 							r4 = o4->val.temp->placement.reg;
-// 						}
-// 					} else {
-// 						return 0;
-// 					}
-// 					if(r1 == r4){
-// 						if(r2 == r3){
-// 							//use liveness to check if o2 is liveout in instrNext
-// 							if(wastemp == 1){
-// 								index = instrNext->id;
-// 								TLN = lia[index].out->head;
-// 								while(TLN != NULL){
-// 									if(o2->val.temp->tempId == TLN->temp->tempId){
-// 										doit = 0;
-// 									}
-// 									TLN = TLN->next;
-// 								}
-// 							}
-// 							if(doit){
-// 								instr->next = instrNext->next;
-// 							} else {
-// 								instrTarget->next = instrNext->next;
-// 							}
-// 							changeMade = 1;
-// 						}
-// 					}
-// 				}
-// 			}
-//
-// 		}
-//
-// 	}
-// 	return 0;
-// }
-
 /**
- * look for a pattern where "addq $1, x" is used instead of "inc x"
+ * look for a pattern "movq $1, %rbx
+ 					  "addq rbx, x" 
+
+   replace it with "incq x"
  */
 int incPattern(INSTR *instr){
 	OPERAND *leftOP, *temp;
@@ -405,7 +327,10 @@ int incPattern(INSTR *instr){
 }
 
 /**
- * look for a pattern where "subq $1, x" is used instead of "dec x"
+ * look for a pattern "movq $1, %rbx
+ 					  "subq rbx, x" 
+
+   replace it with "decq x"
  */
 int decPattern(INSTR *instr){
 	OPERAND *leftOP, *temp;
