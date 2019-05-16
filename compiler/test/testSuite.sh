@@ -16,7 +16,7 @@ else
   reset
   invoke_cleanup(){
     rm log/*.log &>/dev/null
-    rm tmp/output/*.txt &>/dev/null
+    rm -R tmp/output/ &>/dev/null
   }
 
   if [ "$1" == "clean" ]
@@ -120,6 +120,8 @@ else
 
       #run tests in all subfolders
       function beginTest() {
+        mkdir testPart4/tmp/output
+        mkdir unitTests/tmp/output
         for dir in ./*/; do (cd "$dir" && invoke_tests); done
       }
 
