@@ -204,3 +204,10 @@ WriteComplexWrong3 255
 WriteComplexWrong4 255
 WriteNamed 0
 WriteSimple 0
+NegTrue 0
+NegFalse 0
+NegBoolVar 0
+NegBoolExp 0
+NegInt 255
+NegIntExp 255
+NegRecordVar 255

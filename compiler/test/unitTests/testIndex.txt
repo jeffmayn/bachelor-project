@@ -115,13 +115,13 @@ Kortslutning af AND og OR
 
 
 //**Skal implementeres**//
-Neger true                                                      NegTrue.kit
-Neger False                                                     NegFalse.kit
-Neger et boolsk udtryk (må gerne bruge boolsk/tal variabel)     NegBoolExp.kit
-Neger en bools variabel                                         NegBoolVar.kit
-Neger et tal (FORBUDT)                                          NegInt.kit
-Neger et taludtryk (FORBUDT)                                    NegIntExp.kit
-Neger en record variabel (FORBUDT)                              NegRecordVar.kit
+[done]  Neger true                                                      NegTrue.kit
+[done]  Neger False                                                     NegFalse.kit
+[done}  Neger et boolsk udtryk (må gerne bruge boolsk/tal variabel)     NegBoolExp.kit
+[done]  Neger en bools variabel                                         NegBoolVar.kit
+[done]  Neger et tal (FORBUDT)                                          NegInt.kit
+[done]  Neger et taludtryk (FORBUDT)                                    NegIntExp.kit
+[done]  Neger en record variabel (FORBUDT)                              NegRecordVar.kit
 
 Kardinalitet af positivt tal-constant                           CardIntConst.kit
 Kardinalitet af udtryk (der giver et negativt tal)              CardIntExp.kit
