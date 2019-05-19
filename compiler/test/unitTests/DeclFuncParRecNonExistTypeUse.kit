@@ -1,0 +1,9 @@
+#Erklær en funktion der tager som parameter en anonym record indeholdende en type der ikke findes (FORBUDT)
+#Brug parameteren
+func f(x:record of {i:I}):int
+  x.i = true;
+  write 7;
+  return 8;
+end f
+
+write 9;

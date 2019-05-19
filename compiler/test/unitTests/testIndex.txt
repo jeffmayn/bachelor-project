@@ -32,12 +32,18 @@ Tilgå en variabel i et andet scope, der deler navn med en function (FORBUDT)   
 *****Erklær et array af en brugerdefineret type der ikke findes (FORBUDT) DeclArrOfTypeNonExists.Kit
 
 
-Erklær en funktion der returnere et anonymt array af en type der ikke findes. (FORBUDT)
-Erklær en funktion der returnere et anonymt array indeholdende en typ, der ikke findes (FORBUDT)
-Erklær en funktion der returnere en anonym record af en type, der ikke findes. (FORBUDT)
-Erklær en funktion der tager som parameter et anonymt array af en type, der ikke findes (FORBUDT)
-Erklær en funktion der tager som parameter et anonymt array af en type der ikke findes (FORBUDT)
-Erklær en funktion der tager som parameter en anonym record af en type der ikke findes (FORBUDT)
+Erklær en funktion der returnerer en variabel af en type der ikke findes. (FORBUDT)                     DeclFuncRetNonExistType.kit
+Erklær en funktion der returnerer et anonymt array indeholdende en type, der ikke findes (FORBUDT)      DeclFuncRetArrNonExistType.kit
+Erklær en funktion der returnerer en anonym record indeholdende en type, der ikke findes. (FORBUDT)     DeclFuncRetRecNonExistType.kit
+Erklær en funktion der tager som parameter en variabel af en type, der ikke findes (FORBUDT)            DeclFuncParNonExistType.kit
+Erklær en funktion der tager som parameter et anonymt array indeholdende en type der ikke findes (FORBUDT) DeclFuncParArrNonExistType.kit
+Erklær en funktion der tager som parameter en anonym record indeholdende en type der ikke findes (FORBUDT) DeclFuncParRecNonExistType.kit
+
+/*Ligesom de tilsvarende 4 af de 6 herover, men hvor paramtre og returværdier bliver brugt
+                                          DeclFuncRetArrNonExistTypeUse.kit
+                                          DeclFuncRetRecNonExistTypeUse.kit
+                                          DeclFuncParArrNonExistTypeUse.kit
+                                          DeclFuncParRecNonExistTypeUse.kit
 
 
 alloker anonym record variabel                                AllocAnonRec.kit
