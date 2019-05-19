@@ -49,6 +49,8 @@ AssiNullSimple 255
 AssiRecElem 0
 AssiRecNest 0
 AssiRecNestWrong 255
+DeclArrTypeNonExist 255
+DeclArrTypeNonExist 255
 DeclCircArr 0
 DeclCircRec 0
 DeclCircType 255
