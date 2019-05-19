@@ -29,6 +29,17 @@ Tilgå en funktion der deler navn med en type (FORBUDT)                         
 Tilgå en variabel i et andet scope, der deler navn med en type (FORBUDT)                            AccessVarNotType.kit
 Tilgå en variabel i et andet scope, der deler navn med en function (FORBUDT)                        AccessVarNotFunc.kit
 
+*****Erklær et array af en brugerdefineret type der ikke findes (FORBUDT) DeclArrOfTypeNonExists.Kit
+
+
+Erklær en funktion der returnere et anonymt array af en type der ikke findes. (FORBUDT)
+Erklær en funktion der returnere et anonymt array indeholdende en typ, der ikke findes (FORBUDT)
+Erklær en funktion der returnere en anonym record af en type, der ikke findes. (FORBUDT)
+Erklær en funktion der tager som parameter et anonymt array af en type, der ikke findes (FORBUDT)
+Erklær en funktion der tager som parameter et anonymt array af en type der ikke findes (FORBUDT)
+Erklær en funktion der tager som parameter en anonym record af en type der ikke findes (FORBUDT)
+
+
 alloker anonym record variabel                                AllocAnonRec.kit
 alloker anonym array variabel                                 AllocAnonArr.kit
 alloker navngivet record variabel                             AllocNamedRec.kit
@@ -102,6 +113,28 @@ eks.
 [done]  Tjek division by zero-error. Både ved explicit 0 og gennem en variabel DivisionByZeroExplicit.kit / DivisionByZeroImplicit.kit
 Kortslutning af AND og OR
 
+
+//**Skal implementeres**//
+Neger true                                                      NegTrue.kit
+Neger False                                                     NegFalse.kit
+Neger et boolsk udtryk (må gerne bruge boolsk/tal variabel)     NegBoolExp.kit
+Neger en bools variabel                                         NegBoolVar.kit
+Neger et tal (FORBUDT)                                          NegInt.kit
+Neger et taludtryk (FORBUDT)                                    NegIntExp.kit
+Neger en record variabel (FORBUDT)                              NegRecordVar.kit
+
+Kardinalitet af positivt tal-constant                           CardIntConst.kit
+Kardinalitet af udtryk (der giver et negativt tal)              CardIntExp.kit
+Kardinalitet af bolsk true                                      CardBoolConst.kit
+Kardinalitet af boolsk udtryk (der er falsk)                    CardBoolExp.kit
+Kardinalitet af (navngiven) record                              CardRec.kit
+Kardinalitet af (anonym) array                                  CardArr.kit
+Kardinalitet af en type (FORBUDT)                               CardType.kit
+Kardinalitet af en funktion (FORBUDT)                           CardFunc.kit
+Udtryk der involdvere Kardinalitet (eks |array|*|record|+|x-y|*|true|) CardExp.kit
+//***********//
+
+
 Løkker og if-sætninger
 [done]  if-sætning true                                                     IfTrue.kit
 [done]  if-sætning false                                                    IfFalse.kit
@@ -135,6 +168,7 @@ tjek om {} virker korrekt                                           StmtList.kit
 [done] Funktionskald som parametre til funktion med forkerte typer         FuncCallAsParamWrong.kit
 [done] Gendefintion af funktion i eget scope (FORBUDT)                     FuncReDef.kit
 [done] gendefintion af funktion i andet scope                              FuncReDefScope.kit
+
 
 /*return-tests er dækket af funktions-tests ovenfor*/
 returner konstant, der passer med retur-type                              RetConst.kit

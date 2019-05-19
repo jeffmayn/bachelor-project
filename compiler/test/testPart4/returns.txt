@@ -20,3 +20,4 @@ staticLink2 0
 testAllocType 255
 testAnd&Or 0
 veryLargeExpTree 255
+kimFactorial 0
