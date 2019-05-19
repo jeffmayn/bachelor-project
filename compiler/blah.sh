@@ -1,6 +1,6 @@
 #!/bin/bash
 #for file in kimTest/O_Knapsack.src; do
-for file in test/unitTests/DeclFunc*Use.kit; do
+for file in test/unitTests/DeclArrTypeNonExist.kit; do
   echo "########" $file
   ./build/compiler < $file > a.s &&
   gcc -no-pie -g a.s &&

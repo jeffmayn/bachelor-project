@@ -54,6 +54,7 @@ DeclCircRec 0
 DeclCircType 255
 DeclFieldTypeNameAsOtherField 255
 DeclFieldVarTypeFromVar 255
+DeclArrTypeNonExist 255
 DeclFuncParArrNonExistType 255
 DeclFuncParArrNonExistTypeUse 255
 DeclFuncParNonExistType 255

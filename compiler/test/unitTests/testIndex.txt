@@ -29,7 +29,7 @@ Tilgå en funktion der deler navn med en type (FORBUDT)                         
 Tilgå en variabel i et andet scope, der deler navn med en type (FORBUDT)                            AccessVarNotType.kit
 Tilgå en variabel i et andet scope, der deler navn med en function (FORBUDT)                        AccessVarNotFunc.kit
 
-*****Erklær et array af en brugerdefineret type der ikke findes (FORBUDT) DeclArrOfTypeNonExists.Kit
+Erklær et array af en brugerdefineret type der ikke findes (FORBUDT) DeclArrTypeNonExist.Kit
 
 
 Erklær en funktion der returnerer en variabel af en type der ikke findes. (FORBUDT)                     DeclFuncRetNonExistType.kit
