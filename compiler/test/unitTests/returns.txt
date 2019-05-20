@@ -69,9 +69,11 @@ DeclFuncRetRecNonExistType 255
 DeclFuncRetRecNonExistTypeUse 255
 DeclNestArr 0
 DeclNestRec 0
+DeclRecTypeNonExist 255
 DeclRedef 255
 DeclRedefScopes 0
 DeclTypeChain 0
+DeclTypeNonExist 255
 DeclTypeOutOfOrder 0
 DeclTypeTypeNameAsFunc 255
 DeclTypeTypeNameAsVar 255
