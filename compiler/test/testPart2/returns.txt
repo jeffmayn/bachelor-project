@@ -1,0 +1,10 @@
+BoolAsName 255
+CardNeg  0
+CardOfCard 0
+CardOfOr 255
+CombineTypeDeclExp 255
+MatchCommInline 255
+NegCard 255
+NoStmtList 255
+RetDecl 255
+UnmatchComm 255

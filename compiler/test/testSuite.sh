@@ -110,6 +110,8 @@ else
                     #((count=count+1))
                     invoke_asm $filename $count
                   fi
+              else
+                echo -ne "> tests was successful: $count\r"
               fi
             fi
           done
@@ -120,6 +122,7 @@ else
 
       #run tests in all subfolders
       function beginTest() {
+        mkdir testPart2/tmp/output
         mkdir testPart4/tmp/output
         mkdir unitTests/tmp/output
         for dir in ./*/; do (cd "$dir" && invoke_tests); done
