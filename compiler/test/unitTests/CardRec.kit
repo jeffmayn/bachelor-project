@@ -1,0 +1,6 @@
+type myRec = record of {x:int, y:bool};
+var k:myRec;
+allocate k;
+k.x = 10;
+k.y = true;
+write |k|;

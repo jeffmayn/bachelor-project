@@ -1,0 +1,11 @@
+var u:int, p:int;
+type myRec = record of {x:int, y:bool};
+var k:myRec;
+allocate k;
+
+k.x = 10;
+k.y = true;
+u = 10;
+p = 20;
+
+write |k|*|u-p|*|k|;

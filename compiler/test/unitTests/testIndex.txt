@@ -123,14 +123,14 @@ Kortslutning af AND og OR
 [done]  Neger et taludtryk (FORBUDT)                                    NegIntExp.kit
 [done]  Neger en record variabel (FORBUDT)                              NegRecordVar.kit
 
-Kardinalitet af positivt tal-constant                           CardIntConst.kit
-Kardinalitet af udtryk (der giver et negativt tal)              CardIntExp.kit
-Kardinalitet af bolsk true                                      CardBoolConst.kit
-Kardinalitet af boolsk udtryk (der er falsk)                    CardBoolExp.kit
-Kardinalitet af (navngiven) record                              CardRec.kit
-Kardinalitet af (anonym) array                                  CardArr.kit
-Kardinalitet af en type (FORBUDT)                               CardType.kit
-Kardinalitet af en funktion (FORBUDT)                           CardFunc.kit
+[done]  Kardinalitet af positivt tal-constant                           CardIntConst.kit
+[done]  Kardinalitet af udtryk (der giver et negativt tal)              CardIntExp.kit
+[done]  Kardinalitet af bolsk true                                      CardBoolConst.kit
+[done]  Kardinalitet af boolsk udtryk (der er falsk)                    CardBoolExp.kit
+[done]  Kardinalitet af (navngiven) record                              CardRec.kit
+[done]  Kardinalitet af (anonym) array                                  CardArr.kit
+[done]  Kardinalitet af en type (FORBUDT)                               CardType.kit
+[done]  Kardinalitet af en funktion (FORBUDT)                           CardFunc.kit
 Udtryk der involdvere Kardinalitet (eks |array|*|record|+|x-y|*|true|) CardExp.kit
 //***********//
 

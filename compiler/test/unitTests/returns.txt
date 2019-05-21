@@ -211,3 +211,12 @@ NegBoolExp 0
 NegInt 255
 NegIntExp 255
 NegRecordVar 255
+CardIntCons 0
+CardIntExp 0
+CardBoolCons 0
+CardBoolExp 0
+CardRec 0
+CardArr 0
+CardType 255
+CardFunc 255
+CardExp 0
