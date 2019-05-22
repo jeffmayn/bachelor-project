@@ -72,6 +72,8 @@ int test_Hash(){
   for(int i = 0; i < 10; i++){
     results[i] = Hash(input[i]);
   }
+  printf("!!! YOYOYOY2 !!!");
+
   for(int i = 0; i<10; i++){
     if(known[i] != results[i]){
       printf("Test: test_Hash, FAILED at hashing %s", input[i]);
@@ -86,9 +88,10 @@ int test_Hash(){
  */
 int test_putSymbol(){
   int mistakes = 123;
-  SymbolTable *table = initSymbolTable();
 
-  SYMBOL *newSym = putSymbol(table, "kitty", 1, 1, NULL, NULL);
+  SymbolTable *table = initSymbolTable();
+  TYPE* fhdsau = NEW(TYPE);
+  SYMBOL *newSym = putSymbol(table, "kitty", 1, 1, NULL, fhdsau);
 
   if((newSym != NULL) && (!strcmp(newSym->name, "kitty"))\
                       && (newSym->typeVal == 1)){
@@ -107,7 +110,8 @@ int test_putSymbol(){
 int test_getSymbol(){
   int mistakes = 123;
   SymbolTable *table = initSymbolTable();
-  SYMBOL *newSym = putSymbol(table, "kitty", 1, 1, NULL, NULL);
+  TYPE* fhdsau = NEW(TYPE);
+  SYMBOL *newSym = putSymbol(table, "kitty", 1, 1, NULL, fhdsau);
   SYMBOL *retrieved = getSymbol(table, "kitty");
   if(retrieved == NULL){
     printf("failed: getsymbol null pointer\n");
@@ -132,8 +136,10 @@ int test_scopeSymbolTable(){
   SymbolTable *t = initSymbolTable();
   SymbolTable *childTable = scopeSymbolTable(t);
 
-  putSymbol(t, "kitty", 1, 1, NULL, NULL);
-  putSymbol(childTable, "Arnold", 1, 2, NULL, NULL);
+  TYPE* fhdsau = NEW(TYPE);
+  SYMBOL *newSym = putSymbol(t, "kitty", 1, 1, NULL, fhdsau);
+
+  putSymbol(childTable, "Arnold", 1, 2, NULL, fhdsau);
 
 
   SYMBOL *retrieved = getSymbol(childTable, "kitty");
@@ -159,7 +165,9 @@ int test_doublePutSymbol(){
   SymbolTable *t = initSymbolTable();
 
   // create first 'kitty' symbol and insert
-  SYMBOL *firstSym = putSymbol(t, "kitty", 1, 1, NULL, NULL);
+  TYPE* fhdsau = NEW(TYPE);
+
+  SYMBOL *firstSym = putSymbol(t, "kitty", 1, 1, NULL, fhdsau);
 
   if((firstSym != NULL) && (!strcmp(firstSym->name, "kitty"))\
       && (firstSym->typeVal == 1)){
@@ -168,7 +176,7 @@ int test_doublePutSymbol(){
     printf("failed ");
   }
 
-  SYMBOL *secondSym = putSymbol(t, "kitty", 1, 1, NULL, NULL);
+  SYMBOL *secondSym = putSymbol(t, "kitty", 1, 1, NULL, fhdsau);
 
   if(secondSym == NULL){
     mistakes = 0;
@@ -188,8 +196,10 @@ int test_doubleScopeSymbolTable(){
   SymbolTable *t = initSymbolTable();
   SymbolTable *childTable = scopeSymbolTable(t);
 
-  putSymbol(t, "kitty", 1, 1, NULL, NULL);
-  putSymbol(childTable, "kitty", 1, 2, NULL, NULL);
+  TYPE* fhdsau = NEW(TYPE);
+
+  putSymbol(t, "kitty", 1, 1, NULL, fhdsau);
+  putSymbol(childTable, "kitty", 1, 2, NULL, fhdsau);
 
   SYMBOL *retrieved = getSymbol(t, "kitty");
   SYMBOL *retrieved2 = getSymbol(childTable, "kitty");

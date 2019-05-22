@@ -7,6 +7,10 @@
 #include "internalASM.h"
 #include "IRprint.h"
 
+// symbol test dependencies
+#include "main_test.h"
+#include "testp1.h"
+
 int lineno = 0;
 int charpos = 0;
 int SYNTAX_ERROR = 0;
@@ -21,6 +25,11 @@ BODY *theexpression;
 SymbolTable *childScopeForDebugging;
 
 int main(int argc, char *argv[]) {
+
+  // run symboltable test
+  // run_tests();
+
+
   //checking flags
   RUNTIMECHECK = 1;
   LIVENESS = 1;
