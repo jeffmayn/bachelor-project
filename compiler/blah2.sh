@@ -1,11 +1,11 @@
 #!/bin/bash
 #for file in kimTest/O_Knapsack.src; do
-for file in test/testPart2/*.kit; do
+for file in test/unitTests/DeclCircRec.kit; do
   echo "########" $file
-  ./build/compiler < $file > a.s  &&
-  gcc -no-pie -g a.s &&
+  ./build/compiler < $file > a.s  #&&
+  #gcc -no-pie -g a.s &&
   #file=${file##*/} &&
   #./a.out > test/unitTests/tmp/expected/${file%.kit}.txt
-  ./a.out
-  echo ret $?
+  #./a.out
+  #echo ret $?
 done

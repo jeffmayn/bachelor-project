@@ -8,3 +8,4 @@ NegCard 255
 NoStmtList 255
 RetDecl 255
 UnmatchComm 255
+nestedIf 0

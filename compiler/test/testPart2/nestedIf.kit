@@ -1,0 +1,38 @@
+(*b1 skulle ikke have en else-clause, men får den fra a*)
+(*Problemet er løst for c ved at læggge den i { } *)
+var a:bool, b1:bool, b2:bool, c:bool;
+var x:bool, y:bool;
+
+a = true;
+b1 = false;
+b2 = false;
+c = true;
+x = false;
+y = false;
+
+if(a)
+then
+  if(b1)
+  then
+    write 1;
+else
+  if(b2)
+  then
+  {
+    if(c)
+    then
+      write 3;
+  }
+  else
+    write 4;
+
+(*the inner if-statmenet is an if-then-else*)
+if(x)
+then
+  if(y)
+  then
+    write 5;
+  else
+    write 6;
+else
+  write 7;
