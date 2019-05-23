@@ -23,7 +23,7 @@ INC_DIR_MAIN := $(shell find $(SRC_DIR_MAIN) -type d)#finds all subfolders in in
 INC_FLAGS_MAIN := $(addprefix -I,$(INC_DIR_MAIN))
 #INC_FLAGS_TEST :=$(addprefix -I,$(INC_DIR_TEST))
 
-CFLAGS ?= -std=c11 -Wall -Wextra -pedantic
+CFLAGS ?= -std=c11 -g -Wall -Wextra -pedantic
 #-MMD -MP -lfl -g
 $(BUILD_DIR)/$(TARGET_MAIN): $(OBJ_MAIN)
 	$(GCC) $(OBJ_MAIN) -o $@ $(LDFLAGS)

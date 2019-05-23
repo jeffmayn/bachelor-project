@@ -1,0 +1,10 @@
+#Finder det 47 fibbonacci tal
+func fibbo(tal:int):int
+  if(tal == 0) then
+    return 0;
+  if(tal == 1) then
+    return 1;
+  return fibbo(tal-1) + fibbo(tal-2);
+end fibbo
+
+write fibbo(47);

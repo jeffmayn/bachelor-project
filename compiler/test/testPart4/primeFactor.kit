@@ -1,0 +1,34 @@
+#Primatalsfactorisere tallene fra 1 til 2000000
+func factor(x:int):int
+  var p:int;
+  var temp:int;
+  var prime:bool;
+  var i:int;
+  var n:int;
+  i = 0;
+  while(i < x) do{
+    n = i;
+    prime = true;
+    write n;
+    p = 2;
+    while(n > p*p) do{
+      temp = n/p;
+      if(n == temp*p) then{
+        write p;
+        n = n/p;
+        prime = false;
+      }
+      else{
+        p = p+1;
+      }
+    }
+    write n;
+    write prime;
+    i = i + 1;
+    write 1010;
+    write 1010;
+  }
+return 0;
+end factor
+
+write factor(2000000);

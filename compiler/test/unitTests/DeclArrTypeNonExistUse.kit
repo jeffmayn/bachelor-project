@@ -1,0 +1,8 @@
+#Erklær en array-type af en brugerdefineret type der ikke findes (FORBUDT)
+#Når arrayet kun erklæres ses fejlen ikke, men der opstår ikke yderligere problemer
+#Når en variabel erklæres af type X, så smides kernen under kodegenererig, da B ikke findes
+#hvis arrayet bruges, så opdages fejlen i typetjekkeren
+type X = array of B;
+var a:X;
+a[3] = 7;
+write 42;
